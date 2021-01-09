@@ -1,0 +1,7 @@
+<configuration>
+    <appender name="TERMINAL" class="at.Xirado.Bean.Main.JLineAppender" />
+
+    <root level="INFO">
+        <appender-ref ref="TERMINAL" />
+    </root>
+</configuration>
