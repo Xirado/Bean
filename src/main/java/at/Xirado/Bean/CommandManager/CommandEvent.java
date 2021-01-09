@@ -115,12 +115,12 @@ public class CommandEvent extends GuildMessageReceivedEvent
     {
         Member m = this.event.getMember();
         GuildVoiceState guildVoiceState = m.getVoiceState();
-        if(guildVoiceState != null && guildVoiceState.getChannel().getMembers().size() <= 2)
+        if(guildVoiceState != null)
         {
-            return true;
+            if(guildVoiceState.getChannel().getMembers().size() <= 2) return true;
         }
-        if(m.hasPermission(Permission.MANAGE_CHANNEL))
-            return true;
+
+        if(m.hasPermission(Permission.MANAGE_CHANNEL)) return true;
         Role djRole = m.getRoles().stream()
             .filter(role -> role.getName().equalsIgnoreCase("DJ")) // filter by role name
             .findFirst() // take first result
@@ -192,7 +192,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(message).queue(success);
+                    pc.sendMessage(message).queue(success, null);
                 }
         );
     }
@@ -202,7 +202,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(message).queue();
+                    pc.sendMessage(message).queue(null,null);
                 }
         );
     }
@@ -222,7 +222,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(embed).queue(success);
+                    pc.sendMessage(embed).queue(success, null);
                 }
         );
     }
@@ -232,7 +232,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(embed).queue();
+                    pc.sendMessage(embed).queue(null,null);
                 }
         );
     }
@@ -252,7 +252,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(message).queue(success);
+                    pc.sendMessage(message).queue(success, null);
                 }
         );
     }
@@ -262,7 +262,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(message).queue();
+                    pc.sendMessage(message).queue(null,null);
                 }
         );
     }
