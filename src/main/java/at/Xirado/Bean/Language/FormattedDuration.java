@@ -24,8 +24,10 @@ public class FormattedDuration
 
     }
 
-    public static String getDuration(long seconds)
+    public static String getDuration(long seconds, boolean calcDifference)
     {
+        if(calcDifference) seconds = (System.currentTimeMillis()/1000)-seconds;
+        if(seconds < 0) throw new IllegalArgumentException("Negative Duration Value!");
         if(seconds < 10) return "now";
         if(seconds < 60) return "less than a minute ago";
         if(seconds < 3600) // less than a hour
@@ -58,7 +60,7 @@ public class FormattedDuration
             if(months == 1) return "a month ago";
             return months+" months ago";
         }
-        int years = (int) ((((seconds/60)/60)/24)/30)/365;
+        int years = (int) ((seconds/3600)/24)/365;
         if(years == 1) return "a year ago";
         return years+" years ago";
 
