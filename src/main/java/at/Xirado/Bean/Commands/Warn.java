@@ -4,6 +4,7 @@ import at.Xirado.Bean.CommandManager.Command;
 import at.Xirado.Bean.CommandManager.CommandEvent;
 import at.Xirado.Bean.CommandManager.CommandType;
 import at.Xirado.Bean.Main.DiscordBot;
+import at.Xirado.Bean.Misc.Util;
 import at.Xirado.Bean.PunishmentManager.Case;
 import at.Xirado.Bean.PunishmentManager.CaseType;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -11,8 +12,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 
+import java.awt.*;
 import java.time.Instant;
 
 public class Warn extends Command
@@ -44,6 +47,11 @@ public class Warn extends Command
         DiscordBot.instance.jda.retrieveUserById(ID).queue(
                 (target) ->
                 {
+                    if(!guild.isMember(target))
+                    {
+                        event.replyError("The given user is not on this server!");
+                        return;
+                    }
                     Case modcase = Case.createCase(CaseType.WARN, event.getGuild().getIdLong(), target.getIdLong(), member.getIdLong(), Reason, 0L);
                     EmbedBuilder builder = new EmbedBuilder()
                             .setThumbnail(target.getEffectiveAvatarUrl())
@@ -58,11 +66,14 @@ public class Warn extends Command
                     event.reply(new EmbedBuilder()
                             .setColor(CaseType.WARN.getEmbedColor())
                             .setDescription("✅ "+target.getAsTag()+" has been warned")
-                            .setFooter("User-ID: "+target.getIdLong())
-                            .setTimestamp(Instant.now())
+
                             .build()
                     );
                     event.replyinLogChannel(builder.build());
+                    Util.sendPrivateMessage(target, new EmbedBuilder()
+                            .setColor(Color.red)
+                            .setDescription("You have been warned in "+guild.getName()+"!\nReason: "+Reason)
+                            .build());
 
                 },
                 (failure) ->

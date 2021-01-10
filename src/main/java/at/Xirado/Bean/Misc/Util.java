@@ -127,6 +127,14 @@ public class Util
 			return "Hey "+m.getAsMention()+", you can't say that!";
 		}
 	}
+	public static void sendPrivateMessage(User user, MessageEmbed embed)
+	{
+		user.openPrivateChannel()
+				.flatMap(privateChannel -> privateChannel.sendMessage(embed))
+				.queue(null, new ErrorHandler()
+						.ignore(EnumSet.allOf(ErrorResponse.class)));
+	}
+
 	public static ErrorHandler handle(TextChannel c)
 	{
 		return new ErrorHandler()

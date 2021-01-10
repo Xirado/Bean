@@ -127,6 +127,8 @@ public class CommandManager
         addCommand(new Haste(jda));
         addCommand(new GameKeys(jda));
         addCommand(new Warn(jda));
+        addCommand(new Warns(jda));
+        addCommand(new CaseCommand(jda));
 
 
 

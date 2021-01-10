@@ -6,9 +6,12 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.ErrorHandler;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.awt.*;
 import java.time.Instant;
+import java.util.EnumSet;
 import java.util.function.Consumer;
 
 public class CommandEvent extends GuildMessageReceivedEvent
@@ -39,7 +42,6 @@ public class CommandEvent extends GuildMessageReceivedEvent
         this.event.getChannel().sendMessage(
                 new EmbedBuilder()
                 .setColor(Color.red)
-                .setTimestamp(Instant.now())
                 .setDescription(ERROR_EMOTE+" "+message)
                 .build()
         ).queue();
@@ -192,7 +194,8 @@ public class CommandEvent extends GuildMessageReceivedEvent
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(message).queue(success, null);
+                    pc.sendMessage(message).queue(success, new ErrorHandler()
+                            .ignore(EnumSet.allOf(ErrorResponse.class)));
                 }
         );
     }
@@ -202,7 +205,8 @@ public class CommandEvent extends GuildMessageReceivedEvent
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(message).queue(null,null);
+                    pc.sendMessage(message).queue(null, new ErrorHandler()
+                            .ignore(EnumSet.allOf(ErrorResponse.class)));
                 }
         );
     }
@@ -222,7 +226,8 @@ public class CommandEvent extends GuildMessageReceivedEvent
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(embed).queue(success, null);
+                    pc.sendMessage(embed).queue(success, new ErrorHandler()
+                            .ignore(EnumSet.allOf(ErrorResponse.class)));
                 }
         );
     }
@@ -232,7 +237,8 @@ public class CommandEvent extends GuildMessageReceivedEvent
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(embed).queue(null,null);
+                    pc.sendMessage(embed).queue(null, new ErrorHandler()
+                            .ignore(EnumSet.allOf(ErrorResponse.class)));
                 }
         );
     }
@@ -252,7 +258,8 @@ public class CommandEvent extends GuildMessageReceivedEvent
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(message).queue(success, null);
+                    pc.sendMessage(message).queue(success, new ErrorHandler()
+                            .ignore(EnumSet.allOf(ErrorResponse.class)));
                 }
         );
     }
@@ -262,7 +269,8 @@ public class CommandEvent extends GuildMessageReceivedEvent
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(message).queue(null,null);
+                    pc.sendMessage(message).queue(null, new ErrorHandler()
+                            .ignore(EnumSet.allOf(ErrorResponse.class)));
                 }
         );
     }

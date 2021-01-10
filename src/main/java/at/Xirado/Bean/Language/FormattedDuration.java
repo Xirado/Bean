@@ -2,6 +2,9 @@ package at.Xirado.Bean.Language;
 
 public class FormattedDuration
 {
+    public static final long ONE_DAY = 86400000L;
+    public static final long ONE_WEEK = ONE_DAY*7;
+
     private long epochTime;
     private String format;
 
@@ -45,7 +48,7 @@ public class FormattedDuration
         if(seconds < 604800) // less than a week
         {
             int days = (int) ((seconds/60)/60)/24;
-            if(days == 1) return "a day ago";
+            if(days == 1) return "yesterday";
             return days+" days ago";
         }
         if(seconds < 2.628e+6) // less than a month
