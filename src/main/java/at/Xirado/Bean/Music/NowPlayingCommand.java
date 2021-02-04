@@ -26,7 +26,7 @@ public class NowPlayingCommand extends Command
     }
 
     @Override
-    public void execute(final CommandEvent event) {
+    public void executeCommand(final CommandEvent event) {
         final AudioHandler handler = (AudioHandler)ResultHandler.getHandler(event.getGuild());
         final Message m = handler.getNowPlaying(event.getJDA());
         if (m == null) {

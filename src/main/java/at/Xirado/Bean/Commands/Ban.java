@@ -32,13 +32,13 @@ public class Ban extends Command
 	}
 
 	@Override
-	public void execute(CommandEvent e)
+	public void executeCommand(CommandEvent e)
 	{
 		String[] args = e.getArguments().getArguments();
 		Member member = e.getMember();
 		User user = e.getAuthor();
 		Guild guild = e.getGuild();
-		TextChannel logchannel = Util.getLogChannel(guild);
+		TextChannel logchannel = DiscordBot.instance.logChannelManager.getLogChannel(guild.getIdLong());
 		TextChannel channel = e.getChannel();
 		if(args.length < 1)
 		{
@@ -47,11 +47,11 @@ public class Ban extends Command
 		}
 		String ID = args[0].replaceAll("[^0-9]", "");
 		DiscordBot.instance.jda.retrieveUserById(ID).queue(
-				(u) ->
+				(targetUser) ->
 				{
-					if(guild.isMember(u))
+					if(guild.isMember(targetUser))
 					{
-						Member asmember = guild.getMember(u);
+						Member asmember = guild.getMember(targetUser);
 						if(!member.canInteract(asmember))
 						{
 							channel.sendMessage(user.getAsMention()+", you can't ban this user!").queue(response -> response.delete().queueAfter(10, TimeUnit.SECONDS));
@@ -76,27 +76,26 @@ public class Ban extends Command
 							sb.append(args[i]).append(" ");
 						}
 					}
-					String Reason1 = sb.toString();
-					final String Reason = Reason1.substring(0, Reason1.length()-1);
-					String wholeReason = "banned by "+member.getUser().getAsTag()+" for: "+Reason;
-					boolean ismember = guild.isMember(u);
+					final String Reason = sb.toString().trim();
+					String wholeReason = "banned by "+user.getAsTag()+" for: "+Reason;
+					boolean ismember = guild.isMember(targetUser);
 					
-					guild.ban(u, 0, wholeReason).queue(
+					guild.ban(targetUser, 0, wholeReason).queue(
 							(response) -> {
 								if(ismember)
 								{
-									Util.sendPrivateMessage(u, new MessageBuilder("You have been **permanently** banned from "+guild.getName()+" for **"+Reason+"**").build());
+									Util.sendPrivateMessage(targetUser, new MessageBuilder("You have been **permanently** banned from "+guild.getName()+" for **"+Reason+"**").build());
 								}
 								EmbedBuilder builder = new EmbedBuilder()
 										.setColor(Color.decode("#8B0000"))
 										.setTimestamp(Instant.now())
-										.setFooter("ID: "+u.getIdLong())
-										.setTitle("[BAN] "+u.getAsTag())
-										.addField("User", u.getAsMention(), true)
+										.setFooter("ID: "+targetUser.getIdLong())
+										.setTitle("[BAN] "+targetUser.getAsTag())
+										.addField("User", targetUser.getAsMention(), true)
 										.addField("Moderator", user.getAsMention(), true)
 										.addField("Reason", Reason, true)
 										.addField("Duration", "∞", true)
-										.setThumbnail(u.getEffectiveAvatarUrl());
+										.setThumbnail(targetUser.getEffectiveAvatarUrl());
 								if(logchannel != null)
 								{
 									if(logchannel.getIdLong() == channel.getIdLong())
@@ -113,7 +112,7 @@ public class Ban extends Command
 							}
 							
 							);
-				}
+				}, (err) -> e.replyError("You provided an invalid user-id!")
 			);
 	}
 }

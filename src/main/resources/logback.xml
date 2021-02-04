@@ -1,7 +1,13 @@
 <configuration>
-    <appender name="TERMINAL" class="at.Xirado.Bean.Main.JLineAppender" />
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <useJansi>true</useJansi>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="at.Xirado.Bean.Logging.Layout" />
+        </encoder>
+    </appender>
 
-    <root level="INFO">
-        <appender-ref ref="TERMINAL" />
+
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT" />
     </root>
 </configuration>

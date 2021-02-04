@@ -20,7 +20,7 @@ public class ReneHelp extends Command
     }
 
     @Override
-    public void execute(CommandEvent e) {
+    public void executeCommand(CommandEvent e) {
         String tosend = "<@355769135260762114>, wir brauchen dich!";
         for(int i = 0; i < 5; i++)
         {

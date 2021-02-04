@@ -24,7 +24,25 @@ public class SkipCommand extends Command
     }
 
     @Override
-    public void execute(final CommandEvent event) {
+    public void executeCommand(final CommandEvent event) {
+        if(event.getMember().getVoiceState() != null)
+        {
+            if(!event.getMember().getVoiceState().inVoiceChannel())
+            {
+                event.replyError("You need to be in a Voicechannel to do this!");
+                return;
+            }
+        }else
+        {
+            event.replyError("You need to be in a Voicechannel to do this!");
+            return;
+        }
+
+        if(event.getGuild().getSelfMember().getVoiceState() == null || !event.getGuild().getSelfMember().getVoiceState().inVoiceChannel())
+        {
+            event.replyError("There is no music playing!");
+            return;
+        }
         final AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
         if (event.getAuthor().getIdLong() == handler.getRequester()) {
             event.replySuccess("Skipped **" + handler.getPlayer().getPlayingTrack().getInfo().title + "**");

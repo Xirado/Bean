@@ -18,7 +18,7 @@ public class GuildMessageReactionRemove extends ListenerAdapter
 	public void onGuildMessageReactionRemoveAll(GuildMessageReactionRemoveAllEvent e)
 	{
 
-		Util.runAsync(new Runnable() {
+		Util.doAsynchronously(new Runnable() {
 			@Override
 			public void run() {
 				Long messageid = e.getMessageIdLong();
@@ -29,7 +29,7 @@ public class GuildMessageReactionRemove extends ListenerAdapter
 	@Override
 	public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent e)
 	{
-		Util.runAsync(new Runnable() {
+		Util.doAsynchronously(new Runnable() {
 			@Override
 			public void run() {
 				try

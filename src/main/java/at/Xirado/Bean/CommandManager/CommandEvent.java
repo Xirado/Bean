@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.time.Instant;
@@ -25,6 +26,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
     public final GuildMessageReceivedEvent event;
     public final CommandArgument arg;
     public Command command;
+    public Member member;
 
     public CommandEvent(CommandArgument arg, GuildMessageReceivedEvent e)
     {
@@ -37,6 +39,19 @@ public class CommandEvent extends GuildMessageReceivedEvent
     {
         return this.event.getGuild().getMember(DiscordBot.instance.jda.getSelfUser());
     }
+
+    @Nullable
+    @Override
+    public Member getMember()
+    {
+        return this.member;
+    }
+
+    public void setMember(Member member)
+    {
+        this.member = member;
+    }
+
     public void replyError(String message)
     {
         this.event.getChannel().sendMessage(

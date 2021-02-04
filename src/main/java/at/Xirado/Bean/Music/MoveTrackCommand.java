@@ -25,7 +25,7 @@ public class MoveTrackCommand extends Command
     }
 
     @Override
-    public void execute(final CommandEvent event) {
+    public void executeCommand(final CommandEvent event) {
         final String[] parts = event.getArguments().getArguments();
         if(!event.isDJ())
         {

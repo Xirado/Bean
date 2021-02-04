@@ -37,7 +37,7 @@ public class QueueCommand extends Command
 
 
     @Override
-    public void execute(final CommandEvent event) {
+    public void executeCommand(final CommandEvent event) {
         Bot bot = DiscordBot.instance.musicinstance;
         Paginator.Builder builder = new Paginator.Builder().setColumns(1).setFinalAction(m -> {
             try {

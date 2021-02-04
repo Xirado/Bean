@@ -24,7 +24,7 @@ public class SkipToCommand extends Command
     }
 
     @Override
-    public void execute(final CommandEvent event) {
+    public void executeCommand(final CommandEvent event) {
         if(!event.isDJ())
         {
             event.replyError("You need to be a DJ to do this!");

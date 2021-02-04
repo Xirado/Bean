@@ -44,29 +44,30 @@ public class GuildReceiveMessage extends ListenerAdapter
 					if(StringUtils.containsIgnoreCase(message, s))
 					{
 						e.getMessage().delete().queue(
-								(response1) ->
-								{
-									e.getChannel().sendMessage(Util.BadWord(member, e.getGuild())).queue(
-											(response) ->
-											{
-												if(DiscordBot.instance.logChannelManager.getLogChannel(e.getGuild().getIdLong()) != null)
-												{
-													DiscordBot.instance.logChannelManager.getLogChannel(e.getGuild().getIdLong()).sendMessage(
-															new EmbedBuilder()
-																	.setColor(Color.orange)
-																	.setAuthor("Blacklisted word used", null, e.getGuild().getIconUrl())
-																	.setFooter("UserID: "+e.getMember().getIdLong())
-																	.addField("User", e.getMember().getAsMention(), true)
-																	.addField("Channel", e.getChannel().getAsMention(), true)
-																	.addField("Message", message, true)
-																	.setTimestamp(Instant.now())
-																	.build()
-													).queue(null, Throwable::printStackTrace);
-												}
-												response.delete().queueAfter(5, TimeUnit.SECONDS);
-											}
-									);
-								});
+							(response1) ->
+							{
+								e.getChannel().sendMessage(Util.BadWord(member, e.getGuild())).queue(
+									(response) ->
+									{
+										if(DiscordBot.instance.logChannelManager.getLogChannel(e.getGuild().getIdLong()) != null)
+										{
+											DiscordBot.instance.logChannelManager.getLogChannel(e.getGuild().getIdLong()).sendMessage(
+													new EmbedBuilder()
+															.setColor(Color.orange)
+															.setAuthor("Blacklisted word used", null, e.getGuild().getIconUrl())
+															.setFooter("UserID: "+e.getMember().getIdLong())
+															.addField("User", e.getMember().getAsMention(), true)
+															.addField("Channel", e.getChannel().getAsMention(), true)
+															.addField("Message", message, true)
+															.setTimestamp(Instant.now())
+															.build()
+											).queue(null, null);
+										}
+										response.delete().queueAfter(5, TimeUnit.SECONDS);
+									}
+								);
+							}
+						);
 					}
 				}
         	}

@@ -27,7 +27,7 @@ public class GameKeys extends Command
     }
 
     @Override
-    public void execute(CommandEvent e)
+    public void executeCommand(CommandEvent e)
     {
         try
         {

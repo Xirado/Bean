@@ -33,10 +33,9 @@ public class Blacklist extends Command
 	}
 
 	@Override
-	public void execute(CommandEvent e)
+	public void executeCommand(CommandEvent e)
 	{
 		String[] args = e.getArguments().getArguments();
-		Member member = e.getMember();
 		User user = e.getAuthor();
 		Guild guild = e.getGuild();
 		TextChannel channel = e.getChannel();
@@ -55,7 +54,6 @@ public class Blacklist extends Command
 				e.replyErrorUsage();
 				return;
 			}
-			List<String> currentlist = DiscordBot.instance.blacklistManager.getBlacklistedWords(guild.getIdLong());
 			if(blMan.containsBlacklistedWord(guild.getIdLong(), args[1].toUpperCase()))
 			{
 				EmbedBuilder builder = new EmbedBuilder()

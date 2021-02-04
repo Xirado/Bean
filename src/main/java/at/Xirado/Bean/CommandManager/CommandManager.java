@@ -1,24 +1,23 @@
 package at.Xirado.Bean.CommandManager;
 
 import at.Xirado.Bean.Commands.*;
+import at.Xirado.Bean.Logging.Console;
 import at.Xirado.Bean.Main.DiscordBot;
 import at.Xirado.Bean.Modules.GabrielHelp;
-import at.Xirado.Bean.Modules.GameKeys;
 import at.Xirado.Bean.Modules.LukasHelp;
 import at.Xirado.Bean.Modules.ReneHelp;
 import at.Xirado.Bean.Music.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CommandManager
@@ -36,7 +35,7 @@ public class CommandManager
         return new ArrayList<>();
     }
 
-    protected void addRegisteredModule(Long guildID, Command command)
+    protected void registerModule(Long guildID, Command command)
     {
         ArrayList<Command> commands = getRegisteredModules(guildID);
         commands.add(command);
@@ -45,54 +44,70 @@ public class CommandManager
 
     public void handleCommand(GuildMessageReceivedEvent e)
     {
-        if(e == null) return;
-
-        CommandArgument arguments = new CommandArgument(e.getMessage().getContentRaw(), e.getGuild().getIdLong());
-        String invoke = arguments.getCommand();
-        Member m = e.getMember();
-        if(DiscordBot.debugMode)
+        Runnable r = () ->
         {
-            if(m.getIdLong() != 184654964122058752L) return;
-        }
-        for(Command cmd : registeredCommands)
-        {
-
-            if(cmd == null) continue;
-            if(cmd.invoke == null) continue;
-            if(cmd.aliases == null) continue;
-
-            if(cmd.getInvoke().equalsIgnoreCase(invoke) || Arrays.stream(cmd.getAliases()).anyMatch(invoke::equalsIgnoreCase))
+            try
             {
-                if(!cmd.isGlobal())
-                {
-                    if(cmd.enabledGuilds == null) return;
-                    if(!Arrays.asList(cmd.enabledGuilds).contains(e.getGuild().getIdLong()))
-                    {
-                        return;
-                    }
-                }
-                if(cmd.getNeededPermissions() == null) return;
-                List<Permission> neededPermissions = Arrays.asList(cmd.getNeededPermissions());
-                for(Permission p : neededPermissions)
-                {
-                    if(!m.hasPermission(p))
-                    {
-                        EmbedBuilder builder = new EmbedBuilder()
-                                .setColor(Color.red)
-                                .setTimestamp(Instant.now())
-                                .setFooter("Insufficient permissions")
-                                .setDescription("\uD83D\uDEAB You don't have permission to do this! \uD83D\uDEAB")
-                                .setAuthor(m.getUser().getAsTag(), null, m.getUser().getEffectiveAvatarUrl());
-                        e.getChannel().sendMessage(builder.build()).queue((response) -> response.delete().queueAfter(10, TimeUnit.SECONDS));
-                        return;
-                    }
-                }
-                CommandEvent ice = new CommandEvent(arguments, e);
-                ice.setCommand(cmd);
-                cmd.execute(ice);
-                break;
+                if(e == null) return;
+
+                CommandArgument arguments = new CommandArgument(e.getMessage().getContentRaw(), e.getGuild().getIdLong());
+                String invoke = arguments.getCommand();
+                e.getGuild().retrieveMember(e.getAuthor()).queue(
+                        (member) ->
+                        {
+                            if(DiscordBot.debugMode)
+                            {
+                                if(member.getIdLong() != 184654964122058752L) return;
+                            }
+                            for(Command cmd : registeredCommands)
+                            {
+
+                                if(cmd == null) continue;
+                                if(cmd.invoke == null) continue;
+                                if(cmd.aliases == null) continue;
+
+                                if(cmd.getInvoke().equalsIgnoreCase(invoke) || Arrays.stream(cmd.getAliases()).anyMatch(invoke::equalsIgnoreCase))
+                                {
+                                    if(!cmd.isGlobal())
+                                    {
+                                        if(cmd.enabledGuilds == null) return;
+                                        if(!Arrays.asList(cmd.enabledGuilds).contains(e.getGuild().getIdLong()))
+                                        {
+                                            return;
+                                        }
+                                    }
+                                    if(cmd.getNeededPermissions() == null) return;
+                                    Permission[] neededPermissions = cmd.getNeededPermissions();
+                                    for(Permission p : neededPermissions)
+                                    {
+                                        if(!member.hasPermission(p))
+                                        {
+                                            EmbedBuilder builder = new EmbedBuilder()
+                                                    .setColor(Color.red)
+                                                    .setTimestamp(Instant.now())
+                                                    .setFooter("Insufficient permissions")
+                                                    .setDescription("\uD83D\uDEAB You don't have permission to do this! \uD83D\uDEAB")
+                                                    .setAuthor(member.getUser().getAsTag(), null, member.getUser().getEffectiveAvatarUrl());
+                                            e.getChannel().sendMessage(builder.build()).queue((response) -> response.delete().queueAfter(10, TimeUnit.SECONDS));
+                                            return;
+                                        }
+                                    }
+                                    CommandEvent ice = new CommandEvent(arguments, e);
+                                    ice.setMember(member);
+                                    ice.setCommand(cmd);
+                                    cmd.executeCommand(ice);
+                                    break;
+                                }
+                            }
+                        }
+                );
+
+            }catch(Exception ex)
+            {
+                Console.error(ExceptionUtils.getStackTrace(ex));
             }
-        }
+        };
+        DiscordBot.instance.scheduledExecutorService.submit(r);
     }
     public void registerAllCommands()
     {
@@ -125,10 +140,11 @@ public class CommandManager
         addCommand(new LukasHelp(jda));
         addCommand(new ReneHelp(jda));
         addCommand(new Haste(jda));
-        addCommand(new GameKeys(jda));
-        addCommand(new Warn(jda));
-        addCommand(new Warns(jda));
-        addCommand(new CaseCommand(jda));
+        //addCommand(new GameKeys(jda));
+        //addCommand(new Warn(jda));
+        //addCommand(new Warns(jda));
+        //addCommand(new CaseCommand(jda));
+        //addCommand(new Tempban(jda));
 
 
 
@@ -140,7 +156,7 @@ public class CommandManager
         {
             for(Long guildID : cmd.enabledGuilds)
             {
-                addRegisteredModule(guildID,cmd);
+                registerModule(guildID,cmd);
             }
         }
     }

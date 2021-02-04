@@ -20,43 +20,39 @@ public class Announce extends Command
 		this.invoke = "announce";
 		this.neededPermissions = new Permission[]{Permission.MESSAGE_MENTION_EVERYONE};
 		this.description = "Creates an announcement in a channel";
-		this.usage = "announce [#Channel/ID] [Text]";
+		this.usage = "announce #Channel [Text]";
 		this.commandType = CommandType.ADMIN;
 	}
 
 	@Override
-	public void execute(CommandEvent e)
+	public void executeCommand(CommandEvent e)
 	{
 
 		String[] args = e.getArguments().getArguments();
-		e.getMessage().delete().queue(
-				(success) ->
-				{
-					Guild g = e.getGuild();
-					TextChannel c = e.getChannel();
-					if(args.length >= 2)
-					{
-						TextChannel targetchannel;
-						String s = args[0].replaceAll("[^0-9]", "");
-						targetchannel = e.getGuild().getTextChannelById(s);
-						if(targetchannel == null)
-						{
-							c.sendMessage("Invalid channel-id!").queue();
-							return;
-						}
-
-						String tostring = e.getArguments().getAsString(1);
-						EmbedBuilder builder = new EmbedBuilder()
-								.setAuthor(g.getName(), null, g.getIconUrl())
-								.setDescription(tostring);
-						targetchannel.sendMessage(builder.build()).queue(
-								(result) ->
-								{
-									targetchannel.sendMessage("@everyone").queue(null, Util.handle(e.getChannel()));
-								}, Util.handle(c)
-						);
-					}
-				}, Util.handle(e.getChannel())
+		e.getMessage().delete().queue();
+		Guild g = e.getGuild();
+		TextChannel c = e.getChannel();
+		if(args.length < 2)
+		{
+			e.replyErrorUsage();
+			return;
+		}
+		TextChannel targetChannel = e.getGuild().getTextChannelById(args[0].replaceAll("[^0-9]", ""));
+		if(targetChannel == null)
+		{
+			e.replyError("Invalid channel!");
+			return;
+		}
+		String message = e.getArguments().getAsString(1);
+		targetChannel.sendMessage(
+				new EmbedBuilder()
+					.setAuthor(g.getName(), null, g.getIconUrl())
+					.setDescription(message)
+					.build()
+		).queue(
+				(result) -> {
+					targetChannel.sendMessage("@everyone").queue(null, Util.ignoreAllErrors());
+				}
 		);
 	}
 }

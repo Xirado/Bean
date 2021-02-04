@@ -20,7 +20,7 @@ public class StopCommand extends Command
     }
 
     @Override
-    public void execute(CommandEvent event)
+    public void executeCommand(CommandEvent event)
     {
         if(event.getMember().getVoiceState() == null)
         {

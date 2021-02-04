@@ -27,7 +27,7 @@ public class Settings extends Command
 	}
 
 	@Override
-	public void execute(CommandEvent e)
+	public void executeCommand(CommandEvent e)
 	{
 		String[] args = e.getArguments().getArguments();
 		Member m = e.getMember();

@@ -30,6 +30,27 @@ public class Case
     private String reason;
     private long duration;
     private long createdAt;
+    private boolean isActive;
+
+    public void setActive(boolean value)
+    {
+        String qry = "UPDATE modcases SET active = ? WHERE caseID = ?";
+        try
+        {
+            PreparedStatement ps = SQL.con.prepareStatement(qry);
+            ps.setBoolean(1, value);
+            ps.setString(2, this.caseID);
+            ps.execute();
+        } catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+    }
+
+    public boolean isActive()
+    {
+        return isActive;
+    }
 
     public CaseType getType()
     {
@@ -70,7 +91,15 @@ public class Case
         return createdAt;
     }
 
-    public Case(CaseType type, long GuildID, long targetID, long moderatorID, String reason, long duration, long createdAt, String caseID)
+    public void fetchUpdate()
+    {
+        Case newcase = Punishments.getCaseByID(this.getCaseID(), DiscordBot.instance.jda.getGuildById(this.getGuildID()));
+        this.isActive = newcase.isActive;
+        this.duration = newcase.duration;
+        this.reason = newcase.reason;
+    }
+
+    public Case(CaseType type, long GuildID, long targetID, long moderatorID, String reason, long duration, long createdAt, String caseID, boolean isActive)
     {
         this.type = type;
         this.GuildID = GuildID;
@@ -80,6 +109,7 @@ public class Case
         this.duration = duration;
         this.caseID = caseID;
         this.createdAt = createdAt;
+        this.isActive = isActive;
     }
     public static Case createCase(CaseType type, long guildID, long targetID, long moderatorID, String reason, long duration)
     {
@@ -92,7 +122,7 @@ public class Case
         }
         try
         {
-            String qry = "INSERT INTO modcases (caseID, guildID, targetID, moderatorID, caseType, reason, duration, creationDate) values (?,?,?,?,?,?,?,?)";
+            String qry = "INSERT INTO modcases (caseID, guildID, targetID, moderatorID, caseType, reason, duration, creationDate, active) values (?,?,?,?,?,?,?,?,?)";
             PreparedStatement ps = SQL.con.prepareStatement(qry);
             ps.setString(1, caseID);
             ps.setLong(2, guildID);
@@ -102,12 +132,13 @@ public class Case
             ps.setString(6, reason);
             ps.setLong(7, duration);
             ps.setLong(8, System.currentTimeMillis());
+            ps.setBoolean(9, true);
             ps.execute();
         } catch (SQLException throwables)
         {
             throwables.printStackTrace();
         }
-        return new Case(type,guildID,targetID,moderatorID,reason,duration,System.currentTimeMillis(), caseID);
+        return new Case(type,guildID,targetID,moderatorID,reason,duration,System.currentTimeMillis(), caseID, true);
     }
 
 

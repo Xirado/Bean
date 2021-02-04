@@ -1,9 +1,67 @@
 package at.Xirado.Bean.Language;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.Period;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class FormattedDuration
 {
     public static final long ONE_DAY = 86400000L;
     public static final long ONE_WEEK = ONE_DAY*7;
+
+    private static final Pattern periodPattern = Pattern.compile("([0-9]+)([a-z]+)");
+
+    public static Long parsePeriod(String period){
+        if(period == null) return null;
+        period = period.toLowerCase(Locale.ENGLISH);
+        Matcher matcher = periodPattern.matcher(period);
+        Instant instant=Instant.EPOCH;
+        while(matcher.find()){
+            int num = Integer.parseInt(matcher.group(1));
+            String typ = matcher.group(2);
+            switch (typ) {
+                case "seconds":
+                case "sec":
+                case "s":
+                    instant=instant.plus(Duration.ofSeconds(num));
+                    break;
+                case "minutes":
+                case "min":
+                case "m":
+                    instant=instant.plus(Duration.ofMinutes(num));
+                    break;
+                case "hr":
+                case "hour":
+                case "hours":
+                case "h":
+                    instant=instant.plus(Duration.ofHours(num));
+                    break;
+                case "day":
+                case "days":
+                case "d":
+                    instant=instant.plus(Duration.ofDays(num));
+                    break;
+                case "w":
+                    instant=instant.plus(Period.ofWeeks(num));
+                    break;
+                case "month":
+                case "mon":
+                    instant=instant.plus(Period.ofMonths(num));
+                    break;
+                case "year":
+                case "yr":
+                case "y":
+                    instant=instant.plus(Period.ofYears(num));
+                    break;
+                default:
+                    return null;
+            }
+        }
+        return instant.toEpochMilli();
+    }
 
     private long epochTime;
     private String format;

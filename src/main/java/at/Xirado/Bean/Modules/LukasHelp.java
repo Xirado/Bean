@@ -20,7 +20,7 @@ public class LukasHelp extends Command
     }
 
     @Override
-    public void execute(CommandEvent e) {
+    public void executeCommand(CommandEvent e) {
         String tosend = "<@614384531423756298>, wir brauchen dich!";
         for(int i = 0; i < 5; i++)
         {

@@ -27,7 +27,7 @@ public class Uptime extends Command
     }
 
     @Override
-    public void execute(CommandEvent e)
+    public void executeCommand(CommandEvent e)
     {
         long thistime = System.currentTimeMillis() / 1000;
         TextChannel c = e.getChannel();
@@ -35,8 +35,7 @@ public class Uptime extends Command
                 new EmbedBuilder()
                         .setColor(Color.decode("#FEFEFE"))
                         .setTimestamp(Instant.now())
-                        .setFooter("Developed by Xirado")
-                        .setDescription("Uptime: `" + Util.getLength(thistime - DiscordBot.instance.STARTTIME) + "`")
+                        .setDescription("Uptime: `" + Util.getLength(thistime - DiscordBot.STARTTIME) + "`")
                         .build()
         ).queue();
     }

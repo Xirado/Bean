@@ -80,6 +80,6 @@ public abstract class Command
         this.aliases = new String[]{};
     }
 
-    public abstract void execute(CommandEvent event);
+    public abstract void executeCommand(CommandEvent event);
 
 }

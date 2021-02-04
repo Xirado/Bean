@@ -28,20 +28,19 @@ public class PostEmbed extends Command
 	}
 
 	@Override
-	public void execute(CommandEvent e)
+	public void executeCommand(CommandEvent e)
 	{
 		String[] args = e.getArguments().getArguments();
 		e.getMessage().delete().complete();
 		Member m = e.getMember();
 		User u = e.getAuthor();
-		Guild g = e.getGuild();
 		TextChannel c = e.getChannel();
 		if(args.length >= 1)
 		{
 			StringBuilder sb = new StringBuilder();
-			for(int i = 0; i < args.length; i++)
+			for (String arg : args)
 			{
-				sb.append(args[i]).append(" ");
+				sb.append(arg).append(" ");
 			}
 			String tostring = sb.toString();
 			tostring = tostring.substring(0, tostring.length()-1);

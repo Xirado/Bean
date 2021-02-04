@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 
 import java.awt.*;
@@ -24,14 +23,14 @@ public class Warn extends Command
     {
         super(jda);
         this.invoke = "warn";
-        this.neededPermissions = new Permission[]{Permission.ADMINISTRATOR};
+        this.neededPermissions = new Permission[]{Permission.ADMINISTRATOR}; // TODO: Add proper implementation
         this.commandType = CommandType.MODERATION;
         this.description = "warns a user";
         this.usage = "warn [@User/ID] (Optional Reason)";
     }
 
     @Override
-    public void execute(CommandEvent event)
+    public void executeCommand(CommandEvent event)
     {
         Member member = event.getMember();
         User user = event.getAuthor();
@@ -81,7 +80,5 @@ public class Warn extends Command
                     event.replyError("Invalid User-ID!");
                 }
         );
-
-
     }
 }

@@ -27,7 +27,7 @@ public class Mock extends Command
     }
 
     @Override
-    public void execute(CommandEvent e) {
+    public void executeCommand(CommandEvent e) {
         String[] args = e.getArguments().getArguments();
         Member member = e.getMember();
         TextChannel channel = e.getChannel();

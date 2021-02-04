@@ -23,7 +23,7 @@ public class PauseCommand extends Command
     }
 
     @Override
-    public void execute(CommandEvent e)
+    public void executeCommand(CommandEvent e)
     {
         GuildVoiceState guildVoiceState = e.getMember().getVoiceState();
         if(guildVoiceState == null || !guildVoiceState.inVoiceChannel())

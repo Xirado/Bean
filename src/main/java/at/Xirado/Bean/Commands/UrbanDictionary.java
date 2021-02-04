@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.time.Instant;
@@ -34,7 +33,7 @@ public class UrbanDictionary extends Command
     }
 
     @Override
-    public void execute(CommandEvent e) {
+    public void executeCommand(CommandEvent e) {
         String[] args = e.getArguments().getArguments();
         TextChannel channel = e.getChannel();
         Member m = e.getMember();

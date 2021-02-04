@@ -3,15 +3,12 @@ package at.Xirado.Bean.Commands;
 import at.Xirado.Bean.CommandManager.Command;
 import at.Xirado.Bean.CommandManager.CommandEvent;
 import at.Xirado.Bean.CommandManager.CommandType;
-import at.Xirado.Bean.Misc.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
-import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.awt.*;
@@ -36,8 +33,7 @@ public class Clear extends Command
     }
 
     @Override
-    public void execute(CommandEvent event) {
-        Member m = event.getMember();
+    public void executeCommand(CommandEvent event) {
         String[] args = event.getArguments().getArguments();
         TextChannel channel = event.getChannel();
 
@@ -90,7 +86,8 @@ public class Clear extends Command
                                     );
                                 }
                             },
-                            Util.handle(channel)
+                            new ErrorHandler()
+                                    .ignore(ErrorResponse.UNKNOWN_MESSAGE)
                     );
                 },
                 new ErrorHandler()

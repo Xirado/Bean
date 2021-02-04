@@ -31,7 +31,7 @@ public class CaseCommand extends Command
     }
 
     @Override
-    public void execute(CommandEvent event)
+    public void executeCommand(CommandEvent event)
     {
         String[] args = event.getArguments().getArguments();
         Member m = event.getMember();

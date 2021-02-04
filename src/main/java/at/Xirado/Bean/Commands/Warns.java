@@ -3,7 +3,6 @@ package at.Xirado.Bean.Commands;
 import at.Xirado.Bean.CommandManager.Command;
 import at.Xirado.Bean.CommandManager.CommandEvent;
 import at.Xirado.Bean.CommandManager.CommandType;
-import at.Xirado.Bean.Handlers.PrefixManager;
 import at.Xirado.Bean.Language.FormattedDuration;
 import at.Xirado.Bean.Main.DiscordBot;
 import at.Xirado.Bean.PunishmentManager.Case;
@@ -32,7 +31,7 @@ public class Warns extends Command
     }
 
     @Override
-    public void execute(CommandEvent event)
+    public void executeCommand(CommandEvent event)
     {
         String[] args = event.getArguments().getArguments();
         Guild guild = event.getGuild();

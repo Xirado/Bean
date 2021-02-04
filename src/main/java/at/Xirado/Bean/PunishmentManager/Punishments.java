@@ -1,8 +1,11 @@
 package at.Xirado.Bean.PunishmentManager;
 
 import at.Xirado.Bean.Misc.SQL;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,6 +15,27 @@ import java.util.List;
 
 public class Punishments
 {
+    public static void createMutedRole(Guild g)
+    {
+        g.createRole()
+                .setName("Muted")
+                .setPermissions(0L)
+                .queue(
+                        (mutedRole) ->
+                        {
+                            for(TextChannel channel : g.getTextChannels())
+                            {
+                                channel.createPermissionOverride(mutedRole)
+                                        .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_ADD_REACTION)
+                                        .queue();
+                            }
+                        },
+                        (error) ->
+                        {
+                            error.printStackTrace();
+                        }
+                );
+    }
     public static Case getCaseByID(String sixDigitID, Guild guild)
     {
         String qry = "SELECT * FROM modcases WHERE caseID = ? AND guildID = ? LIMIT 1";
@@ -23,7 +47,7 @@ public class Punishments
             ResultSet rs = ps.executeQuery();
             if(rs.next())
             {
-                return new Case(CaseType.WARN, rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID"));
+                return new Case(CaseType.WARN, rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID"), rs.getBoolean("active"));
 
             }
             return null;
@@ -55,7 +79,7 @@ public class Punishments
             ResultSet rs = ps.executeQuery();
             while(rs.next())
             {
-                allCases.add(new Case(CaseType.WARN, rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID")));
+                allCases.add(new Case(CaseType.WARN, rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID"), rs.getBoolean("active")));
             }
             return allCases;
         } catch (SQLException throwables)
@@ -84,7 +108,7 @@ public class Punishments
             ResultSet rs = ps.executeQuery();
             while(rs.next())
             {
-                allCases.add(new Case(CaseType.WARN, rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID")));
+                allCases.add(new Case(CaseType.WARN, rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID"), rs.getBoolean("active")));
             }
             return allCases;
         } catch (SQLException throwables)

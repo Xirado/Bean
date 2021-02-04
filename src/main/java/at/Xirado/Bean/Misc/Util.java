@@ -2,6 +2,7 @@ package at.Xirado.Bean.Misc;
 
 import at.Xirado.Bean.Listeners.*;
 import at.Xirado.Bean.Main.DiscordBot;
+import ch.qos.logback.classic.Level;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
@@ -116,6 +117,11 @@ public class Util
 		);
 
 	}
+	public static void setLoggingLevel(Level level) {
+		ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+		root.setLevel(level);
+	}
+
 	public static String BadWord(Member m, Guild g)
 	{
 		if(g.getIdLong() == 713469621532885002L)
@@ -126,6 +132,10 @@ public class Util
 		{
 			return "Hey "+m.getAsMention()+", you can't say that!";
 		}
+	}
+	public static ErrorHandler ignoreAllErrors()
+	{
+		return new ErrorHandler().ignore(EnumSet.allOf(ErrorResponse.class));
 	}
 	public static void sendPrivateMessage(User user, MessageEmbed embed)
 	{
@@ -366,15 +376,10 @@ public class Util
 	}
 	
 	
-	public static void runAsync(Runnable r)
+	public static void doAsynchronously(Runnable r)
 	{
-		DiscordBot.instance.executorService.execute(r);
+		DiscordBot.instance.scheduledExecutorService.submit(r);
 	}
 
-	public static void oldRunAsync(Runnable r)
-	{
-		Thread t = new Thread(r);
-		t.start();
-	}
 	
 }

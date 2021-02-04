@@ -1,5 +1,8 @@
 package at.Xirado.Bean.Misc;
 
+import at.Xirado.Bean.Main.DiscordBot;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -17,9 +20,10 @@ public class SQL {
 	public static String database = null;
 	public static String password = null;
 	public static String username = null;
-	
-	
+
+	public static ch.qos.logback.classic.Logger logger =  (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(DiscordBot.class);
 	public static void connect() {
+		logger.info("Connecting to MySQL-Database...");
 		host = JSONConfig.config.get("Host");
 		database = JSONConfig.config.get("Database");
 		username = JSONConfig.config.get("Username");
@@ -34,10 +38,10 @@ public class SQL {
 			}
 			try {
 				con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database+"?autoReconnect=true&useUnicode=yes&serverTimezone=UTC", username, password);
-				System.out.println("MySQL connected successfully");
+				logger.info("Successfully connected to MySQL-Database!");
 			} catch (SQLException e) {
 				e.printStackTrace();
-				System.out.println("MySQL connection failed");
+				logger.error("MySQL-Connection failed!");
 			}
 		}
 		

@@ -18,7 +18,6 @@ public class LogListeners extends ListenerAdapter {
         Guild g = event.getGuild();
         TextChannel logchannel = Util.getLogChannel(g);
         User unbanned = event.getUser();
-        Util.removeBan(g.getIdLong(),unbanned.getIdLong());
         if(logchannel != null)
         {
             EmbedBuilder builder = new EmbedBuilder()

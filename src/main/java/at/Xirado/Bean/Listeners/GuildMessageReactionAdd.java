@@ -17,30 +17,27 @@ public class GuildMessageReactionAdd extends ListenerAdapter
 	@Override
 	public void onGuildMessageReactionAdd(@NotNull GuildMessageReactionAddEvent e)
 	{
-		Util.runAsync(new Runnable() {
-
-			@Override
-			public void run() {
-				try
+		Util.doAsynchronously(() ->
+		{
+			try
+			{
+				if(e.getMember().getUser().isBot()) return;
+				Guild g = e.getGuild();
+				Long id = e.getMessageIdLong();
+				TextChannel logchannel = Util.getLogChannel(g);
+				ReactionEmote reactionemote = e.getReactionEmote();
+				String reacted = reactionemote.getAsReactionCode();
+				if(!reactionemote.isEmoji())
+					reacted = reactionemote.getEmote().getId();
+				Member bot = g.getMember(DiscordBot.instance.jda.getSelfUser());
+				Role r = DiscordBot.instance.reactionRoleManager.getRoleIfAvailable(id, reacted);
+				if(r != null)
 				{
-					if(e.getMember().getUser().isBot()) return;
-					Guild g = e.getGuild();
-					Long id = e.getMessageIdLong();
-					TextChannel logchannel = Util.getLogChannel(g);
-					ReactionEmote reactionemote = e.getReactionEmote();
-					String reacted = reactionemote.getAsReactionCode();
-					if(!reactionemote.isEmoji())
-						reacted = reactionemote.getEmote().getId();
-					Member bot = g.getMember(DiscordBot.instance.jda.getSelfUser());
-					Role r = DiscordBot.instance.reactionRoleManager.getRoleIfAvailable(id, reacted);
-					if(r != null)
-					{
-						g.addRoleToMember(e.getMember(), r).queue();
-					}
-				} catch (Exception e2)
-				{
-					e2.printStackTrace();
+					g.addRoleToMember(e.getMember(), r).queue();
 				}
+			} catch (Exception e2)
+			{
+				e2.printStackTrace();
 			}
 		});
 	}

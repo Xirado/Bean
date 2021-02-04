@@ -32,7 +32,7 @@ public class Help extends Command
 	}
 
 	@Override
-	public void execute(CommandEvent e)
+	public void executeCommand(CommandEvent e)
 	{
 		String[] args = e.getArguments().getArguments();
 		Member member = e.getMember();
@@ -46,7 +46,6 @@ public class Help extends Command
 					.setColor(Color.decode("#FEFEFE"))
 					.setAuthor(user.getAsTag(), null, user.getAvatarUrl())
 					.setTitle("BeanBot command list")
-					.setFooter("Developed by Xirado")
 					.setTimestamp(Instant.now());
 			for(CommandType type : CommandType.values())
 			{
@@ -74,7 +73,6 @@ public class Help extends Command
 			{
 				EmbedBuilder builder = new EmbedBuilder()
 						.setColor(Color.red)
-						.setFooter("Developed by Xirado")
 						.setTimestamp(Instant.now())
 						.setDescription("\uD83D\uDEAB No modules have been enabled! \uD83D\uDEAB")
 						.setAuthor(user.getAsTag(), null, user.getAvatarUrl());
@@ -90,7 +88,6 @@ public class Help extends Command
 			String tostring = sb.toString().trim();
 			EmbedBuilder embed = new EmbedBuilder()
 					.setColor(Color.decode("#FEFEFE"))
-					.setFooter("Developed by Xirado")
 					.setAuthor(user.getAsTag(), null, user.getAvatarUrl())
 					.setTitle("Enabled Modules")
 					.setThumbnail(DiscordBot.instance.jda.getSelfUser().getAvatarUrl())
@@ -113,21 +110,19 @@ public class Help extends Command
 					.setColor(Color.decode("#FEFEFE"))
 					.setTitle("Help - "+name)
 					.setDescription("Oh, there's nothing there (yet?)")
-					.setTimestamp(Instant.now())
-					.setFooter("Developed by Xirado");
+					.setTimestamp(Instant.now());
 			channel.sendMessage(builder.build()).queue();
 			return;
 		}
 		StringBuilder sb = new StringBuilder();
 		for(Command command : commands)
 		{
-			sb.append("`"+Prefix+command.getUsage()+"` - "+command.getDescription()+"\n");
+			sb.append("`").append(Prefix).append(command.getUsage()).append("` - ").append(command.getDescription()).append("\n");
 		}
 		String tostring = sb.toString().trim();
 		EmbedBuilder embed = new EmbedBuilder()
 				.setColor(Color.decode("#FEFEFE"))
 				.setTitle("Help - "+name)
-				.setFooter("Developed by Xirado")
 				.setTimestamp(Instant.now());
 		String description = type.getNotes();
 		if(description.length() > 0)

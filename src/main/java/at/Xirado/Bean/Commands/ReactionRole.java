@@ -26,14 +26,14 @@ public class ReactionRole extends Command
 		super(jda);
 		this.invoke = "rr";
 		this.description = "Adds reaction roles to messages";
-		this.usage = "rr #TextChannel Message-ID @Role :Emoji: || rr clear";
+		this.usage = "rr [#TextChannel] [Message-ID] [@Role] [Emoji] || rr clear [#TextChannel] [Message-ID]";
 		this.neededPermissions = new Permission[]{Permission.ADMINISTRATOR};
 		this.commandType = CommandType.ADMIN;
-		this.aliases = new String[]{"reactionrole","reactionroles","createreactionrole"};
+		this.aliases = new String[]{"reactionrole", "reactionroles", "createreactionrole"};
 	}
 
 	@Override
-	public void execute(CommandEvent e)
+	public void executeCommand(CommandEvent e)
 	{
 		String[] args = e.getArguments().getArguments();
 
@@ -141,8 +141,7 @@ public class ReactionRole extends Command
 								EnumSet.allOf(ErrorResponse.class),
 								(ex) -> {
 									ex.printStackTrace();
-									if(channel != null)
-										channel.sendMessage("An error occured!\n```"+ex.getErrorResponse().toString()+"\n"+ex.getMeaning()+"```").queue();
+									channel.sendMessage("An error occured!\n```"+ex.getErrorResponse().toString()+"\n"+ex.getMeaning()+"```").queue();
 								}
 						)
 				);

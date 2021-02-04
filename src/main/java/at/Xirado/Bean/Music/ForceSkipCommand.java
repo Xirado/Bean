@@ -26,13 +26,36 @@ public class ForceSkipCommand extends Command
     }
 
     @Override
-    public void execute(CommandEvent event) {
+    public void executeCommand(CommandEvent event) {
+
+        if(event.getMember().getVoiceState() != null)
+        {
+            if(!event.getMember().getVoiceState().inVoiceChannel())
+            {
+                event.replyError("You need to be in a Voicechannel to do this!");
+                return;
+            }
+        }else
+        {
+            event.replyError("You need to be in a Voicechannel to do this!");
+            return;
+        }
+
+        if(event.getGuild().getSelfMember().getVoiceState() == null || !event.getGuild().getSelfMember().getVoiceState().inVoiceChannel())
+        {
+            event.replyError("There is no music playing!");
+            return;
+        }
+        final AudioHandler handler = ResultHandler.getHandler(event.getGuild());
+        if (event.getAuthor().getIdLong() == handler.getRequester()) {
+            event.replySuccess("Skipped **" + handler.getPlayer().getPlayingTrack().getInfo().title + "**");
+            handler.getPlayer().stopTrack();
+        }
         if(!event.isDJ())
         {
             event.replyError("You need to be a DJ to do this!");
             return;
         }
-        final AudioHandler handler = ResultHandler.getHandler(event.getGuild());
         final User u = event.getJDA().getUserById(handler.getRequester());
         event.replySuccess("Skipped **" + handler.getPlayer().getPlayingTrack().getInfo().title + "** (requested by " + ((u == null) ? "someone" : ("**" + u.getAsTag() + "**")) + ")");
         handler.getPlayer().stopTrack();

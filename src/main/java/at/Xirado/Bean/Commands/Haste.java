@@ -25,7 +25,7 @@ public class Haste extends Command
     }
 
     @Override
-    public void execute(CommandEvent event)
+    public void executeCommand(CommandEvent event)
     {
         String[] args = event.getArguments().getArguments();
         if(args.length == 0)
