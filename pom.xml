@@ -135,7 +135,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>at.Xirado.Bean.Main.DiscordBot</mainClass>
+                            <mainClass>at.xirado.bean.main.DiscordBot</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
