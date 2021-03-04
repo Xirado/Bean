@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.*;
 
 import java.awt.*;
 import java.time.Instant;
+import java.util.Arrays;
 
 public class Settings extends Command
 {
@@ -22,14 +23,14 @@ public class Settings extends Command
 		this.usage = "settings (Subargument)";
 		this.description = "Change server-specific settings";
 		this.commandType = CommandType.ADMIN;
-		this.neededPermissions = new Permission[]{Permission.MANAGE_SERVER};
+		this.neededPermissions = Arrays.asList(Permission.MANAGE_SERVER);
 
 	}
 
 	@Override
 	public void executeCommand(CommandEvent e)
 	{
-		String[] args = e.getArguments().getArguments();
+		String[] args = e.getArguments().toStringArray();
 		Member m = e.getMember();
 		Guild g = e.getGuild();
 		String Prefix = DiscordBot.instance.prefixManager.getPrefix(g.getIdLong());

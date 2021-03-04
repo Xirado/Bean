@@ -14,7 +14,7 @@ public class CommandArgument
 	{
 		return Command;
 	}
-	public String[] getArguments()
+	public String[] toStringArray()
 	{
 		return args;
 	}

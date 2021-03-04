@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.entities.User;
 
 import java.awt.*;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class Ban extends Command
@@ -27,14 +28,14 @@ public class Ban extends Command
 		this.invoke = "ban";
 		this.description = "permanently bans a user from the server";
 		this.usage = "ban [@User/ID] (Optional Reason)";
-		this.neededPermissions = new Permission[]{Permission.BAN_MEMBERS};
+		this.neededPermissions = Arrays.asList(Permission.BAN_MEMBERS);
 		this.commandType = CommandType.MODERATION;
 	}
 
 	@Override
 	public void executeCommand(CommandEvent e)
 	{
-		String[] args = e.getArguments().getArguments();
+		String[] args = e.getArguments().toStringArray();
 		Member member = e.getMember();
 		User user = e.getAuthor();
 		Guild guild = e.getGuild();
@@ -45,6 +46,7 @@ public class Ban extends Command
 			e.replyErrorUsage();
 			return;
 		}
+
 		String ID = args[0].replaceAll("[^0-9]", "");
 		DiscordBot.instance.jda.retrieveUserById(ID).queue(
 				(targetUser) ->

@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 public class ReactionRole extends Command
@@ -27,15 +28,15 @@ public class ReactionRole extends Command
 		this.invoke = "rr";
 		this.description = "Adds reaction roles to messages";
 		this.usage = "rr [#TextChannel] [Message-ID] [@Role] [Emoji] || rr clear [#TextChannel] [Message-ID]";
-		this.neededPermissions = new Permission[]{Permission.ADMINISTRATOR};
+		this.neededPermissions = Arrays.asList(Permission.ADMINISTRATOR);
 		this.commandType = CommandType.ADMIN;
-		this.aliases = new String[]{"reactionrole", "reactionroles", "createreactionrole"};
+		this.aliases = Arrays.asList("reactionrole", "reactionroles", "createreactionrole");
 	}
 
 	@Override
 	public void executeCommand(CommandEvent e)
 	{
-		String[] args = e.getArguments().getArguments();
+		String[] args = e.getArguments().toStringArray();
 
 		Guild guild = e.getGuild();
 		Member bot = guild.getMember(DiscordBot.instance.jda.getSelfUser());

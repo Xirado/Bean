@@ -1,12 +1,12 @@
 package at.Xirado.Bean.PunishmentManager;
 
-import at.Xirado.Bean.Main.DiscordBot;
+import at.Xirado.Bean.Logging.Console;
 import at.Xirado.Bean.Misc.SQL;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Locale;
 import java.util.Random;
 
 public class Case
@@ -34,13 +34,33 @@ public class Case
 
     public void setActive(boolean value)
     {
+        Connection connection = SQL.getConnectionFromPool();
         String qry = "UPDATE modcases SET active = ? WHERE caseID = ?";
         try
         {
-            PreparedStatement ps = SQL.con.prepareStatement(qry);
+            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setBoolean(1, value);
             ps.setString(2, this.caseID);
             ps.execute();
+            connection.close();
+        } catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+    }
+
+
+    public void setReason(String reason)
+    {
+        Connection connection = SQL.getConnectionFromPool();
+        String qry = "UPDATE modcases SET reason = ? WHERE caseID = ?";
+        try
+        {
+            PreparedStatement ps = connection.prepareStatement(qry);
+            ps.setString(1, reason);
+            ps.setString(2, this.caseID);
+            ps.execute();
+            connection.close();
         } catch (SQLException throwables)
         {
             throwables.printStackTrace();
@@ -93,10 +113,14 @@ public class Case
 
     public void fetchUpdate()
     {
-        Case newcase = Punishments.getCaseByID(this.getCaseID(), DiscordBot.instance.jda.getGuildById(this.getGuildID()));
-        this.isActive = newcase.isActive;
-        this.duration = newcase.duration;
-        this.reason = newcase.reason;
+        Case newcase = Punishments.getCaseByID(this.getCaseID(), this.getGuildID());
+        if(newcase != null)
+        {
+            this.isActive = newcase.isActive;
+            this.duration = newcase.duration;
+            this.reason = newcase.reason;
+        }
+
     }
 
     public Case(CaseType type, long GuildID, long targetID, long moderatorID, String reason, long duration, long createdAt, String caseID, boolean isActive)
@@ -122,8 +146,9 @@ public class Case
         }
         try
         {
+            Connection connection = SQL.getConnectionFromPool();
             String qry = "INSERT INTO modcases (caseID, guildID, targetID, moderatorID, caseType, reason, duration, creationDate, active) values (?,?,?,?,?,?,?,?,?)";
-            PreparedStatement ps = SQL.con.prepareStatement(qry);
+            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setString(1, caseID);
             ps.setLong(2, guildID);
             ps.setLong(3, targetID);
@@ -134,9 +159,11 @@ public class Case
             ps.setLong(8, System.currentTimeMillis());
             ps.setBoolean(9, true);
             ps.execute();
+            connection.close();
         } catch (SQLException throwables)
         {
-            throwables.printStackTrace();
+            Console.logger.error("Could not create case!", throwables);
+            return null;
         }
         return new Case(type,guildID,targetID,moderatorID,reason,duration,System.currentTimeMillis(), caseID, true);
     }
@@ -146,11 +173,11 @@ public class Case
     public static String generateCaseNumber()
     {
         Random random = new Random();
-        String first = Integer.toString(random.nextInt(256), 36);
+        String first = Integer.toString(random.nextInt(1295), 36);
         if(first.length() == 1) first = "0"+first;
-        String second = Integer.toString(random.nextInt(256), 36);
+        String second = Integer.toString(random.nextInt(1295), 36);
         if(second.length() == 1) second = "0"+second;
-        String third = Integer.toString(random.nextInt(256), 36);
+        String third = Integer.toString(random.nextInt(1295), 36);
         if(third.length() == 1) third = "0"+third;
         String code = first+second+third;
         return code.toUpperCase();
@@ -160,8 +187,9 @@ public class Case
     {
         try
         {
+            Connection connection = SQL.getConnectionFromPool();
             String qry = "SELECT 1 FROM modcases WHERE caseID = ?";
-            PreparedStatement ps = SQL.con.prepareStatement(qry);
+            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setString(1,ID);
             ResultSet rs = ps.executeQuery();
             return rs.next();

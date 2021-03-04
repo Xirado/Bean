@@ -11,6 +11,8 @@ public class LogLevel extends ConsoleCommand
     public LogLevel()
     {
         this.invoke = "loglevel";
+        this.description = "Changes the loglevel";
+
     }
 
     @Override

@@ -12,6 +12,8 @@ import com.jagrosh.jmusicbot.audio.AudioHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 
+import java.util.Arrays;
+
 public class NowPlayingCommand extends Command
 {
 
@@ -19,7 +21,7 @@ public class NowPlayingCommand extends Command
     {
         super(jda);
         this.invoke = "nowplaying";
-        this.aliases = new String[]{"playingnow", "playing", "pn"};
+        this.aliases = Arrays.asList("playingnow", "playing", "pn");
         this.description = "Shows info about the currently playing song";
         this.usage = "nowplaying";
         this.commandType = CommandType.MUSIC;

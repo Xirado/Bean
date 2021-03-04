@@ -21,14 +21,14 @@ public class Mock extends Command
     {
         super(jda);
         this.invoke = "mock";
-        this.description = "gEt mOcKeD bOy";
+        this.description = "gEt mOcKeD kId";
         this.commandType = CommandType.FUN;
         this.usage = "mock [Text]";
     }
 
     @Override
     public void executeCommand(CommandEvent e) {
-        String[] args = e.getArguments().getArguments();
+        String[] args = e.getArguments().toStringArray();
         Member member = e.getMember();
         TextChannel channel = e.getChannel();
         Guild g = e.getGuild();

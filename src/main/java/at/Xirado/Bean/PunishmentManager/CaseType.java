@@ -7,7 +7,9 @@ public enum CaseType
     WARN("Warn", Color.decode("#FFFF00")), // Gelb
     MUTE("Mute", Color.decode("#E24C00")), // Orange
     KICK("Kick", Color.decode("#800080")), // Violett
-    BAN("Ban", Color.decode("#990000"));   // Rot
+    BAN("Ban", Color.decode("#990000")),   // Rot
+    TEMPBAN("Tempban", Color.decode("#990000")),
+    SOFTBAN("Softban", Color.decode("#FFFFFF"));
 
     private final String friendlyName;
     private final Color embedColor;

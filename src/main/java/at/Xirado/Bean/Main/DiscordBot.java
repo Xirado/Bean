@@ -10,6 +10,7 @@ import at.Xirado.Bean.Misc.SQL;
 import at.Xirado.Bean.Misc.Util;
 import at.Xirado.Bean.PunishmentManager.Case;
 import at.Xirado.Bean.PunishmentManager.CaseType;
+import at.Xirado.Bean.PunishmentManager.Punishments;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -17,7 +18,6 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.BotConfig;
 import com.jagrosh.jmusicbot.Listener;
-import com.jagrosh.jmusicbot.entities.Prompt;
 import com.jagrosh.jmusicbot.settings.SettingsManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.LoggerFactory;
 
@@ -33,12 +34,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.*;
 public class DiscordBot
 {
@@ -59,22 +62,35 @@ public class DiscordBot
     public final LogChannelManager logChannelManager = new LogChannelManager();
     public final BlacklistManager blacklistManager = new BlacklistManager();
     public final ReactionRoleManager reactionRoleManager = new ReactionRoleManager();
+    public final PermissionCheckerManager permissionCheckerManager;
+    public final MutedRoleManager mutedRoleManager;
+
 
     public Bot musicinstance;
-    protected final String token;
+    private String token;
     public final String path;
-    public final JDA jda;
+    public JDA jda;
     public final CommandManager commandManager;
     public final ConsoleCommandManager consoleCommandManager;
     public static boolean debugMode;
+
+    public final String VERSION;
 
     public static Logger logger =  (Logger) LoggerFactory.getLogger("ROOT");
 
     public DiscordBot()
     {
-        String token1;
-        JDA jda1;
+        instance = this;
         Thread.currentThread().setName("Main-Thread");
+        final Properties properties = new Properties();
+        try
+        {
+            properties.load(this.getClass().getClassLoader().getResourceAsStream("settings.properties"));
+        } catch (IOException e)
+        {
+            Console.logger.error("Could not retrieve project metadata!", e);
+        }
+        VERSION = properties.getProperty("app-version");
         Shell.startShell();
         while(!Shell.startedSuccessfully)
         {
@@ -83,12 +99,11 @@ public class DiscordBot
                 Thread.sleep(100);
             } catch (InterruptedException e)
             {
-                logger.error(ExceptionUtils.getStackTrace(e));
+                Console.logger.error("", e);
             }
         }
         Util.setLoggingLevel(Level.INFO);
         Console.info("Logging level set to \"INFO\"");
-        instance = this;
         File file = new File("token.txt");
         if(!file.exists())
         {
@@ -102,18 +117,16 @@ public class DiscordBot
             logger.warn("token.txt has been created. Please add your Discord Bot Token to it, save and start again!");
             System.exit(1);
         }
-        token1 = "";
         try
         {
             BufferedReader br = new BufferedReader(new FileReader(file));
-            token1 = br.readLine();
+            token = br.readLine();
             br.close();
         } catch (IOException e)
         {
             logger.error(ExceptionUtils.getStackTrace(e));
         }
 
-        this.token = token1;
         this.path = Util.getPath();
         JSONConfig.updateConfig();
         SQL.connect();
@@ -124,44 +137,33 @@ public class DiscordBot
             System.exit(1);
         }
         SQLHelper.createTables();
-
-        jda1 = null;
+        permissionCheckerManager = new PermissionCheckerManager();
+        jda = null;
         try
         {
-            jda1 = JDABuilder.create(token, EnumSet.allOf(GatewayIntent.class)).build();
+            jda = JDABuilder.create(token, EnumSet.allOf(GatewayIntent.class)).setMemberCachePolicy(MemberCachePolicy.ONLINE).build();
         } catch (LoginException e)
         {
             logger.error(ExceptionUtils.getStackTrace(e));
         }
 
-        this.jda = jda1;
         addShutdownHook();
         try
         {
             this.jda.awaitReady();
         } catch (InterruptedException e)
         {
-            e.printStackTrace();
+            System.exit(0);
         }
         logger.info("Successfully logged in as @"+this.jda.getSelfUser().getAsTag());
         this.jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.playing("bean.bz | +help"), false);
         Util.addListeners();
 
-
-        // startup log
-
-        // create prompt to handle startup
-        Prompt prompt = new Prompt("JMusicBot", "Switching to nogui mode. You can manually start in nogui mode by including the -Dnogui=true flag.",
-                "true".equalsIgnoreCase(System.getProperty("nogui", "false")));
-
         commandManager = new CommandManager();
         commandManager.registerAllCommands();
         consoleCommandManager = new ConsoleCommandManager();
         consoleCommandManager.registerAllCommands();
-
-
-
-        // load config
+        mutedRoleManager = new MutedRoleManager();
         BotConfig config = new BotConfig(null);
         config.load();
         if(!config.isValid())
@@ -176,10 +178,11 @@ public class DiscordBot
         this.jda.addEventListener(new Listener(this.musicinstance));
         scheduledExecutorService.submit(() ->
         {
-            String qry = "SELECT * FROM modCases WHERE active = 1 AND duration != 0";
+            String qry = "SELECT * FROM modCases WHERE active = 1 AND duration > 0";
             try
             {
-                PreparedStatement ps = SQL.con.prepareStatement(qry);
+                Connection connection = SQL.getConnectionFromPool();
+                PreparedStatement ps = connection.prepareStatement(qry);
                 ResultSet rs = ps.executeQuery();
                 List<Case> cases = new ArrayList<>();
                 while(rs.next())
@@ -187,34 +190,65 @@ public class DiscordBot
                     cases.add(new Case(CaseType.valueOf(rs.getString("caseType").toUpperCase()), rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID"), rs.getBoolean("active")));
 
                 }
+                connection.close();
                 for(Case modcase : cases)
                 {
-                    if (modcase.getType() == CaseType.BAN)
+                    if (modcase.getType() == CaseType.TEMPBAN)
                     {
                         if(modcase.getCreatedAt()+modcase.getDuration() < System.currentTimeMillis())
                         {
-                            Guild g = instance.jda.getGuildById(modcase.getGuildID());
-                            g.unban(String.valueOf(modcase.getTargetID())).queue();
-                            modcase.setActive(false);
-                            continue;
+                            try
+                            {
+                                Guild g = instance.jda.getGuildById(modcase.getGuildID());
+                                if(g == null)
+                                {
+                                    modcase.setActive(false);
+                                    continue;
+                                }
+                                Punishments.unban(modcase, null);
+                                continue;
+                            }catch (Exception e)
+                            {
+                                logger.error("Could not undo punishment", e);
+                                continue;
+                            }
                         }
                         Runnable r = () ->
                         {
-                            modcase.fetchUpdate();
-                            if(!modcase.isActive()) return;
-                            Guild g = instance.jda.getGuildById(modcase.getGuildID());
-                            g.unban(String.valueOf(modcase.getTargetID())).queue();
-                            modcase.setActive(false);
+                            Punishments.unban(modcase, null);
                         };
                         scheduledExecutorService.schedule(r, (modcase.getDuration()+modcase.getCreatedAt())-System.currentTimeMillis(), TimeUnit.MILLISECONDS);
                     }else if(modcase.getType() == CaseType.MUTE)
                     {
-                        // TODO: UNMUTE USER
+                        if(modcase.getCreatedAt()+modcase.getDuration() < System.currentTimeMillis())
+                        {
+                            try
+                            {
+                                Guild g = instance.jda.getGuildById(modcase.getGuildID());
+                                if(g == null)
+                                {
+                                    modcase.setActive(false);
+                                    continue;
+                                }
+
+                                Punishments.unmute(modcase, null);
+                                continue;
+                            }catch (Exception e)
+                            {
+                                logger.error("Could not undo punishment", e);
+                                continue;
+                            }
+                        }
+                        Runnable r = () ->
+                        {
+                            Punishments.unmute(modcase, null);
+                        };
+                        scheduledExecutorService.schedule(r, (modcase.getDuration()+modcase.getCreatedAt())-System.currentTimeMillis(), TimeUnit.MILLISECONDS);
                     }
                 }
             } catch (SQLException throwables)
             {
-                logger.error(ExceptionUtils.getStackTrace(throwables));
+                logger.error("An error occured", throwables);
             }
         });
         logger.info("Successfully started up!");

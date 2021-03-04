@@ -11,6 +11,8 @@ import com.jagrosh.jmusicbot.audio.AudioHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 
+import java.util.Arrays;
+
 public class ForceSkipCommand extends Command
 {
 
@@ -22,7 +24,7 @@ public class ForceSkipCommand extends Command
         this.usage = "forceskip";
         this.description = "Force-skips the currently playing song";
         this.commandType = CommandType.MUSIC;
-        this.aliases = new String[]{"fskip", "fs"};
+        this.aliases = Arrays.asList("fskip", "fs");
     }
 
     @Override
@@ -50,6 +52,7 @@ public class ForceSkipCommand extends Command
         if (event.getAuthor().getIdLong() == handler.getRequester()) {
             event.replySuccess("Skipped **" + handler.getPlayer().getPlayingTrack().getInfo().title + "**");
             handler.getPlayer().stopTrack();
+            return;
         }
         if(!event.isDJ())
         {

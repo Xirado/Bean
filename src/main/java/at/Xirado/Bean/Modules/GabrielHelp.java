@@ -6,6 +6,8 @@ import at.Xirado.Bean.CommandManager.CommandType;
 import at.Xirado.Bean.Misc.Util;
 import net.dv8tion.jda.api.JDA;
 
+import java.util.Arrays;
+
 public class GabrielHelp extends Command
 {
     public GabrielHelp(JDA jda)
@@ -15,7 +17,7 @@ public class GabrielHelp extends Command
         this.commandType = CommandType.FUN;
         this.description = "Gabriel hilf uns";
         this.global = false;
-        this.enabledGuilds = new Long[]{687748771760832551L};
+        this.enabledGuilds = Arrays.asList(687748771760832551L);
         this.usage = "gabrielhelp";
     }
 

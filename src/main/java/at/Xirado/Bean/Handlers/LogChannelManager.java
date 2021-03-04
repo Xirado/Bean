@@ -4,6 +4,7 @@ import at.Xirado.Bean.Main.DiscordBot;
 import at.Xirado.Bean.Misc.SQL;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,11 +22,13 @@ public class LogChannelManager
     public void setLogChannel(long guildID, long channelid)
     {
         try {
-            PreparedStatement ps = SQL.con.prepareStatement("INSERT INTO logChannels (guildID,channelID) values (?,?) ON DUPLICATE KEY UPDATE channelID = ?");
+            Connection connection = SQL.getConnectionFromPool();
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO logChannels (guildID,channelID) values (?,?) ON DUPLICATE KEY UPDATE channelID = ?");
             ps.setLong(1, guildID);
             ps.setLong(2, channelid);
             ps.setLong(3,channelid);
             ps.execute();
+            connection.close();
             if(this.logChannel.containsKey(guildID))
             {
                 this.logChannel.remove(guildID);
@@ -45,7 +48,8 @@ public class LogChannelManager
         }else
         {
             try {
-                PreparedStatement ps = SQL.con.prepareStatement("SELECT channelID FROM logChannels WHERE guildID = ?");
+                Connection connection = SQL.getConnectionFromPool();
+                PreparedStatement ps = connection.prepareStatement("SELECT channelID FROM logChannels WHERE guildID = ?");
                 ps.setLong(1, guildid);
                 ResultSet rs = ps.executeQuery();
                 if(rs.next())
@@ -53,6 +57,7 @@ public class LogChannelManager
                     channel = DiscordBot.instance.jda.getTextChannelById(rs.getLong("channelID"));
                     this.logChannel.put(guildid, channel.getIdLong());
                 }
+                connection.close();
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }

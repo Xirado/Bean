@@ -10,13 +10,13 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 
 public class Blacklist extends Command
@@ -28,14 +28,14 @@ public class Blacklist extends Command
 		this.invoke = "blacklist";
 		this.usage = "blacklist [add/remove/list] (word)";
 		this.description = "Modifies the list of blacklisted words";
-		this.neededPermissions = new  Permission[]{Permission.MESSAGE_MANAGE};
+		this.neededPermissions = Arrays.asList(Permission.MESSAGE_MANAGE);
 		this.commandType = CommandType.MODERATION;
 	}
 
 	@Override
 	public void executeCommand(CommandEvent e)
 	{
-		String[] args = e.getArguments().getArguments();
+		String[] args = e.getArguments().toStringArray();
 		User user = e.getAuthor();
 		Guild guild = e.getGuild();
 		TextChannel channel = e.getChannel();
@@ -64,10 +64,7 @@ public class Blacklist extends Command
 				return;
 				
 			}
-			synchronized (this)
-			{
-				blMan.addBlacklistedWord(guild.getIdLong(), args[1].toUpperCase());
-			}
+			blMan.addBlacklistedWord(guild.getIdLong(), args[1].toUpperCase());
 			EmbedBuilder builder = new EmbedBuilder()
 				.setDescription("Word has been added to blacklist")
 				.setColor(Color.GREEN)
@@ -75,7 +72,6 @@ public class Blacklist extends Command
 				.addField("Word", StringUtils.capitalize(args[1].toLowerCase()), true)
 				.setTimestamp(Instant.now());
 			channel.sendMessage(builder.build()).queue();
-			return;
 		}else if(subcommand.equalsIgnoreCase("remove"))
 		{
 			if(args.length != 2)
@@ -94,10 +90,7 @@ public class Blacklist extends Command
 				return;
 
 			}
-			synchronized (this)
-			{
-				blMan.removeBlacklistedWord(guild.getIdLong(), args[1].toUpperCase());
-			}
+			blMan.removeBlacklistedWord(guild.getIdLong(), args[1].toUpperCase());
 			EmbedBuilder builder = new EmbedBuilder()
 					.setDescription("Word has been removed from blacklist!")
 					.setColor(Color.GREEN)

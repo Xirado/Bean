@@ -16,6 +16,7 @@ public class SendMessage extends ConsoleCommand
     public SendMessage()
     {
         this.invoke = "sendmessage";
+        this.description = "Sends a message in a certain textchannel";
     }
     @Override
     public void executeCommand(String invoke, String[] args)

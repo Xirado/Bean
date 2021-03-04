@@ -9,6 +9,8 @@ import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import net.dv8tion.jda.api.JDA;
 
+import java.util.Arrays;
+
 public class PlayCommand extends Command
 {
     public PlayCommand(JDA jda)
@@ -17,7 +19,7 @@ public class PlayCommand extends Command
         this.invoke = "play";
         this.description = "Plays/Resumes a song";
         this.usage = "play [Title/URL]";
-        this.aliases = new String[]{"p"};
+        this.aliases = Arrays.asList("p");
         this.commandType = CommandType.MUSIC;
     }
 
@@ -27,7 +29,7 @@ public class PlayCommand extends Command
         Bot bot = DiscordBot.instance.musicinstance;
         CommandArgument commandArgument = event.getArguments();
         String asWhole = commandArgument.getAsString(0);
-        String[] args = commandArgument.getArguments();
+        String[] args = commandArgument.toStringArray();
         if(ResultHandler.init(event))
             return;
         final AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();

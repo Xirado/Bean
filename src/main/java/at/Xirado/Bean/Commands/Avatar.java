@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.JDA;
 
 import java.awt.*;
 import java.time.Instant;
+import java.util.Arrays;
 
 public class Avatar extends Command
 {
@@ -20,13 +21,13 @@ public class Avatar extends Command
 		this.usage = "avatar [@User/ID]";
 		this.description = "Gets the avatar of a user";
 		this.commandType = CommandType.FUN;
-		this.aliases = new String[]{"getavatar"};
+		this.aliases = Arrays.asList("getavatar");
 	}
 
 	@Override
 	public void executeCommand(CommandEvent e)
 	{
-		String[] args = e.getArguments().getArguments();
+		String[] args = e.getArguments().toStringArray();
 		if(args.length < 1)
 		{
 			EmbedBuilder b = new EmbedBuilder()

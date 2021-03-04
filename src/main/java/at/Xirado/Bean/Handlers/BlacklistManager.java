@@ -2,6 +2,7 @@ package at.Xirado.Bean.Handlers;
 
 import at.Xirado.Bean.Misc.SQL;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,11 +23,14 @@ public class BlacklistManager
         String qry = "SELECT 1 FROM blacklistedWords WHERE guildID = ? AND word = ?";
         try
         {
-            PreparedStatement ps = SQL.con.prepareStatement(qry);
+            Connection connection = SQL.getConnectionFromPool();
+            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setLong(1, guildID);
             ps.setString(2, word.toUpperCase());
             ResultSet rs = ps.executeQuery();
-            return rs.next();
+            boolean x = rs.next();
+            connection.close();
+            return x;
         } catch (SQLException throwables)
         {
             throwables.printStackTrace();
@@ -46,10 +50,12 @@ public class BlacklistManager
         String qry = "DELETE FROM blacklistedWords WHERE guildID = ? AND word = ?";
         try
         {
-            PreparedStatement ps = SQL.con.prepareStatement(qry);
+            Connection connection = SQL.getConnectionFromPool();
+            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setLong(1, guildID);
             ps.setString(2, word.toUpperCase());
             ps.execute();
+            connection.close();
 
         } catch (SQLException throwables)
         {
@@ -69,10 +75,12 @@ public class BlacklistManager
         String qry = "INSERT INTO blacklistedWords (guildID, word) values (?,?)";
         try
         {
-            PreparedStatement ps = SQL.con.prepareStatement(qry);
+            Connection connection = SQL.getConnectionFromPool();
+            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setLong(1, guildID);
             ps.setString(2, word.toUpperCase());
             ps.execute();
+            connection.close();
 
         } catch (SQLException throwables)
         {
@@ -89,7 +97,8 @@ public class BlacklistManager
         String qry = "SELECT word FROM blacklistedWords WHERE guildID = ?";
         try
         {
-            PreparedStatement ps = SQL.con.prepareStatement(qry);
+            Connection connection = SQL.getConnectionFromPool();
+            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setLong(1,  guildID);
             ResultSet rs = ps.executeQuery();
             ArrayList<String> blacklistedWords = new ArrayList<>();
@@ -97,6 +106,7 @@ public class BlacklistManager
             {
                 blacklistedWords.add(rs.getString("word"));
             }
+            connection.close();
             return blacklistedWords;
         } catch (SQLException throwables)
         {

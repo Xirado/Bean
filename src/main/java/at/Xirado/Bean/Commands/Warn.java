@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.entities.User;
 
 import java.awt.*;
 import java.time.Instant;
+import java.util.Arrays;
 
 public class Warn extends Command
 {
@@ -23,7 +24,7 @@ public class Warn extends Command
     {
         super(jda);
         this.invoke = "warn";
-        this.neededPermissions = new Permission[]{Permission.ADMINISTRATOR}; // TODO: Add proper implementation
+        this.neededPermissions = Arrays.asList(Permission.ADMINISTRATOR); // TODO: Add proper implementation
         this.commandType = CommandType.MODERATION;
         this.description = "warns a user";
         this.usage = "warn [@User/ID] (Optional Reason)";
@@ -35,7 +36,7 @@ public class Warn extends Command
         Member member = event.getMember();
         User user = event.getAuthor();
         Guild guild = event.getGuild();
-        String[] args = event.getArguments().getArguments();
+        String[] args = event.getArguments().toStringArray();
         if(args.length < 1)
         {
             event.replyErrorUsage();

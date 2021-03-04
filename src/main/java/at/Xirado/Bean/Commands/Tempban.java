@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 import java.awt.*;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class Tempban extends Command
@@ -29,13 +30,13 @@ public class Tempban extends Command
         this.invoke = "tempban";
         this.commandType = CommandType.MODERATION;
         this.description = "Bans an user temporarily";
-        this.neededPermissions = new Permission[]{Permission.BAN_MEMBERS};
+        this.neededPermissions = Arrays.asList(Permission.BAN_MEMBERS);
         this.usage = "tempban [@User/ID] [Duration] (Optional Reason)";
     }
 
     @Override
     public void executeCommand(CommandEvent e) {
-        String[] args = e.getArguments().getArguments();
+        String[] args = e.getArguments().toStringArray();
         Guild g = e.getGuild();
         Member m = e.getMember();
         TextChannel c = e.getChannel();
@@ -139,30 +140,4 @@ public class Tempban extends Command
         );
     }
 
-    /*@Override
-    public List<Permission> neededPermissions() {
-        ArrayList<Permission> perms = new ArrayList<>();
-        perms.add(Permission.BAN_MEMBERS);
-        return perms;
-    }
-
-    @Override
-    public String getInvoke() {
-        return "tempban";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Temporary bans a member";
-    }
-
-    @Override
-    public String getUsage() {
-        return "tempban [@User/ID] [time] [s,m,h,d,w] [reason]";
-    }
-
-    @Override
-    public CommandType getType() {
-        return CommandType.MODERATION;
-    }*/
 }

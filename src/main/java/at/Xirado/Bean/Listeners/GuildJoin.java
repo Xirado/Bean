@@ -20,9 +20,9 @@ public class GuildJoin extends ListenerAdapter
 			e.getGuild().getSystemChannel().sendMessage(
 					new EmbedBuilder()
 					.setColor(Color.decode("#FEFEFE"))
-					.setDescription("Hi, I'm Bean! Type `+help` to get started!")
+					.setDescription("Hi, I'm Bean! Type `+help` to get started!\n\nThings to do ASAP:\n1. Choose a channel where i can log everything i do (`+settings setLogChannel [#Channel]`)\n2. Create (or use existing) muted-role, set permissions, and use `+setmutedrole [@Role]`\n" +
+							"3. Tell me which of your roles are allowed to use moderator-commands with `+addmod [@Role]`")
 					.setTimestamp(Instant.now())
-					.setFooter("Developed by Xirado")
 					.build()
 			).queue();
 		}

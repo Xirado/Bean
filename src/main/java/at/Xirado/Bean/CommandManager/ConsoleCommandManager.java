@@ -1,11 +1,7 @@
 package at.Xirado.Bean.CommandManager;
 
-import at.Xirado.Bean.ConsoleCommands.Clearscreen;
-import at.Xirado.Bean.ConsoleCommands.LogLevel;
-import at.Xirado.Bean.ConsoleCommands.SendMessage;
-import at.Xirado.Bean.ConsoleCommands.Shutdown;
+import at.Xirado.Bean.ConsoleCommands.*;
 import at.Xirado.Bean.Logging.Console;
-import at.Xirado.Bean.ConsoleCommands.Debug;
 import at.Xirado.Bean.Main.DiscordBot;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -26,7 +22,7 @@ public class ConsoleCommandManager
                  boolean foundCommand = false;
                  for(ConsoleCommand ccmd : consoleCommands)
                  {
-                     if(ccmd.invoke.equalsIgnoreCase(invoke))
+                     if(ccmd.getInvoke().equalsIgnoreCase(invoke) || ccmd.getAliases().stream().anyMatch(invoke::equalsIgnoreCase))
                      {
                          ccmd.executeCommand(invoke, args);
                          foundCommand = true;
@@ -36,7 +32,7 @@ public class ConsoleCommandManager
                  if(!foundCommand) System.out.println(ansi().fg(RED).a("Unbekannter Befehl \""+invoke+"\""));
              }catch(Exception e)
              {
-                 Console.error(ExceptionUtils.getStackTrace(e));
+                 Console.logger.error("Could not execute console-command", e);
              }
          };
         DiscordBot.instance.scheduledExecutorService.submit(r);
@@ -52,5 +48,8 @@ public class ConsoleCommandManager
         registerCommand(new Clearscreen());
         registerCommand(new Shutdown());
         registerCommand(new Debug());
+        registerCommand(new Info());
+        registerCommand(new Echo());
+        registerCommand(new Help());
     }
 }

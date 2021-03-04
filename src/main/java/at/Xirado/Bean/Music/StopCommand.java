@@ -6,6 +6,8 @@ import at.Xirado.Bean.CommandManager.CommandType;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import net.dv8tion.jda.api.JDA;
 
+import java.util.Arrays;
+
 public class StopCommand extends Command
 {
 
@@ -15,7 +17,7 @@ public class StopCommand extends Command
         this.invoke = "stop";
         this.description = "Stops the player and clears the queue";
         this.usage = "stop";
-        this.aliases = new String[]{"leave", "quit"};
+        this.aliases = Arrays.asList("leave", "quit", "disconnect");
         this.commandType = CommandType.MUSIC;
     }
 
@@ -50,5 +52,6 @@ public class StopCommand extends Command
         handler.stopAndClear();
         event.getGuild().getAudioManager().closeAudioConnection();
         event.replySuccess("The player has stopped and the queue has been cleared.");
+        System.gc();
     }
 }

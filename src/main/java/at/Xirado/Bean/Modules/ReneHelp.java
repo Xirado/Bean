@@ -6,6 +6,8 @@ import at.Xirado.Bean.CommandManager.CommandType;
 import at.Xirado.Bean.Misc.Util;
 import net.dv8tion.jda.api.JDA;
 
+import java.util.Arrays;
+
 public class ReneHelp extends Command
 {
     public ReneHelp(JDA jda)
@@ -15,7 +17,7 @@ public class ReneHelp extends Command
         this.commandType = CommandType.FUN;
         this.description = "Rene hilf uns";
         this.global = false;
-        this.enabledGuilds = new Long[]{687748771760832551L};
+        this.enabledGuilds = Arrays.asList(687748771760832551L);
         this.usage = "renehelp";
     }
 

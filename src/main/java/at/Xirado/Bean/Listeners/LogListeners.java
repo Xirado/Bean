@@ -15,18 +15,6 @@ public class LogListeners extends ListenerAdapter {
 
     @Override
     public void onGuildUnban(@NotNull GuildUnbanEvent event) {
-        Guild g = event.getGuild();
-        TextChannel logchannel = Util.getLogChannel(g);
-        User unbanned = event.getUser();
-        if(logchannel != null)
-        {
-            EmbedBuilder builder = new EmbedBuilder()
-                    .setColor(Color.decode("#FEFEFE"))
-                    .setTitle("User unbanned")
-                    .addField("User", unbanned.getAsMention(), false)
-                    .setFooter("ID: "+unbanned.getIdLong()+" | "+unbanned.getAsTag())
-                    .setThumbnail(unbanned.getEffectiveAvatarUrl());
-            logchannel.sendMessage(builder.build()).queue();
-        }
+
     }
 }

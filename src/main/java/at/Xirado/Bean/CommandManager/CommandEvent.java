@@ -8,11 +8,13 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.time.Instant;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class CommandEvent extends GuildMessageReceivedEvent
@@ -40,7 +42,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
         return this.event.getGuild().getMember(DiscordBot.instance.jda.getSelfUser());
     }
 
-    @Nullable
+    @NotNull
     @Override
     public Member getMember()
     {
@@ -49,7 +51,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
 
     public void setMember(Member member)
     {
-        this.member = member;
+        if(this.member == null) this.member = member;
     }
 
     public void replyError(String message)
@@ -75,17 +77,29 @@ public class CommandEvent extends GuildMessageReceivedEvent
     }
     public void replyinLogChannel(String message)
     {
-        TextChannel logchannel = Util.getLogChannel(this.event.getGuild());
+        TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
         if(logchannel != null) logchannel.sendMessage(message).queue();
     }
+
+
+    public TextChannel getLogChannel()
+    {
+        return DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
+    }
+
+    public boolean hasLogChannel()
+    {
+        return DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong()) != null;
+    }
+
     public void replyinLogChannel(Message message)
     {
-        TextChannel logchannel = Util.getLogChannel(this.event.getGuild());
+        TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
         if(logchannel != null) logchannel.sendMessage(message).queue();
     }
     public void replyinLogChannel(MessageEmbed message)
     {
-        TextChannel logchannel = Util.getLogChannel(this.event.getGuild());
+        TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
         if(logchannel != null) logchannel.sendMessage(message).queue();
     }
     public void replyErrorUsage()
@@ -94,23 +108,21 @@ public class CommandEvent extends GuildMessageReceivedEvent
                 .setColor(Color.red)
                 .setAuthor(this.event.getMember().getUser().getAsTag(), null, this.event.getMember().getUser().getEffectiveAvatarUrl())
                 .setTitle("Invalid arguments!")
-                .setTimestamp(Instant.now())
-                .setFooter("Developed by Xirado");
-        String usage = this.getCommand().usage;
-        String[] aliases = this.getCommand().aliases;
+                .setTimestamp(Instant.now());
+        String usage = this.getCommand().getUsage();
+        List<String> aliases = this.getCommand().getAliases();
         StringBuilder sb = new StringBuilder();
         String aliasesstring = null;
-        if(aliases.length > 0)
+        if(aliases.size() > 0)
         {
             for(String alias : aliases)
             {
                 sb.append(alias).append(", ");
             }
-            aliasesstring = sb.toString();
-            aliasesstring = aliasesstring.substring(0,aliasesstring.length()-2);
+            aliasesstring = sb.toString().trim();
         }
         String description = "`"+usage+"`\n"+this.getCommand().description;
-        if(aliases.length > 0 && aliasesstring != null)
+        if(aliases.size() > 0 && aliasesstring != null)
         {
             description+="\nAliases: `"+aliasesstring+"`";
         }

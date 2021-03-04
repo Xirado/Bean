@@ -15,6 +15,7 @@ import java.awt.*;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -29,12 +30,12 @@ public class Clear extends Command
         this.description = "Bulk-delete messages";
         this.usage = "clear [Amount]";
         this.commandType = CommandType.MODERATION;
-        this.neededPermissions = new Permission[]{Permission.MESSAGE_MANAGE};
+        this.neededPermissions = Arrays.asList(Permission.MESSAGE_MANAGE);
     }
 
     @Override
     public void executeCommand(CommandEvent event) {
-        String[] args = event.getArguments().getArguments();
+        String[] args = event.getArguments().toStringArray();
         TextChannel channel = event.getChannel();
 
         if(args.length < 1)

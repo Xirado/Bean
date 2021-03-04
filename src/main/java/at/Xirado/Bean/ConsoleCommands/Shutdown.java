@@ -9,6 +9,7 @@ public class Shutdown extends ConsoleCommand
     public Shutdown()
     {
         this.invoke = "shutdown";
+        this.description = "Shuts down all JDA instances and all threadpools";
     }
 
 

@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +30,7 @@ public class QueueCommand extends Command
     {
         super(jda);
         this.invoke = "queue";
-        this.aliases = new String[]{"q"};
+        this.aliases = Arrays.asList("q");
         this.description = "Shows the queue";
         this.usage = "queue (Page)";
         this.commandType = CommandType.MUSIC;

@@ -1,7 +1,6 @@
 package at.Xirado.Bean.Logging;
 
 import at.Xirado.Bean.Main.DiscordBot;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.fusesource.jansi.AnsiConsole;
 import org.jline.reader.*;
 import org.jline.terminal.Terminal;
@@ -22,17 +21,30 @@ public class Shell
     public static Terminal terminal = null;
     public static volatile boolean startedSuccessfully = false;
 
+    public static final AttributedStyle BLUE = AttributedStyle.DEFAULT.foreground(0x00, 0xDB, 0xFF);
+    public static final AttributedStyle PINK = AttributedStyle.DEFAULT.foreground(0xFF, 0x00, 0xFF);
+
+
+
+    public static final String LOGO = new AttributedStringBuilder().style(BLUE).append("           ______     ______     ______     __   __\n          ")
+            .style(PINK).append("/").style(BLUE).append("\\  ").style(BLUE).append("== ").style(BLUE).append("\\   ").style(PINK).append("/").style(BLUE)
+            .append("\\  ").style(BLUE).append("___").style(BLUE).append("\\   ").style(PINK).append("/").style(BLUE).append("\\").style(BLUE)
+            .append("  __ ").style(BLUE).append("\\   ").style(PINK).append("/").style(BLUE).append("\\ ").style(BLUE).append("\"-.").style(BLUE)
+            .append("\\ \\\n").style(PINK).append("          \\ ").style(BLUE).append("\\  ").style(BLUE).append("__<").style(PINK).append("   \\ ")
+            .style(BLUE).append("\\  ").style(BLUE).append("__\\").style(PINK).append("   \\ ").style(BLUE).append("\\  __ \\  ").style(PINK).append("\\ ")
+            .style(BLUE).append("\\ \\").style(BLUE).append("-.  ").style(BLUE).append("\\\n").style(PINK).append("           \\ ").style(BLUE)
+            .append("\\_____\\  ").style(PINK).append("\\ ").style(BLUE).append("\\_____\\  ").style(PINK).append("\\ ").style(BLUE).append("\\_\\ \\_\\  ")
+            .style(PINK).append("\\ ").style(BLUE).append("\\_\\").style(PINK).append("\\\"").style(BLUE).append("\\_\\\n").style(PINK)
+            .append("            \\/_____/   \\/_____/   \\/_/\\/_/   \\/_/ \\/_/\n\n                      Bean v"+DiscordBot.instance.VERSION+" by Xirado\n").toAnsi();
+
+
 
     public static void startShell()
     {
         Thread t = new Thread(() ->
         {
             AnsiConsole.systemInstall();
-            String prompt = new AttributedStringBuilder()
-                    .style(AttributedStyle.DEFAULT.foreground(0,255,255))
-                    .append("> ")
-                    .style(AttributedStyle.DEFAULT)
-                    .toAnsi();
+            String prompt = new AttributedStringBuilder().style(AttributedStyle.DEFAULT.foreground(0,255,255)).append("» ").style(AttributedStyle.DEFAULT).toAnsi();
             TerminalBuilder builder = TerminalBuilder.builder();
             builder.system(true);
 
@@ -41,22 +53,10 @@ public class Shell
                 terminal = builder.build();
             } catch (IOException e)
             {
-                e.printStackTrace();
+                logger.error("Could not build Terminal!", e);
             }
             terminal.puts(InfoCmp.Capability.clear_screen);
             terminal.flush();
-            String logo = new AttributedStringBuilder()
-                    .style(AttributedStyle.DEFAULT.foreground(0,255,255))
-                    .append("" +
-                    " ______                    _\n" +
-                    " | ___ \\                  | |\n" +
-                    " | |_/ / ___  __ _ _ __   | |__ ____\n" +
-                    " | ___ \\/ _ \\/ _` | '_ \\  | '_ \\_  /\n" +
-                    " | |_/ /  __/ (_| | | | |_| |_) / /\n" +
-                    " \\____/ \\___|\\__,_|_| |_(_)_.__/___|\n")
-                    .style(AttributedStyle.DEFAULT)
-                    .toAnsi();
-            System.out.println(logo);
             reader = LineReaderBuilder.builder()
                     .terminal(terminal)
                     .completer(null)
@@ -67,6 +67,7 @@ public class Shell
                     .build();
             System.setOut(CustomPrintStream.getPrintStream());
             System.setErr(CustomPrintStream.getPrintStream());
+            terminal.writer().println(LOGO);
             startedSuccessfully = true;
             while (true) {
                 String line;
@@ -85,12 +86,11 @@ public class Shell
                 }
                 catch (Exception e)
                 {
-                    String stacktrace = ExceptionUtils.getStackTrace(e);
-                    logger.error(stacktrace);
+                    logger.error("An error occured", e);
                 }
             }
         });
-        t.setName("Shell");
+        t.setName("Terminal Worker");
         t.start();
     }
 }

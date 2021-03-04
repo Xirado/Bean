@@ -91,7 +91,7 @@ public class FormattedDuration
         if(seconds < 0) throw new IllegalArgumentException("Negative Duration Value!");
         if(seconds < 10) return "now";
         if(seconds < 60) return "less than a minute ago";
-        if(seconds < 3600) // less than a hour
+        if(seconds < 3600) // less than an hour
         {
             int minutes = (int) (seconds/60);
             if(minutes == 1) return "a minute ago";
@@ -100,7 +100,7 @@ public class FormattedDuration
         if(seconds < 86400) // less than a day
         {
             int hours = (int) (seconds/60)/60;
-            if(hours == 1) return "a hour ago";
+            if(hours == 1) return "an hour ago";
             return hours+" hours ago";
         }
         if(seconds < 604800) // less than a week

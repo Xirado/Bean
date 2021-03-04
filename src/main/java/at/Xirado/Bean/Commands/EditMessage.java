@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.awt.*;
+import java.util.Arrays;
 
 public class EditMessage extends Command
 {
@@ -23,13 +24,13 @@ public class EditMessage extends Command
         this.invoke = "edit";
         this.description = "Edits a message posted by me";
         this.usage = "edit [#TextChannel] [Message-ID] [New Content]";
-        this.neededPermissions = new Permission[]{Permission.ADMINISTRATOR};
+        this.neededPermissions = Arrays.asList(Permission.ADMINISTRATOR);
         this.commandType = CommandType.ADMIN;
     }
 
     @Override
     public void executeCommand(CommandEvent e) {
-        String[] args = e.getArguments().getArguments();
+        String[] args = e.getArguments().toStringArray();
         TextChannel channel = e.getChannel();
         Member m = e.getMember();
         if (args.length < 3)

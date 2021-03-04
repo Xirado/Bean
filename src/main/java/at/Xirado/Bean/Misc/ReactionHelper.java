@@ -3,6 +3,7 @@ package at.Xirado.Bean.Misc;
 import at.Xirado.Bean.Main.DiscordBot;
 import net.dv8tion.jda.api.entities.Role;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,12 +16,17 @@ public class ReactionHelper
 	{
 		try
 		{
-			PreparedStatement ps = SQL.con.prepareStatement("SELECT roleID FROM reactionRoles WHERE messageID = ? AND emoticon = ?");
+			Connection connection = SQL.getConnectionFromPool();
+			PreparedStatement ps = connection.prepareStatement("SELECT roleID FROM reactionRoles WHERE messageID = ? AND emoticon = ?");
 			ps.setLong(1, messageID);
 			ps.setString(2, emoticon);
 			ResultSet rs = ps.executeQuery();
 			if(rs.next())
+			{
+				connection.close();
 				return DiscordBot.instance.jda.getRoleById(rs.getLong("roleID"));
+			}
+			connection.close();
 			return null;
 		} catch (SQLException e)
 		{
@@ -32,9 +38,11 @@ public class ReactionHelper
 	{
 		try
 		{
-			PreparedStatement ps = SQL.con.prepareStatement("DELETE FROM reactionRoles WHERE messageID = ?");
+			Connection connection = SQL.getConnectionFromPool();
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM reactionRoles WHERE messageID = ?");
 			ps.setLong(1, messageid);
 			ps.execute();
+			connection.close();
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
@@ -44,10 +52,12 @@ public class ReactionHelper
 	{
 		try
 		{
-			PreparedStatement ps = SQL.con.prepareStatement("SELECT * FROM reactionRoles WHERE messageid = ? AND emoticon = ?");
+			Connection connection = SQL.getConnectionFromPool();
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM reactionRoles WHERE messageid = ? AND emoticon = ?");
 			ps.setLong(1, messageid);
 			ps.setString(2, emoticon);
 			ResultSet rs = ps.executeQuery();
+			connection.close();
 			return rs.next();
 		} catch (SQLException e)
 		{
@@ -61,11 +71,13 @@ public class ReactionHelper
 			return;
 		try
 		{
-			PreparedStatement ps = SQL.con.prepareStatement("INSERT INTO reactionRoles (messageID, emoticon, roleID) values (?,?,?)");
+			Connection connection = SQL.getConnectionFromPool();
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO reactionRoles (messageID, emoticon, roleID) values (?,?,?)");
 			ps.setLong(1, messageid);
 			ps.setString(2, emoticon);
 			ps.setLong(3, roleid);
 			ps.execute();
+			connection.close();
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
@@ -75,11 +87,13 @@ public class ReactionHelper
 	{
 		try
 		{
-			PreparedStatement ps = SQL.con.prepareStatement("DELETE FROM reactionRoles WHERE messageID = ? AND emoticon = ? AND roleID = ?");
+			Connection connection = SQL.getConnectionFromPool();
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM reactionRoles WHERE messageID = ? AND emoticon = ? AND roleID = ?");
 			ps.setLong(1, messageid);
 			ps.setString(2, emoticon);
 			ps.setLong(3, roleid);
 			ps.execute();
+			connection.close();
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
@@ -90,7 +104,8 @@ public class ReactionHelper
 	{
 		try
 		{
-			PreparedStatement ps = SQL.con.prepareStatement("SELECT * FROM reactionRoles WHERE messageID = ?");
+			Connection connection = SQL.getConnectionFromPool();
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM reactionRoles WHERE messageID = ?");
 			ps.setLong(1, messageID);
 			ResultSet rs = ps.executeQuery();
 			ArrayList<HashMap<String,Long>> allReactions = new ArrayList<>();
@@ -102,6 +117,7 @@ public class ReactionHelper
 				current.put(emoticon,roleID);
 				allReactions.add(current);
 			}
+			connection.close();
 			return allReactions;
 		} catch (SQLException e)
 		{

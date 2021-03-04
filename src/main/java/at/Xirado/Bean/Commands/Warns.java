@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 
 public class Warns extends Command
@@ -25,15 +26,15 @@ public class Warns extends Command
         this.invoke = "warns";
         this.commandType = CommandType.MODERATION;
         this.description = "Lists all the warns of a member";
-        this.neededPermissions = new Permission[]{Permission.ADMINISTRATOR};
-        this.aliases = new String[]{"infractions", "modlog", "modlogs"};
+        this.neededPermissions = Arrays.asList(Permission.ADMINISTRATOR);
+        this.aliases = Arrays.asList("infractions", "modlog", "modlogs");
         this.usage = "warns [@User/ID]";
     }
 
     @Override
     public void executeCommand(CommandEvent event)
     {
-        String[] args = event.getArguments().getArguments();
+        String[] args = event.getArguments().toStringArray();
         Guild guild = event.getGuild();
         Member member = event.getMember();
         if(args.length < 1)

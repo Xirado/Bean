@@ -6,7 +6,6 @@ import at.Xirado.Bean.CommandManager.CommandType;
 import at.Xirado.Bean.Main.DiscordBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -26,15 +25,13 @@ public class Help extends Command
 		super(jda);
 		this.invoke = "help";
 		this.global = true;
-		this.aliases = new String[]{};
-		this.neededPermissions = new Permission[]{};
 
 	}
 
 	@Override
 	public void executeCommand(CommandEvent e)
 	{
-		String[] args = e.getArguments().getArguments();
+		String[] args = e.getArguments().toStringArray();
 		Member member = e.getMember();
 		User user = e.getAuthor();
 		Guild guild = e.getGuild();

@@ -3,6 +3,7 @@ package at.Xirado.Bean.Handlers;
 import at.Xirado.Bean.Misc.SQL;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,12 +23,14 @@ public class PrefixManager
         prefix.put(guildid, newPrefix);
         try
         {
+            Connection connection = SQL.getConnectionFromPool();
             String qry = "INSERT INTO commandPrefixes (guildID,prefix) values (?,?) ON DUPLICATE KEY UPDATE prefix = ?";
-            PreparedStatement ps = SQL.con.prepareStatement(qry);
+            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setLong(1, guildid);
             ps.setString(2, newPrefix);
             ps.setString(3, newPrefix);
             ps.execute();
+            connection.close();
         } catch (SQLException throwables)
         {
             throwables.printStackTrace();
@@ -45,9 +48,11 @@ public class PrefixManager
         else
         {
             try {
-                PreparedStatement ps = SQL.con.prepareStatement("SELECT prefix FROM commandPrefixes WHERE guildID = ?");
+                Connection connection = SQL.getConnectionFromPool();
+                PreparedStatement ps = connection.prepareStatement("SELECT prefix FROM commandPrefixes WHERE guildID = ?");
                 ps.setLong(1, guildid);
                 ResultSet rs = ps.executeQuery();
+                connection.close();
                 if(rs.next())
                 {
                     prefix = rs.getString("prefix");

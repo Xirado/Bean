@@ -28,13 +28,13 @@ public class UrbanDictionary extends Command
         this.usage = "urbandict [Word(s)]";
         this.description = "Shows the first explanation of a word on UrbanDictionary";
         this.commandType = CommandType.FUN;
-        this.aliases = new String[]{"urbandictionary", "urban"};
+        this.aliases = Arrays.asList("urbandictionary", "urban");
 
     }
 
     @Override
     public void executeCommand(CommandEvent e) {
-        String[] args = e.getArguments().getArguments();
+        String[] args = e.getArguments().toStringArray();
         TextChannel channel = e.getChannel();
         Member m = e.getMember();
         if(args.length == 0)

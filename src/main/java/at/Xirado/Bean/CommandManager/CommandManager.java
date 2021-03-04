@@ -1,6 +1,7 @@
 package at.Xirado.Bean.CommandManager;
 
 import at.Xirado.Bean.Commands.*;
+import at.Xirado.Bean.Commands.Moderation.*;
 import at.Xirado.Bean.Logging.Console;
 import at.Xirado.Bean.Main.DiscordBot;
 import at.Xirado.Bean.Modules.GabrielHelp;
@@ -10,14 +11,14 @@ import at.Xirado.Bean.Music.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CommandManager
@@ -35,11 +36,15 @@ public class CommandManager
         return new ArrayList<>();
     }
 
-    protected void registerModule(Long guildID, Command command)
+    private void registerModule(Long guildID, Command command)
     {
         ArrayList<Command> commands = getRegisteredModules(guildID);
-        commands.add(command);
-        registeredModules.put(guildID,commands);
+        if(commands.stream().noneMatch((c) -> c.equals(command)))
+        {
+            commands.add(command);
+            registeredModules.put(guildID,commands);
+        }
+
     }
 
     public void handleCommand(GuildMessageReceivedEvent e)
@@ -66,21 +71,22 @@ public class CommandManager
                                 if(cmd.invoke == null) continue;
                                 if(cmd.aliases == null) continue;
 
-                                if(cmd.getInvoke().equalsIgnoreCase(invoke) || Arrays.stream(cmd.getAliases()).anyMatch(invoke::equalsIgnoreCase))
+                                if(cmd.getInvoke().equalsIgnoreCase(invoke) || cmd.getAliases().stream().anyMatch(invoke::equalsIgnoreCase))
                                 {
                                     if(!cmd.isGlobal())
                                     {
                                         if(cmd.enabledGuilds == null) return;
-                                        if(!Arrays.asList(cmd.enabledGuilds).contains(e.getGuild().getIdLong()))
+                                        if(!cmd.getEnabledGuilds().contains(e.getGuild().getIdLong()))
                                         {
                                             return;
                                         }
                                     }
                                     if(cmd.getNeededPermissions() == null) return;
-                                    Permission[] neededPermissions = cmd.getNeededPermissions();
-                                    for(Permission p : neededPermissions)
+                                    List<Permission> neededPermissions = cmd.getNeededPermissions();
+                                    List<Permission> neededBotPermissions = cmd.getNeededBotPermissions();
+                                    if(e.getAuthor().getIdLong() != DiscordBot.OWNER_ID)
                                     {
-                                        if(!member.hasPermission(p))
+                                        if(!member.hasPermission(e.getChannel(), neededPermissions))
                                         {
                                             EmbedBuilder builder = new EmbedBuilder()
                                                     .setColor(Color.red)
@@ -92,6 +98,42 @@ public class CommandManager
                                             return;
                                         }
                                     }
+                                    Member botMember = e.getGuild().getMember(DiscordBot.getInstance().jda.getSelfUser());
+                                    if(!botMember.hasPermission(e.getChannel(), Permission.MESSAGE_WRITE))
+                                    {
+                                        Console.logger.warn("Received command \""+arguments.getCommand()+" "+arguments.getAsString(0)+"\" in "+e.getGuild().getName()+" but can't write messages. Sucks to be them...");
+                                        return;
+                                    }
+                                    if(neededBotPermissions != null && neededBotPermissions.size() > 0)
+                                    {
+
+                                        List<Permission> missingPermissions = new ArrayList<>();
+                                        for(Permission p : neededBotPermissions)
+                                        {
+                                            if(!botMember.hasPermission(p))
+                                            {
+                                                missingPermissions.add(p);
+                                            }
+                                        }
+                                        if(missingPermissions.size() > 0)
+                                        {
+                                            EmbedBuilder builder = new EmbedBuilder()
+                                                    .setColor(Color.red)
+                                                    .setFooter("Missing bot permissions");
+                                            StringBuilder sb = new StringBuilder();
+                                            for(Permission p : missingPermissions)
+                                            {
+                                                sb.append("`").append(p.getName()).append("`, ");
+                                            }
+                                            String toString = sb.toString();
+                                            toString = toString.substring(0, toString.length()-2);
+                                            builder.setDescription("Oops, it seems as i don't have the permission to do this \uD83D\uDE26\nMissing Permissions: "+toString);
+                                            e.getChannel().sendMessage(builder.build()).queue();
+                                            return;
+                                        }
+
+                                    }
+
                                     CommandEvent ice = new CommandEvent(arguments, e);
                                     ice.setMember(member);
                                     ice.setCommand(cmd);
@@ -99,12 +141,13 @@ public class CommandManager
                                     break;
                                 }
                             }
-                        }
+                        },
+                        (error) -> Console.logger.error("Could not retrieve member!", error)
                 );
 
-            }catch(Exception ex)
+            }catch(Throwable t)
             {
-                Console.error(ExceptionUtils.getStackTrace(ex));
+                Console.logger.error("An error occured while executing a command!", t);
             }
         };
         DiscordBot.instance.scheduledExecutorService.submit(r);
@@ -114,7 +157,7 @@ public class CommandManager
         JDA jda = DiscordBot.instance.jda;
         addCommand(new Announce(jda));
         addCommand(new Avatar(jda));
-        addCommand(new Ban(jda));
+        //addCommand(new Ban(jda));
         addCommand(new Blacklist(jda));
         addCommand(new Clear(jda));
         addCommand(new EditMessage(jda));
@@ -140,11 +183,20 @@ public class CommandManager
         addCommand(new LukasHelp(jda));
         addCommand(new ReneHelp(jda));
         addCommand(new Haste(jda));
-        //addCommand(new GameKeys(jda));
-        //addCommand(new Warn(jda));
-        //addCommand(new Warns(jda));
-        //addCommand(new CaseCommand(jda));
-        //addCommand(new Tempban(jda));
+
+        addCommand(new BanCommand(jda));
+        addCommand(new SoftBanCommand(jda));
+        addCommand(new KickCommand(jda));
+        addCommand(new TempbanCommand(jda));
+        addCommand(new CaseCommand(jda));
+        addCommand(new AddModeratorCommand(jda));
+        addCommand(new RemoveModeratorCommand(jda));
+        addCommand(new ListModeratorsCommand(jda));
+        addCommand(new ModlogCommand(jda));
+        addCommand(new WarnCommand(jda));
+        addCommand(new MuteCommand(jda));
+        addCommand(new SetMutedRoleCommand(jda));
+        addCommand(new UnmuteCommand(jda));
 
 
 

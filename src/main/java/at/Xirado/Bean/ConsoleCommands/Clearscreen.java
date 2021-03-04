@@ -4,11 +4,15 @@ import at.Xirado.Bean.CommandManager.ConsoleCommand;
 import at.Xirado.Bean.Logging.Shell;
 import org.jline.utils.InfoCmp;
 
+import java.util.Arrays;
+
 public class Clearscreen extends ConsoleCommand
 {
     public Clearscreen()
     {
         this.invoke = "cls";
+        this.description = "Clears the screen";
+        this.aliases = Arrays.asList("clear", "clearscreen");
     }
     @Override
     public void executeCommand(String invoke, String[] args)

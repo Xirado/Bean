@@ -8,9 +8,7 @@ import org.jline.reader.LineReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 
 public class CustomPrintStream
 {
@@ -20,6 +18,7 @@ public class CustomPrintStream
         if(printStream == null)
         {
             printStream = new PrintStream(System.out) {
+
                 @Override
                 public void write(int b)
                 {
@@ -237,6 +236,7 @@ public class CustomPrintStream
                 @Override
                 public void println(char x)
                 {
+
                     if(Shell.reader.isReading())
                     {
                         Shell.reader.callWidget(LineReader.CLEAR);
@@ -253,6 +253,7 @@ public class CustomPrintStream
                 @Override
                 public void println(int x)
                 {
+
                     if(Shell.reader.isReading())
                     {
                         Shell.reader.callWidget(LineReader.CLEAR);
@@ -333,6 +334,7 @@ public class CustomPrintStream
                 @Override
                 public void println(@Nullable String x)
                 {
+
                     if(Shell.reader.isReading())
                     {
                         Shell.reader.callWidget(LineReader.CLEAR);
@@ -365,7 +367,7 @@ public class CustomPrintStream
                 @Override
                 public PrintStream printf(@NotNull String format, Object... args)
                 {
-                    PrintWriter ps = null;
+                    PrintWriter ps;
                     if(Shell.reader.isReading())
                     {
                         Shell.reader.callWidget(LineReader.CLEAR);

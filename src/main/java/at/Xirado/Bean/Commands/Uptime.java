@@ -33,9 +33,9 @@ public class Uptime extends Command
         TextChannel c = e.getChannel();
         c.sendMessage(
                 new EmbedBuilder()
-                        .setColor(Color.decode("#FEFEFE"))
+                        .setColor(Color.green)
                         .setTimestamp(Instant.now())
-                        .setDescription("Uptime: `" + Util.getLength(thistime - DiscordBot.STARTTIME) + "`")
+                        .setDescription("My uptime: " + Util.getLength(thistime - DiscordBot.STARTTIME) + "")
                         .build()
         ).queue();
     }

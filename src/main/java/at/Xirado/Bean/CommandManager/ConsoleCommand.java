@@ -1,12 +1,33 @@
 package at.Xirado.Bean.CommandManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class ConsoleCommand
 {
     public String invoke;
+    public List<String> aliases;
+    public String description;
+
+    public String getDescription()
+    {
+        return description;
+    }
 
     public ConsoleCommand()
     {
         this.invoke = null;
+        this.aliases = new ArrayList<>();
+    }
+
+    public List<String> getAliases()
+    {
+        return this.aliases;
+    }
+
+    public String getInvoke()
+    {
+        return this.invoke;
     }
 
 

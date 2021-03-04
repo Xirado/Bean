@@ -17,6 +17,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -72,13 +73,13 @@ public class Util
 			byte[] postData = text.getBytes(StandardCharsets.UTF_8);
 			int postDataLength = postData.length;
 
-			String requestURL = "https://hastebin.com/documents";
+			String requestURL = "https://hastebin.de/documents";
 			URL url = new URL(requestURL);
 			HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
 			conn.setDoOutput(true);
 			conn.setInstanceFollowRedirects(false);
 			conn.setRequestMethod("POST");
-			conn.setRequestProperty("User-Agent", "Hastebin Java Api");
+			conn.setRequestProperty("User-Agent", "Bean Discord Bot (https://bean.bz)");
 			conn.setRequestProperty("Content-Length", Integer.toString(postDataLength));
 			conn.setUseCaches(false);
 
@@ -92,7 +93,7 @@ public class Util
 			if (response.contains("\"key\"")) {
 				response = response.substring(response.indexOf(":") + 2, response.length() - 2);
 
-				String postURL = raw ? "https://hastebin.com/raw/" : "https://hastebin.com/";
+				String postURL = raw ? "https://hastebin.de/raw/" : "https://hastebin.de/";
 				response = postURL + response;
 			}
 
@@ -163,18 +164,20 @@ public class Util
 	{
 		try
 		{
+			Connection connection = SQL.getConnectionFromPool();
 			String qry = "SELECT 1 FROM tempbanned WHERE guild = ? AND user = ?";
-			PreparedStatement ps = SQL.con.prepareStatement(qry);
+			PreparedStatement ps = connection.prepareStatement(qry);
 			ps.setLong(1, guildid);
 			ps.setLong(2, userid);
 			ResultSet rs = ps.executeQuery();
 			if(rs.next())
 			{
-				PreparedStatement ps1 = SQL.con.prepareStatement("DELETE FROM tempbanned WHERE guild = ? AND user = ?");
+				PreparedStatement ps1 = connection.prepareStatement("DELETE FROM tempbanned WHERE guild = ? AND user = ?");
 				ps1.setLong(1, guildid);
 				ps1.setLong(2,userid);
 				ps1.execute();
 			}
+			connection.close();
 		}catch(Exception e)
 		{
 			e.printStackTrace();
@@ -183,23 +186,25 @@ public class Util
 	public static void addBan(long guildid, long userid, long bantime)
 	{
 		try {
+			Connection connection = SQL.getConnectionFromPool();
 			String qry = "SELECT 1 FROM tempbanned WHERE guild = ? AND user = ?";
-			PreparedStatement ps = SQL.con.prepareStatement(qry);
+			PreparedStatement ps = connection.prepareStatement(qry);
 			ps.setLong(1, guildid);
 			ps.setLong(2, userid);
 			ResultSet rs = ps.executeQuery();
 			if(rs.next())
 			{
-				PreparedStatement ps1 = SQL.con.prepareStatement("DELETE FROM tempbanned WHERE guild = ? AND user = ?");
+				PreparedStatement ps1 = connection.prepareStatement("DELETE FROM tempbanned WHERE guild = ? AND user = ?");
 				ps1.setLong(1, guildid);
 				ps1.setLong(2,userid);
 				ps.execute();
 			}
-			PreparedStatement ps1 = SQL.con.prepareStatement("INSERT INTO tempbanned (guild,user,deadline) values (?,?,?)");
+			PreparedStatement ps1 = connection.prepareStatement("INSERT INTO tempbanned (guild,user,deadline) values (?,?,?)");
 			ps1.setLong(1, guildid);
 			ps1.setLong(2, userid);
 			ps1.setLong(3, bantime);
 			ps1.execute();
+			connection.close();
 		} catch (SQLException throwables) {
 			throwables.printStackTrace();
 		}
@@ -254,11 +259,13 @@ public class Util
 	{
 		try
 		{
+			Connection connection = SQL.getConnectionFromPool();
 			String tablename = "guild_"+g.getIdLong();
 			String qry = "SELECT value FROM "+tablename+" WHERE setting = ?";
-			PreparedStatement ps = SQL.con.prepareStatement(qry);
+			PreparedStatement ps = connection.prepareStatement(qry);
 			ps.setString(1, SETTING.toUpperCase());
 			ResultSet rs = ps.executeQuery();
+			connection.close();
 			if(rs.next())
 			{
 				return rs.getString("value");
@@ -279,13 +286,15 @@ public class Util
 	{
 		try
 		{
+			Connection connection = SQL.getConnectionFromPool();
 			String tablename = "guild_"+g.getIdLong();
 			String qry = "INSERT INTO "+tablename+" (setting,value) values (?,?) ON DUPLICATE KEY UPDATE value = ?";
-			PreparedStatement ps = SQL.con.prepareStatement(qry);
+			PreparedStatement ps = connection.prepareStatement(qry);
 			ps.setString(1, SETTING.toUpperCase());
 			ps.setString(2, VALUE);
 			ps.setString(3, VALUE);
 			ps.execute();
+			connection.close();
 		} catch (SQLException e)
 		{
 			e.printStackTrace();

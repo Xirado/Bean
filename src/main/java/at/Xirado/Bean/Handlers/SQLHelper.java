@@ -2,6 +2,7 @@ package at.Xirado.Bean.Handlers;
 
 import at.Xirado.Bean.Misc.SQL;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -21,8 +22,10 @@ public class SQLHelper {
     public static void executeSQL(String query)
     {
         try {
-            PreparedStatement ps = SQL.con.prepareStatement(query);
+            Connection connection = SQL.getConnectionFromPool();
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.execute();
+            connection.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

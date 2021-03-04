@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -26,13 +27,13 @@ public class ForceRemove extends Command
         this.description = "Removes all songs from the queue that are from a certain member";
         this.usage = "forceremove [@Member]";
         this.commandType = CommandType.MUSIC;
-        this.aliases = new String[]{"forcedelete"};
+        this.aliases = Arrays.asList("forcedelete");
     }
 
     @Override
     public void executeCommand(CommandEvent event) {
         Bot bot = DiscordBot.instance.musicinstance;
-        String[] args = event.getArguments().getArguments();
+        String[] args = event.getArguments().toStringArray();
         String whole = event.getArguments().getAsString(0);
         Guild g = event.getGuild();
         if(!event.isDJ())

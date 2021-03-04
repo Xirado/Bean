@@ -3,33 +3,40 @@ package at.Xirado.Bean.CommandManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Command
 {
     public String invoke;
-    public String[] aliases;
-    public Permission[] neededPermissions;
-    public Permission[] neededBotPermissions;
+    public List<String> aliases;
+    public List<Permission> neededPermissions;
+    public List<Permission> neededBotPermissions;
     public String description;
     public CommandType commandType;
     public String usage;
     public boolean global;
-    public Long[] enabledGuilds;
+    public List<Long> enabledGuilds;
+    public boolean ifNotPermissedCheckForModRole;
 
     public String getInvoke()
     {
         return invoke;
     }
 
-    public String[] getAliases()
+    public List<String> getAliases()
     {
         return aliases;
     }
 
-    public Permission[] getNeededPermissions()
+    public List<Permission> getNeededPermissions()
     {
         return neededPermissions;
+    }
+
+    public List<Permission> getNeededBotPermissions()
+    {
+        return neededBotPermissions;
     }
 
     public String getDescription()
@@ -44,7 +51,7 @@ public abstract class Command
             return true;
         }else
         {
-            return Arrays.asList(this.enabledGuilds).contains(guildID);
+            return this.enabledGuilds.contains(guildID);
         }
     }
     public CommandType getCommandType()
@@ -62,7 +69,7 @@ public abstract class Command
         return global;
     }
 
-    public Long[] getEnabledGuilds()
+    public List<Long> getEnabledGuilds()
     {
         return enabledGuilds;
     }
@@ -70,14 +77,15 @@ public abstract class Command
     public Command(JDA jda)
     {
         this.global = true;
-        this.enabledGuilds = new Long[]{};
+        this.enabledGuilds = new ArrayList<>();
         this.usage = null;
         this.invoke = null;
         this.description = null;
         this.commandType = CommandType.EXCLUDED;
-        this.neededPermissions = new Permission[]{};
-        this.neededBotPermissions = new Permission[]{};
-        this.aliases = new String[]{};
+        this.neededPermissions = new ArrayList<>();
+        this.neededBotPermissions = new ArrayList<>();
+        this.aliases = new ArrayList<>();
+        this.ifNotPermissedCheckForModRole = false;
     }
 
     public abstract void executeCommand(CommandEvent event);

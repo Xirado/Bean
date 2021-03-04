@@ -11,6 +11,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.util.Arrays;
+
 public class Announce extends Command
 {
 
@@ -18,7 +20,7 @@ public class Announce extends Command
 	{
 		super(jda);
 		this.invoke = "announce";
-		this.neededPermissions = new Permission[]{Permission.MESSAGE_MENTION_EVERYONE};
+		this.neededPermissions = Arrays.asList(Permission.MESSAGE_MENTION_EVERYONE, Permission.MESSAGE_MANAGE);
 		this.description = "Creates an announcement in a channel";
 		this.usage = "announce #Channel [Text]";
 		this.commandType = CommandType.ADMIN;
@@ -28,7 +30,7 @@ public class Announce extends Command
 	public void executeCommand(CommandEvent e)
 	{
 
-		String[] args = e.getArguments().getArguments();
+		String[] args = e.getArguments().toStringArray();
 		e.getMessage().delete().queue();
 		Guild g = e.getGuild();
 		TextChannel c = e.getChannel();
