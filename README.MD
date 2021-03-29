@@ -6,4 +6,5 @@
 </h1>
 
 All in one multi-purpose Discord-bot written in Java using [JDA](https://github.com/DV8FromTheWorld/JDA).
+
 Invite Bean to your server [here](https://bean.bz/).
