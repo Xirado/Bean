@@ -1,8 +1,11 @@
 package at.xirado.bean.commandmanager;
 
 
+import at.xirado.bean.commands.slashcommands.BanCommand;
+import at.xirado.bean.commands.slashcommands.Choose;
 import at.xirado.bean.main.DiscordBot;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.commands.CommandHook;
 import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -28,17 +31,22 @@ public class SlashCommandManager {
 
     public final List<SlashCommand> registeredCommands;
     public final ConcurrentHashMap<Long, List<SlashCommand>> registeredGuildCommands;
+    private final CommandUpdateAction commandUpdateAction;
+
 
     public SlashCommandManager()
     {
         registeredCommands = Collections.synchronizedList(new ArrayList<>());
         registeredGuildCommands = new ConcurrentHashMap<>();
+        commandUpdateAction = DiscordBot.getInstance().jda.updateCommands();
     }
 
 
     public void registerAllCommands()
     {
-
+        registerCommand(new Choose());
+        registerCommand(new BanCommand());
+        commandUpdateAction.queue();
     }
 
     private void registerCommand(SlashCommand command)
@@ -70,6 +78,7 @@ public class SlashCommandManager {
             }
             return;
         }
+        commandUpdateAction.addCommands(command.getCommandData());
         registeredCommands.add(command);
     }
 
@@ -80,14 +89,13 @@ public class SlashCommandManager {
         {
             try
             {
-                if(event.getGuild() == null) return;
                 for(SlashCommand cmd : registeredCommands)
                 {
                     if(cmd == null) continue;
                     if(cmd.getCommandName() == null) continue;
                     if(cmd.getCommandName().equalsIgnoreCase(event.getName()))
                     {
-                        event.acknowledge(true);
+                        CommandHook hook = event.getHook();
                         List<Permission> neededPermissions = cmd.getNeededUserPermissions();
                         List<Permission> neededBotPermissions = cmd.getNeededBotPermissions();
                         if(neededPermissions != null)
@@ -96,7 +104,9 @@ public class SlashCommandManager {
                             {
                                 if(!member.hasPermission(permission))
                                 {
-                                    event.reply("You don't have permission to do this!").setEphemeral(true).queue();
+                                    event.acknowledge(true)
+                                            .flatMap(v -> hook.sendMessage("You don't have permission to do this!"))
+                                            .queue();
                                     return;
                                 }
                             }
@@ -108,7 +118,9 @@ public class SlashCommandManager {
                             {
                                 if(!event.getGuild().getSelfMember().hasPermission(permission))
                                 {
-                                    event.reply("I don't have the required permission to do this.").setEphemeral(true).queue();
+                                    event.acknowledge(true)
+                                            .flatMap(v -> hook.sendMessage("I don't have the required permission to do this!"))
+                                            .queue();
                                     return;
                                 }
                             }

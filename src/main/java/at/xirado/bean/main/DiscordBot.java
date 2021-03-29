@@ -2,6 +2,7 @@ package at.xirado.bean.main;
 
 import at.xirado.bean.commandmanager.CommandManager;
 import at.xirado.bean.commandmanager.ConsoleCommandManager;
+import at.xirado.bean.commandmanager.SlashCommandManager;
 import at.xirado.bean.logging.Shell;
 import at.xirado.bean.misc.JSONConfig;
 import at.xirado.bean.misc.SQL;
@@ -63,7 +64,7 @@ public class DiscordBot
     public final ReactionRoleManager reactionRoleManager = new ReactionRoleManager();
     public final PermissionCheckerManager permissionCheckerManager;
     public final MutedRoleManager mutedRoleManager;
-
+    public final SlashCommandManager slashCommandManager;
 
     public Bot musicinstance;
     private String token;
@@ -159,6 +160,8 @@ public class DiscordBot
 
         commandManager = new CommandManager();
         commandManager.registerAllCommands();
+        slashCommandManager = new SlashCommandManager();
+        slashCommandManager.registerAllCommands();
         consoleCommandManager = new ConsoleCommandManager();
         consoleCommandManager.registerAllCommands();
         mutedRoleManager = new MutedRoleManager();

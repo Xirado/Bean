@@ -94,6 +94,6 @@ public abstract class SlashCommand
         this.enabledGuilds = new ArrayList<>();
     }
 
-    public abstract void executeCommand(@NotNull SlashCommandEvent event, @NotNull Member sender, @NotNull CommandContext context);
+    public abstract void executeCommand(@NotNull SlashCommandEvent event, @NotNull Member sender, @NotNull CommandContext ctx);
 
 }

@@ -175,6 +175,7 @@ public class Util
 		jda.addEventListener(new GuildMessageReactionRemove());
 		jda.addEventListener(new GuildMessageDelete());
 		jda.addEventListener(new PrivateMessageReceived());
+		jda.addEventListener(new SlashCommandListener());
 	}
 	
 	public static String getPath()

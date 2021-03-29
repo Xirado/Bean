@@ -25,7 +25,7 @@ import java.util.List;
 
 public class CommandManager
 {
-    private static final Logger logger = LoggerFactory.getLogger(CommandManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandManager.class);
     public final ArrayList<Command> registeredCommands = new ArrayList<>();
     public final HashMap<Long, ArrayList<Command>> registeredModules = new HashMap<>();
 
@@ -91,7 +91,7 @@ public class CommandManager
                         Member botMember = e.getGuild().getMember(DiscordBot.getInstance().jda.getSelfUser());
                         if(!botMember.hasPermission(e.getChannel(), Permission.MESSAGE_WRITE))
                         {
-                            logger.warn("Received command \""+arguments.getCommand()+" "+arguments.toString(0)+"\" in "+e.getGuild().getName()+" but can't write messages. Sucks to be them...");
+                            LOGGER.warn("Received command \""+arguments.getCommand()+" "+arguments.toString(0)+"\" in "+e.getGuild().getName()+" but can't write messages. Sucks to be them...");
                             return;
                         }
                         if(neededBotPermissions != null && neededBotPermissions.size() > 0)
