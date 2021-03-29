@@ -1,11 +1,13 @@
 package at.xirado.bean.punishmentmanager;
 
-import at.xirado.bean.logging.Console;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.sql.Connection;
@@ -18,9 +20,12 @@ import java.util.List;
 
 public class Punishments
 {
+    private static final Logger logger = LoggerFactory.getLogger(Punishments.class);
+
     public static boolean hasActiveBan(Member m)
     {
         Connection connection = SQL.getConnectionFromPool();
+        if(connection == null) return false;
         String qry = "SELECT 1 from modcases WHERE guildID = ? AND targetID = ? AND caseType = ? AND active = ?";
         try(PreparedStatement ps = connection.prepareStatement(qry))
         {
@@ -29,12 +34,14 @@ public class Punishments
             ps.setString(3, "Ban");
             ps.setBoolean(4, true);
             ResultSet rs = ps.executeQuery();
-            connection.close();
             return rs.next();
         }catch (SQLException ex)
         {
-            Console.logger.error("Could not check if user has active ban", ex);
+            logger.error("Could not check if user has active ban", ex);
             return false;
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
@@ -80,6 +87,39 @@ public class Punishments
 
                     }
             );
+        }
+    }
+
+    public static void mute(Member m, long durationMillis, String reason)
+    {
+
+    }
+
+    public static List<Case> getAllWarns(Member m)
+    {
+        Connection connection = SQL.getConnectionFromPool();
+        if(connection == null) return null;
+        String qry = "SELECT * from modcases WHERE guildID = ? AND targetID = ? AND caseType = ? AND active = ?";
+        try(PreparedStatement ps = connection.prepareStatement(qry))
+        {
+            ps.setLong(1, m.getGuild().getIdLong());
+            ps.setLong(2, m.getIdLong());
+            ps.setString(3, "Warn");
+            ps.setBoolean(4, true);
+            ResultSet rs = ps.executeQuery();
+            List<Case> cases = new ArrayList<>();
+            while(rs.next())
+            {
+                cases.add(new Case(CaseType.valueOf(rs.getString("caseType").toUpperCase()), rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID"), rs.getBoolean("active")));
+            }
+            return cases;
+        }catch (SQLException ex)
+        {
+            logger.error("Could not fetch active warns", ex);
+            return null;
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
@@ -138,7 +178,6 @@ public class Punishments
             ps.setString(3, "Mute");
             ps.setBoolean(4, true);
             ResultSet rs = ps.executeQuery();
-            connection.close();
             if(rs.next())
             {
                 return new Case(CaseType.valueOf(rs.getString("caseType").toUpperCase()), rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID"), rs.getBoolean("active"));
@@ -146,8 +185,11 @@ public class Punishments
             return null;
         }catch (SQLException ex)
         {
-            Console.logger.error("Could not check if member has active mute", ex);
+            logger.error("Could not check if member has active mute", ex);
             return null;
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
@@ -175,10 +217,10 @@ public class Punishments
     public static Case getCaseByID(String sixDigitID, long guildID)
     {
         String qry = "SELECT * FROM modcases WHERE caseID = ? AND guildID = ? LIMIT 1";
-        try
+        Connection connection = SQL.getConnectionFromPool();
+        if(connection == null) return null;
+        try(PreparedStatement ps = connection.prepareStatement(qry))
         {
-            Connection connection = SQL.getConnectionFromPool();
-            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setString(1,sixDigitID.toUpperCase());
             ps.setLong(2, guildID);
             ResultSet rs = ps.executeQuery();
@@ -192,6 +234,9 @@ public class Punishments
         {
             throwables.printStackTrace();
             return null;
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
@@ -212,12 +257,14 @@ public class Punishments
                 cases.add(new Case(CaseType.valueOf(rs.getString("caseType").toUpperCase()), rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID"), rs.getBoolean("active")));
             }
             Collections.reverse(cases);
-            connection.close();
             return cases;
         }catch(SQLException e)
         {
-            Console.logger.error("Could not get modlog!", e);
+            logger.error("Could not get modlog!", e);
             return new ArrayList<>();
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
@@ -231,10 +278,10 @@ public class Punishments
             usingLimit = " LIMIT "+limit;
         }
         String qry = "SELECT * FROM modcases WHERE guildID = ? AND targetID = ? AND caseType = ? AND creationDate > ? ORDER BY creationDate ASC"+usingLimit;
-        try
+        Connection connection = SQL.getConnectionFromPool();
+        if(connection == null) return null;
+        try(PreparedStatement ps = connection.prepareStatement(qry))
         {
-            Connection connection = SQL.getConnectionFromPool();
-            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setLong(1,guildID);
             ps.setLong(2,targetID);
             ps.setString(3, "Warn");
@@ -245,12 +292,14 @@ public class Punishments
             {
                 allCases.add(new Case(CaseType.WARN, rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID"), rs.getBoolean("active")));
             }
-            connection.close();
             return allCases;
         } catch (SQLException throwables)
         {
             throwables.printStackTrace();
             return new ArrayList<>();
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
     public static List<Case> getAllInfractions(Member member, int limit)
@@ -263,10 +312,10 @@ public class Punishments
             usingLimit = " LIMIT "+limit;
         }
         String qry = "SELECT * FROM modcases WHERE guildID = ? AND targetID = ? AND caseType = ? ORDER BY creationDate ASC"+usingLimit;
-        try
+        Connection connection = SQL.getConnectionFromPool();
+        if(connection == null) return null;
+        try(PreparedStatement ps = connection.prepareStatement(qry))
         {
-            Connection connection = SQL.getConnectionFromPool();
-            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setLong(1,guildID);
             ps.setLong(2,targetID);
             ps.setString(3, "Warn");
@@ -276,12 +325,14 @@ public class Punishments
             {
                 allCases.add(new Case(CaseType.WARN, rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID"), rs.getBoolean("active")));
             }
-            connection.close();
             return allCases;
         } catch (SQLException throwables)
         {
             throwables.printStackTrace();
             return new ArrayList<>();
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 }

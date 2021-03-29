@@ -1,8 +1,10 @@
 package at.xirado.bean.misc;
 
-import at.xirado.bean.logging.Console;
-import org.mariadb.jdbc.MariaDbPoolDataSource;
+import at.xirado.bean.main.DiscordBot;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,15 +17,17 @@ import java.util.concurrent.TimeUnit;
 public class SQL {
 
 
-	public static Logger logger = Console.logger;
+	private static final Logger logger = LoggerFactory.getLogger(SQL.class);
 
-	private static MariaDbPoolDataSource dataSource = null;
+	private static HikariConfig config = new HikariConfig();
+	private static HikariDataSource ds;
 
 	public static Connection getConnectionFromPool()
 	{
 		try
 		{
-			return dataSource.getConnection();
+			logger.debug("Gave Connection instance to "+Thread.currentThread().getName());
+			return ds.getConnection();
 		} catch (SQLException throwables)
 		{
 			logger.error("Could not get Connection from SQL-Pool!", throwables);
@@ -42,49 +46,52 @@ public class SQL {
 		String password = JSONConfig.config.get("Password");
 		int port = Integer.parseInt(JSONConfig.config.get("Port"));
 		if(!isConnected()) {
-			try {
-				Class.forName("org.mariadb.jdbc.Driver");
-			} catch (ClassNotFoundException e1) {
-				logger.error("MariaDB Driver-class not found!", e1);
-			}
-			try {
-				MariaDbPoolDataSource x = new MariaDbPoolDataSource("jdbc:mariadb://" + host + ":" + port + "/" + database +"?user="+ username +"&password="+ password);
-				x.setMaxPoolSize(100);
-				x.setMinPoolSize(10);
-				dataSource = x;
-				logger.info("Successfully created Database-Pool!");
-			} catch (SQLException e) {
-				e.printStackTrace();
-				logger.error("MySQL-Connection failed!");
-			}
+
+			config.setJdbcUrl("jdbc:mariadb://" + host + ":" + port + "/" + database);
+			config.setUsername(username);
+			config.setPassword(password);
+			config.setMaximumPoolSize(20);
+			config.setDriverClassName("org.mariadb.jdbc.Driver");
+			config.setScheduledExecutor(DiscordBot.getInstance().scheduledExecutorService);
+			config.setThreadFactory(DiscordBot.getInstance().namedThreadFactory);
+			config.addDataSourceProperty("cachePrepStmts", "true");
+			config.addDataSourceProperty("prepStmtCacheSize", "250");
+			config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+
+
+			ds = new HikariDataSource(config);
+			logger.info("Successfully created Database-Pool!");
 		}
 		
 	}
 
 	public static void disconnect() {
-		dataSource.close();
+		ds.close();
 	}
 	
 	public static boolean isConnected() {
-		return (dataSource != null);
+		return (ds != null);
 	}
 	
 	
 	
 	
 	public static void initKeepAlive() {
-		ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
-		ses.scheduleAtFixedRate(() ->
+		DiscordBot.getInstance().scheduledExecutorService.scheduleAtFixedRate(() ->
 		{
-			try(PreparedStatement ps = dataSource.getConnection().prepareStatement("SELECT 1"))
+			Connection connection = getConnectionFromPool();
+			if(connection == null) return;
+			try(PreparedStatement ps = connection.prepareStatement("SELECT 1"))
 			{
 				ps.execute();
 			} catch (SQLException e)
 			{
-				Console.logger.error("SQL-Keepalive failed", e);
+				logger.error("SQL-Keepalive failed", e);
+			} finally
+			{
+				Util.closeQuietly(connection);
 			}
 		}, 1, 1, TimeUnit.HOURS);
 	}
-	
-	
 }

@@ -34,7 +34,7 @@ public class ForceRemove extends Command
     public void executeCommand(CommandEvent event) {
         Bot bot = DiscordBot.instance.musicinstance;
         String[] args = event.getArguments().toStringArray();
-        String whole = event.getArguments().getAsString(0);
+        String whole = event.getArguments().toString(0);
         Guild g = event.getGuild();
         if(!event.isDJ())
         {

@@ -32,10 +32,10 @@ public class SkipToCommand extends Command
         }
         int index = 0;
         try {
-            index = Integer.parseInt(event.getArguments().getAsString(0));
+            index = Integer.parseInt(event.getArguments().toString(0));
         }
         catch (NumberFormatException e) {
-            event.replyError(" `" + event.getArguments().getAsString(0) + "` is not a valid integer!");
+            event.replyError(" `" + event.getArguments().toString(0) + "` is not a valid integer!");
             return;
         }
         final AudioHandler handler = ResultHandler.getHandler(event.getGuild());

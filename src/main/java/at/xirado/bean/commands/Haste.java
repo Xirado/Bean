@@ -33,7 +33,7 @@ public class Haste extends Command
             return;
         }
         event.deleteInvokeMessage();
-        String haste = event.getArguments().getAsString(0);
+        String haste = event.getArguments().toString(0);
         String linkresponse = Util.postHaste(haste, false);
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(Color.decode("#93bdca"))

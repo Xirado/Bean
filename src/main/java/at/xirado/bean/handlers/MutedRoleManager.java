@@ -1,7 +1,9 @@
 package at.xirado.bean.handlers;
 
-import at.xirado.bean.logging.Console;
 import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MutedRoleManager
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(MutedRoleManager.class);
 
     private final ConcurrentHashMap<Long, Long> mutedRoles;
 
@@ -26,18 +30,19 @@ public class MutedRoleManager
         Connection connection = SQL.getConnectionFromPool();
         if(connection == null)
         {
-            Console.logger.error("Could not delete muted role!");
+            logger.error("Could not delete muted role!", new Exception());
             return;
         }
         try(PreparedStatement ps = connection.prepareStatement(qry))
         {
             ps.setLong(1, guildID);
             ps.execute();
-            connection.close();
         }catch(Exception e)
         {
-            Console.logger.error("Could not delete muted role!", e);
-            return;
+            logger.error("Could not delete muted role!", e);
+        }finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
@@ -52,7 +57,7 @@ public class MutedRoleManager
         Connection connection = SQL.getConnectionFromPool();
         if(connection == null)
         {
-            Console.logger.error("Could not set muted role!");
+            logger.error("Could not set muted role!", new Exception());
             return;
         }
         try(PreparedStatement ps = connection.prepareStatement(qry))
@@ -61,11 +66,12 @@ public class MutedRoleManager
             ps.setLong(2, roleID);
             ps.setLong(3, roleID);
             ps.execute();
-            connection.close();
         }catch(Exception e)
         {
-            Console.logger.error("Could not set muted role!", e);
-            return;
+            logger.error("Could not set muted role!", e);
+        }finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
@@ -79,14 +85,13 @@ public class MutedRoleManager
         Connection connection = SQL.getConnectionFromPool();
         if(connection == null)
         {
-            Console.logger.error("Could not initialize MutedRole Table!");
+            logger.error("Could not get muted-role!", new Exception());
             return null;
         }
         try(PreparedStatement ps = connection.prepareStatement(qry))
         {
             ps.setLong(1, guildID);
             ResultSet rs = ps.executeQuery();
-            connection.close();
             if(rs.next())
             {
                 long role = rs.getLong("roleID");
@@ -95,11 +100,13 @@ public class MutedRoleManager
                 return role;
             }
             return null;
-
         }catch(Exception e)
         {
-            Console.logger.error("Could not initialize Muted Role Table!", e);
+            logger.error("Could not initialize Muted Role Table!", e);
             return null;
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
@@ -109,19 +116,18 @@ public class MutedRoleManager
         Connection connection = SQL.getConnectionFromPool();
         if(connection == null)
         {
-            Console.logger.error("Could not initialize MutedRole Table!");
+            logger.error("Could not initialize MutedRole Table!", new Exception());
             return;
         }
         try(PreparedStatement ps = connection.prepareStatement(qry))
         {
             ps.execute();
-            connection.close();
         }catch(Exception e)
         {
-            Console.logger.error("Could not initialize Muted Role Table!", e);
-            return;
+            logger.error("Could not initialize Muted Role Table!", e);
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
-
-
 }

@@ -1,6 +1,7 @@
 package at.xirado.bean.handlers;
 
 import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Util;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,20 +22,22 @@ public class BlacklistManager
     public boolean containsBlacklistedWord(long guildID, String word)
     {
         String qry = "SELECT 1 FROM blacklistedWords WHERE guildID = ? AND word = ?";
-        try
+        Connection connection = SQL.getConnectionFromPool();
+        if(connection == null) return false;
+        try(PreparedStatement ps = connection.prepareStatement(qry))
         {
-            Connection connection = SQL.getConnectionFromPool();
-            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setLong(1, guildID);
             ps.setString(2, word.toUpperCase());
             ResultSet rs = ps.executeQuery();
             boolean x = rs.next();
-            connection.close();
             return x;
         } catch (SQLException throwables)
         {
             throwables.printStackTrace();
             return false;
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
@@ -48,18 +51,20 @@ public class BlacklistManager
         bannedwords.remove(word.toUpperCase());
         blacklistedWords.put(guildID, bannedwords);
         String qry = "DELETE FROM blacklistedWords WHERE guildID = ? AND word = ?";
-        try
+        Connection connection = SQL.getConnectionFromPool();
+        if(connection == null) return;
+        try(PreparedStatement ps = connection.prepareStatement(qry))
         {
-            Connection connection = SQL.getConnectionFromPool();
-            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setLong(1, guildID);
             ps.setString(2, word.toUpperCase());
             ps.execute();
-            connection.close();
 
         } catch (SQLException throwables)
         {
             throwables.printStackTrace();
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
@@ -73,18 +78,20 @@ public class BlacklistManager
         bannedwords.add(word.toUpperCase());
         blacklistedWords.put(guildID, bannedwords);
         String qry = "INSERT INTO blacklistedWords (guildID, word) values (?,?)";
-        try
+        Connection connection = SQL.getConnectionFromPool();
+        if(connection == null) return;
+        try(PreparedStatement ps = connection.prepareStatement(qry))
         {
-            Connection connection = SQL.getConnectionFromPool();
-            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setLong(1, guildID);
             ps.setString(2, word.toUpperCase());
             ps.execute();
-            connection.close();
 
         } catch (SQLException throwables)
         {
             throwables.printStackTrace();
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
@@ -95,10 +102,10 @@ public class BlacklistManager
             return this.blacklistedWords.get(guildID);
         }
         String qry = "SELECT word FROM blacklistedWords WHERE guildID = ?";
-        try
+        Connection connection = SQL.getConnectionFromPool();
+        if(connection == null) return null;
+        try(PreparedStatement ps = connection.prepareStatement(qry))
         {
-            Connection connection = SQL.getConnectionFromPool();
-            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setLong(1,  guildID);
             ResultSet rs = ps.executeQuery();
             ArrayList<String> blacklistedWords = new ArrayList<>();
@@ -106,12 +113,14 @@ public class BlacklistManager
             {
                 blacklistedWords.add(rs.getString("word"));
             }
-            connection.close();
             return blacklistedWords;
         } catch (SQLException throwables)
         {
             throwables.printStackTrace();
             return new ArrayList<>();
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 }

@@ -39,7 +39,7 @@ public class ReactionRole extends Command
 		String[] args = e.getArguments().toStringArray();
 
 		Guild guild = e.getGuild();
-		Member bot = guild.getMember(DiscordBot.instance.jda.getSelfUser());
+		Member bot = e.getSelfMember();
 		TextChannel channel = e.getChannel();
 		if(!bot.hasPermission(Permission.MANAGE_ROLES))
 		{
@@ -64,9 +64,7 @@ public class ReactionRole extends Command
 			targetchannel.retrieveMessageById(args[2]).queue(
 					(response) ->
 					{
-						synchronized (this){
-							ReactionHelper.removeAllReactions(response.getIdLong());
-						}
+						ReactionHelper.removeAllReactions(response.getIdLong());
 						response.clearReactions().queue(
 								(r)->
 								{
@@ -118,10 +116,7 @@ public class ReactionRole extends Command
 						result.addReaction(emoticon).queue(
 								(success) ->
 								{
-									synchronized (this)
-									{
-										ReactionHelper.addReaction(result.getIdLong(),emoticon,targetRole.getIdLong());
-									}
+									ReactionHelper.addReaction(result.getIdLong(),emoticon,targetRole.getIdLong());
 								}
 						);
 					}else
@@ -129,10 +124,7 @@ public class ReactionRole extends Command
 						result.addReaction(e.getMessage().getEmotes().get(0)).queue(
 								(success) ->
 								{
-									synchronized (this)
-									{
-										ReactionHelper.addReaction(result.getIdLong(),e.getMessage().getEmotes().get(0).getId(),targetRole.getIdLong());
-									}
+									ReactionHelper.addReaction(result.getIdLong(),e.getMessage().getEmotes().get(0).getId(),targetRole.getIdLong());
 								}
 						);
 					}

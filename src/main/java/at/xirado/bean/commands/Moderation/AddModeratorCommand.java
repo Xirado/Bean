@@ -4,7 +4,6 @@ import at.xirado.bean.commandmanager.Command;
 import at.xirado.bean.commandmanager.CommandEvent;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.logging.Console;
 import at.xirado.bean.main.DiscordBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -12,11 +11,14 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
 public class AddModeratorCommand extends Command
 {
+    private static final Logger logger = LoggerFactory.getLogger(AddModeratorCommand.class);
     public AddModeratorCommand(JDA jda)
     {
         super(jda);
@@ -64,7 +66,7 @@ public class AddModeratorCommand extends Command
                     .setColor(role.getColor())
                     .setDescription(role.getAsMention() + " can now use moderator-commands!");
             event.reply(builder.build());
-            Console.logger.debug("Added moderator role "+role.getIdLong()+" (@"+role.getName()+") to guild "+guild.getIdLong()+" ("+guild.getName()+")");
+            logger.debug("Added moderator role "+role.getIdLong()+" (@"+role.getName()+") to guild "+guild.getIdLong()+" ("+guild.getName()+")");
 
         }else
         {

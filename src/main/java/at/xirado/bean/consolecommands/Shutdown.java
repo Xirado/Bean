@@ -1,11 +1,15 @@
 package at.xirado.bean.consolecommands;
 
 import at.xirado.bean.commandmanager.ConsoleCommand;
-import at.xirado.bean.logging.Console;
 import at.xirado.bean.main.DiscordBot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Shutdown extends ConsoleCommand
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(Shutdown.class);
+
     public Shutdown()
     {
         this.invoke = "shutdown";
@@ -16,8 +20,9 @@ public class Shutdown extends ConsoleCommand
     @Override
     public void executeCommand(String invoke, String[] args)
     {
-        Console.info("Shutting down...");
+        logger.info("Shutting down...");
         DiscordBot.getInstance().scheduledExecutorService.shutdown();
         DiscordBot.getInstance().jda.shutdown();
+        System.exit(0);
     }
 }

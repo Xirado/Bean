@@ -9,13 +9,10 @@ import ch.qos.logback.core.LayoutBase;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Layout extends LayoutBase<ILoggingEvent> {
+public class FileLoggerLayout extends LayoutBase<ILoggingEvent> {
 
 
 
@@ -25,13 +22,6 @@ public class Layout extends LayoutBase<ILoggingEvent> {
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
         String formattedDate = myDateObj.format(myFormatObj);
         AttributedStringBuilder asb = new AttributedStringBuilder();
-        if(event.getLevel() == Level.ERROR)
-        {
-            asb.style(AttributedStyle.DEFAULT.foreground(222,23,56));
-        }else if(event.getLevel() == Level.WARN)
-        {
-            asb.style(AttributedStyle.DEFAULT.foreground(255,255,0));
-        }
         asb.append("[").append(formattedDate).append("] [")
                 .append(event.getThreadName())
                 .append("] [")
@@ -43,7 +33,7 @@ public class Layout extends LayoutBase<ILoggingEvent> {
             IThrowableProxy iThrowableProxy = event.getThrowableProxy();
             asb.append("\n").append(ThrowableProxyUtil.asString(iThrowableProxy));
         }
-        asb.style(AttributedStyle.DEFAULT).append(CoreConstants.LINE_SEPARATOR);
+        asb.append(CoreConstants.LINE_SEPARATOR);
         sbuf.append(asb.toAnsi());
         return sbuf.toString();
     }

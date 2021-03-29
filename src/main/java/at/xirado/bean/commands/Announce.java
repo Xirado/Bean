@@ -45,7 +45,7 @@ public class Announce extends Command
 			e.replyError("Invalid channel!");
 			return;
 		}
-		String message = e.getArguments().getAsString(1);
+		String message = e.getArguments().toString(1);
 		targetChannel.sendMessage(
 				new EmbedBuilder()
 					.setAuthor(g.getName(), null, g.getIconUrl())

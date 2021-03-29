@@ -1,5 +1,6 @@
 package at.xirado.bean.commandmanager;
 
+import at.xirado.bean.language.Phrase;
 import at.xirado.bean.main.DiscordBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -105,7 +106,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(Color.red)
                 .setAuthor(this.event.getMember().getUser().getAsTag(), null, this.event.getMember().getUser().getEffectiveAvatarUrl())
-                .setTitle("Invalid arguments!")
+                .setTitle(Phrase.INVALID_ARGUMENTS.getTranslated(this.event.getGuild()))
                 .setTimestamp(Instant.now());
         String usage = this.getCommand().getUsage();
         List<String> aliases = this.getCommand().getAliases();
@@ -122,7 +123,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
         String description = "`"+usage+"`\n"+this.getCommand().description;
         if(aliases.size() > 0 && aliasesstring != null)
         {
-            description+="\nAliases: `"+aliasesstring+"`";
+            description+="\n"+Phrase.ALIASES.getTranslated(this.event.getGuild())+": `"+aliasesstring+"`";
         }
         builder.setDescription(description);
         this.getChannel().sendMessage(builder.build()).queue();

@@ -2,6 +2,8 @@ package at.xirado.bean.misc;
 
 import at.xirado.bean.main.DiscordBot;
 import net.dv8tion.jda.api.entities.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,12 +14,17 @@ import java.util.HashMap;
 
 public class ReactionHelper
 {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReactionHelper.class);
+
 	public static Role getRoleIfAvailable(Long messageID, String emoticon)
 	{
-		try
+		Connection connection = SQL.getConnectionFromPool();
+		if(connection == null)
 		{
-			Connection connection = SQL.getConnectionFromPool();
-			PreparedStatement ps = connection.prepareStatement("SELECT roleID FROM reactionRoles WHERE messageID = ? AND emoticon = ?");
+			return null;
+		}
+		try(PreparedStatement ps = connection.prepareStatement("SELECT roleID FROM reactionRoles WHERE messageID = ? AND emoticon = ?"))
+		{
 			ps.setLong(1, messageID);
 			ps.setString(2, emoticon);
 			ResultSet rs = ps.executeQuery();
@@ -26,86 +33,105 @@ public class ReactionHelper
 				connection.close();
 				return DiscordBot.instance.jda.getRoleById(rs.getLong("roleID"));
 			}
-			connection.close();
 			return null;
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
 			return null;
+		} finally
+		{
+			Util.closeQuietly(connection);
 		}
 	}
 	public static void removeAllReactions(Long messageid)
 	{
-		try
+		Connection connection = SQL.getConnectionFromPool();
+		if(connection == null) return;
+		try(PreparedStatement ps = connection.prepareStatement("DELETE FROM reactionRoles WHERE messageID = ?"))
 		{
-			Connection connection = SQL.getConnectionFromPool();
-			PreparedStatement ps = connection.prepareStatement("DELETE FROM reactionRoles WHERE messageID = ?");
+
 			ps.setLong(1, messageid);
 			ps.execute();
-			connection.close();
 		} catch (SQLException e)
 		{
-			e.printStackTrace();
+			LOGGER.error("An error occured", e);
+		}finally
+		{
+			Util.closeQuietly(connection);
 		}
 	}
 	public static boolean duplicateExists(long messageid, String emoticon)
 	{
-		try
+		Connection connection = SQL.getConnectionFromPool();
+		if(connection == null)
 		{
-			Connection connection = SQL.getConnectionFromPool();
-			PreparedStatement ps = connection.prepareStatement("SELECT * FROM reactionRoles WHERE messageid = ? AND emoticon = ?");
+			return true;
+		}
+		try(PreparedStatement ps = connection.prepareStatement("SELECT * FROM reactionRoles WHERE messageid = ? AND emoticon = ?"))
+		{
 			ps.setLong(1, messageid);
 			ps.setString(2, emoticon);
 			ResultSet rs = ps.executeQuery();
-			connection.close();
 			return rs.next();
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
 			return true;
+		}finally
+		{
+			Util.closeQuietly(connection);
 		}
 	}
 	public static void addReaction(long messageid, String emoticon, long roleid)
 	{
 		if(duplicateExists(messageid, emoticon))
 			return;
-		try
+		Connection connection = SQL.getConnectionFromPool();
+		if(connection == null)
 		{
-			Connection connection = SQL.getConnectionFromPool();
-			PreparedStatement ps = connection.prepareStatement("INSERT INTO reactionRoles (messageID, emoticon, roleID) values (?,?,?)");
+			return;
+		}
+		try(PreparedStatement ps = connection.prepareStatement("INSERT INTO reactionRoles (messageID, emoticon, roleID) values (?,?,?)"))
+		{
 			ps.setLong(1, messageid);
 			ps.setString(2, emoticon);
 			ps.setLong(3, roleid);
 			ps.execute();
-			connection.close();
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
+		}finally
+		{
+			Util.closeQuietly(connection);
 		}
 	}
 	public static void removeReaction(long messageid, String emoticon, long roleid)
 	{
-		try
+
+		Connection connection = SQL.getConnectionFromPool();
+		if(connection == null) return;
+		try(PreparedStatement ps = connection.prepareStatement("DELETE FROM reactionRoles WHERE messageID = ? AND emoticon = ? AND roleID = ?"))
 		{
-			Connection connection = SQL.getConnectionFromPool();
-			PreparedStatement ps = connection.prepareStatement("DELETE FROM reactionRoles WHERE messageID = ? AND emoticon = ? AND roleID = ?");
 			ps.setLong(1, messageid);
 			ps.setString(2, emoticon);
 			ps.setLong(3, roleid);
 			ps.execute();
-			connection.close();
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
+		}finally
+		{
+			Util.closeQuietly(connection);
 		}
 	}
 
 	public static ArrayList<HashMap<String,Long>> getAllReactions(Long messageID)
 	{
-		try
+		Connection connection = SQL.getConnectionFromPool();
+		if(connection == null) return null;
+		try(PreparedStatement ps = connection.prepareStatement("SELECT * FROM reactionRoles WHERE messageID = ?"))
 		{
-			Connection connection = SQL.getConnectionFromPool();
-			PreparedStatement ps = connection.prepareStatement("SELECT * FROM reactionRoles WHERE messageID = ?");
+
 			ps.setLong(1, messageID);
 			ResultSet rs = ps.executeQuery();
 			ArrayList<HashMap<String,Long>> allReactions = new ArrayList<>();
@@ -117,12 +143,14 @@ public class ReactionHelper
 				current.put(emoticon,roleID);
 				allReactions.add(current);
 			}
-			connection.close();
 			return allReactions;
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
 			return new ArrayList<>();
+		}finally
+		{
+			Util.closeQuietly(connection);
 		}
 	}
 }

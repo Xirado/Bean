@@ -28,7 +28,7 @@ public class PlayCommand extends Command
     {
         Bot bot = DiscordBot.instance.musicinstance;
         CommandArgument commandArgument = event.getArguments();
-        String asWhole = commandArgument.getAsString(0);
+        String asWhole = commandArgument.toString(0);
         String[] args = commandArgument.toStringArray();
         if(ResultHandler.init(event))
             return;

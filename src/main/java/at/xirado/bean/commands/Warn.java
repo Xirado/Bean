@@ -43,7 +43,7 @@ public class Warn extends Command
             return;
         }
         final String ID = args[0].replaceAll("[^0-9]", "");
-        final String Reason = event.getArguments().getAsString(1);
+        final String Reason = event.getArguments().toString(1);
         DiscordBot.instance.jda.retrieveUserById(ID).queue(
                 (target) ->
                 {
@@ -82,4 +82,7 @@ public class Warn extends Command
                 }
         );
     }
+
+
+
 }

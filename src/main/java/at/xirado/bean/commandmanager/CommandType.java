@@ -1,12 +1,15 @@
 package at.xirado.bean.commandmanager;
 
+import at.xirado.bean.language.Phrase;
+import net.dv8tion.jda.api.entities.Guild;
+
 public enum CommandType
 {
 
 	MODERATION("\uD83D\uDEE1", ""),
 	ADMIN("\uD83C\uDF9B", ""),
 	FUN("\uD83C\uDFB1", ""),
-	MUSIC("\uD83C\uDFB5", "\n**Note:** To get DJ privileges, you either need to have a role called \"DJ\", have Manage Channel permissions or be alone in the channel with the bot"),
+	MUSIC("\uD83C\uDFB5", Phrase.DJ_PRIVILEGES_INFO.getEnglish()),
 	UTILITIES("⚒", ""),
 	BEAN("<:Bean:776425797903974431>", ""),
 	EXCLUDED("", ""),
@@ -14,10 +17,16 @@ public enum CommandType
 
 	private final String emoji;
 	private final String notes;
+	private Guild g = null;
 	CommandType(String emoji, String notes)
 	{
 		this.emoji = emoji;
 		this.notes = notes;
+	}
+
+	public void setGuild(Guild g)
+	{
+		this.g = g;
 	}
 
 	public String getEmoji() {

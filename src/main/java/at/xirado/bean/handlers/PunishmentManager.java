@@ -1,12 +1,16 @@
 package at.xirado.bean.handlers;
 
-import at.xirado.bean.logging.Console;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PunishmentManager
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(PunishmentManager.class);
+
     public PunishmentManager()
     {
 
@@ -16,7 +20,7 @@ public class PunishmentManager
     {
         if(guild.getIdLong() != moderator.getGuild().getIdLong())
         {
-            Console.logger.error("Member not from this guild!", new IllegalArgumentException());
+            logger.error("Member not from this guild!", new IllegalArgumentException());
             return;
         }
 

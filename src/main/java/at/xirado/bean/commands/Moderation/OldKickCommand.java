@@ -3,7 +3,6 @@ package at.xirado.bean.commands.Moderation;
 import at.xirado.bean.commandmanager.Command;
 import at.xirado.bean.commandmanager.CommandEvent;
 import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.logging.Console;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
@@ -15,13 +14,17 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.Arrays;
 
-public class KickCommand extends Command
+public class OldKickCommand extends Command
 {
-    public KickCommand(JDA jda)
+    private static final Logger logger = LoggerFactory.getLogger(OldKickCommand.class);
+
+    public OldKickCommand(JDA jda)
     {
         super(jda);
         this.invoke = "kick";
@@ -68,7 +71,7 @@ public class KickCommand extends Command
                         return;
                     }
                     boolean withReason = args.length > 1;
-                    final String Reason = withReason ? event.getArguments().getAsString(1) : "No reason specified";
+                    final String Reason = withReason ? event.getArguments().toString(1) : "No reason specified";
                     User target_User = target_Member.getUser();
                     target_User.openPrivateChannel().queue(
                             (privateChannel -> {
@@ -95,7 +98,7 @@ public class KickCommand extends Command
                                 Case modcase = Case.createCase(CaseType.KICK, guild.getIdLong(), target_Member.getIdLong(), sender.getIdLong(), Reason, 0);
                                 if(modcase == null)
                                 {
-                                    Console.logger.error("Could not create modcase!", new Exception());
+                                    logger.error("Could not create modcase!", new Exception());
                                     return;
                                 }
                                 if(event.hasLogChannel())

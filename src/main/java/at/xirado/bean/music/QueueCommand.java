@@ -51,7 +51,7 @@ public class QueueCommand extends Command
         int pagenum = 1;
 
         try {
-            pagenum = Integer.parseInt(event.getArguments().getAsString(0));
+            pagenum = Integer.parseInt(event.getArguments().toString(0));
         }
         catch (NumberFormatException ex) {}
         final AudioHandler ah = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();

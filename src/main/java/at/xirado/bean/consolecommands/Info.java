@@ -2,6 +2,7 @@ package at.xirado.bean.consolecommands;
 
 import at.xirado.bean.commandmanager.ConsoleCommand;
 import at.xirado.bean.logging.Shell;
+import at.xirado.bean.main.DiscordBot;
 
 import java.util.Arrays;
 
@@ -20,7 +21,7 @@ public class Info extends ConsoleCommand
         String logo = Shell.LOGO;
         StringBuilder sb = new StringBuilder();
         long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        sb.append("\nMemory-Information:\n")
+        sb.append("\nCurrently playing music in "+ DiscordBot.getInstance().jda.getAudioManagers().size() +" guilds\nmemory info:\n")
                 .append("   max memory:       ").append(convertBytes(Runtime.getRuntime().maxMemory())).append("\n")
                 .append("   allocated memory: ").append(convertBytes(Runtime.getRuntime().totalMemory())).append("\n")
                 .append("   free memory:      ").append(convertBytes(Runtime.getRuntime().freeMemory())).append("\n")

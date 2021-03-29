@@ -10,35 +10,31 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GuildMessageReactionAdd extends ListenerAdapter
 {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GuildMessageReactionAdd.class);
 
 	@Override
 	public void onGuildMessageReactionAdd(@NotNull GuildMessageReactionAddEvent e)
 	{
-		Util.doAsynchronously(() ->
+		try
 		{
-			try
+			if(e.getMember().getUser().isBot()) return;
+			Guild g = e.getGuild();
+			long id = e.getMessageIdLong();
+			ReactionEmote reactionemote = e.getReactionEmote();
+			String reacted = reactionemote.isEmoji() ? reactionemote.getAsReactionCode() : reactionemote.getEmote().getId();
+			Role r = DiscordBot.instance.reactionRoleManager.getRoleIfAvailable(id, reacted);
+			if(r != null)
 			{
-				if(e.getMember().getUser().isBot()) return;
-				Guild g = e.getGuild();
-				Long id = e.getMessageIdLong();
-				TextChannel logchannel = Util.getLogChannel(g);
-				ReactionEmote reactionemote = e.getReactionEmote();
-				String reacted = reactionemote.getAsReactionCode();
-				if(!reactionemote.isEmoji())
-					reacted = reactionemote.getEmote().getId();
-				Member bot = g.getMember(DiscordBot.instance.jda.getSelfUser());
-				Role r = DiscordBot.instance.reactionRoleManager.getRoleIfAvailable(id, reacted);
-				if(r != null)
-				{
-					g.addRoleToMember(e.getMember(), r).queue();
-				}
-			} catch (Exception e2)
-			{
-				e2.printStackTrace();
+				g.addRoleToMember(e.getMember(), r).queue();
 			}
-		});
+		} catch (Exception e2)
+		{
+			LOGGER.error("An error occured whilst executing reaction role event!", e2);
+		}
 	}
 }

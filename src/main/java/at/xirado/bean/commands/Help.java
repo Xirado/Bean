@@ -32,7 +32,6 @@ public class Help extends Command
 	public void executeCommand(CommandEvent e)
 	{
 		String[] args = e.getArguments().toStringArray();
-		Member member = e.getMember();
 		User user = e.getAuthor();
 		Guild guild = e.getGuild();
 		String Prefix = DiscordBot.instance.prefixManager.getPrefix(guild.getIdLong());
@@ -40,7 +39,7 @@ public class Help extends Command
 		if(args.length != 1)
 		{
 			EmbedBuilder builder = new EmbedBuilder()
-					.setColor(Color.decode("#FEFEFE"))
+					.setColor(0x551a8b)
 					.setAuthor(user.getAsTag(), null, user.getAvatarUrl())
 					.setTitle("BeanBot command list")
 					.setTimestamp(Instant.now());

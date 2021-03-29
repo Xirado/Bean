@@ -2,7 +2,10 @@ package at.xirado.bean.handlers;
 
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class LogChannelManager
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogChannelManager.class);
+
     public ConcurrentHashMap<Long, Long> logChannel;
 
     public LogChannelManager()
@@ -21,21 +26,28 @@ public class LogChannelManager
 
     public void setLogChannel(long guildID, long channelid)
     {
-        try {
-            Connection connection = SQL.getConnectionFromPool();
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO logChannels (guildID,channelID) values (?,?) ON DUPLICATE KEY UPDATE channelID = ?");
+        Connection connection = SQL.getConnectionFromPool();
+        if(connection == null)
+        {
+            LOGGER.error("Could not set logchannel!", new Exception());
+            return;
+        }
+        try(var ps = connection.prepareStatement("INSERT INTO logChannels (guildID,channelID) values (?,?) ON DUPLICATE KEY UPDATE channelID = ?"))
+        {
             ps.setLong(1, guildID);
             ps.setLong(2, channelid);
-            ps.setLong(3,channelid);
+            ps.setLong(3, channelid);
             ps.execute();
-            connection.close();
             if(this.logChannel.containsKey(guildID))
             {
                 this.logChannel.remove(guildID);
                 this.logChannel.put(guildID, channelid);
             }
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            LOGGER.error("Could not set Log Channel!", throwables);
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
     public TextChannel getLogChannel(long guildid)
@@ -47,9 +59,14 @@ public class LogChannelManager
             channel = DiscordBot.instance.jda.getTextChannelById(this.logChannel.get(guildid));
         }else
         {
-            try {
-                Connection connection = SQL.getConnectionFromPool();
-                PreparedStatement ps = connection.prepareStatement("SELECT channelID FROM logChannels WHERE guildID = ?");
+            Connection connection = SQL.getConnectionFromPool();
+            if(connection == null)
+            {
+                LOGGER.error("Could not get logchannel!", new Exception());
+                return null;
+            }
+            try (PreparedStatement ps = connection.prepareStatement("SELECT channelID FROM logChannels WHERE guildID = ?"))
+            {
                 ps.setLong(1, guildid);
                 ResultSet rs = ps.executeQuery();
                 if(rs.next())
@@ -57,11 +74,12 @@ public class LogChannelManager
                     channel = DiscordBot.instance.jda.getTextChannelById(rs.getLong("channelID"));
                     this.logChannel.put(guildid, channel.getIdLong());
                 }
-                connection.close();
             } catch (SQLException throwables) {
-                throwables.printStackTrace();
+                LOGGER.error("Could not get logchannel!", throwables);
+            } finally
+            {
+                Util.closeQuietly(connection);
             }
-
         }
         return channel;
     }

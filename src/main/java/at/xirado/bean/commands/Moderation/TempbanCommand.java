@@ -78,7 +78,7 @@ public class TempbanCommand extends Command
                         return;
                     }
                     boolean withReason = args.length > 2;
-                    final String Reason = withReason ? event.getArguments().getAsString(2) : "No reason specified";
+                    final String Reason = withReason ? event.getArguments().toString(2) : "No reason specified";
                     User target_User = target_Member.getUser();
                     String user_mention = target_User.getAsMention();
                     String user_tag = target_User.getAsTag();

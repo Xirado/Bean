@@ -2,8 +2,6 @@ package at.xirado.bean.main;
 
 import at.xirado.bean.commandmanager.CommandManager;
 import at.xirado.bean.commandmanager.ConsoleCommandManager;
-import at.Xirado.Bean.Handlers.*;
-import at.xirado.bean.logging.Console;
 import at.xirado.bean.logging.Shell;
 import at.xirado.bean.misc.JSONConfig;
 import at.xirado.bean.misc.SQL;
@@ -11,10 +9,7 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import at.xirado.bean.punishmentmanager.Punishments;
-import at.x7rad0.b3an.Handlers.*;
 import at.xirado.bean.handlers.*;
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jmusicbot.Bot;
@@ -29,6 +24,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
@@ -49,6 +45,7 @@ public class DiscordBot
 {
     public static final long OWNER_ID = 184654964122058752L;
     public static final long STARTTIME = System.currentTimeMillis()/1000;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordBot.class);
 
     public static DiscordBot instance;
 
@@ -57,7 +54,7 @@ public class DiscordBot
         return instance;
     }
 
-    private final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("Threadpool (Thread %d)").build();
+    public final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("Threadpool (Thread %d)").build();
     public final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), namedThreadFactory);
 
     public final PrefixManager prefixManager = new PrefixManager();
@@ -78,7 +75,6 @@ public class DiscordBot
 
     public final String VERSION;
 
-    public static Logger logger =  (Logger) LoggerFactory.getLogger("ROOT");
 
     public DiscordBot()
     {
@@ -90,7 +86,7 @@ public class DiscordBot
             properties.load(this.getClass().getClassLoader().getResourceAsStream("settings.properties"));
         } catch (IOException e)
         {
-            Console.logger.error("Could not retrieve project metadata!", e);
+            LOGGER.error("Could not retrieve project metadata!", e);
         }
         VERSION = properties.getProperty("app-version");
         Shell.startShell();
@@ -98,14 +94,14 @@ public class DiscordBot
         {
             try
             {
-                Thread.sleep(100);
+                Thread.sleep(10);
             } catch (InterruptedException e)
             {
-                Console.logger.error("", e);
+                LOGGER.error("", e);
             }
         }
-        Util.setLoggingLevel(Level.INFO);
-        Console.info("Logging level set to \"INFO\"");
+        //Util.setLoggingLevel(Level.INFO);
+        //Console.info("Logging level set to \"INFO\"");
         File file = new File("token.txt");
         if(!file.exists())
         {
@@ -116,7 +112,7 @@ public class DiscordBot
             {
                 e.printStackTrace();
             }
-            logger.warn("token.txt has been created. Please add your Discord Bot Token to it, save and start again!");
+            LOGGER.warn("token.txt has been created. Please add your Discord Bot Token to it, save and start again!");
             System.exit(1);
         }
         try
@@ -126,7 +122,7 @@ public class DiscordBot
             br.close();
         } catch (IOException e)
         {
-            logger.error(ExceptionUtils.getStackTrace(e));
+            LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
 
         this.path = Util.getPath();
@@ -135,7 +131,7 @@ public class DiscordBot
         SQL.initKeepAlive();
         if(!SQL.isConnected())
         {
-            logger.error("I can't run without a SQL connection!");
+            LOGGER.error("I can't run without a SQL connection!");
             System.exit(1);
         }
         SQLHelper.createTables();
@@ -146,7 +142,7 @@ public class DiscordBot
             jda = JDABuilder.create(token, EnumSet.allOf(GatewayIntent.class)).setMemberCachePolicy(MemberCachePolicy.ONLINE).build();
         } catch (LoginException e)
         {
-            logger.error(ExceptionUtils.getStackTrace(e));
+            LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
 
         addShutdownHook();
@@ -157,8 +153,8 @@ public class DiscordBot
         {
             System.exit(0);
         }
-        logger.info("Successfully logged in as @"+this.jda.getSelfUser().getAsTag());
-        this.jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.playing("bean.bz | +help"), false);
+        LOGGER.info("Successfully logged in as @"+this.jda.getSelfUser().getAsTag());
+        this.jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching("www.bean.bz | +help"), false);
         Util.addListeners();
 
         commandManager = new CommandManager();
@@ -181,10 +177,14 @@ public class DiscordBot
         scheduledExecutorService.submit(() ->
         {
             String qry = "SELECT * FROM modCases WHERE active = 1 AND duration > 0";
-            try
+            Connection connection = SQL.getConnectionFromPool();
+            if(connection == null)
             {
-                Connection connection = SQL.getConnectionFromPool();
-                PreparedStatement ps = connection.prepareStatement(qry);
+                LOGGER.error("Could not load pending punishments!", new Exception());
+                return;
+            }
+            try(PreparedStatement ps = connection.prepareStatement(qry))
+            {
                 ResultSet rs = ps.executeQuery();
                 List<Case> cases = new ArrayList<>();
                 while(rs.next())
@@ -211,7 +211,7 @@ public class DiscordBot
                                 continue;
                             }catch (Exception e)
                             {
-                                logger.error("Could not undo punishment", e);
+                                LOGGER.error("Could not undo punishment", e);
                                 continue;
                             }
                         }
@@ -237,7 +237,7 @@ public class DiscordBot
                                 continue;
                             }catch (Exception e)
                             {
-                                logger.error("Could not undo punishment", e);
+                                LOGGER.error("Could not undo punishment", e);
                                 continue;
                             }
                         }
@@ -250,15 +250,23 @@ public class DiscordBot
                 }
             } catch (SQLException throwables)
             {
-                logger.error("An error occured", throwables);
+                LOGGER.error("An error occured", throwables);
+            }finally
+            {
+                try
+                {
+                    connection.close();
+                } catch (SQLException exception)
+                {
+                    LOGGER.error("An error occured", exception);
+                }
             }
         });
-        logger.info("Successfully started up!");
+        LOGGER.info("Successfully started up!");
         debugMode = runningFromIntelliJ();
         if(debugMode)
         {
-            logger.warn("Debug mode enabled! Not listening for any user-commands.");
-            getInstance().jda.getPresence().setPresence(OnlineStatus.INVISIBLE,false);
+            LOGGER.warn("Debug mode enabled! Not listening for any user-commands.");
         }
     }
 
@@ -276,7 +284,7 @@ public class DiscordBot
     {
         Runtime.getRuntime().addShutdownHook(new Thread(() ->
         {
-            logger.info("Shutting down...");
+            LOGGER.info("Shutting down...");
             getInstance().scheduledExecutorService.shutdown();
             getInstance().jda.shutdown();
         }));

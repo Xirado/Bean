@@ -1,10 +1,9 @@
 package at.xirado.bean.commandmanager;
 
-import at.Xirado.Bean.ConsoleCommands.*;
-import at.xirado.bean.logging.Console;
 import at.xirado.bean.main.DiscordBot;
-import at.x7rad0.b3an.ConsoleCommands.*;
 import at.xirado.bean.consolecommands.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
@@ -12,6 +11,7 @@ import static org.fusesource.jansi.Ansi.Color.RED;
 import static org.fusesource.jansi.Ansi.ansi;
 public class ConsoleCommandManager
 {
+    private static final Logger logger = LoggerFactory.getLogger(ConsoleCommandManager.class);
     public final ArrayList<ConsoleCommand> consoleCommands = new ArrayList<>();
 
     public void handleConsoleCommand(final String invoke, final String[] args)
@@ -33,7 +33,7 @@ public class ConsoleCommandManager
                  if(!foundCommand) System.out.println(ansi().fg(RED).a("Unbekannter Befehl \""+invoke+"\""));
              }catch(Exception e)
              {
-                 Console.logger.error("Could not execute console-command", e);
+                 logger.error("Could not execute console-command", e);
              }
          };
         DiscordBot.instance.scheduledExecutorService.submit(r);

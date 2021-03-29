@@ -149,10 +149,10 @@ public class ResultHandler implements AudioLoadResultHandler
     @Override
     public void noMatches() {
         if (this.ytsearch) {
-            this.m.editMessage(FormatUtil.filter("No results found for `" + this.event.getArguments().getAsString(0) + "`.")).queue();
+            this.m.editMessage(FormatUtil.filter("No results found for `" + this.event.getArguments().toString(0) + "`.")).queue();
         }
         else {
-            DiscordBot.instance.musicinstance.getPlayerManager().loadItemOrdered(this.event.getGuild(), "ytsearch:" + this.event.getArguments().getAsString(0), new ResultHandler(this.m, this.event, true));
+            DiscordBot.instance.musicinstance.getPlayerManager().loadItemOrdered(this.event.getGuild(), "ytsearch:" + this.event.getArguments().toString(0), new ResultHandler(this.m, this.event, true));
         }
     }
 

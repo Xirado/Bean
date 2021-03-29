@@ -69,7 +69,7 @@ public class MuteCommand extends Command
             event.replyError("You can't mute someone for this short amount of time");
             return;
         }
-        String Reason = args.length > 2 ? event.getArguments().getAsString(2) : "No reason specified";
+        String Reason = args.length > 2 ? event.getArguments().toString(2) : "No reason specified";
         g.retrieveMemberById(targetID).queue(
                 (target_Member) ->
                 {

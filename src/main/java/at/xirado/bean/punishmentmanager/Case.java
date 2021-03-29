@@ -1,7 +1,9 @@
 package at.xirado.bean.punishmentmanager;
 
-import at.xirado.bean.logging.Console;
 import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +13,8 @@ import java.util.Random;
 
 public class Case
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(Case.class);
 
     /**
      * caseID VARCHAR(6)
@@ -22,14 +26,14 @@ public class Case
      * duration BIGINT NOT NULL
      * creationDate BIGINT NOT NULL
      */
-    private String caseID;
-    private CaseType type;
-    private long GuildID;
-    private long targetID;
-    private long moderatorID;
+    private final String caseID;
+    private final CaseType type;
+    private final long GuildID;
+    private final long targetID;
+    private final long moderatorID;
     private String reason;
     private long duration;
-    private long createdAt;
+    private final long createdAt;
     private boolean isActive;
 
     public void setActive(boolean value)
@@ -48,6 +52,8 @@ public class Case
             throwables.printStackTrace();
         }
     }
+
+
 
 
     public void setReason(String reason)
@@ -144,11 +150,11 @@ public class Case
             String generatedID = generateCaseNumber();
             if(!idAlreadyExists(generatedID)) caseID = generatedID;
         }
-        try
+        Connection connection = SQL.getConnectionFromPool();
+        if(connection == null) return null;
+        String qry = "INSERT INTO modcases (caseID, guildID, targetID, moderatorID, caseType, reason, duration, creationDate, active) values (?,?,?,?,?,?,?,?,?)";
+        try(PreparedStatement ps = connection.prepareStatement(qry))
         {
-            Connection connection = SQL.getConnectionFromPool();
-            String qry = "INSERT INTO modcases (caseID, guildID, targetID, moderatorID, caseType, reason, duration, creationDate, active) values (?,?,?,?,?,?,?,?,?)";
-            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setString(1, caseID);
             ps.setLong(2, guildID);
             ps.setLong(3, targetID);
@@ -159,11 +165,13 @@ public class Case
             ps.setLong(8, System.currentTimeMillis());
             ps.setBoolean(9, true);
             ps.execute();
-            connection.close();
         } catch (SQLException throwables)
         {
-            Console.logger.error("Could not create case!", throwables);
+            logger.error("Could not create case!", throwables);
             return null;
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
         return new Case(type,guildID,targetID,moderatorID,reason,duration,System.currentTimeMillis(), caseID, true);
     }

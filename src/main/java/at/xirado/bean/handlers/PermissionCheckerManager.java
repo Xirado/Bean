@@ -1,10 +1,12 @@
 package at.xirado.bean.handlers;
 
-import at.xirado.bean.logging.Console;
 import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PermissionCheckerManager
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(PermissionCheckerManager.class);
 
     private final ConcurrentHashMap<Long, ArrayList<Long>> moderators;
 
@@ -36,17 +40,19 @@ public class PermissionCheckerManager
         Connection con = SQL.getConnectionFromPool();
         if(con == null)
         {
-            Console.logger.error("Could not initialize Database Table!", new Exception());
+            logger.error("Could not initialize Database Table!", new Exception());
             return;
         }
         String qry = "CREATE TABLE IF NOT EXISTS moderatorroles (guildID BIGINT, roleID BIGINT)";
         try(PreparedStatement ps = con.prepareStatement(qry))
         {
             ps.execute();
-            con.close();
         }catch (SQLException e)
         {
-            Console.logger.error("Could not initialize Database Table!", e);
+            logger.error("Could not initialize Database Table!", e);
+        } finally
+        {
+            Util.closeQuietly(con);
         }
     }
 
@@ -60,7 +66,7 @@ public class PermissionCheckerManager
         Connection con = SQL.getConnectionFromPool();
         if(con == null)
         {
-            Console.logger.error("Could not check if \""+roleID+"\" is a valid moderator role in \""+guildID+"\"", new Exception());
+            logger.error("Could not check if \""+roleID+"\" is a valid moderator role in \""+guildID+"\"", new Exception());
             return false;
         }
         String qry = "SELECT 1 FROM moderatorroles WHERE guildID = ? AND roleID = ?";
@@ -69,12 +75,14 @@ public class PermissionCheckerManager
             ps.setLong(1, guildID);
             ps.setLong(2, roleID);
             ResultSet rs = ps.executeQuery();
-            con.close();
             return rs.next();
         }catch (SQLException e)
         {
-            Console.logger.error("Could not check if \""+roleID+"\" is a valid moderator role in \""+guildID+"\"", e);
+            logger.error("Could not check if \""+roleID+"\" is a valid moderator role in \""+guildID+"\"", e);
             return false;
+        } finally
+        {
+            Util.closeQuietly(con);
         }
     }
 
@@ -84,7 +92,7 @@ public class PermissionCheckerManager
         Connection con = SQL.getConnectionFromPool();
         if(con == null)
         {
-            Console.logger.error("Could not add moderator role \""+roleID+"\" to guild \""+guildID+"\"!", new Exception());
+            logger.error("Could not add moderator role \""+roleID+"\" to guild \""+guildID+"\"!", new Exception());
             return false;
         }
         String qry = "INSERT INTO moderatorroles (guildID, roleID) values (?,?)";
@@ -93,13 +101,15 @@ public class PermissionCheckerManager
             ps.setLong(1, guildID);
             ps.setLong(2, roleID);
             ps.execute();
-            con.close();
             reloadAllowedRoles(guildID);
             return true;
         }catch (SQLException e)
         {
-            Console.logger.error("Could not add moderator role \""+roleID+"\" to guild \""+guildID+"\"!", e);
+            logger.error("Could not add moderator role \""+roleID+"\" to guild \""+guildID+"\"!", e);
             return false;
+        } finally
+        {
+            Util.closeQuietly(con);
         }
     }
 
@@ -123,7 +133,7 @@ public class PermissionCheckerManager
         Connection con = SQL.getConnectionFromPool();
         if(con == null)
         {
-            Console.logger.error("Could not aremove moderator role \""+roleID+"\" from guild \""+guildID+"\"!", new Exception());
+            logger.error("Could not remove moderator role \""+roleID+"\" from guild \""+guildID+"\"!", new Exception());
             return false;
         }
         String qry = "DELETE FROM moderatorroles WHERE guildID = ? AND roleID = ?";
@@ -132,13 +142,15 @@ public class PermissionCheckerManager
             ps.setLong(1, guildID);
             ps.setLong(2, roleID);
             ps.execute();
-            con.close();
             reloadAllowedRoles(guildID);
             return true;
         }catch (SQLException e)
         {
-            Console.logger.error("Could not remove moderator role \""+roleID+"\" from guild \""+guildID+"\"!", e);
+            logger.error("Could not remove moderator role \""+roleID+"\" from guild \""+guildID+"\"!", e);
             return false;
+        } finally
+        {
+            Util.closeQuietly(con);
         }
     }
 
@@ -151,7 +163,7 @@ public class PermissionCheckerManager
         Connection con = SQL.getConnectionFromPool();
         if(con == null)
         {
-            Console.logger.error("Could not fetch allowed roles for guild \""+guildID+"\"", new Exception());
+            logger.error("Could not fetch allowed roles for guild \""+guildID+"\"", new Exception());
             return new ArrayList<>();
         }
         String qry = "SELECT roleID FROM moderatorroles WHERE guildID = ?";
@@ -164,13 +176,15 @@ public class PermissionCheckerManager
             {
                 ret.add(rs.getLong("roleID"));
             }
-            con.close();
             moderators.put(guildID, ret);
             return ret;
         }catch (SQLException e)
         {
-            Console.logger.error("Could not fetch allowed roles for guild \""+guildID+"\"", e);
+            logger.error("Could not fetch allowed roles for guild \""+guildID+"\"", e);
             return new ArrayList<>();
+        } finally
+        {
+            Util.closeQuietly(con);
         }
     }
 }

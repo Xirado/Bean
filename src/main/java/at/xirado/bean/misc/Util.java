@@ -1,8 +1,6 @@
 package at.xirado.bean.misc;
 
-import at.Xirado.Bean.Listeners.*;
 import at.xirado.bean.main.DiscordBot;
-import at.x7rad0.b3an.Listeners.*;
 import at.xirado.bean.listeners.*;
 import ch.qos.logback.classic.Level;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -37,6 +35,20 @@ public class Util
 				.setTimestamp(Instant.now())
 				.setDescription(content);
 		return builder.build();
+	}
+
+	/**
+	 * Auto closes AutoClosables
+	 * @param closeables Closeables
+	 */
+	public static void closeQuietly(AutoCloseable ... closeables) {
+		for (AutoCloseable c : closeables) {
+			if (c != null) {
+				try {
+					c.close();
+				} catch (Exception ignored){}
+			}
+		}
 	}
 
 
@@ -85,7 +97,7 @@ public class Util
 			conn.setRequestProperty("Content-Length", Integer.toString(postDataLength));
 			conn.setUseCaches(false);
 
-			String response = null;
+			String response;
 			DataOutputStream wr;
 			wr = new DataOutputStream(conn.getOutputStream());
 			wr.write(postData);
@@ -125,21 +137,11 @@ public class Util
 		root.setLevel(level);
 	}
 
-	public static String BadWord(Member m, Guild g)
-	{
-		if(g.getIdLong() == 713469621532885002L)
-		{
-			return "Hey "+m.getAsMention()+", das darfst du nicht sagen!";
-		}
-		else
-		{
-			return "Hey "+m.getAsMention()+", you can't say that!";
-		}
-	}
 	public static ErrorHandler ignoreAllErrors()
 	{
 		return new ErrorHandler().ignore(EnumSet.allOf(ErrorResponse.class));
 	}
+
 	public static void sendPrivateMessage(User user, MessageEmbed embed)
 	{
 		user.openPrivateChannel()
@@ -161,63 +163,13 @@ public class Util
 				);
 	}
 
-
-	public static void removeBan(long guildid, long userid)
-	{
-		try
-		{
-			Connection connection = SQL.getConnectionFromPool();
-			String qry = "SELECT 1 FROM tempbanned WHERE guild = ? AND user = ?";
-			PreparedStatement ps = connection.prepareStatement(qry);
-			ps.setLong(1, guildid);
-			ps.setLong(2, userid);
-			ResultSet rs = ps.executeQuery();
-			if(rs.next())
-			{
-				PreparedStatement ps1 = connection.prepareStatement("DELETE FROM tempbanned WHERE guild = ? AND user = ?");
-				ps1.setLong(1, guildid);
-				ps1.setLong(2,userid);
-				ps1.execute();
-			}
-			connection.close();
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	public static void addBan(long guildid, long userid, long bantime)
-	{
-		try {
-			Connection connection = SQL.getConnectionFromPool();
-			String qry = "SELECT 1 FROM tempbanned WHERE guild = ? AND user = ?";
-			PreparedStatement ps = connection.prepareStatement(qry);
-			ps.setLong(1, guildid);
-			ps.setLong(2, userid);
-			ResultSet rs = ps.executeQuery();
-			if(rs.next())
-			{
-				PreparedStatement ps1 = connection.prepareStatement("DELETE FROM tempbanned WHERE guild = ? AND user = ?");
-				ps1.setLong(1, guildid);
-				ps1.setLong(2,userid);
-				ps.execute();
-			}
-			PreparedStatement ps1 = connection.prepareStatement("INSERT INTO tempbanned (guild,user,deadline) values (?,?,?)");
-			ps1.setLong(1, guildid);
-			ps1.setLong(2, userid);
-			ps1.setLong(3, bantime);
-			ps1.execute();
-			connection.close();
-		} catch (SQLException throwables) {
-			throwables.printStackTrace();
-		}
-	}
 	
 	public static void addListeners()
 	{
 		JDA jda = DiscordBot.instance.jda;
 		jda.addEventListener(new LogListeners());
 		jda.addEventListener(new GuildJoin());
-		jda.addEventListener(new GuildReceiveMessage());
+		jda.addEventListener(new GuildMessageReceivedListener());
 		jda.addEventListener(new GuildMemberJoin());
 		jda.addEventListener(new GuildMessageReactionAdd());
 		jda.addEventListener(new GuildMessageReactionRemove());
@@ -230,7 +182,7 @@ public class Util
 		try
 		{
 			String path2 = DiscordBot.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			String decodedPath = URLDecoder.decode(path2, "UTF-8");
+			String decodedPath = URLDecoder.decode(path2, StandardCharsets.UTF_8);
 			decodedPath = decodedPath.substring(0,decodedPath.lastIndexOf("/"));
 			return decodedPath;
 		} catch (Exception e)
@@ -239,69 +191,13 @@ public class Util
 			return null;
 		}
 	}
-	
-	public static void loadFile(String filename)
-	{
-		File cfgFile = new File(DiscordBot.instance.path, filename);
-		if (!cfgFile.exists()) {
-            try {
-            	InputStream in = DiscordBot.class.getResourceAsStream("/"+filename);
-                if(in != null) {
-                	Files.copy(in, cfgFile.toPath());
-                }else {
-                	cfgFile.createNewFile();
-                }
-            } catch (IOException e) {
-            	e.printStackTrace();
-            }
-		}
-	}
 
-	public static String getOption(Guild g, String SETTING)
-	{
-		try
-		{
-			Connection connection = SQL.getConnectionFromPool();
-			String tablename = "guild_"+g.getIdLong();
-			String qry = "SELECT value FROM "+tablename+" WHERE setting = ?";
-			PreparedStatement ps = connection.prepareStatement(qry);
-			ps.setString(1, SETTING.toUpperCase());
-			ResultSet rs = ps.executeQuery();
-			connection.close();
-			if(rs.next())
-			{
-				return rs.getString("value");
-			}
-			return null;
-		} catch (SQLException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-	}
 	public static TextChannel getLogChannel(@NotNull Guild g)
 	{
 		return DiscordBot.instance.logChannelManager.getLogChannel(g.getIdLong());
 		
 	}
-	public static void UpdateOption(Guild g, String SETTING, String VALUE)
-	{
-		try
-		{
-			Connection connection = SQL.getConnectionFromPool();
-			String tablename = "guild_"+g.getIdLong();
-			String qry = "INSERT INTO "+tablename+" (setting,value) values (?,?) ON DUPLICATE KEY UPDATE value = ?";
-			PreparedStatement ps = connection.prepareStatement(qry);
-			ps.setString(1, SETTING.toUpperCase());
-			ps.setString(2, VALUE);
-			ps.setString(3, VALUE);
-			ps.execute();
-			connection.close();
-		} catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-	}
+
 	public static String getLengthWithDelimiter(long seconds, String delimiter)
 	{
 		if(seconds == -1)
@@ -344,6 +240,7 @@ public class Util
 		String length = ges.toString();
 		return length.substring(0, length.length()-delimiter.length());
 	}
+
 	public static String getLength(long seconds, boolean... comma) {
 		if(seconds == -1) {
 			return "∞";

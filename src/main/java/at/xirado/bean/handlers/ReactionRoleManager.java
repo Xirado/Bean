@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ReactionRoleManager
 {
-    public ConcurrentHashMap<Long, HashMap<String,Long>> reactionRoles;
+    private final ConcurrentHashMap<Long, HashMap<String,Long>> reactionRoles;
     public ReactionRoleManager()
     {
         this.reactionRoles = new ConcurrentHashMap<>();
@@ -19,20 +19,20 @@ public class ReactionRoleManager
 
     public void removeAllReactionRoles(long messageID)
     {
-        if(this.reactionRoles.containsKey(messageID))
-            this.reactionRoles.remove(messageID);
+        reactionRoles.remove(messageID);
         ReactionHelper.removeAllReactions(messageID);
     }
+
     public Role getRoleIfAvailable(long messageID, String emoticon)
     {
         if(this.reactionRoles.containsKey(messageID))
         {
-            HashMap<String, Long> hm = this.reactionRoles.get(messageID);
+            HashMap<String, Long> hm = reactionRoles.get(messageID);
             if(hm.containsKey(emoticon))
             {
                 return DiscordBot.instance.jda.getRoleById(hm.get(emoticon));
             }else{
-                Role r = ReactionHelper.getRoleIfAvailable(messageID,emoticon);
+                Role r = ReactionHelper.getRoleIfAvailable(messageID, emoticon);
                 if(r != null)
                 {
                     hm.put(emoticon, r.getIdLong());
@@ -50,9 +50,5 @@ public class ReactionRoleManager
             this.reactionRoles.put(messageID,hm);
         }
         return r;
-    }
-    public List<HashMap<String,Long>> getAllReactions(Long messageID)
-    {
-        return new ArrayList<>();
     }
 }

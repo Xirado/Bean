@@ -1,5 +1,6 @@
 package at.xirado.bean.misc;
 
+import at.xirado.bean.main.DiscordBot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.json.simple.JSONArray;
@@ -24,6 +25,7 @@ public class JSONConfig
 	public static void updateConfig()
 	{
 		config.clear();
+		HashMap<Integer, String> test = new HashMap<>();
 		List<Map<String,String>> list = getConfig("config.json");
 		for(int i = 0; i < list.size(); i++)
 		{

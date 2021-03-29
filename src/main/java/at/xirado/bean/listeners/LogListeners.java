@@ -6,8 +6,5 @@ import org.jetbrains.annotations.NotNull;
 
 public class LogListeners extends ListenerAdapter {
 
-    @Override
-    public void onGuildUnban(@NotNull GuildUnbanEvent event) {
 
-    }
 }

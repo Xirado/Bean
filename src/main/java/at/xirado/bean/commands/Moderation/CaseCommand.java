@@ -28,7 +28,7 @@ public class CaseCommand extends Command
         this.commandType = CommandType.MODERATION;
         this.aliases = Arrays.asList("incident");
         this.description = "Shows information of a case or changes the reason.";
-        this.usage = "case [Case ID] || case [Case ID] reason [New Reason]";
+        this.usage = "case [Case ID] || case [Case ID] reason [New Reason] || case [Case ID] delete";
     }
 
     @Override
@@ -111,6 +111,15 @@ public class CaseCommand extends Command
                 event.replyinLogChannel(builder.build());
             }
 
-        }
+        }/*else if(StringUtils.startsWithIgnoreCase(args[1], "delete"))
+        {
+            String caseID = args[0];
+            if(caseID.length() != 6)
+            {
+                event.replyError("The Case-ID must be 6 digit!\nExample: 4V8MNU");
+                return;
+            }
+
+        }*/
     }
 }

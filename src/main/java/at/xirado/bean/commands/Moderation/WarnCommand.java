@@ -7,6 +7,7 @@ import at.xirado.bean.handlers.PermissionCheckerManager;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
+import at.xirado.bean.punishmentmanager.Punishments;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -17,6 +18,7 @@ import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.time.Instant;
+import java.util.List;
 
 public class WarnCommand extends Command
 {
@@ -52,7 +54,7 @@ public class WarnCommand extends Command
             event.replyError("User-ID may not be empty!");
             return;
         }
-        String Reason = args.length < 2 ? "No reason specified" : event.getArguments().getAsString(1);
+        String Reason = args.length < 2 ? "No reason specified" : event.getArguments().toString(1);
         boolean withReason = args.length > 1;
         DiscordBot.getInstance().jda.retrieveUserById(target_ID).queue();
         g.retrieveMemberById(target_ID).queue(
@@ -120,5 +122,31 @@ public class WarnCommand extends Command
                     .handle(ErrorResponse.UNKNOWN_MEMBER, err -> event.replyError("This user is not on this server!"))
                     .handle(ErrorResponse.UNKNOWN_USER, err -> event.replyError("This user does not exist!"))
         );
+    }
+
+    /**
+     * HTL-Server
+     * @param m Member
+     */
+    public static void doWarnPolicy(Member m)
+    {
+        List<Case> cases = Punishments.getAllWarns(m);
+        if(cases == null || cases.isEmpty()) return;
+        int warnsLessThan100DaysOld = 0;
+        for(Case modcase : cases)
+        {
+            if(!modcase.isActive()) continue;
+            if(modcase.getCreatedAt() > System.currentTimeMillis()-8640000000L)
+            {
+                warnsLessThan100DaysOld++;
+            }
+        }
+        switch (warnsLessThan100DaysOld)
+        {
+            case 0:
+                return;
+            case 1:
+
+        }
     }
 }
