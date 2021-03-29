@@ -1,4 +1,8 @@
-<img align="left" src="https://bean.bz/images/logo.png" height="30" width="30">
+<h1> <img src="https://bean.bz/images/logo.png"
+  width="50"
+  height="50"
+  style="float:left;">
+  # Bean
+</h1>
 
-# Bean
 All in one multi-purpose Discord-bot written in Java using [JDA](https://github.com/DV8FromTheWorld/JDA).
