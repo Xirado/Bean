@@ -1,7 +1,7 @@
 package at.xirado.bean.commandmanager;
 
-import at.xirado.bean.commands.blockingmoderation.BanCommand;
-import at.xirado.bean.commands.blockingmoderation.KickCommand;
+import at.xirado.bean.commands.Moderation.BanCommand;
+import at.xirado.bean.commands.Moderation.KickCommand;
 import at.xirado.bean.language.Phrase;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.modules.GabrielHelp;
