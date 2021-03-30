@@ -113,6 +113,56 @@ public class SlashCommandManager {
             boolean foundCommand = false;
             try
             {
+                if(event.getGuild() != null)
+                {
+                    Guild guild = event.getGuild();
+                    long guildID = guild.getIdLong();
+                    if(registeredGuildCommands.containsKey(guildID))
+                    {
+                        List<SlashCommand> guildOnlySlashcommands = registeredGuildCommands.get(guildID);
+                        for(SlashCommand cmd : guildOnlySlashcommands)
+                        {
+                            if(cmd == null) continue;
+                            if(cmd.getCommandName() == null) continue;
+                            if(cmd.getCommandName().equalsIgnoreCase(event.getName()))
+                            {
+                                foundCommand = true;
+                                CommandHook hook = event.getHook();
+                                List<Permission> neededPermissions = cmd.getNeededUserPermissions();
+                                List<Permission> neededBotPermissions = cmd.getNeededBotPermissions();
+                                if(neededPermissions != null)
+                                {
+                                    for(Permission permission : neededPermissions)
+                                    {
+                                        if(!member.hasPermission(permission))
+                                        {
+                                            event.acknowledge(true)
+                                                    .flatMap(v -> hook.sendMessage("You don't have permission to do this!"))
+                                                    .queue();
+                                            return;
+                                        }
+                                    }
+                                }
+
+                                if(neededBotPermissions != null)
+                                {
+                                    for(Permission permission : neededBotPermissions)
+                                    {
+                                        if(!event.getGuild().getSelfMember().hasPermission(permission))
+                                        {
+                                            event.acknowledge(true)
+                                                    .flatMap(v -> hook.sendMessage("I don't have the required permission to do this!"))
+                                                    .queue();
+                                            return;
+                                        }
+                                    }
+                                }
+                                cmd.executeCommand(event, member, new CommandContext(event));
+                                return;
+                            }
+                        }
+                    }
+                }
                 for(SlashCommand cmd : registeredCommands)
                 {
                     if(cmd == null) continue;
@@ -162,55 +212,8 @@ public class SlashCommandManager {
                         cmd.executeCommand(event, member, new CommandContext(event));
                     }
                 }
-                Guild guild = event.getGuild();
-                long guildID = guild.getIdLong();
-                if(!registeredGuildCommands.containsKey(guildID))
-                {
-                    event.reply("This command is either no longer available or has been disabled").setEphemeral(true).queue();
-                    return;
-                }
-                List<SlashCommand> guildOnlySlashcommands = registeredGuildCommands.get(guildID);
-                for(SlashCommand cmd : guildOnlySlashcommands)
-                {
-                    if(cmd == null) continue;
-                    if(cmd.getCommandName() == null) continue;
-                    if(cmd.getCommandName().equalsIgnoreCase(event.getName()))
-                    {
-                        foundCommand = true;
-                        CommandHook hook = event.getHook();
-                        List<Permission> neededPermissions = cmd.getNeededUserPermissions();
-                        List<Permission> neededBotPermissions = cmd.getNeededBotPermissions();
-                        if(neededPermissions != null)
-                        {
-                            for(Permission permission : neededPermissions)
-                            {
-                                if(!member.hasPermission(permission))
-                                {
-                                    event.acknowledge(true)
-                                            .flatMap(v -> hook.sendMessage("You don't have permission to do this!"))
-                                            .queue();
-                                    return;
-                                }
-                            }
-                        }
-
-                        if(neededBotPermissions != null)
-                        {
-                            for(Permission permission : neededBotPermissions)
-                            {
-                                if(!event.getGuild().getSelfMember().hasPermission(permission))
-                                {
-                                    event.acknowledge(true)
-                                            .flatMap(v -> hook.sendMessage("I don't have the required permission to do this!"))
-                                            .queue();
-                                    return;
-                                }
-                            }
-                        }
-                        cmd.executeCommand(event, member, new CommandContext(event));
-                    }
-                }
                 if(!foundCommand) event.reply("This command is either no longer available or has been disabled").setEphemeral(true).queue();
+
             }catch (Exception e)
             {
                 LOGGER.error("Could not execute slash-command", e);

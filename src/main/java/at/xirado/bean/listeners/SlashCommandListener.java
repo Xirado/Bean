@@ -15,16 +15,12 @@ public class SlashCommandListener extends ListenerAdapter
     {
         Guild g = event.getGuild();
         User user = event.getUser();
-        g.retrieveMember(user).queue(
-                (member) ->
-                {
-                    DiscordBot.getInstance().slashCommandManager.handleSlashCommand(event, member);
-                },
-                (error) ->
-                {
-                    DiscordBot.getInstance().slashCommandManager.handleSlashCommand(event, null);
-                }
-        );
+        if(g == null)
+        {
+            DiscordBot.getInstance().slashCommandManager.handleSlashCommand(event, null);
+            return;
+        }
+        g.retrieveMember(user).queue((member) -> DiscordBot.getInstance().slashCommandManager.handleSlashCommand(event, member), (error) -> {});
 
     }
 

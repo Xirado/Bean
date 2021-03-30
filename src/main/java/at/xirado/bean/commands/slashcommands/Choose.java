@@ -20,6 +20,7 @@ public class Choose extends SlashCommand
                 .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "1st", "the first argument").setRequired(true))
                 .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "2nd", "the second argument").setRequired(true))
         );
+        setRunnableInDM(true);
     }
 
 
