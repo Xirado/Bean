@@ -7,16 +7,14 @@ import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.commands.CommandHook;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 
 public class BanCommand extends SlashCommand
 {
@@ -45,19 +43,26 @@ public class BanCommand extends SlashCommand
         {
             if (!sender.canInteract(targetMember))
             {
-                ctx.reply("You cannot ban this member!").setEphemeral(true).queue();
+                ctx.reply(CommandContext.DENY+" You cannot ban this member!").setEphemeral(true).queue();
                 return;
             }
+
+            if(DiscordBot.getInstance().permissionCheckerManager.isModerator(targetMember))
+            {
+                event.reply(CommandContext.DENY+" You cannot ban a moderator!").setEphemeral(true).queue();
+                return;
+            }
+
             if (!g.getSelfMember().canInteract(targetMember))
             {
-                ctx.reply("I cannot interact with this member!").setEphemeral(true).queue();
+                ctx.reply(CommandContext.DENY+" I cannot interact with this member!").setEphemeral(true).queue();
                 return;
             }
         }
         Case bancase = Case.createCase(CaseType.BAN, g.getIdLong(), targetUser.getIdLong(), sender.getIdLong(), reason != null ? reason : "No reason specified", -1);
         if(bancase == null)
         {
-            ctx.reply("An error occured, please try again later.").setEphemeral(true).queue();
+            ctx.reply(CommandContext.ERROR+" An error occured.").setEphemeral(true).queue();
             return;
         }
         try
@@ -66,8 +71,8 @@ public class BanCommand extends SlashCommand
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(CaseType.BAN.getEmbedColor())
                     .setAuthor("You have been banned from "+g.getName()+"!")
-                    .addField("Reason", bancase.getReason(), true)
-                    .addField("Moderator", sender.getUser().getAsTag(), true);
+                    .addField("reason", bancase.getReason(), true)
+                    .addField("moderator", sender.getAsMention() + "("+sender.getUser().getAsTag()+")", true);
             privateChannel.sendMessage(builder.build()).complete();
         }catch (Exception ignored)
         {
@@ -76,11 +81,7 @@ public class BanCommand extends SlashCommand
         g.ban(targetUser, deldays, bancase.getReason()).queue(
                 (success) ->
                 {
-                    EmbedBuilder builder = new EmbedBuilder()
-                            .setColor(0x8b0000)
-                            .setDescription(targetUser.getAsMention()+" has been banned!")
-                            .setFooter("Case #"+bancase.getCaseID()+" ("+bancase.getReason()+")");
-                    ctx.reply(builder.build()).queue();
+                    ctx.reply(CommandContext.SUCCESS+" "+targetUser.getAsMention()+" has been banned.\n`Reason: "+bancase.getReason()+" (#"+bancase.getCaseID()+")`").setEphemeral(true).queue();
                     TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(g.getIdLong());
                     EmbedBuilder builder2 = new EmbedBuilder()
                             .setTimestamp(Instant.now())
@@ -88,14 +89,14 @@ public class BanCommand extends SlashCommand
                             .setThumbnail(targetUser.getEffectiveAvatarUrl())
                             .setFooter("Target ID: "+targetUser.getIdLong())
                             .setTitle("Ban | Case #"+bancase.getCaseID())
-                            .addField("Target", targetUser.getAsMention()+" ("+targetUser.getAsTag()+")", true)
-                            .addField("Moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true)
-                            .addField("Reason", bancase.getReason(), false);
-                    if(logchannel != null) logchannel.sendMessage(builder2.build()).queue();
+                            .addField("banned", targetUser.getAsMention()+" ("+targetUser.getAsTag()+")", true)
+                            .addField("moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true)
+                            .addField("reason", bancase.getReason(), false);
+                    Objects.requireNonNullElseGet(logchannel, event::getChannel).sendMessage(builder2.build()).queue();
                 },
                 (error) ->
                 {
-                    ctx.reply("An error occured").setEphemeral(true).queue();
+                    ctx.reply(CommandContext.ERROR + " An error occured").setEphemeral(true).queue();
                 }
         );
     }

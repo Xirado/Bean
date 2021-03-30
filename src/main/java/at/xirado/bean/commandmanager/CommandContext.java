@@ -9,6 +9,11 @@ import java.util.Arrays;
 
 public class CommandContext
 {
+
+    public static final String DENY = "\uD83D\uDEAB";
+    public static final String ERROR = "❌";
+    public static final String SUCCESS = "✅";
+
     private final SlashCommandEvent event;
 
     public CommandContext(SlashCommandEvent event)
