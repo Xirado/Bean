@@ -133,6 +133,30 @@ public class Case
 
     }
 
+    /**
+     * Deletes a case
+     * @return returns true if the case has been deleted successfully
+     */
+    public boolean deleteCase()
+    {
+        Connection connection = SQL.getConnectionFromPool();
+        if(connection == null) return false;
+        String qry = "DELETE FROM modcases WHERE caseID = ?";
+        try(PreparedStatement ps = connection.prepareStatement(qry))
+        {
+            ps.setString(1, caseID);
+            ps.execute();
+            return true;
+        } catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+            return false;
+        } finally
+        {
+            Util.closeQuietly(connection);
+        }
+    }
+
     public Case(CaseType type, long GuildID, long targetID, long moderatorID, String reason, long duration, long createdAt, String caseID, boolean isActive)
     {
         this.type = type;
