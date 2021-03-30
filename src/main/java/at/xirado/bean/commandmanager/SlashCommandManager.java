@@ -109,6 +109,7 @@ public class SlashCommandManager {
     {
         Runnable r = () ->
         {
+            boolean foundCommand = false;
             try
             {
                 for(SlashCommand cmd : registeredCommands)
@@ -117,6 +118,7 @@ public class SlashCommandManager {
                     if(cmd.getCommandName() == null) continue;
                     if(cmd.getCommandName().equalsIgnoreCase(event.getName()))
                     {
+                        foundCommand = true;
                         CommandHook hook = event.getHook();
                         List<Permission> neededPermissions = cmd.getNeededUserPermissions();
                         List<Permission> neededBotPermissions = cmd.getNeededBotPermissions();
@@ -158,7 +160,6 @@ public class SlashCommandManager {
                     return;
                 }
                 List<SlashCommand> guildOnlySlashcommands = registeredGuildCommands.get(guildID);
-                boolean foundCommand = false;
                 for(SlashCommand cmd : guildOnlySlashcommands)
                 {
                     if(cmd == null) continue;
