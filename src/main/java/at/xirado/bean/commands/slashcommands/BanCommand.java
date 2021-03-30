@@ -41,6 +41,12 @@ public class BanCommand extends SlashCommand
         int deldays = event.getOption("delDays") != null ? (int) Math.max(0, Math.min(7, event.getOption("delDays").getAsLong())) : 0;
         if(targetMember != null)
         {
+            if(sender.getIdLong() == targetMember.getIdLong())
+            {
+                ctx.reply("You cannot ban yourself.").setEphemeral(true).queue();
+                return;
+            }
+
             if (!sender.canInteract(targetMember))
             {
                 ctx.reply(CommandContext.DENY+" You cannot ban this member!").setEphemeral(true).queue();
