@@ -36,8 +36,6 @@ public class Unban extends SlashCommand
         );
         setNeededUserPermissions(Collections.singletonList(Permission.BAN_MEMBERS));
         setNeededBotPermissions(Collections.singletonList(Permission.BAN_MEMBERS));
-        setGlobal(false);
-        setEnabledGuilds(Collections.singletonList(815597207617142814L));
     }
 
     @Override
