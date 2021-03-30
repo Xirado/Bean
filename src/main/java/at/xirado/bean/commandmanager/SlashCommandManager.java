@@ -3,6 +3,7 @@ package at.xirado.bean.commandmanager;
 
 import at.xirado.bean.commands.slashcommands.BanCommand;
 import at.xirado.bean.commands.slashcommands.Choose;
+import at.xirado.bean.commands.slashcommands.Unban;
 import at.xirado.bean.main.DiscordBot;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.commands.CommandHook;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -46,8 +48,35 @@ public class SlashCommandManager {
     {
         registerCommand(new Choose());
         registerCommand(new BanCommand());
-        commandUpdateAction.queue();
+        registerCommand(new Unban());
+
+        queueToDiscord();
     }
+
+    private void queueToDiscord()
+    {
+        commandUpdateAction.queue();
+        for(Map.Entry<Long, List<SlashCommand>> entrySet : registeredGuildCommands.entrySet())
+        {
+            Long guildID = entrySet.getKey();
+            List<SlashCommand> slashCommands = entrySet.getValue();
+
+            if(guildID == null || slashCommands == null) continue;
+            if(slashCommands.isEmpty()) continue;
+            Guild guild = DiscordBot.getInstance().jda.getGuildById(guildID);
+            if(guild == null) continue;
+
+            CommandUpdateAction guildCommandUpdateAction = guild.updateCommands();
+            boolean shouldQueue = false;
+            for(SlashCommand cmd : slashCommands)
+            {
+                guildCommandUpdateAction = guildCommandUpdateAction.addCommands(cmd.getCommandData());
+                if(!shouldQueue) shouldQueue = true;
+            }
+            if(shouldQueue)  guildCommandUpdateAction.queue();
+        }
+    }
+
 
     private void registerCommand(SlashCommand command)
     {
@@ -59,22 +88,15 @@ public class SlashCommandManager {
             {
                 Guild guild = DiscordBot.getInstance().jda.getGuildById(guildID);
                 if(guild == null) continue;
-                CommandCreateAction commandCreateAction = guild.upsertCommand(command.getCommandName(), command.getCommandDescription());
-                for(Object data : command.getOptions())
+                List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(guildID) ? registeredGuildCommands.get(guildID) : new ArrayList<>();
+                alreadyRegistered.add(command);
+                if(registeredGuildCommands.containsKey(guildID))
                 {
-                    CommandUpdateAction.OptionData optionData = (CommandUpdateAction.OptionData) data;
-                    DataObject dataObject = optionData.toData();
-                    commandCreateAction.addOption((String) dataObject.get("name"), (String) dataObject.get("description"), Command.OptionType.fromKey((int) dataObject.get("type")));
+                    registeredGuildCommands.replace(guildID, alreadyRegistered);
+                }else
+                {
+                    registeredGuildCommands.put(guildID, alreadyRegistered);
                 }
-                commandCreateAction.queue(
-                        s ->
-                        {
-                            List<SlashCommand> guildCommands = registeredGuildCommands.containsKey(guildID) ? registeredGuildCommands.get(guildID) : new ArrayList<>();
-                            guildCommands.add(command);
-                            registeredGuildCommands.put(guildID, guildCommands);
-                            LOGGER.info("Registered command "+command.getCommandName()+" for guild "+guild.getName());
-                        }
-                );
             }
             return;
         }
@@ -128,6 +150,56 @@ public class SlashCommandManager {
                         cmd.executeCommand(event, member, new CommandContext(event));
                     }
                 }
+                Guild guild = event.getGuild();
+                long guildID = guild.getIdLong();
+                if(!registeredGuildCommands.containsKey(guildID))
+                {
+                    event.reply("This command is either no longer available or has been disabled").setEphemeral(true).queue();
+                    return;
+                }
+                List<SlashCommand> guildOnlySlashcommands = registeredGuildCommands.get(guildID);
+                boolean foundCommand = false;
+                for(SlashCommand cmd : guildOnlySlashcommands)
+                {
+                    if(cmd == null) continue;
+                    if(cmd.getCommandName() == null) continue;
+                    if(cmd.getCommandName().equalsIgnoreCase(event.getName()))
+                    {
+                        foundCommand = true;
+                        CommandHook hook = event.getHook();
+                        List<Permission> neededPermissions = cmd.getNeededUserPermissions();
+                        List<Permission> neededBotPermissions = cmd.getNeededBotPermissions();
+                        if(neededPermissions != null)
+                        {
+                            for(Permission permission : neededPermissions)
+                            {
+                                if(!member.hasPermission(permission))
+                                {
+                                    event.acknowledge(true)
+                                            .flatMap(v -> hook.sendMessage("You don't have permission to do this!"))
+                                            .queue();
+                                    return;
+                                }
+                            }
+                        }
+
+                        if(neededBotPermissions != null)
+                        {
+                            for(Permission permission : neededBotPermissions)
+                            {
+                                if(!event.getGuild().getSelfMember().hasPermission(permission))
+                                {
+                                    event.acknowledge(true)
+                                            .flatMap(v -> hook.sendMessage("I don't have the required permission to do this!"))
+                                            .queue();
+                                    return;
+                                }
+                            }
+                        }
+                        cmd.executeCommand(event, member, new CommandContext(event));
+                    }
+                }
+                if(!foundCommand) event.reply("This command is either no longer available or has been disabled").setEphemeral(true).queue();
             }catch (Exception e)
             {
                 LOGGER.error("Could not execute slash-command", e);
