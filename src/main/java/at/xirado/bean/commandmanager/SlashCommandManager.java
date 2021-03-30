@@ -1,9 +1,7 @@
 package at.xirado.bean.commandmanager;
 
 
-import at.xirado.bean.commands.slashcommands.BanCommand;
-import at.xirado.bean.commands.slashcommands.Choose;
-import at.xirado.bean.commands.slashcommands.Unban;
+import at.xirado.bean.commands.slashcommands.*;
 import at.xirado.bean.main.DiscordBot;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.commands.CommandHook;
@@ -50,6 +48,8 @@ public class SlashCommandManager {
         registerCommand(new Choose());
         registerCommand(new BanCommand());
         registerCommand(new Unban());
+        registerCommand(new WarnCommand());
+        registerCommand(new CaseCommand());
 
         queueToDiscord();
     }

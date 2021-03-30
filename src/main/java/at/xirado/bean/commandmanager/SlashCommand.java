@@ -82,7 +82,7 @@ public abstract class SlashCommand
         return isGlobal;
     }
 
-    public void setGlobal(boolean global)
+    public void Global(boolean global)
     {
         isGlobal = global;
     }

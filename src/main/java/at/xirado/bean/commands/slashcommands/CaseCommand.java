@@ -40,8 +40,6 @@ public class CaseCommand extends SlashCommand
                     .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "case", "the case you want to delete").setRequired(true))
                 )
         );
-        Global(false);
-        setEnabledGuilds(Arrays.asList(815597207617142814L));
     }
 
     @Override
