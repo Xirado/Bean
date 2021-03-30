@@ -193,27 +193,6 @@ public class Punishments
         }
     }
 
-    public static void createMutedRole(Guild g)
-    {
-        g.createRole()
-                .setName("Muted")
-                .setPermissions(0L)
-                .queue(
-                        (mutedRole) ->
-                        {
-                            for(TextChannel channel : g.getTextChannels())
-                            {
-                                channel.createPermissionOverride(mutedRole)
-                                        .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_ADD_REACTION)
-                                        .queue();
-                            }
-                        },
-                        (error) ->
-                        {
-                            error.printStackTrace();
-                        }
-                );
-    }
     public static Case getCaseByID(String sixDigitID, long guildID)
     {
         String qry = "SELECT * FROM modcases WHERE caseID = ? AND guildID = ? LIMIT 1";

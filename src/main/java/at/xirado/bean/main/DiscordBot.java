@@ -256,13 +256,7 @@ public class DiscordBot
                 LOGGER.error("An error occured", throwables);
             }finally
             {
-                try
-                {
-                    connection.close();
-                } catch (SQLException exception)
-                {
-                    LOGGER.error("An error occured", exception);
-                }
+                Util.closeQuietly(connection);
             }
         });
         LOGGER.info("Successfully started up!");

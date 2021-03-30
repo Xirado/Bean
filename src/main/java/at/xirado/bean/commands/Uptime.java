@@ -35,7 +35,7 @@ public class Uptime extends Command
                 new EmbedBuilder()
                         .setColor(Color.green)
                         .setTimestamp(Instant.now())
-                        .setDescription("My uptime: " + Util.getLength(thistime - DiscordBot.STARTTIME) + "")
+                        .setDescription("Uptime: " + Util.getLength(thistime - DiscordBot.STARTTIME) + "")
                         .build()
         ).queue();
     }

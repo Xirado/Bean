@@ -80,10 +80,6 @@ public class TempbanCommand extends Command
                     boolean withReason = args.length > 2;
                     final String Reason = withReason ? event.getArguments().toString(2) : "No reason specified";
                     User target_User = target_Member.getUser();
-                    String user_mention = target_User.getAsMention();
-                    String user_tag = target_User.getAsTag();
-                    String sender_mention = sender.getAsMention();
-                    String sender_tag = event.getSelfMember().getUser().getAsTag();
                     long channelid = event.getChannel().getIdLong();
                     guild.ban(target_Member, 0, Reason).queue(
                             (success) ->

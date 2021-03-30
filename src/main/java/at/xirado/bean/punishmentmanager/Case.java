@@ -39,17 +39,19 @@ public class Case
     public void setActive(boolean value)
     {
         Connection connection = SQL.getConnectionFromPool();
+        if(connection == null) return;
         String qry = "UPDATE modcases SET active = ? WHERE caseID = ?";
-        try
+        try(PreparedStatement ps = connection.prepareStatement(qry))
         {
-            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setBoolean(1, value);
             ps.setString(2, this.caseID);
             ps.execute();
-            connection.close();
         } catch (SQLException throwables)
         {
             throwables.printStackTrace();
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
@@ -59,17 +61,19 @@ public class Case
     public void setReason(String reason)
     {
         Connection connection = SQL.getConnectionFromPool();
+        if(connection == null) return;
         String qry = "UPDATE modcases SET reason = ? WHERE caseID = ?";
-        try
+        try(PreparedStatement ps = connection.prepareStatement(qry))
         {
-            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setString(1, reason);
             ps.setString(2, this.caseID);
             ps.execute();
-            connection.close();
         } catch (SQLException throwables)
         {
             throwables.printStackTrace();
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
@@ -193,11 +197,11 @@ public class Case
 
     public static boolean idAlreadyExists(String ID)
     {
-        try
+        Connection connection = SQL.getConnectionFromPool();
+        String qry = "SELECT 1 FROM modcases WHERE caseID = ?";
+        if(connection == null) return false;
+        try(PreparedStatement ps = connection.prepareStatement(qry))
         {
-            Connection connection = SQL.getConnectionFromPool();
-            String qry = "SELECT 1 FROM modcases WHERE caseID = ?";
-            PreparedStatement ps = connection.prepareStatement(qry);
             ps.setString(1,ID);
             ResultSet rs = ps.executeQuery();
             return rs.next();
@@ -205,6 +209,9 @@ public class Case
         {
             e.printStackTrace();
             return true;
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 }

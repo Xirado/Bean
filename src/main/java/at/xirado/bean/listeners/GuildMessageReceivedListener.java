@@ -27,24 +27,6 @@ public class GuildMessageReceivedListener extends ListenerAdapter
 	@Override
 	public void onGuildMessageReceived(GuildMessageReceivedEvent e)
 	{
-		if(e.getGuild().getIdLong() == 687748771760832551L)
-		{
-			if(e.getMessage().getContentRaw().startsWith("<@!622849062600704030>") || e.getMessage().getContentRaw().startsWith("<@622849062600704030>"))
-			{
-				try
-				{
-					URL url = new URL("https://bean.bz/images/notoracism.png");
-					BufferedImage img = ImageIO.read(url);
-					File file = new File("image.png"); // change the '.jpg' to whatever extension the image has
-					ImageIO.write(img, "png", file); // again, change 'jpg' to the correct extension
-					e.getChannel().sendMessage("Ich fühle mich gleich angegriffen wenn jemand was gegen schwarze sagt. BITTE vorsichtig sein").addFile(file).queue();
-				} catch (IOException ioException)
-				{
-					ioException.printStackTrace();
-				}
-
-			}
-		}
 		User author = e.getAuthor();
 		e.getGuild().retrieveMemberById(author.getIdLong()).queue(
 				(member) ->
