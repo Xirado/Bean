@@ -18,6 +18,17 @@ public abstract class SlashCommand
     private List<Permission> neededBotPermissions;
     private boolean isGlobal;
     private List<Long> enabledGuilds;
+    private boolean runnableInDM;
+
+    public boolean isRunnableInDM()
+    {
+        return runnableInDM;
+    }
+
+    public void setRunnableInDM(boolean runnableInDM)
+    {
+        this.runnableInDM = runnableInDM;
+    }
 
     public String getCommandName()
     {
@@ -92,6 +103,7 @@ public abstract class SlashCommand
         this.commandData = null;
         this.isGlobal = true;
         this.enabledGuilds = new ArrayList<>();
+        this.runnableInDM = false;
     }
 
     public abstract void executeCommand(@NotNull SlashCommandEvent event, @NotNull Member sender, @NotNull CommandContext ctx);
