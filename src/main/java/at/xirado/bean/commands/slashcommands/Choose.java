@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
@@ -23,7 +24,7 @@ public class Choose extends SlashCommand
 
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @NotNull Member sender, @NotNull CommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull CommandContext ctx)
     {
         String firstOption = event.getOption("1st").getAsString();
         String secondOption = event.getOption("2nd").getAsString();

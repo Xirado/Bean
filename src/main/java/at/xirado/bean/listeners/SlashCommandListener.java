@@ -14,11 +14,6 @@ public class SlashCommandListener extends ListenerAdapter
     public void onSlashCommand(SlashCommandEvent event)
     {
         Guild g = event.getGuild();
-        if(g == null)
-        {
-            event.reply(CommandContext.ERROR+" this command can not be accessed via DM!").setEphemeral(true).queue();
-            return;
-        }
         User user = event.getUser();
         g.retrieveMember(user).queue(
                 (member) ->
@@ -27,7 +22,7 @@ public class SlashCommandListener extends ListenerAdapter
                 },
                 (error) ->
                 {
-
+                    DiscordBot.getInstance().slashCommandManager.handleSlashCommand(event, null);
                 }
         );
 

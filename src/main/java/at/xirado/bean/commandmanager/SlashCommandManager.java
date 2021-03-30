@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +106,7 @@ public class SlashCommandManager {
     }
 
 
-    public void handleSlashCommand(@NotNull SlashCommandEvent event, @NotNull Member member)
+    public void handleSlashCommand(@NotNull SlashCommandEvent event, @Nullable Member member)
     {
         Runnable r = () ->
         {
@@ -119,36 +120,45 @@ public class SlashCommandManager {
                     if(cmd.getCommandName().equalsIgnoreCase(event.getName()))
                     {
                         foundCommand = true;
+                        if(member == null && !cmd.isRunnableInDM())
+                        {
+                            event.reply(CommandContext.ERROR+" this command cannot be run in DMs").setEphemeral(true).queue();
+                            return;
+                        }
                         CommandHook hook = event.getHook();
                         List<Permission> neededPermissions = cmd.getNeededUserPermissions();
                         List<Permission> neededBotPermissions = cmd.getNeededBotPermissions();
-                        if(neededPermissions != null)
+                        if(member != null)
                         {
-                            for(Permission permission : neededPermissions)
+                            if(neededPermissions != null)
                             {
-                                if(!member.hasPermission(permission))
+                                for(Permission permission : neededPermissions)
                                 {
-                                    event.acknowledge(true)
-                                            .flatMap(v -> hook.sendMessage("You don't have permission to do this!"))
-                                            .queue();
-                                    return;
+                                    if(!member.hasPermission(permission))
+                                    {
+                                        event.acknowledge(true)
+                                                .flatMap(v -> hook.sendMessage("You don't have permission to do this!"))
+                                                .queue();
+                                        return;
+                                    }
+                                }
+                            }
+
+                            if(neededBotPermissions != null)
+                            {
+                                for(Permission permission : neededBotPermissions)
+                                {
+                                    if(!event.getGuild().getSelfMember().hasPermission(permission))
+                                    {
+                                        event.acknowledge(true)
+                                                .flatMap(v -> hook.sendMessage("I don't have the required permission to do this!"))
+                                                .queue();
+                                        return;
+                                    }
                                 }
                             }
                         }
 
-                        if(neededBotPermissions != null)
-                        {
-                            for(Permission permission : neededBotPermissions)
-                            {
-                                if(!event.getGuild().getSelfMember().hasPermission(permission))
-                                {
-                                    event.acknowledge(true)
-                                            .flatMap(v -> hook.sendMessage("I don't have the required permission to do this!"))
-                                            .queue();
-                                    return;
-                                }
-                            }
-                        }
                         cmd.executeCommand(event, member, new CommandContext(event));
                     }
                 }
