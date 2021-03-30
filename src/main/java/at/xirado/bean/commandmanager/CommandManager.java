@@ -1,14 +1,14 @@
 package at.xirado.bean.commandmanager;
 
-import at.xirado.bean.commands.Moderation.BanCommand;
-import at.xirado.bean.commands.Moderation.KickCommand;
+import at.xirado.bean.commands.moderation.BanCommand;
+import at.xirado.bean.commands.moderation.KickCommand;
 import at.xirado.bean.language.Phrase;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.modules.GabrielHelp;
 import at.xirado.bean.modules.LukasHelp;
 import at.xirado.bean.modules.ReneHelp;
 import at.xirado.bean.commands.*;
-import at.xirado.bean.commands.Moderation.*;
+import at.xirado.bean.commands.moderation.*;
 import at.xirado.bean.music.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;

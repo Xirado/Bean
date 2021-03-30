@@ -1,4 +1,4 @@
-package at.xirado.bean.commands.Moderation;
+package at.xirado.bean.commands.moderation;
 
 import at.xirado.bean.commandmanager.Command;
 import at.xirado.bean.commandmanager.CommandEvent;
@@ -16,18 +16,17 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
-public class RemoveModeratorCommand extends Command
+public class AddModeratorCommand extends Command
 {
-    private static final Logger logger = LoggerFactory.getLogger(RemoveModeratorCommand.class);
-
-    public RemoveModeratorCommand(JDA jda)
+    private static final Logger logger = LoggerFactory.getLogger(AddModeratorCommand.class);
+    public AddModeratorCommand(JDA jda)
     {
         super(jda);
-        this.invoke = "removemod";
-        this.aliases = Arrays.asList("removemoderator");
+        this.invoke = "addmod";
+        this.aliases = Arrays.asList("addmoderator");
         this.commandType = CommandType.ADMIN;
-        this.usage = "removemod [@role/id]";
-        this.description = "removes the ability of a role to use moderator-commands";
+        this.usage = "addmod [@role/id]";
+        this.description = "Allows a certain role to use mod-commands";
         this.neededPermissions = Arrays.asList(Permission.ADMINISTRATOR);
     }
 
@@ -55,19 +54,19 @@ public class RemoveModeratorCommand extends Command
             event.replyError("Invalid role!");
             return;
         }
-        if(!permissionCheckerManager.isAllowedRole(guild.getIdLong(), role.getIdLong()))
+        if(permissionCheckerManager.isAllowedRole(guild.getIdLong(), role.getIdLong()))
         {
-            event.replyWarning("This role is already not allowed to use moderator-commands!");
+            event.replyWarning("This role is already allowed to use moderator-commands!");
             return;
         }
-        boolean success = permissionCheckerManager.removeAllowedRole(guild.getIdLong(), role.getIdLong());
+        boolean success = permissionCheckerManager.addAllowedRole(guild.getIdLong(), role.getIdLong());
         if(success)
         {
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(role.getColor())
-                    .setDescription(role.getAsMention() + " is now no longer able to use moderator-commands!");
+                    .setDescription(role.getAsMention() + " can now use moderator-commands!");
             event.reply(builder.build());
-            logger.debug("Removed moderator role "+role.getIdLong()+" (@"+role.getName()+") from guild "+guild.getIdLong()+" ("+guild.getName()+")");
+            logger.debug("Added moderator role "+role.getIdLong()+" (@"+role.getName()+") to guild "+guild.getIdLong()+" ("+guild.getName()+")");
 
         }else
         {

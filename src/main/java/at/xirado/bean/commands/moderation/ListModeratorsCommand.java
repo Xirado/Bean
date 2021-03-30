@@ -1,4 +1,4 @@
-package at.xirado.bean.commands.Moderation;
+package at.xirado.bean.commands.moderation;
 
 import at.xirado.bean.commandmanager.Command;
 import at.xirado.bean.commandmanager.CommandEvent;
