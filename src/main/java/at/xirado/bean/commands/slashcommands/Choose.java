@@ -30,10 +30,10 @@ public class Choose extends SlashCommand
         int i = new Random().nextInt(2);
         if(i == 0)
         {
-            ctx.reply("I choose... "+firstOption).setEphemeral(true).queue();
+            ctx.reply("I choose... "+firstOption).queue();
         }else
         {
-            ctx.reply("I choose... "+secondOption).setEphemeral(true).queue();
+            ctx.reply("I choose... "+secondOption).queue();
         }
     }
 }
