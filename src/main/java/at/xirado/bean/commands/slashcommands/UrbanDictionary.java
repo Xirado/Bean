@@ -95,48 +95,17 @@ public class UrbanDictionary extends SlashCommand
         int year = Integer.parseInt(timeposted.substring(0,4));
         int month = Integer.parseInt(timeposted.substring(5,7));
         int day = Integer.parseInt(timeposted.substring(8,10));
-        switch (month)
+        if(month > 12)
         {
-            case 1:
-                monthformatted = "January "+Util.ordinal(day)+", "+year;
-                break;
-            case 2:
-                monthformatted = "February "+Util.ordinal(day)+", "+year;
-                break;
-            case 3:
-                monthformatted = "March "+Util.ordinal(day)+", "+year;
-                break;
-            case 4:
-                monthformatted = "April "+Util.ordinal(day)+", "+year;
-                break;
-            case 5:
-                monthformatted = "May "+Util.ordinal(day)+", "+year;
-                break;
-            case 6:
-                monthformatted = "June "+Util.ordinal(day)+", "+year;
-                break;
-            case 7:
-                monthformatted = "July "+Util.ordinal(day)+", "+year;
-                break;
-            case 8:
-                monthformatted = "August "+Util.ordinal(day)+", "+year;
-                break;
-            case 9:
-                monthformatted = "September "+Util.ordinal(day)+", "+year;
-                break;
-            case 10:
-                monthformatted = "October "+Util.ordinal(day)+", "+year;
-                break;
-            case 11:
-                monthformatted = "November "+Util.ordinal(day)+", "+year;
-                break;
-            case 12:
-                monthformatted = "December "+Util.ordinal(day)+", "+year;
-                break;
-            default:
-                monthformatted = "Unknown";
-
+            EmbedBuilder builder2 = new EmbedBuilder()
+                    .setColor(Color.decode("#1D2439"))
+                    .setTitle("UrbanDictionary sent invalid data!")
+                    .setTimestamp(Instant.now());
+            ctx.reply(builder2.build()).queue();
+            return;
         }
+        String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+        monthformatted = months[month-1]+" "+Util.ordinal(day)+", "+year;
         builder.addField("Author","["+result.getAuthor()+"]("+authorurl+")\n"+ monthformatted+"\n\uD83D\uDC4D "+result.getLikes()+" \uD83D\uDC4E "+result.getDislikes()+"\n"+"Permalink: "+result.getPermalink() , false);
         ctx.reply(builder.build()).queue();
     }
