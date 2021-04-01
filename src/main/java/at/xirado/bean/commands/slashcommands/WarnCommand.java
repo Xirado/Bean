@@ -32,10 +32,9 @@ public class WarnCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull CommandContext ctx)
     {
-        Member m = event.getMember();
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
         Guild g = event.getGuild();
-        if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
+        if(!permissionCheckerManager.isModerator(sender) && !sender.hasPermission(Permission.ADMINISTRATOR))
         {
             ctx.reply(CommandContext.DENY+" You don't have permission to do this!").setEphemeral(true).queue();
             return;
@@ -48,7 +47,7 @@ public class WarnCommand extends SlashCommand
         }
         String Reason = event.getOption("reason") == null ? "No reason specified" : event.getOption("reason").getAsString();
         boolean withReason = event.getOption("reason") != null;
-        if(!m.canInteract(targetMember))
+        if(!sender.canInteract(targetMember))
         {
             ctx.reply(CommandContext.DENY+" You cannot warn this member!").setEphemeral(true).queue();
             return;
@@ -58,7 +57,7 @@ public class WarnCommand extends SlashCommand
             ctx.reply(CommandContext.DENY+" You cannot warn a moderator!").setEphemeral(true).queue();
             return;
         }
-        Case modcase = Case.createCase(CaseType.WARN, g.getIdLong(), targetMember.getIdLong(), m.getIdLong(), Reason, 0);
+        Case modcase = Case.createCase(CaseType.WARN, g.getIdLong(), targetMember.getIdLong(), sender.getIdLong(), Reason, 0);
         if(modcase == null)
         {
             ctx.reply(CommandContext.ERROR+" An error occured! Please try again later.").setEphemeral(true).queue();
@@ -71,7 +70,7 @@ public class WarnCommand extends SlashCommand
                             .setColor(CaseType.WARN.getEmbedColor())
                             .setAuthor("You have been warned on "+g.getName()+"!", null, g.getIconUrl())
                             .addField("Reason", Reason, true)
-                            .addField("Moderator", m.getUser().getAsTag(), true);
+                            .addField("Moderator", sender.getUser().getAsTag(), true);
                     privateChannel.sendMessage(builder.build()).queue(success -> {}, error -> {});
                 }, (e) -> {});
 
@@ -84,7 +83,7 @@ public class WarnCommand extends SlashCommand
                 .setFooter("Target ID: "+targetMember.getIdLong())
                 .setTitle("Warn | Case #"+modcase.getCaseID())
                 .addField("Target", targetMember.getAsMention()+" ("+targetMember.getUser().getAsTag()+")", true)
-                .addField("Moderator", m.getAsMention()+" ("+m.getUser().getAsTag()+")", true)
+                .addField("Moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true)
                 .addField("Reason", Reason, false);
         if(!withReason)
         {

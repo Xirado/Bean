@@ -47,15 +47,6 @@ public class FormattedDuration
                 case "w":
                     instant=instant.plus(Period.ofWeeks(num));
                     break;
-                case "month":
-                case "mon":
-                    instant=instant.plus(Period.ofMonths(num));
-                    break;
-                case "year":
-                case "yr":
-                case "y":
-                    instant=instant.plus(Period.ofYears(num));
-                    break;
                 default:
                     return null;
             }

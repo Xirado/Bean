@@ -43,7 +43,6 @@ public class Unban extends SlashCommand
     {
         Guild g = event.getGuild();
         if(g == null) return;
-        Member m = event.getMember();
         SlashCommandEvent.OptionData optionData = event.getOption("user");
         if(optionData == null)
         {
@@ -83,7 +82,7 @@ public class Unban extends SlashCommand
                                         .setTitle("Unban")
                                         .setThumbnail(target.getEffectiveAvatarUrl())
                                         .addField("unbanned", target.getAsMention()+" ("+target.getAsTag()+")" , true)
-                                        .addField("moderator", m.getAsMention()+" ("+m.getUser().getAsTag()+")", true);
+                                        .addField("moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true);
                                 if(logchannel != null)
                                 {
                                     logchannel.sendMessage(builder.build()).queue();

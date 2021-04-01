@@ -50,6 +50,7 @@ public class SlashCommandManager {
         registerCommand(new Unban());
         registerCommand(new WarnCommand());
         registerCommand(new CaseCommand());
+        registerCommand(new TempbanCommand());
 
         queueToDiscord();
     }

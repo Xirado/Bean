@@ -75,6 +75,7 @@ public class Unban extends Command
                                 }catch (SQLException ex)
                                 {
                                     e.replyError("We currently have an issue with our database. Please try again later!");
+                                    return;
                                 }
                                 EmbedBuilder builder = new EmbedBuilder()
                                         .setColor(Color.green)

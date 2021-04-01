@@ -45,11 +45,10 @@ public class CaseCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull CommandContext ctx)
     {
-        Member m = event.getMember();
         Guild g = event.getGuild();
-        if(m == null || g == null) return;
+        if(sender == null || g == null) return;
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
-        if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
+        if(!permissionCheckerManager.isModerator(sender) && !sender.hasPermission(Permission.ADMINISTRATOR))
         {
             ctx.reply(CommandContext.DENY+" You don't have permission to do this!").setEphemeral(true).queue();
             return;
