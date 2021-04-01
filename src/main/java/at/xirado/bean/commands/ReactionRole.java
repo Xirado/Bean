@@ -36,7 +36,8 @@ public class ReactionRole extends Command
 	@Override
 	public void executeCommand(CommandEvent e)
 	{
-		String[] args = e.getArguments().toStringArray();
+		e.reply("Please use /reactionrole! (Reinvite me from https://bean.bz/ if slash-commands are not available.");
+		/*String[] args = e.getArguments().toStringArray();
 
 		Guild guild = e.getGuild();
 		Member bot = e.getSelfMember();
@@ -137,7 +138,7 @@ public class ReactionRole extends Command
 									channel.sendMessage("An error occured!\n```"+ex.getErrorResponse().toString()+"\n"+ex.getMeaning()+"```").queue();
 								}
 						)
-				);
+				);*/
 		
 	}
 }
