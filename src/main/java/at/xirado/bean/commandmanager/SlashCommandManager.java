@@ -52,6 +52,7 @@ public class SlashCommandManager {
         registerCommand(new CaseCommand());
         registerCommand(new TempbanCommand());
         registerCommand(new UrbanDictionary());
+        registerCommand(new Mock());
 
         queueToDiscord();
     }
