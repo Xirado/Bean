@@ -54,6 +54,7 @@ public class SlashCommandManager {
         registerCommand(new UrbanDictionary());
         registerCommand(new Mock());
         registerCommand(new ReactionRole());
+        registerCommand(new Avatar());
 
         queueToDiscord();
     }
