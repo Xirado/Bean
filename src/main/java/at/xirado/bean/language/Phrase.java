@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.Locale;
 
+// TODO: Initial commit
 public enum Phrase
 {
     HELLO_IM_BEAN("Hi, I'm Bean! Type `+help` to get started!","Hey, ich bin Bean! Nutze `+help` um loszulegen!"),
