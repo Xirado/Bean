@@ -1,4 +1,4 @@
-package at.xirado.bean.language;
+package at.xirado.bean.translation;
 
 import net.dv8tion.jda.api.entities.Guild;
 

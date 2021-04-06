@@ -1,6 +1,6 @@
 package at.xirado.bean.commandmanager;
 
-import at.xirado.bean.language.Phrase;
+import at.xirado.bean.translation.TranslationHandler;
 import net.dv8tion.jda.api.entities.Guild;
 
 public enum CommandType
@@ -9,7 +9,7 @@ public enum CommandType
 	MODERATION("\uD83D\uDEE1", ""),
 	ADMIN("\uD83C\uDF9B", ""),
 	FUN("\uD83C\uDFB1", ""),
-	MUSIC("\uD83C\uDFB5", Phrase.DJ_PRIVILEGES_INFO.getEnglish()),
+	MUSIC("\uD83C\uDFB5", TranslationHandler.getForLanguage("en_US").get("commands.dj_privileges_info")),
 	UTILITIES("⚒", ""),
 	BEAN("<:Bean:776425797903974431>", ""),
 	EXCLUDED("", ""),

@@ -3,15 +3,13 @@ package at.xirado.bean.commandmanager;
 
 import at.xirado.bean.commands.slashcommands.*;
 import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.translation.TranslationHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.commands.CommandHook;
-import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -131,7 +129,6 @@ public class SlashCommandManager {
                             if(cmd.getCommandName() == null) continue;
                             if(cmd.getCommandName().equalsIgnoreCase(event.getName()))
                             {
-                                foundCommand = true;
                                 CommandHook hook = event.getHook();
                                 List<Permission> neededPermissions = cmd.getNeededUserPermissions();
                                 List<Permission> neededBotPermissions = cmd.getNeededBotPermissions();
@@ -142,7 +139,7 @@ public class SlashCommandManager {
                                         if(!member.hasPermission(permission))
                                         {
                                             event.acknowledge(true)
-                                                    .flatMap(v -> hook.sendMessage("You don't have permission to do this!"))
+                                                    .flatMap(v -> hook.sendMessage(TranslationHandler.ofGuild(guild).get("general.no_perms")))
                                                     .queue();
                                             return;
                                         }
@@ -156,7 +153,7 @@ public class SlashCommandManager {
                                         if(!event.getGuild().getSelfMember().hasPermission(permission))
                                         {
                                             event.acknowledge(true)
-                                                    .flatMap(v -> hook.sendMessage("I don't have the required permission to do this!"))
+                                                    .flatMap(v -> hook.sendMessage(TranslationHandler.ofGuild(guild).get("general.no_bot_perms1")))
                                                     .queue();
                                             return;
                                         }
@@ -177,7 +174,7 @@ public class SlashCommandManager {
                         foundCommand = true;
                         if(member == null && !cmd.isRunnableInDM())
                         {
-                            event.reply(CommandContext.ERROR+" this command cannot be run in DMs").setEphemeral(true).queue();
+                            event.reply(String.format(TranslationHandler.getForLanguage("en_US").get("commands.cannot_run_in_dm"), CommandContext.ERROR)).setEphemeral(true).queue();
                             return;
                         }
                         CommandHook hook = event.getHook();
@@ -192,7 +189,7 @@ public class SlashCommandManager {
                                     if(!member.hasPermission(permission))
                                     {
                                         event.acknowledge(true)
-                                                .flatMap(v -> hook.sendMessage("You don't have permission to do this!"))
+                                                .flatMap(v -> hook.sendMessage(TranslationHandler.ofGuild(event.getGuild()).get("general.no_perms")))
                                                 .queue();
                                         return;
                                     }
@@ -206,7 +203,7 @@ public class SlashCommandManager {
                                     if(!event.getGuild().getSelfMember().hasPermission(permission))
                                     {
                                         event.acknowledge(true)
-                                                .flatMap(v -> hook.sendMessage("I don't have the required permission to do this!"))
+                                                .flatMap(v -> hook.sendMessage(TranslationHandler.ofGuild(event.getGuild()).get("general.no_bot_perms1")))
                                                 .queue();
                                         return;
                                     }
@@ -217,7 +214,7 @@ public class SlashCommandManager {
                         cmd.executeCommand(event, member, new CommandContext(event));
                     }
                 }
-                if(!foundCommand) event.reply("This command is either no longer available or has been disabled").setEphemeral(true).queue();
+                if(!foundCommand && member != null) event.reply(TranslationHandler.ofGuild(event.getGuild()).get("commands.disabled_or_unknown")).setEphemeral(true).queue();
 
             }catch (Exception e)
             {

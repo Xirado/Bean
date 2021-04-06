@@ -36,7 +36,7 @@ public class UnmuteCommand extends Command
         Guild g = event.getGuild();
         if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
         {
-            event.replyError("You are not permissed to do this!");
+            event.replyError(event.getLocalized("general.no_perms"));
             return;
         }
         String[] args = event.getArguments().toStringArray();
@@ -48,7 +48,7 @@ public class UnmuteCommand extends Command
         String target_ID = args[0].replaceAll("[^0-9]", "");
         if(target_ID.length() == 0)
         {
-            event.replyError("User-ID may not be empty!");
+            event.replyError(event.getLocalized("commands.id_empty"));
             return;
         }
         g.retrieveMemberById(target_ID).queue(
@@ -57,7 +57,7 @@ public class UnmuteCommand extends Command
                     Role r = g.getRoleById(DiscordBot.getInstance().mutedRoleManager.getMutedRole(g.getIdLong()));
                     if(!targetMember.getRoles().contains(r))
                     {
-                        event.replyError("This member is not muted!");
+                        event.replyError(event.getLocalized("commands.unmute.member_not_muted"));
                         return;
                     }
                     g.removeRoleFromMember(targetMember, r).queue(s -> {}, e -> {});
@@ -65,7 +65,7 @@ public class UnmuteCommand extends Command
                     Connection connection = SQL.getConnectionFromPool();
                     if(connection == null)
                     {
-                        event.replyError("We currently have an issue with our database. Please try again later!");
+                        event.replyError(event.getLocalized("general.db_error"));
                         return;
                     }
                     try(var ps = connection.prepareStatement(qry))
@@ -77,11 +77,12 @@ public class UnmuteCommand extends Command
                         connection.close();
                     }catch (SQLException ex)
                     {
-                        event.replyError("We currently have an issue with our database. Please try again later!");
+                        event.replyError(event.getLocalized("general.db_error"));
+                        return;
                     }
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(Color.green)
-                            .setDescription(targetMember.getAsMention()+" has been unmuted!");
+                            .setDescription(event.getLocalized("commands.unmute.user_unmuted", targetMember.getAsMention()));
                     event.reply(builder.build());
                     if(event.hasLogChannel())
                     {
@@ -89,7 +90,7 @@ public class UnmuteCommand extends Command
                                 .setColor(Color.green)
                                 .setTitle("Unmute")
                                 .setThumbnail(targetMember.getUser().getEffectiveAvatarUrl())
-                                .addField("Target", targetMember.getAsMention()+" ("+targetMember.getUser().getAsTag()+")" , true)
+                                .addField(event.getLocalized("commands.target"), targetMember.getAsMention()+" ("+targetMember.getUser().getAsTag()+")" , true)
                                 .addField("Moderator", m.getAsMention()+" ("+m.getUser().getAsTag()+")", true);
                         event.replyinLogChannel(builder2.build());
                     }

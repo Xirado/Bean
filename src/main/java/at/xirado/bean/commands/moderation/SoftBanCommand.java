@@ -46,34 +46,40 @@ public class SoftBanCommand extends Command
             event.replyErrorUsage();
             return;
         }
+
         String target_ID = args[0].replaceAll("[^0-9]", "");
+        if(target_ID.length() == 0)
+        {
+            event.replyError(event.getLocalized("commands.id_empty"));
+            return;
+        }
         guild.retrieveMemberById(target_ID).queue(
                 (target_Member) ->
                 {
                     if(!senderMember.canInteract(target_Member))
                     {
-                        event.replyError("You cannot softban this member!");
+                        event.replyError(event.getLocalized("commands.softban.you_cannot_softban_this_member"));
                         return;
                     }
                     if(!event.getSelfMember().canInteract(target_Member))
                     {
-                        event.replyError("I cannot softban this member!");
+                        event.replyError(event.getLocalized("commands.softban.i_cannot_softban_this_member"));
                         return;
                     }
                     if(DiscordBot.getInstance().permissionCheckerManager.isModerator(target_Member))
                     {
-                        event.replyError("You cannot softban a moderator!");
+                        event.replyError(event.getLocalized("commands.softban.cannot_softban_moderator"));
                         return;
                     }
                     boolean withReason = args.length > 1;
-                    final String Reason = withReason ? event.getArguments().toString(1) : "No reason specified";
+                    final String Reason = withReason ? event.getArguments().toString(1) : event.getLocalized("commands.noreason");
                     User target_User = target_Member.getUser();
                     target_User.openPrivateChannel().queue(
                             (privateChannel -> {
                                 EmbedBuilder builder = new EmbedBuilder()
                                         .setColor(0xffa500)
-                                        .setAuthor("You have been softbanned from "+guild.getName()+"!", null, guild.getIconUrl())
-                                        .addField("Reason", Reason, true)
+                                        .setAuthor(event.getLocalized("commands.softban.you_have_been_softbanned", guild.getName()), null, guild.getIconUrl())
+                                        .addField(event.getLocalized("commands.reason"), Reason, true)
                                         .addField("Moderator", senderMember.getUser().getAsTag(), true);
                                 privateChannel.sendMessage(builder.build()).queue(
                                         (success1) ->
@@ -98,13 +104,14 @@ public class SoftBanCommand extends Command
                                             if(modcase == null)
                                             {
                                                 logger.error("Could not create modcase!", new Exception());
+                                                event.replyError(event.getLocalized("general.unknown_error_occured"));
                                                 return;
                                             }
                                             if(event.hasLogChannel())
                                             {
                                                 EmbedBuilder builder = new EmbedBuilder()
                                                         .setColor(0xffa500)
-                                                        .setDescription(CommandEvent.SUCCESS_EMOTE +" "+target_User.getAsTag()+" has been softbanned")
+                                                        .setDescription(CommandEvent.SUCCESS_EMOTE +" "+event.getLocalized("commands.softban.has_been_softbanned", target_User.getAsTag()))
                                                         .setFooter("Case #"+modcase.getCaseID()+" ("+Reason+")");
                                                 event.reply(builder.build());
                                             }
@@ -112,11 +119,11 @@ public class SoftBanCommand extends Command
                                                     .setTimestamp(Instant.now())
                                                     .setColor(0xffa500)
                                                     .setThumbnail(target_User.getEffectiveAvatarUrl())
-                                                    .setFooter("Target ID: "+target_User.getIdLong())
+                                                    .setFooter(event.getLocalized("commands.target_id")+": "+target_User.getIdLong())
                                                     .setTitle("Softban | Case #"+modcase.getCaseID())
-                                                    .addField("Target", target_User.getAsMention()+" ("+target_User.getAsTag()+")", true)
+                                                    .addField(event.getLocalized("commands.target"), target_User.getAsMention()+" ("+target_User.getAsTag()+")", true)
                                                     .addField("Moderator", senderMember.getAsMention()+" ("+event.getAuthor().getAsTag()+")", true)
-                                                    .addField("Reason", Reason, false);
+                                                    .addField(event.getLocalized("commands.reason"), Reason, false);
                                             if(!withReason)
                                             {
                                                 builder.addField("", "Use `"+DiscordBot.getInstance().prefixManager.getPrefix(guild.getIdLong())+"reason "+modcase.getCaseID()+" [Reason]` to add a reason to this softban.", false);
@@ -132,13 +139,13 @@ public class SoftBanCommand extends Command
                                         },
                                         (error) ->
                                         {
-                                            event.replyError("Error: Could not unban user. (Still banned)");
+                                            event.replyError(event.getLocalized("commands.softban.could_not_unban"));
                                         }
                                 );
                             },
                             (error) ->
                             {
-                                event.replyError("Could not softban this user");
+                                event.replyError(event.getLocalized("could_not_softban_user"));
 
                             }
                     );
@@ -146,11 +153,11 @@ public class SoftBanCommand extends Command
                 new ErrorHandler()
                 .handle(ErrorResponse.UNKNOWN_MEMBER, (err) ->
                 {
-                    event.replyError("The specified user is not a member of this guild!");
+                    event.replyError(event.getLocalized("commands.user_not_in_guild"));
                 })
                 .handle(ErrorResponse.UNKNOWN_USER, (err) ->
                 {
-                    event.replyError("This user does not exist!");
+                    event.replyError(event.getLocalized("commands.user_not_exists"));
                 })
         );
     }

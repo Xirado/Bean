@@ -2,7 +2,7 @@ package at.xirado.bean.commands.slashcommands;
 
 import at.xirado.bean.commandmanager.*;
 import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.language.FormattedDuration;
+import at.xirado.bean.translation.FormattedDuration;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.punishmentmanager.Case;

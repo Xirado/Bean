@@ -46,18 +46,18 @@ public class RemoveModeratorCommand extends Command
         String roleID = args[0].replaceAll("[^0-9]", "");
         if(roleID.length() == 0)
         {
-            event.replyError("ID may not be empty!");
+            event.replyError(event.getLocalized("commands.id_empty"));
             return;
         }
         Role role = guild.getRoleById(roleID);
         if(role == null)
         {
-            event.replyError("Invalid role!");
+            event.replyError(event.getLocalized("commands.invalid_role"));
             return;
         }
         if(!permissionCheckerManager.isAllowedRole(guild.getIdLong(), role.getIdLong()))
         {
-            event.replyWarning("This role is already not allowed to use moderator-commands!");
+            event.replyWarning(event.getLocalized("commands.moderator.not_added"));
             return;
         }
         boolean success = permissionCheckerManager.removeAllowedRole(guild.getIdLong(), role.getIdLong());
@@ -65,14 +65,13 @@ public class RemoveModeratorCommand extends Command
         {
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(role.getColor())
-                    .setDescription(role.getAsMention() + " is now no longer able to use moderator-commands!");
+                    .setDescription(event.getLocalized("commands.moderator.removed", role.getAsMention()));
             event.reply(builder.build());
             logger.debug("Removed moderator role "+role.getIdLong()+" (@"+role.getName()+") from guild "+guild.getIdLong()+" ("+guild.getName()+")");
 
         }else
         {
-            event.replyError("An error occured!");
-
+            event.replyError(event.getLocalized("general.unknown_error_occured"));
         }
 
     }

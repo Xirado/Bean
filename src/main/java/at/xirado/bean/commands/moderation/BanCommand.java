@@ -3,7 +3,7 @@ package at.xirado.bean.commands.moderation;
 import at.xirado.bean.commandmanager.Command;
 import at.xirado.bean.commandmanager.CommandEvent;
 import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.language.Phrase;
+import at.xirado.bean.translation.Phrase;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
@@ -46,7 +46,7 @@ public class BanCommand extends Command
         String target_ID = args[0].replaceAll("[^0-9]", "");
         if(target_ID.length() == 0)
         {
-            event.replyError(Phrase.ID_MAY_NOT_BE_EMPTY.getTranslated(guild));
+            event.replyError(event.getLocalized("commands.id_empty"));
             return;
         }
         User target_User = null;
@@ -55,7 +55,7 @@ public class BanCommand extends Command
             target_User = DiscordBot.getInstance().jda.retrieveUserById(target_ID).complete();
         } catch (ErrorResponseException e)
         {
-            event.replyError(Phrase.USER_DOES_NOT_EXIST.getTranslated(guild)+"!");
+            event.replyError(event.getLocalized("commands.user_not_exists"));
             return;
         }
         boolean userIsInCurrentGuild = guild.isMember(target_User);
@@ -67,22 +67,22 @@ public class BanCommand extends Command
                 target_Member = guild.retrieveMember(target_User).complete();
             } catch (Exception e)
             {
-                event.replyError(Phrase.AN_ERROR_OCCURED.getTranslated(guild)+"!");
+                event.replyError(event.getLocalized("general.unknown_error_occured"));
                 return;
             }
             if(!senderMember.canInteract(target_Member))
             {
-                event.replyError(Phrase.YOU_CANNOT_BAN_THIS_MEMBER.getTranslated(guild)+"!");
+                event.replyError(event.getLocalized("commands.ban.you_cannot_ban_this_member"));
                 return;
             }
             if(!event.getSelfMember().canInteract(target_Member))
             {
-                event.replyError(Phrase.I_CANNOT_BAN_THIS_MEMBER.getTranslated(guild)+"!");
+                event.replyError(event.getLocalized("commands.ban.i_cannot_ban_this_member"));
                 return;
             }
             if(DiscordBot.getInstance().permissionCheckerManager.isModerator(target_Member))
             {
-                event.replyError(Phrase.YOU_CANNOT_BAN_A_MODERATOR.getTranslated(guild)+"!");
+                event.replyError(event.getLocalized("commands.ban.cannot_ban_moderator"));
                 return;
             }
         }
@@ -97,17 +97,17 @@ public class BanCommand extends Command
         }
         if(isbanned)
         {
-            event.replyError(Phrase.CANNOT_BAN_ALREADY_BANNED.getTranslated(guild)+"!");
+            event.replyError(event.getLocalized("commands.ban.already_banned"));
             return;
         }
         boolean withReason = args.length > 1;
-        final String Reason = withReason ? event.getArguments().toString(1) : Phrase.NO_REASON_SPECIFIED.getTranslated(guild);
+        final String Reason = withReason ? event.getArguments().toString(1) : event.getLocalized("commands.noreason");
         try
         {
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(CaseType.BAN.getEmbedColor())
-                    .setAuthor(Phrase.YOU_HAVE_BEEN_BANNED.getTranslated(guild).replaceAll("%guild%", guild.getName())+"!")
-                    .addField(Phrase.REASON.getTranslated(guild), Reason, true)
+                    .setAuthor(event.getLocalized("commands.ban.you_have_been_banned", guild.getName()))
+                    .addField(event.getLocalized("commands.reason"), Reason, true)
                     .addField("Moderator", senderMember.getUser().getAsTag(), true);
             PrivateChannel privateChannel = target_User.openPrivateChannel().complete();
             privateChannel.sendMessage(builder.build()).complete();
@@ -120,20 +120,20 @@ public class BanCommand extends Command
             guild.ban(target_User, 0, Reason).complete();
         } catch (ErrorResponseException e)
         {
-            event.replyError(Phrase.COULD_NOT_BAN_USER.getTranslated(guild)+"!");
+            event.replyError(event.getLocalized("commands.ban.could_not_ban_user"));
             return;
         }
         Case bancase = Case.createCase(CaseType.BAN, guild.getIdLong(), target_User.getIdLong(), senderMember.getIdLong(), Reason, -1);
         if(bancase == null)
         {
-            event.replyError(Phrase.AN_ERROR_OCCURED.getTranslated(guild));
+            event.replyError(event.getLocalized("general.unknown_error_occured"));
             return;
         }
         if(event.hasLogChannel())
         {
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(0x8b0000)
-                    .setDescription(CommandEvent.SUCCESS_EMOTE +" "+Phrase.HAS_BEEN_BANNED.getTranslated(guild).replaceAll("%user%", target_User.getAsTag()))
+                    .setDescription(CommandEvent.SUCCESS_EMOTE +" "+event.getLocalized("commands.ban.has_been_banned", target_User.getAsTag()))
                     .setFooter("Case #"+bancase.getCaseID()+" ("+Reason+")");
             event.reply(builder.build());
         }
@@ -141,11 +141,11 @@ public class BanCommand extends Command
                 .setTimestamp(Instant.now())
                 .setColor(0x8b0000)
                 .setThumbnail(target_User.getEffectiveAvatarUrl())
-                .setFooter("Target ID: "+target_User.getIdLong())
+                .setFooter(event.getLocalized("commands.target_id")+": "+target_User.getIdLong())
                 .setTitle("Ban | Case #"+bancase.getCaseID())
-                .addField(Phrase.TARGET.getTranslated(guild), target_User.getAsMention()+" ("+target_User.getAsTag()+")", true)
+                .addField(event.getLocalized("commands.target"), target_User.getAsMention()+" ("+target_User.getAsTag()+")", true)
                 .addField("Moderator", senderMember.getAsMention()+" ("+event.getAuthor().getAsTag()+")", true)
-                .addField(Phrase.REASON.getTranslated(guild), Reason, false);
+                .addField(event.getLocalized("commands.reason"), Reason, false);
         if(!withReason)
         {
             builder.addField("", "Use `"+DiscordBot.getInstance().prefixManager.getPrefix(guild.getIdLong())+"case "+bancase.getCaseID()+" reason [Reason]`\n to add a reason to this ban.", false);

@@ -2,7 +2,7 @@ package at.xirado.bean.commands;
 
 import at.xirado.bean.commandmanager.Command;
 import at.xirado.bean.commandmanager.CommandEvent;
-import at.xirado.bean.language.ServerLanguage;
+import at.xirado.bean.translation.ServerLanguage;
 import net.dv8tion.jda.api.JDA;
 
 import java.util.Arrays;

@@ -38,25 +38,25 @@ public class SetMutedRoleCommand extends Command
         String roleID = args[0].replaceAll("[^0-9]", "");
         if(roleID.length() == 0)
         {
-            event.replyError("Role-ID may not be empty!");
+            event.replyError(event.getLocalized("commands.id_empty"));
             return;
         }
         Guild g = event.getGuild();
         Role role = g.getRoleById(roleID);
         if(role == null)
         {
-            event.replyError("This is not a valid role!");
+            event.replyError(event.getLocalized("commands.invalid_role"));
             return;
         }
         if(!event.getSelfMember().canInteract(role))
         {
-            event.replyError("I cannot interact with this role!");
+            event.replyError(event.getLocalized("commands.cannot_interact_role", role.getAsMention()));
             return;
         }
         DiscordBot.getInstance().mutedRoleManager.setMutedRole(g.getIdLong(), role.getIdLong());
         event.reply(new EmbedBuilder()
             .setColor(Color.green)
-            .setDescription(role.getAsMention()+" is now the \"muted\"-role!\n\n(Make sure you have setup this role correctly, so users who are muted cannot write in any chat!)")
+            .setDescription(event.getLocalized("commands.set_muted_role", role.getAsMention()))
             .build()
         );
     }

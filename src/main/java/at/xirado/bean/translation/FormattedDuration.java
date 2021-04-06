@@ -1,4 +1,4 @@
-package at.xirado.bean.language;
+package at.xirado.bean.translation;
 
 import java.time.Duration;
 import java.time.Instant;

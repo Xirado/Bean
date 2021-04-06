@@ -8,6 +8,7 @@ import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.Punishments;
+import at.xirado.bean.translation.TranslationHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -38,7 +39,7 @@ public class CaseCommand extends Command
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
         if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
         {
-            event.replyError("You are not permissed to do this!");
+            event.replyError(event.getLocalized("general.no_perms"));
             return;
         }
         String[] args = event.getArguments().toStringArray();
@@ -52,26 +53,26 @@ public class CaseCommand extends Command
         {
             if(args[0].length() != 6)
             {
-                event.replyError("The Case-ID must be 6 digit!\nExample: 4V8MNU");
+                event.replyError(event.getLocalized("commands.case.must_be_6_digit"));
                 return;
             }
             Case modcase = Punishments.getCaseByID(args[0], g.getIdLong());
             if(modcase == null)
             {
-                event.replyError("The case with the ID \""+args[0]+"\" does not exist.");
+                event.replyError(event.getLocalized("commands.case.not_exists", args[0]));
                 return;
             }
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(modcase.getType().getEmbedColor())
                     .setTitle(modcase.getType().getFriendlyName()+" | Case #"+modcase.getCaseID())
                     .setTimestamp(Instant.ofEpochMilli(modcase.getCreatedAt()))
-                    .setFooter("Issued")
-                    .addField("Target", "<@"+modcase.getTargetID()+">", true)
+                    .setFooter(event.getLocalized("commands.issued"))
+                    .addField(event.getLocalized("commands.target"), "<@"+modcase.getTargetID()+">", true)
                     .addField("Moderator", "<@"+modcase.getModeratorID()+">", true)
-                    .addField("Reason", modcase.getReason(), true);
+                    .addField(event.getLocalized("commands.reason"), modcase.getReason(), true);
             if(modcase.getDuration() > 0)
             {
-                builder.addField("Duration", Util.getLength(modcase.getDuration()/1000), true);
+                builder.addField(event.getLocalized("commands.duration"), Util.getLength(modcase.getDuration()/1000), true);
             }
             event.reply(builder.build());
 
@@ -79,13 +80,13 @@ public class CaseCommand extends Command
         {
             if(args.length < 3)
             {
-                event.replyError("Invalid usage! Use:\n`"+DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())+"case [CaseID] reason [New Reason]`");
+                event.replyError(event.getLocalized("commands.case.invalid_usage", DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())));
                 return;
             }
             String caseID = args[0];
             if(caseID.length() != 6)
             {
-                event.replyError("The Case-ID must be 6 digit!\nExample: 4V8MNU");
+                event.replyError(event.getLocalized("commands.case.must_be_6_digit"));
                 return;
             }
             StringBuilder sb = new StringBuilder();
@@ -97,13 +98,13 @@ public class CaseCommand extends Command
             Case modcase = Punishments.getCaseByID(caseID, g.getIdLong());
             if(modcase == null)
             {
-                event.replyError("This modcase does not exist!");
+                event.replyError(event.getLocalized("commands.case.not_exists", caseID));
                 return;
             }
             modcase.setReason(Reason);
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(Color.green)
-                    .setDescription("Reason for case #"+modcase.getCaseID()+" has been changed to: "+Reason)
+                    .setDescription(event.getLocalized("commands.case.reason_changed", modcase.getCaseID(), Reason))
                     .setTimestamp(Instant.now());
             event.reply(builder.build());
             if(event.hasLogChannel())
@@ -111,15 +112,6 @@ public class CaseCommand extends Command
                 event.replyinLogChannel(builder.build());
             }
 
-        }/*else if(StringUtils.startsWithIgnoreCase(args[1], "delete"))
-        {
-            String caseID = args[0];
-            if(caseID.length() != 6)
-            {
-                event.replyError("The Case-ID must be 6 digit!\nExample: 4V8MNU");
-                return;
-            }
-
-        }*/
+        }
     }
 }

@@ -11,6 +11,7 @@ import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import at.xirado.bean.punishmentmanager.Punishments;
 import at.xirado.bean.handlers.*;
+import at.xirado.bean.translation.TranslationHandler;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jmusicbot.Bot;
@@ -103,6 +104,7 @@ public class DiscordBot
         }
         //Util.setLoggingLevel(Level.INFO);
         //Console.info("Logging level set to \"INFO\"");
+        TranslationHandler.init();
         File file = new File("token.txt");
         if(!file.exists())
         {
