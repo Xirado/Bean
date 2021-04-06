@@ -32,10 +32,10 @@ public class Avatar extends SlashCommand
 		User user = event.getOption("user").getAsUser();
 		if(user == null) return;
 		EmbedBuilder b = new EmbedBuilder()
-				.setImage(user.getEffectiveAvatarUrl())
+				.setImage(user.getEffectiveAvatarUrl()+"?size=512")
 				.setColor(Color.magenta)
 				.setTimestamp(Instant.now())
-				.setTitle(user.getAsTag()+"'s avatar");
+				.setAuthor(ctx.getLocalized("commands.avatar_title", user.getAsTag()), null, user.getEffectiveAvatarUrl());
 		ctx.reply(b.build()).queue();
 	}
 }

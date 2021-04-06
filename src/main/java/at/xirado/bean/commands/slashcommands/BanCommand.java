@@ -44,32 +44,32 @@ public class BanCommand extends SlashCommand
         {
             if(sender.getIdLong() == targetMember.getIdLong())
             {
-                ctx.reply("You cannot ban yourself.").setEphemeral(true).queue();
+                ctx.reply(ctx.getLocalized("commands.ban.cannot_ban_self")).setEphemeral(true).queue();
                 return;
             }
 
             if (!sender.canInteract(targetMember))
             {
-                ctx.reply(CommandContext.DENY+" You cannot ban this member!").setEphemeral(true).queue();
+                ctx.reply(CommandContext.DENY+" "+ctx.getLocalized("commands.ban.you_cannot_ban_this_member")).setEphemeral(true).queue();
                 return;
             }
 
             if(DiscordBot.getInstance().permissionCheckerManager.isModerator(targetMember))
             {
-                event.reply(CommandContext.DENY+" You cannot ban a moderator!").setEphemeral(true).queue();
+                event.reply(CommandContext.DENY+" "+ctx.getLocalized("commands.ban.cannot_ban_moderator")).setEphemeral(true).queue();
                 return;
             }
 
             if (!g.getSelfMember().canInteract(targetMember))
             {
-                ctx.reply(CommandContext.DENY+" I cannot interact with this member!").setEphemeral(true).queue();
+                ctx.reply(CommandContext.DENY+" "+ctx.getLocalized("commands.ban.i_cannot_ban_this_member")).setEphemeral(true).queue();
                 return;
             }
         }
         Case bancase = Case.createCase(CaseType.BAN, g.getIdLong(), targetUser.getIdLong(), sender.getIdLong(), reason != null ? reason : "No reason specified", -1);
         if(bancase == null)
         {
-            ctx.reply(CommandContext.ERROR+" An error occured.").setEphemeral(true).queue();
+            ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
             return;
         }
         try
@@ -77,9 +77,9 @@ public class BanCommand extends SlashCommand
             PrivateChannel privateChannel = targetUser.openPrivateChannel().complete();
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(CaseType.BAN.getEmbedColor())
-                    .setAuthor("You have been banned from "+g.getName()+"!")
-                    .addField("reason", bancase.getReason(), true)
-                    .addField("moderator", sender.getAsMention() + "("+sender.getUser().getAsTag()+")", true);
+                    .setAuthor(ctx.getLocalized("commands.ban.you_have_been_banned", g.getName()))
+                    .addField(ctx.getLocalized("commands.reason"), bancase.getReason(), true)
+                    .addField("Moderator", sender.getAsMention() + "("+sender.getUser().getAsTag()+")", true);
             privateChannel.sendMessage(builder.build()).complete();
         }catch (Exception ignored)
         {
@@ -94,16 +94,16 @@ public class BanCommand extends SlashCommand
                             .setTimestamp(Instant.now())
                             .setColor(0x8b0000)
                             .setThumbnail(targetUser.getEffectiveAvatarUrl())
-                            .setFooter("Target ID: "+targetUser.getIdLong())
+                            .setFooter(ctx.getLocalized("commands.target_id")+": "+targetUser.getIdLong())
                             .setTitle("Ban | Case #"+bancase.getCaseID())
-                            .addField("banned", targetUser.getAsMention()+" ("+targetUser.getAsTag()+")", true)
-                            .addField("moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true)
-                            .addField("reason", bancase.getReason(), false);
+                            .addField(ctx.getLocalized("commands.target"), targetUser.getAsMention()+" ("+targetUser.getAsTag()+")", true)
+                            .addField("Moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true)
+                            .addField(ctx.getLocalized("commands.reason"), bancase.getReason(), false);
                     Objects.requireNonNullElseGet(logchannel, event::getChannel).sendMessage(builder2.build()).queue();
                 },
                 (error) ->
                 {
-                    ctx.reply(CommandContext.ERROR + " An error occured").setEphemeral(true).queue();
+                    ctx.reply(CommandContext.ERROR + " "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
                 }
         );
     }

@@ -24,6 +24,8 @@
     "cannot_interact_role": "Ich kann mit der Rolle %1$s nicht interagieren!",
     "invalid_role": "Diese Rolle ist ungültig!",
     "issued": "Ausgestellt",
+	"case" : "Fall",
+	"by" : "von",
     "duration": "Dauer",
     "moderator": {
       "already_added": "Diese Rolle kann bereits Moderator-Befehle ausführen!",
@@ -38,13 +40,16 @@
       "already_banned": "Dieser Nutzer ist bereits gebannt!",
       "you_have_been_banned": "Du wurdest von %1$s gebannt!",
       "could_not_ban_user": "Konnte Nutzer nicht bannen!",
-      "has_been_banned": "%1$s wurde gebannt!"
+      "has_been_banned": "%1$s wurde gebannt!",
+	  "cannot_ban_self" : "Du kannst dich nicht selbst bannen!"
     },
     "case": {
       "must_be_6_digit": "Die Fall-ID muss 6 Zeichen lang sein!\nBeispiel: 4V8MNU",
       "not_exists": "Fall \"%1$s\" existiert nicht!",
       "invalid_usage": "Ungültige Argumente! Nutze:\n`%1$scase [CaseID] reason [neuer Grund]`!",
-      "reason_changed": "Grund für Fall #%1$s wurde auf %2$s geändert!"
+      "reason_changed": "Grund für Fall #%1$s wurde auf %2$s geändert!",
+	  "deleted": "Fall #%1$s wurde gelöscht!",
+	  "err_deleted": "Fall #%1$s konnte nicht gelöscht werden!"
     },
     "kick": {
       "you_cannot_kick": "Du kannst diesen Nutzer nicht kicken!",
@@ -97,6 +102,7 @@
 		"you_have_been_warned": "Du wurdest auf %1$s verwarnt!",
 		"could_not_warn_member": "Konnte diesen Nutzer nicht verwarnen!",
 		"has_been_warned": "%1$s wurde verwarnt!"
-	}
+	},
+	"avatar_title" : "Avatar von %1$s"
   }
 }
