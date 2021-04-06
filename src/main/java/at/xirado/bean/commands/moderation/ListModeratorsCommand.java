@@ -38,14 +38,14 @@ public class ListModeratorsCommand extends Command
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
         if(!permissionCheckerManager.isModerator(member) && !member.hasPermission(Permission.ADMINISTRATOR))
         {
-            event.replyError("You are not permissed to do this!");
+            event.replyError(event.getLocalized("general.no_perms"));
             return;
         }
         Guild guild = event.getGuild();
         ArrayList<Long> allowedRoles = permissionCheckerManager.getAllowedRoles(guild.getIdLong());
         if(allowedRoles == null || allowedRoles.isEmpty())
         {
-            event.replyWarning("No mod-roles have been found!");
+            event.replyWarning(event.getLocalized("commands.listmods.no_roles_found"));
             return;
         }
         StringBuilder sb = new StringBuilder();
@@ -75,7 +75,7 @@ public class ListModeratorsCommand extends Command
         description = description.substring(0, description.length()-2);
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(firstColor == null ? Color.green : firstColor)
-                .setDescription("All moderator roles:\n"+description);
+                .setDescription(event.getLocalized("commands.listmods.all_mod_roles")+":\n"+description);
         event.reply(builder.build());
 
     }

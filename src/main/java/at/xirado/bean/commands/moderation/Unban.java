@@ -62,7 +62,7 @@ public class Unban extends Command
                                 Connection connection = SQL.getConnectionFromPool();
                                 if(connection == null)
                                 {
-                                    e.replyError("We currently have an issue with our database. Please try again later!");
+                                    e.replyError(e.getLocalized("general.db_error"));
                                     return;
                                 }
                                 try(var ps = connection.prepareStatement(qry))
@@ -74,12 +74,12 @@ public class Unban extends Command
                                     connection.close();
                                 }catch (SQLException ex)
                                 {
-                                    e.replyError("We currently have an issue with our database. Please try again later!");
+                                    e.replyError(e.getLocalized("general.db_error"));
                                     return;
                                 }
                                 EmbedBuilder builder = new EmbedBuilder()
                                         .setColor(Color.green)
-                                        .setDescription(user.getAsMention()+" has been unbanned!");
+                                        .setDescription(e.getLocalized("commands.unban.has_been_unbanned", user.getAsMention()));
                                 e.reply(builder.build());
                                 if(e.hasLogChannel())
                                 {
@@ -87,14 +87,14 @@ public class Unban extends Command
                                             .setColor(Color.green)
                                             .setTitle("Unban")
                                             .setThumbnail(user.getEffectiveAvatarUrl())
-                                            .addField("Target", user.getAsMention()+" ("+user.getAsTag()+")" , true)
+                                            .addField(e.getLocalized("commands.target"), user.getAsMention()+" ("+user.getAsTag()+")" , true)
                                             .addField("Moderator", m.getAsMention()+" ("+m.getUser().getAsTag()+")", true);
                                     e.replyinLogChannel(builder2.build());
                                 }
                             },
                             (error) ->
                             {
-                                e.replyError("Could not unban user!");
+                                e.replyError(e.getLocalized("commands.unban.could_not_unban"));
                             }
                     );
                 }

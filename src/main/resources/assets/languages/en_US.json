@@ -1,0 +1,102 @@
+{
+	"general": {
+		"welcome_message": "Hi, I'm Bean! Type %1$shelp to get started!",
+		"invalid_arguments": "Invalid arguments!",
+		"aliases": "Aliases",
+		"insufficient_permissions": "Insufficient permissions!",
+		"no_perms": "You don't have permission to do this!",
+		"no_bot_perms": "Missing bot permissions",
+		"no_bot_perms1": "I don't have the required permission to do this!",
+		"unknown_error_occured": "An unknown error occured!",
+		"db_error": "We currently have an issue with our database. Please try again later!"
+	},
+	"commands": {
+		"dj_privileges_info": "\n**Note:** To get DJ privileges, you either need to have a role called \"DJ\", have Manage Channel permissions or be alone in the channel with the bot",
+		"cannot_run_in_dm": "%1$s This command cannot be run in DMs!",
+		"disabled_or_unknown": "This command is either no longer available or has been disabled",
+		"id_empty": "ID may not be empty!",
+		"user_not_exists": "This user does not exist!",
+		"user_not_in_guild": "This user is not in this guild!",
+		"noreason": "No reason specified",
+		"reason": "Reason",
+		"target": "Target",
+		"target_id": "Target ID",
+		"cannot_interact_role": "I cannot interact with the role %1$s!",
+		"invalid_role": "This role is invalid!",
+		"issued": "Issued",
+		"duration": "Duration",
+		"moderator": {
+			"already_added": "This role is already allowed to use moderator-commands!",
+			"added": "%1$s can now use moderator-commands!",
+			"not_added": "This role is already not allowed to use moderator-commands!",
+			"removed": "%1$s is now no longer able to use moderator-commands!"
+		},
+		"ban": {
+			"you_cannot_ban_this_member": "You cannot ban this member!",
+			"i_cannot_ban_this_member": "I cannot ban this member!",
+			"cannot_ban_moderator": "You cannot ban a moderator!",
+			"already_banned": "This user is already banned!",
+			"you_have_been_banned": "You have been banned from %1$s!",
+			"could_not_ban_user": "Could not ban user!",
+			"has_been_banned": "%1$s has been banned!"
+		},
+		"case": {
+			"must_be_6_digit": "The Case-ID must be 6 characters long!\nExample: 4V8MNU",
+			"not_exists": "A case with the ID \"%1$s\" does not exist!",
+			"invalid_usage": "Invalid usage! Use:\n`%1$scase [CaseID] reason [New Reason]`!",
+			"reason_changed": "Reason for case #%1$s has been changed to: %2$s!"
+		},
+		"kick": {
+			"you_cannot_kick": "You cannot kick this member!",
+			"i_cannot_kick": "I cannot kick this member!",
+			"you_cannot_kick_moderator": "You cannot kick a moderator!",
+			"you_have_been_kicked": "You have been kicked from %1$s!",
+			"could_not_kick_member": "Could not kick this member!",
+			"has_been_kicked": "%1$s has been kicked!"
+		},
+		"listmods": {
+			"no_roles_found": "No moderator-roles have been found!",
+			"all_mod_roles": "All moderator roles"
+		},
+		"modlog": {
+			"no_modlogs": "There are no modlogs for this user!",
+			"for_user": "Modlogs for %1$s",
+			"last_10_incidents": "Last 10 incidents",
+			"more_infos": "Use `%1$s case [CaseID]` for more infos"
+		},
+		"mute": {
+			"you_cannot_mute": "You cannot mute this member!",
+			"i_cannot_mute": "I cannot mute this member!",
+			"you_cannot_mute_moderator": "You cannot mute a moderator!",
+			"duration_too_short": "You cannot mute someone for this short amount of time!",
+			"no_role_setup": "You have not set up a muted-role!\nAfter you have created and/or configured your muted-role, use `%1$ssetmutedrole`",
+			"has_been_muted": "%1$s has been muted\nDuration: %2$s"
+		},
+		"set_muted_role": "%1$s is now the \"muted\"-role!\n\n(Make sure to setup this role correctly, so muted users cannot communicate in chat!)",
+		"softban": {
+			"you_cannot_softban_this_member": "You cannot softban this member!",
+			"i_cannot_softban_this_member": "I cannot softban this member!",
+			"cannot_softban_moderator": "You cannot softban a moderator!",
+			"you_have_been_softbanned": "You have been softbanned from %1$s!",
+			"could_not_softban_user": "Could not softban member!",
+			"has_been_softbanned": "%1$s has been softbanned!",
+			"could_not_unban": "Could not unban user! (Still banned)"
+		},
+		"unban": {
+			"has_been_unbanned": "%1$s has been unbanned!",
+			"could_not_unban": "Could not unban user!"
+		},
+		"unmute": {
+			"member_not_muted": "This member is not muted!",
+			"user_unmuted": "%1$s has been unmuted!"
+		},
+		"warn": {
+			"you_cannot_warn": "You cannot warn this member!",
+			"i_cannot_warn": "I cannot warn this member!",
+			"you_cannot_warn_moderator": "You cannot warn a moderator!",
+			"you_have_been_warned": "You have been warned on %1$s!",
+			"could_not_warn_member": "Could not warn this member!",
+			"has_been_warned": "%1$s has been warned!"
+		}
+	}
+}

@@ -2,7 +2,7 @@ package at.xirado.bean.commandmanager;
 
 import at.xirado.bean.commands.moderation.BanCommand;
 import at.xirado.bean.commands.moderation.KickCommand;
-import at.xirado.bean.language.Phrase;
+import at.xirado.bean.translation.TranslationHandler;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.modules.GabrielHelp;
 import at.xirado.bean.modules.LukasHelp;
@@ -84,7 +84,7 @@ public class CommandManager
                         {
                             if(!member.hasPermission(e.getChannel(), neededPermissions))
                             {
-                                e.getMessage().reply(Phrase.YOU_DONT_HAVE_PERMISSION_TO_DO_THIS.getTranslated(e.getGuild())+"!").mentionRepliedUser(false).queue(s -> {}, ex -> {});
+                                e.getMessage().reply(TranslationHandler.ofGuild(e.getGuild()).get("general.no_perms")).mentionRepliedUser(false).queue(s -> {}, ex -> {});
                                 return;
                             }
                         }
@@ -109,7 +109,7 @@ public class CommandManager
                             {
                                 EmbedBuilder builder = new EmbedBuilder()
                                         .setColor(Color.red)
-                                        .setFooter(Phrase.MISSING_BOT_PERMISSIONS.getTranslated(e.getGuild()));
+                                        .setFooter(TranslationHandler.ofGuild(e.getGuild()).get("general.no_bot_perms"));
                                 StringBuilder sb = new StringBuilder();
                                 for(Permission p : missingPermissions)
                                 {
@@ -117,7 +117,7 @@ public class CommandManager
                                 }
                                 String toString = sb.toString();
                                 toString = toString.substring(0, toString.length()-2);
-                                builder.setDescription(Phrase.MISSING_BOT_PERMISSIONS1.getTranslated(e.getGuild())+" \uD83D\uDE26\n"+Phrase.MISSING_PERMISSIONS.getTranslated(e.getGuild())+": "+toString);
+                                builder.setDescription(TranslationHandler.ofGuild(e.getGuild()).get("general.no_bot_perms1")+" \uD83D\uDE26\n"+ TranslationHandler.ofGuild(e.getGuild()).get("general.no_bot_perms")+": "+toString);
                                 e.getChannel().sendMessage(builder.build()).queue();
                                 return;
                             }
@@ -132,7 +132,7 @@ public class CommandManager
 
             }catch(Exception ex)
             {
-                e.getChannel().sendMessage(Phrase.AN_ERROR_OCCURED.getTranslated(e.getGuild())).queue(s -> {}, exx -> {});
+                e.getChannel().sendMessage(TranslationHandler.ofGuild(e.getGuild()).get("general.unknown_error_occured")).queue(s -> {}, exception -> {});
             }
         };
         DiscordBot.instance.scheduledExecutorService.submit(r);

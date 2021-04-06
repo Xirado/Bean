@@ -4,7 +4,7 @@ import at.xirado.bean.commandmanager.Command;
 import at.xirado.bean.commandmanager.CommandEvent;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.language.FormattedDuration;
+import at.xirado.bean.translation.FormattedDuration;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.Punishments;
@@ -39,7 +39,7 @@ public class ModlogCommand extends Command
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
         if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
         {
-            event.replyError("You are not permissed to do this!");
+            event.replyError(event.getLocalized("general.no_perms"));
             return;
         }
         Guild g = event.getGuild();
@@ -55,7 +55,7 @@ public class ModlogCommand extends Command
             targetID = Long.parseLong(args[0].replaceAll("[^0-9]", ""));
         } catch (NumberFormatException e)
         {
-            event.replyError("ID may not be empty!");
+            event.replyError(event.getLocalized("commands.id_empty"));
             return;
         }
         DiscordBot.getInstance().jda.retrieveUserById(targetID).queue(
@@ -64,7 +64,7 @@ public class ModlogCommand extends Command
                     List<Case> allCases = Punishments.getModlog(g.getIdLong(), targetUser.getIdLong(), 10);
                     if(allCases.isEmpty())
                     {
-                        event.replyWarning("There are no modlogs for this user!");
+                        event.replyWarning(event.getLocalized("commands.modlog.no_modlogs"));
                         return;
                     }
                     StringBuilder sb = new StringBuilder();
@@ -74,13 +74,13 @@ public class ModlogCommand extends Command
                     }
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(Color.orange)
-                            .setFooter("User-ID: "+targetUser.getIdLong())
+                            .setFooter(event.getLocalized("commands.target_id")+": "+targetUser.getIdLong())
                             .setTimestamp(Instant.now())
-                            .setAuthor("Modlogs for "+targetUser.getAsTag(), null, targetUser.getEffectiveAvatarUrl())
-                            .setDescription("**Last 10 incidents:**\n\n"+sb.toString().trim()+"\n\nUse `"+DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())+"case [CaseID]` for more infos");
+                            .setAuthor(event.getLocalized("commands.modlog.for_user", targetUser.getAsTag()), null, targetUser.getEffectiveAvatarUrl())
+                            .setDescription("**"+event.getLocalized("commands.modlog.last_10_incidents")+":**\n\n"+sb.toString().trim()+"\n\n"+event.getLocalized("commands.modlog.more_infos", DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())));
                     event.reply(builder.build());
                 },
-                (error) -> event.replyError("This user does not exist!")
+                (error) -> event.replyError(event.getLocalized("commands.user_not_exists"))
         );
     }
 }

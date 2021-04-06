@@ -50,7 +50,7 @@ public class KickCommand extends Command
         String target_ID = args[0].replaceAll("[^0-9]", "");
         if(target_ID.length() == 0)
         {
-            event.replyError("ID may not be empty!");
+            event.replyError(event.getLocalized("commands.id_empty"));
             return;
         }
         Member target_Member = null;
@@ -61,43 +61,43 @@ public class KickCommand extends Command
         {
             if(e.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER)
             {
-                event.replyError("This user is not in this guild!");
+                event.replyError(event.getLocalized("commands.user_not_in_guild"));
                 return;
             }else if(e.getErrorResponse() == ErrorResponse.UNKNOWN_USER)
             {
-                event.replyError("This user does not exist!");
+                event.replyError(event.getLocalized("commands.user_not_exists"));
                 return;
             }
         }
         if(target_Member == null)
         {
-            event.replyError("This user does not exist!");
+            event.replyError(event.getLocalized("commands.user_not_exists"));
             return;
         }
         if(!sender.canInteract(target_Member))
         {
-            event.replyError("You cannot kick this member!");
+            event.replyError(event.getLocalized("commands.kick.you_cannot_kick"));
             return;
         }
         if(!event.getSelfMember().canInteract(target_Member))
         {
-            event.replyError("I cannot kick this member!");
+            event.replyError(event.getLocalized("commands.kick.i_cannot_kick"));
             return;
         }
         if(DiscordBot.getInstance().permissionCheckerManager.isModerator(target_Member))
         {
-            event.replyError("You cannot kick a moderator!");
+            event.replyError(event.getLocalized("commands.kick.you_cannot_kick_moderator"));
             return;
         }
         boolean withReason = args.length > 1;
-        final String Reason = withReason ? event.getArguments().toString(1) : "No reason specified";
+        final String Reason = withReason ? event.getArguments().toString(1) : event.getLocalized("commands.noreason");
         User target_User = target_Member.getUser();
         try
         {
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(CaseType.KICK.getEmbedColor())
-                    .setTitle("You have been kicked from "+guild.getName()+"!")
-                    .addField("Reason", Reason, true)
+                    .setTitle(event.getLocalized("commands.kick.you_have_been_kicked", guild.getName()))
+                    .addField(event.getLocalized("reason"), Reason, true)
                     .addField("Moderator", sender.getUser().getAsTag(), true);
             PrivateChannel privateChannel = target_User.openPrivateChannel().complete();
             privateChannel.sendMessage(builder.build()).complete();
@@ -110,20 +110,20 @@ public class KickCommand extends Command
             guild.kick(target_Member, Reason).complete();
         } catch (ErrorResponseException e)
         {
-            event.replyError("Could not kick this member!");
+            event.replyError(event.getLocalized("commands.kick.could_not_kick_member"));
             return;
         }
         Case modcase = Case.createCase(CaseType.KICK, guild.getIdLong(), target_Member.getIdLong(), sender.getIdLong(), Reason, 0);
         if(modcase == null)
         {
-            logger.error("Could not create modcase!", new Exception());
+            event.replyError(event.getLocalized("general.unknown_error_occured"));
             return;
         }
         if(event.hasLogChannel())
         {
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(CaseType.KICK.getEmbedColor())
-                    .setDescription(CommandEvent.SUCCESS_EMOTE +" "+target_User.getAsTag()+" has been kicked")
+                    .setDescription(CommandEvent.SUCCESS_EMOTE +" "+event.getLocalized("commands.kick.has_been_kicked", target_User.getAsTag()))
                     .setFooter("Case #"+modcase.getCaseID()+" ("+Reason+")");
             event.reply(builder.build());
         }
@@ -131,11 +131,11 @@ public class KickCommand extends Command
                 .setTimestamp(Instant.now())
                 .setColor(CaseType.KICK.getEmbedColor())
                 .setThumbnail(target_User.getEffectiveAvatarUrl())
-                .setFooter("Target ID: "+target_User.getIdLong())
+                .setFooter(event.getLocalized("commands.target_id")+": "+target_User.getIdLong())
                 .setTitle("Kick | Case "+modcase.getCaseID())
-                .addField("Target", target_User.getAsMention()+" ("+target_User.getAsTag()+")", true)
+                .addField(event.getLocalized("commands.target"), target_User.getAsMention()+" ("+target_User.getAsTag()+")", true)
                 .addField("Moderator", sender.getAsMention()+" ("+event.getAuthor().getAsTag()+")", true)
-                .addField("Reason", Reason, false);
+                .addField(event.getLocalized("commands.reason"), Reason, false);
         if(!withReason)
         {
             builder.addField("", "Use `"+ DiscordBot.getInstance().prefixManager.getPrefix(guild.getIdLong())+"reason "+modcase.getCaseID()+" [Reason]` to add a reason to this kick.", false);

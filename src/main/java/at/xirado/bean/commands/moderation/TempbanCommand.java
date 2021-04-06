@@ -3,7 +3,7 @@ package at.xirado.bean.commands.moderation;
 import at.xirado.bean.commandmanager.Command;
 import at.xirado.bean.commandmanager.CommandEvent;
 import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.language.FormattedDuration;
+import at.xirado.bean.translation.FormattedDuration;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.punishmentmanager.Case;
@@ -50,7 +50,7 @@ public class TempbanCommand extends Command
         String target_ID = args[0].replaceAll("[^0-9]", "");
         if(target_ID.length() == 0)
         {
-            event.replyError("User-ID may not be empty!");
+            event.replyError(event.getLocalized("commands.id_empty"));
             return;
         }
         Long time = FormattedDuration.parsePeriod(args[1]);
@@ -64,27 +64,32 @@ public class TempbanCommand extends Command
                 {
                     if(!sender.canInteract(target_Member))
                     {
-                        event.replyError("You cannot ban this member!");
+                        event.replyError(event.getLocalized("commands.ban.you_cannot_ban_this_member"));
                         return;
                     }
                     if(!event.getSelfMember().canInteract(target_Member))
                     {
-                        event.replyError("I cannot ban this member!");
+                        event.replyError(event.getLocalized("commands.ban.i_cannot_ban_this_member"));
                         return;
                     }
                     if(DiscordBot.getInstance().permissionCheckerManager.isModerator(target_Member))
                     {
-                        event.replyError("You cannot ban a moderator!");
+                        event.replyError(event.getLocalized("commands.ban.cannot_ban_moderator"));
                         return;
                     }
                     boolean withReason = args.length > 2;
-                    final String Reason = withReason ? event.getArguments().toString(2) : "No reason specified";
+                    final String Reason = withReason ? event.getArguments().toString(2) : event.getLocalized("commands.noreason");
                     User target_User = target_Member.getUser();
                     long channelid = event.getChannel().getIdLong();
                     guild.ban(target_Member, 0, Reason).queue(
                             (success) ->
                             {
                                 Case modcase = Case.createCase(CaseType.TEMPBAN, guild.getIdLong(), target_Member.getIdLong(), sender.getIdLong(), Reason, time);
+                                if(modcase == null)
+                                {
+                                    event.replyError(event.getLocalized("general.unknown_error_occured"));
+                                    return;
+                                }
                                 Runnable r = () ->
                                 {
                                     Punishments.unban(modcase, DiscordBot.getInstance().jda.getTextChannelById(channelid));
@@ -95,7 +100,7 @@ public class TempbanCommand extends Command
                                 {
                                     EmbedBuilder builder = new EmbedBuilder()
                                             .setColor(0x8b0000)
-                                            .setDescription(CommandEvent.SUCCESS_EMOTE +" "+target_User.getAsTag()+" has been banned")
+                                            .setDescription(CommandEvent.SUCCESS_EMOTE +" "+event.getLocalized("commands.ban.has_been_banned", target_User.getAsTag()))
                                             .setFooter("Case #"+modcase.getCaseID()+" ("+Reason+")");
                                     event.reply(builder.build());
                                 }
@@ -103,12 +108,12 @@ public class TempbanCommand extends Command
                                         .setTimestamp(Instant.now())
                                         .setColor(0x8b0000)
                                         .setThumbnail(target_User.getEffectiveAvatarUrl())
-                                        .setFooter("Target ID: "+target_User.getIdLong())
+                                        .setFooter(event.getLocalized("commands.target_id")+": "+target_User.getIdLong())
                                         .setTitle("Ban | Case #"+modcase.getCaseID())
-                                        .addField("Target", target_User.getAsMention()+" ("+target_User.getAsTag()+")", true)
+                                        .addField(event.getLocalized("commands.target"), target_User.getAsMention()+" ("+target_User.getAsTag()+")", true)
                                         .addField("Moderator", sender.getAsMention()+" ("+event.getAuthor().getAsTag()+")", true)
-                                        .addField("Reason", Reason, false)
-                                        .addField("Duration", Util.getLength(time/1000), true);
+                                        .addField(event.getLocalized("commands.reason"), Reason, false)
+                                        .addField(event.getLocalized("commands.duration"), Util.getLength(time/1000), true);
                                 if(!withReason)
                                 {
                                     builder.addField("", "Use `"+DiscordBot.getInstance().prefixManager.getPrefix(guild.getIdLong())+"case "+modcase.getCaseID()+" reason [Reason]`\n to add a reason to this ban.", false);
@@ -122,16 +127,16 @@ public class TempbanCommand extends Command
                                     event.replyinLogChannel(builder.build());
                                 }
                             },
-                            (error) -> event.replyError("Could not ban this user!")
+                            (error) -> event.replyError(event.getLocalized("commands.ban.could_not_ban_user"))
                     );
                 }, new ErrorHandler()
                     .handle(ErrorResponse.UNKNOWN_MEMBER, (err) ->
                     {
-                        event.replyError("This user is not member of this server!");
+                        event.replyError(event.getLocalized("commands.user_not_in_guild"));
                     })
                     .handle(ErrorResponse.UNKNOWN_USER, (err) ->
                     {
-                        event.replyError("The user you specified does not exist!");
+                        event.replyError(event.getLocalized("commands.user_not_exists"));
                     })
         );
 
