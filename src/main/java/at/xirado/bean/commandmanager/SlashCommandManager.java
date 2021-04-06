@@ -104,6 +104,23 @@ public class SlashCommandManager {
             }
             return;
         }
+        if(DiscordBot.debugMode)
+        {
+            long testServerID = 815597207617142814L;
+            Guild guild = DiscordBot.getInstance().jda.getGuildById(testServerID);
+            if(guild != null)
+            {
+                List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(guildID) ? registeredGuildCommands.get(guildID) : new ArrayList<>();
+                alreadyRegistered.add(command);
+                if(registeredGuildCommands.containsKey(testServerID))
+                {
+                    registeredGuildCommands.replace(testServerID, alreadyRegistered);
+                }else
+                {
+                    registeredGuildCommands.put(testServerID, alreadyRegistered);
+                }
+            }
+        }
         commandUpdateAction.addCommands(command.getCommandData());
         registeredCommands.add(command);
     }
