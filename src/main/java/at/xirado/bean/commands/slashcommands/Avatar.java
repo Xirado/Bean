@@ -35,7 +35,7 @@ public class Avatar extends SlashCommand
 				.setImage(user.getEffectiveAvatarUrl())
 				.setColor(Color.magenta)
 				.setTimestamp(Instant.now())
-				.setTitle(user.getAsTag()+"'s avatar");
+				.setTitle(ctx.getLocalized("commands.avatar_title", user.getAsTag()));
 		ctx.reply(b.build()).queue();
 	}
 }
