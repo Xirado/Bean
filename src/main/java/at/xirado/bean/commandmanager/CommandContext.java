@@ -1,6 +1,7 @@
 package at.xirado.bean.commandmanager;
 
 import at.xirado.bean.translation.TranslationHandler;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -39,14 +40,12 @@ public class CommandContext
 
     }
 
-    public String getTranslated(String qry)
-    {
-        return TranslationHandler.getForLanguage(this.language).get(qry);
-    }
 
-    public CommandReplyAction localizedReply(String qry, Object... objects)
+    public String getLocalized(String query, Object... objects)
     {
-        return event.replyFormat(TranslationHandler.getForLanguage(this.language).get(qry), objects).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
+        Guild g = event.getGuild();
+        if(g != null) return String.format(TranslationHandler.ofGuild(g).get(query), objects);
+        return String.format(TranslationHandler.getForLanguage("en_US").get(query), objects);
     }
 
     public CommandReplyAction reply(String content)

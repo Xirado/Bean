@@ -97,6 +97,7 @@
 			"you_have_been_warned": "You have been warned on %1$s!",
 			"could_not_warn_member": "Could not warn this member!",
 			"has_been_warned": "%1$s has been warned!"
-		}
+		},
+		"avatar_title" : "%1$s's avatar"
 	}
 }

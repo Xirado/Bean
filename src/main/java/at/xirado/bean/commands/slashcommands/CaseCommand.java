@@ -44,7 +44,7 @@ public class CaseCommand extends SlashCommand
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
         if(!permissionCheckerManager.isModerator(sender) && !sender.hasPermission(Permission.ADMINISTRATOR))
         {
-            ctx.reply(CommandContext.DENY+" You don't have permission to do this!").setEphemeral(true).queue();
+            ctx.reply(CommandContext.DENY+" "+ctx.getLocalized("general.no_perms")).setEphemeral(true).queue();
             return;
         }
 
@@ -54,22 +54,22 @@ public class CaseCommand extends SlashCommand
             String caseID = event.getOption("case").getAsString();
             if(caseID.length() != 6)
             {
-                ctx.reply(CommandContext.ERROR+" The Case-ID must be 6 characters long!").setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.must_be_6_digit")).setEphemeral(true).queue();
                 return;
             }
             Case modcase = Punishments.getCaseByID(caseID, g.getIdLong());
             if(modcase == null)
             {
-                ctx.reply(CommandContext.ERROR+" The case with the ID \""+caseID.toUpperCase()+"\" does not exist!").setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.not_exists", caseID.toUpperCase())).setEphemeral(true).queue();
                 return;
             }
             StringBuilder builder = new StringBuilder();
-            builder.append(CommandContext.SUCCESS + " ").append(modcase.getType().getFriendlyName()).append(" - Case #").append(modcase.getCaseID()).append("\n\n");
-            builder.append("Issued ").append(FormattedDuration.getDuration(modcase.getCreatedAt()/1000, true)).append(" by <@").append(modcase.getModeratorID()).append(">").append("\n");
-            builder.append("Reason: ").append(modcase.getReason()).append("\n");
+            builder.append(CommandContext.SUCCESS + " ").append(modcase.getType().getFriendlyName()).append(" - "+ctx.getLocalized("commands.case")+" #").append(modcase.getCaseID()).append("\n\n");
+            builder.append(" ").append(ctx.getLocalized("commands.issued")).append(FormattedDuration.getDuration(modcase.getCreatedAt()/1000, true)).append(" "+ctx.getLocalized("commands.by")+" <@").append(modcase.getModeratorID()).append(">").append("\n");
+            builder.append(ctx.getLocalized("commands.reason")).append(": ").append(modcase.getReason()).append("\n");
             if(modcase.getDuration() > 0)
             {
-                builder.append("\nDuration: ").append(Util.getLength(modcase.getDuration() / 1000));
+                builder.append("\n").append(ctx.getLocalized("commands.duration")).append(": ").append(Util.getLength(modcase.getDuration() / 1000));
             }
             event.reply(builder.toString()).allowedMentions(Collections.emptyList()).setEphemeral(true).queue();
             return;
@@ -79,40 +79,39 @@ public class CaseCommand extends SlashCommand
             String reason = event.getOption("reason").getAsString();
             if(caseID.length() != 6)
             {
-                ctx.reply(CommandContext.ERROR+" The Case-ID must be 6 characters long!").setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.must_be_6_digit")).setEphemeral(true).queue();
                 return;
             }
             Case modcase = Punishments.getCaseByID(caseID, g.getIdLong());
             if(modcase == null)
             {
-                ctx.reply(CommandContext.ERROR+" The case with the ID \""+caseID.toUpperCase()+"\" does not exist!").setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.not_exists", caseID.toUpperCase())).setEphemeral(true).queue();
                 return;
             }
             modcase.setReason(reason);
-            ctx.reply(CommandContext.SUCCESS+" Reason for case \""+caseID.toUpperCase()+"\" has been changed to `"+reason+"`!").setEphemeral(true).queue();
-            return;
+            ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.case.reason_changed", caseID.toUpperCase(), reason)).setEphemeral(true).queue();
         }else if(event.getSubcommandName().equals("delete"))
         {
             String caseID = event.getOption("case").getAsString();
             if(caseID.length() != 6)
             {
-                ctx.reply(CommandContext.ERROR+" The Case-ID must be 6 characters long!").setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.must_be_6_digit")).setEphemeral(true).queue();
                 return;
             }
             Case modcase = Punishments.getCaseByID(caseID, g.getIdLong());
             if(modcase == null)
             {
-                ctx.reply(CommandContext.ERROR+" The case with the ID \""+caseID.toUpperCase()+"\" does not exist!").setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.not_exists", caseID.toUpperCase())).setEphemeral(true).queue();
                 return;
             }
             boolean x = modcase.deleteCase();
             if(x)
             {
-                ctx.reply(CommandContext.SUCCESS+" Case #"+modcase.getCaseID()+" has been deleted!").setEphemeral(true).queue();
+                ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.case.deleted", modcase.getCaseID())).setEphemeral(true).queue();
 
             }else
             {
-                ctx.reply(CommandContext.ERROR+" Case #"+modcase.getCaseID()+" could not be deleted!").setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.err_deleted", modcase.getCaseID())).setEphemeral(true).queue();
             }
         }
     }
