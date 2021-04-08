@@ -6,6 +6,8 @@ import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
 
 import java.awt.*;
 import java.time.Instant;
@@ -30,27 +32,33 @@ public class Avatar extends Command
 		String[] args = e.getArguments().toStringArray();
 		if(args.length < 1)
 		{
-			EmbedBuilder b = new EmbedBuilder()
-					.setImage(e.getAuthor().getEffectiveAvatarUrl())
-					.setColor(Color.magenta)
-					.setTimestamp(Instant.now())
-					.setTitle(e.getAuthor().getAsTag()+"'s avatar");
-			e.getChannel().sendMessage(b.build()).queue();
+			e.reply(getAvatarEmbed(e.getAuthor(), e));
 			return;
 		}
 		String ID = args[0].replaceAll("[^0-9]", "");
+		if(ID.length() == 0)
+		{
+			e.replyError(e.getLocalized("commands.id_empty"));
+			return;
+		}
 		DiscordBot.instance.jda.retrieveUserById(ID).queue(
 				(target) ->
 				{
-					EmbedBuilder b = new EmbedBuilder()
-							.setImage(target.getEffectiveAvatarUrl())
-							.setColor(Color.magenta)
-							.setTimestamp(Instant.now())
-							.setTitle(target.getAsTag()+"'s avatar");
-					e.getChannel().sendMessage(b.build()).queue();
+					e.reply(getAvatarEmbed(target, e));
 				},
-				(error) ->
-						e.replyError("You provided an invalid user-id.")
-		);
+				(error) -> e.reply(getAvatarEmbed(e.getAuthor(), e)));
 	}
+
+
+
+	private MessageEmbed getAvatarEmbed(User user, CommandEvent e)
+	{
+		return new EmbedBuilder()
+				.setImage(user.getEffectiveAvatarUrl()+"?size=512")
+				.setColor(Color.magenta)
+				.setTimestamp(Instant.now())
+				.setAuthor(e.getLocalized("commands.avatar_title", user.getAsTag()), null, user.getEffectiveAvatarUrl())
+				.build();
+	}
+
 }

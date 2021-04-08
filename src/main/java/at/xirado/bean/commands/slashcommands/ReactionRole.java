@@ -13,6 +13,8 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -22,6 +24,7 @@ import java.util.regex.Pattern;
 
 public class ReactionRole extends SlashCommand
 {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReactionRole.class);
 
 	public ReactionRole()
 	{
@@ -62,7 +65,7 @@ public class ReactionRole extends SlashCommand
 
 		String subcommand = event.getSubcommandName();
 		if(subcommand == null){
-			ctx.reply("Invalid subcommand!").setEphemeral(true).queue();
+			ctx.reply(ctx.getLocalized("commands.invalid_subcommand")).setEphemeral(true).queue();
 			return;
 		}
 		if(subcommand.equalsIgnoreCase("remove"))
@@ -70,7 +73,7 @@ public class ReactionRole extends SlashCommand
 			TextChannel channel = (TextChannel) event.getOption("channel").getAsChannel();
 			if(channel == null)
 			{
-				ctx.reply(CommandContext.ERROR+" This channel does not exist!").setEphemeral(true).queue();
+				ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.channel_not_exists")).setEphemeral(true).queue();
 				return;
 			}
 			long messageID = 0;
@@ -79,22 +82,28 @@ public class ReactionRole extends SlashCommand
 				messageID = Long.parseLong(event.getOption("message_id").getAsString());
 			} catch (Exception e)
 			{
-				ctx.reply(CommandContext.ERROR+" This is not a valid message-id!").setEphemeral(true).queue();
+				ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.message_invalid")).setEphemeral(true).queue();
+				return;
 			}
 			channel.retrieveMessageById(messageID).queue(
 					(message) ->
 					{
 						ReactionHelper.removeAllReactions(message.getIdLong());
 						message.clearReactions().queue(s -> {}, e -> {});
-						ctx.reply(CommandContext.SUCCESS+" Reaction-Roles have been removed successfully!").setEphemeral(true).queue();
-					},
-					(error) -> ctx.reply(CommandContext.ERROR+" This message does not exist!").setEphemeral(true).queue());
+						ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.reactionroles.removed_success")).setEphemeral(true).queue();
+					}, new ErrorHandler()
+							.handle(ErrorResponse.UNKNOWN_MESSAGE, (err) -> ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.message_not_exists")).setEphemeral(true).queue())
+							.handle(EnumSet.allOf(ErrorResponse.class), (err) -> {
+								ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
+								LOGGER.error("An error occured whilst trying to remove reaction-roles!", err);
+							})
+			);
 		}else if(subcommand.equalsIgnoreCase("create"))
 		{
 			TextChannel channel = (TextChannel) event.getOption("channel").getAsChannel();
 			if(channel == null)
 			{
-				ctx.reply(CommandContext.ERROR+" This channel does not exist!").setEphemeral(true).queue();
+				ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.channel_not_exists")).setEphemeral(true).queue();
 				return;
 			}
 			long messageID = 0;
@@ -103,7 +112,8 @@ public class ReactionRole extends SlashCommand
 				messageID = Long.parseLong(event.getOption("message_id").getAsString());
 			} catch (Exception e)
 			{
-				ctx.reply(CommandContext.ERROR+" This is not a valid message-id!").setEphemeral(true).queue();
+				ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.message_invalid")).setEphemeral(true).queue();
+				return;
 			}
 			channel.retrieveMessageById(messageID).queue(
 					(message) ->
@@ -111,7 +121,7 @@ public class ReactionRole extends SlashCommand
 						Role role = event.getOption("role").getAsRole();
 						if(!bot.canInteract(role))
 						{
-							ctx.reply(CommandContext.ERROR+" I cannot interact with this role!").setEphemeral(true).queue();
+							ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.cannot_interact_role", role.getAsMention())).setEphemeral(true).queue();
 							return;
 						}
 						String emoticon = event.getOption("emote").getAsString();
@@ -128,14 +138,17 @@ public class ReactionRole extends SlashCommand
 								(success) ->
 								{
 									ReactionHelper.addReaction(message.getIdLong(), finalEmote, role.getIdLong());
-									ctx.reply(CommandContext.SUCCESS+" The Reaction-Role has been successfully created!").setEphemeral(true).queue();
+									ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.reactionroles.added_success")).setEphemeral(true).queue();
 								},
 								new ErrorHandler()
-								.handle(ErrorResponse.UNKNOWN_EMOJI, (e) -> ctx.reply(CommandContext.ERROR+" The emote you entered is not valid!").setEphemeral(true).queue())
-								.handle(EnumSet.allOf(ErrorResponse.class), (e) -> ctx.reply(CommandContext.ERROR+" An error occured! "+e.getMessage()).setEphemeral(true).queue())
+								.handle(ErrorResponse.UNKNOWN_EMOJI, (e) -> ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.emote_invalid")).setEphemeral(true).queue())
+								.handle(EnumSet.allOf(ErrorResponse.class), (e) -> {
+									ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
+									LOGGER.error("An error occured whilst adding reaction-role!", e);
+								})
 						);
 					},
-					(error) -> ctx.reply(CommandContext.ERROR+" This message does not exist!").setEphemeral(true).queue());
+					(error) -> ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.message_not_exists")).setEphemeral(true).queue());
 		}
 	}
 }

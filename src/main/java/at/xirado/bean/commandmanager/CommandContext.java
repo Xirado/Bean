@@ -1,6 +1,6 @@
 package at.xirado.bean.commandmanager;
 
-import at.xirado.bean.translation.TranslationHandler;
+import at.xirado.bean.translation.I18n;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -26,7 +26,7 @@ public class CommandContext
         if(event.getGuild() != null)
         {
             Locale serverLocale = event.getGuild().getLocale();
-            if(TranslationHandler.getForLanguage(serverLocale.toLanguageTag()) == null)
+            if(I18n.getForLanguage(serverLocale.toLanguageTag()) == null)
             {
                 this.language = "en_US";
             }else
@@ -44,8 +44,17 @@ public class CommandContext
     public String getLocalized(String query, Object... objects)
     {
         Guild g = event.getGuild();
-        if(g != null) return String.format(TranslationHandler.ofGuild(g).get(query), objects);
-        return String.format(TranslationHandler.getForLanguage("en_US").get(query), objects);
+        if(g != null) return String.format(I18n.ofGuild(g).get(query), objects);
+        return String.format(I18n.getForLanguage("en_US").get(query), objects);
+    }
+
+    public I18n getLanguage()
+    {
+        Guild g = event.getGuild();
+        I18n language;
+        if(g != null) language =  I18n.ofGuild(g);
+        else language = I18n.getForLanguage("en_US");
+        return language;
     }
 
     public CommandReplyAction reply(String content)
@@ -66,6 +75,16 @@ public class CommandContext
     public CommandReplyAction replyFormat(String format, Object... args)
     {
         return event.replyFormat(format, args).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
+    }
+
+    public CommandReplyAction replyError(String content)
+    {
+        return event.reply(ERROR+" "+content).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
+    }
+
+    public CommandReplyAction replyErrorFormat(String format, Object... args)
+    {
+        return event.replyFormat(ERROR+" "+format, args).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
     }
 
 

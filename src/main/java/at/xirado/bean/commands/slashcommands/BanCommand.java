@@ -66,7 +66,7 @@ public class BanCommand extends SlashCommand
                 return;
             }
         }
-        Case bancase = Case.createCase(CaseType.BAN, g.getIdLong(), targetUser.getIdLong(), sender.getIdLong(), reason != null ? reason : "No reason specified", -1);
+        Case bancase = Case.createCase(CaseType.BAN, g.getIdLong(), targetUser.getIdLong(), sender.getIdLong(), reason != null ? reason : ctx.getLocalized("commands.noreason"), -1);
         if(bancase == null)
         {
             ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
@@ -88,7 +88,7 @@ public class BanCommand extends SlashCommand
         g.ban(targetUser, deldays, bancase.getReason()).queue(
                 (success) ->
                 {
-                    ctx.reply(CommandContext.SUCCESS+" "+targetUser.getAsMention()+" has been banned.\n`Reason: "+bancase.getReason()+" (#"+bancase.getCaseID()+")`").setEphemeral(true).queue();
+                    ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.ban.has_been_banned", targetUser.getAsMention())+"\n`"+ctx.getLocalized("commands.reason")+": "+bancase.getReason()+" (#"+bancase.getCaseID()+")`").setEphemeral(true).queue();
                     TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(g.getIdLong());
                     EmbedBuilder builder2 = new EmbedBuilder()
                             .setTimestamp(Instant.now())

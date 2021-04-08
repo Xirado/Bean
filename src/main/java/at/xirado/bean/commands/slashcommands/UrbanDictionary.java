@@ -49,7 +49,7 @@ public class UrbanDictionary extends SlashCommand
         {
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(Color.decode("#1D2439"))
-                    .setTitle("Sorry, I haven't found anything...")
+                    .setTitle(ctx.getLocalized("commands.urban.not_found"))
                     .setTimestamp(Instant.now());
             ctx.reply(builder.build()).queue();
             return;
@@ -67,7 +67,7 @@ public class UrbanDictionary extends SlashCommand
                 match -> "["+match.group().replaceAll("\\[|\\]", "")+"]"+"(https://urbandictionary.com/define.php?term="+match.group().replaceAll(" ", "+").replaceAll("\\[|\\]", "")+")");
         if(description.length() > 1024)
         {
-            String replacestring = "[Read more]("+result.getPermalink()+")";
+            String replacestring = "["+ctx.getLocalized("general.read_more")+"]("+result.getPermalink()+")";
             String split = description.substring(0,1024-replacestring.length());
             description = split+replacestring;
         }
@@ -86,7 +86,7 @@ public class UrbanDictionary extends SlashCommand
             example = matcher2.replaceAll(
                     match -> "["+match.group().replaceAll("\\[|\\]", "")+"]"+"(https://www.urbandictionary.com/define.php?term="+match.group().replaceAll(" ", "+").replaceAll("\\[|\\]", "")+")");
             if(example.length() <= 1022)
-                builder.addField("Example", "*"+example+"*", false);
+                builder.addField(ctx.getLocalized("general.example"), "*"+example+"*", false);
         }
         String authorurl = "https://www.urbandictionary.com/author.php?author=";
         authorurl += result.getAuthor().replaceAll(" ", "%20");
@@ -99,14 +99,14 @@ public class UrbanDictionary extends SlashCommand
         {
             EmbedBuilder builder2 = new EmbedBuilder()
                     .setColor(Color.decode("#1D2439"))
-                    .setTitle("UrbanDictionary sent invalid data!")
+                    .setTitle(ctx.getLocalized("commands.urban.invalid_data_received"))
                     .setTimestamp(Instant.now());
             ctx.reply(builder2.build()).queue();
             return;
         }
         String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
         monthformatted = months[month-1]+" "+Util.ordinal(day)+", "+year;
-        builder.addField("Author","["+result.getAuthor()+"]("+authorurl+")\n"+ monthformatted+"\n\uD83D\uDC4D "+result.getLikes()+" \uD83D\uDC4E "+result.getDislikes()+"\n"+"Permalink: "+result.getPermalink() , false);
+        builder.addField(ctx.getLocalized("general.author"),"["+result.getAuthor()+"]("+authorurl+")\n"+ monthformatted+"\n\uD83D\uDC4D "+result.getLikes()+" \uD83D\uDC4E "+result.getDislikes()+"\n"+"Permalink: "+result.getPermalink() , false);
         ctx.reply(builder.build()).queue();
     }
 }

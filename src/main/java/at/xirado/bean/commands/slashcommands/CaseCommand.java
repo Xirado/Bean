@@ -54,18 +54,18 @@ public class CaseCommand extends SlashCommand
             String caseID = event.getOption("case").getAsString();
             if(caseID.length() != 6)
             {
-                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.must_be_6_digit")).setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.casecmd.must_be_6_digit")).setEphemeral(true).queue();
                 return;
             }
             Case modcase = Punishments.getCaseByID(caseID, g.getIdLong());
             if(modcase == null)
             {
-                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.not_exists", caseID.toUpperCase())).setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.casecmd.not_exists", caseID.toUpperCase())).setEphemeral(true).queue();
                 return;
             }
             StringBuilder builder = new StringBuilder();
             builder.append(CommandContext.SUCCESS + " ").append(modcase.getType().getFriendlyName()).append(" - "+ctx.getLocalized("commands.case")+" #").append(modcase.getCaseID()).append("\n\n");
-            builder.append(" ").append(ctx.getLocalized("commands.issued")).append(FormattedDuration.getDuration(modcase.getCreatedAt()/1000, true)).append(" "+ctx.getLocalized("commands.by")+" <@").append(modcase.getModeratorID()).append(">").append("\n");
+            builder.append(ctx.getLocalized("commands.issued")).append(" ").append(FormattedDuration.getDuration(modcase.getCreatedAt() / 1000, true, ctx.getLanguage())).append(" "+ctx.getLocalized("commands.by")+" <@").append(modcase.getModeratorID()).append(">").append("\n");
             builder.append(ctx.getLocalized("commands.reason")).append(": ").append(modcase.getReason()).append("\n");
             if(modcase.getDuration() > 0)
             {
@@ -79,39 +79,39 @@ public class CaseCommand extends SlashCommand
             String reason = event.getOption("reason").getAsString();
             if(caseID.length() != 6)
             {
-                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.must_be_6_digit")).setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.casecmd.must_be_6_digit")).setEphemeral(true).queue();
                 return;
             }
             Case modcase = Punishments.getCaseByID(caseID, g.getIdLong());
             if(modcase == null)
             {
-                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.not_exists", caseID.toUpperCase())).setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.casecmd.not_exists", caseID.toUpperCase())).setEphemeral(true).queue();
                 return;
             }
             modcase.setReason(reason);
-            ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.case.reason_changed", caseID.toUpperCase(), reason)).setEphemeral(true).queue();
+            ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.casecmd.reason_changed", caseID.toUpperCase(), reason)).setEphemeral(true).queue();
         }else if(event.getSubcommandName().equals("delete"))
         {
             String caseID = event.getOption("case").getAsString();
             if(caseID.length() != 6)
             {
-                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.must_be_6_digit")).setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.casecmd.must_be_6_digit")).setEphemeral(true).queue();
                 return;
             }
             Case modcase = Punishments.getCaseByID(caseID, g.getIdLong());
             if(modcase == null)
             {
-                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.not_exists", caseID.toUpperCase())).setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.casecmd.not_exists", caseID.toUpperCase())).setEphemeral(true).queue();
                 return;
             }
             boolean x = modcase.deleteCase();
             if(x)
             {
-                ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.case.deleted", modcase.getCaseID())).setEphemeral(true).queue();
+                ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.casecmd.deleted", modcase.getCaseID())).setEphemeral(true).queue();
 
             }else
             {
-                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.case.err_deleted", modcase.getCaseID())).setEphemeral(true).queue();
+                ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.casecmd.err_deleted", modcase.getCaseID())).setEphemeral(true).queue();
             }
         }
     }

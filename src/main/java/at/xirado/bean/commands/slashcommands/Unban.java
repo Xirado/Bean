@@ -43,13 +43,8 @@ public class Unban extends SlashCommand
     {
         Guild g = event.getGuild();
         if(g == null) return;
-        SlashCommandEvent.OptionData optionData = event.getOption("user");
-        if(optionData == null)
-        {
-            ctx.reply(CommandContext.ERROR+" An error occured. Please try again later!").setEphemeral(true).queue();
-            return;
-        }
-        User target = optionData.getAsUser();
+        User target = event.getOption("user").getAsUser();
+        if(target == null) return;
         g.retrieveBan(target).queue(
                 (ban) ->
                 {
@@ -75,14 +70,14 @@ public class Unban extends SlashCommand
                                 {
                                     Util.closeQuietly(connection);
                                 }
-                                ctx.reply(CommandContext.SUCCESS+" "+target.getAsMention()+" has been unbanned").setEphemeral(true).queue();
+                                ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.unban.has_been_unbanned", target.getAsTag())).setEphemeral(true).queue();
                                 TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(g.getIdLong());
                                 EmbedBuilder builder = new EmbedBuilder()
                                         .setColor(Color.green)
-                                        .setTitle("Unban")
+                                        .setTitle(ctx.getLocalized("commands.unban.unban"))
                                         .setThumbnail(target.getEffectiveAvatarUrl())
-                                        .addField("unbanned", target.getAsMention()+" ("+target.getAsTag()+")" , true)
-                                        .addField("moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true);
+                                        .addField(ctx.getLocalized("commands.target"), target.getAsMention()+" ("+target.getAsTag()+")" , true)
+                                        .addField("Moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true);
                                 if(logchannel != null)
                                 {
                                     logchannel.sendMessage(builder.build()).queue();
@@ -90,12 +85,12 @@ public class Unban extends SlashCommand
 
                             },
                             (error) ->
-                                    ctx.reply(CommandContext.ERROR+" An error occured. Please try again later!").setEphemeral(true).queue()
+                                    ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue()
                     );
                 },
                 new ErrorHandler()
-                    .handle(ErrorResponse.UNKNOWN_BAN, (ex) -> ctx.reply(CommandContext.ERROR+" This user is not banned!").setEphemeral(true).queue())
-                    .handle(EnumSet.allOf(ErrorResponse.class), (ex) -> ctx.reply(CommandContext.ERROR+" An error occured. Please try again later!").setEphemeral(true).queue())
+                    .handle(ErrorResponse.UNKNOWN_BAN, (ex) -> ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.unban.not_banned")).setEphemeral(true).queue())
+                    .handle(EnumSet.allOf(ErrorResponse.class), (ex) -> ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue())
         );
     }
 }

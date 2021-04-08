@@ -53,7 +53,7 @@ public class EditMessage extends Command
                 message ->
                 {
                     if (!message.getAuthor().getId().equals(DiscordBot.instance.jda.getSelfUser().getId())) {
-                        channel.sendMessage(Util.SimpleEmbed(Color.red, "This message was not sent by me!")).queue();
+                        channel.sendMessage(Util.SimpleEmbed(Color.red, e.getLocalized("commands.message_not_sent_by_me"))).queue();
                         return;
                     }
                     StringBuilder sb = new StringBuilder();
@@ -71,8 +71,7 @@ public class EditMessage extends Command
                         message.editMessage(b.build()).queue(
                                 success ->
                                 {
-                                    channel.sendMessage(Util.SimpleEmbed(Color.green, "Message has been edited!")).queue();
-                                    return;
+                                    channel.sendMessage(Util.SimpleEmbed(Color.green, e.getLocalized("commands.message_edited"))).queue();
                                 },
                                 Util.handle(channel)
                         );
@@ -81,16 +80,14 @@ public class EditMessage extends Command
                     message.editMessage(sbtostring).queue(
                             success ->
                             {
-                                channel.sendMessage(Util.SimpleEmbed(Color.green, "Message has been edited!")).queue();
-                                return;
+                                channel.sendMessage(Util.SimpleEmbed(Color.green, e.getLocalized("commands.message_edited"))).queue();
                             },
                             Util.handle(channel)
                     );
                 },
                 error ->
                 {
-                    channel.sendMessage(Util.SimpleEmbed(Color.red, "Invalid Message-ID")).queue();
-                    return;
+                    channel.sendMessage(Util.SimpleEmbed(Color.red, e.getLocalized("commands.message_not_exists"))).queue();
                 }
         );
     }

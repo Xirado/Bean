@@ -3,7 +3,7 @@ package at.xirado.bean.commandmanager;
 
 import at.xirado.bean.commands.slashcommands.*;
 import at.xirado.bean.main.DiscordBot;
-import at.xirado.bean.translation.TranslationHandler;
+import at.xirado.bean.translation.I18n;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.commands.CommandHook;
 import net.dv8tion.jda.api.entities.Guild;
@@ -53,13 +53,20 @@ public class SlashCommandManager {
         registerCommand(new Mock());
         registerCommand(new ReactionRole());
         registerCommand(new Avatar());
+        registerCommand(new TestCommand());
+        registerCommand(new ModlogCommand());
 
         queueToDiscord();
     }
 
     private void queueToDiscord()
     {
-        commandUpdateAction.queue();
+        if(!DiscordBot.debugMode)
+        {
+            commandUpdateAction.queue();
+        }else {
+            DiscordBot.getInstance().jda.updateCommands().queue();
+        }
         for(Map.Entry<Long, List<SlashCommand>> entrySet : registeredGuildCommands.entrySet())
         {
             Long guildID = entrySet.getKey();
@@ -69,14 +76,16 @@ public class SlashCommandManager {
             if(slashCommands.isEmpty()) continue;
             Guild guild = DiscordBot.getInstance().jda.getGuildById(guildID);
             if(guild == null) continue;
-
+            System.out.println("Registered commands for "+guild.getName()+":");
             CommandUpdateAction guildCommandUpdateAction = guild.updateCommands();
             boolean shouldQueue = false;
             for(SlashCommand cmd : slashCommands)
             {
                 guildCommandUpdateAction = guildCommandUpdateAction.addCommands(cmd.getCommandData());
+                System.out.print(cmd.getCommandData().getName()+" ");
                 if(!shouldQueue) shouldQueue = true;
             }
+            System.out.println();
             if(shouldQueue)  guildCommandUpdateAction.queue();
         }
     }
@@ -110,7 +119,7 @@ public class SlashCommandManager {
             Guild guild = DiscordBot.getInstance().jda.getGuildById(testServerID);
             if(guild != null)
             {
-                List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(guildID) ? registeredGuildCommands.get(guildID) : new ArrayList<>();
+                List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(testServerID) ? registeredGuildCommands.get(testServerID) : new ArrayList<>();
                 alreadyRegistered.add(command);
                 if(registeredGuildCommands.containsKey(testServerID))
                 {
@@ -119,7 +128,9 @@ public class SlashCommandManager {
                 {
                     registeredGuildCommands.put(testServerID, alreadyRegistered);
                 }
+                System.out.println("Registered guild-only command ("+guild.getName()+") -> "+command.getCommandData().getName());
             }
+            return;
         }
         commandUpdateAction.addCommands(command.getCommandData());
         registeredCommands.add(command);
@@ -156,7 +167,7 @@ public class SlashCommandManager {
                                         if(!member.hasPermission(permission))
                                         {
                                             event.acknowledge(true)
-                                                    .flatMap(v -> hook.sendMessage(TranslationHandler.ofGuild(guild).get("general.no_perms")))
+                                                    .flatMap(v -> hook.sendMessage(I18n.ofGuild(guild).get("general.no_perms")))
                                                     .queue();
                                             return;
                                         }
@@ -170,7 +181,7 @@ public class SlashCommandManager {
                                         if(!event.getGuild().getSelfMember().hasPermission(permission))
                                         {
                                             event.acknowledge(true)
-                                                    .flatMap(v -> hook.sendMessage(TranslationHandler.ofGuild(guild).get("general.no_bot_perms1")))
+                                                    .flatMap(v -> hook.sendMessage(I18n.ofGuild(guild).get("general.no_bot_perms1")))
                                                     .queue();
                                             return;
                                         }
@@ -191,7 +202,7 @@ public class SlashCommandManager {
                         foundCommand = true;
                         if(member == null && !cmd.isRunnableInDM())
                         {
-                            event.reply(String.format(TranslationHandler.getForLanguage("en_US").get("commands.cannot_run_in_dm"), CommandContext.ERROR)).setEphemeral(true).queue();
+                            event.reply(String.format(I18n.getForLanguage("en_US").get("commands.cannot_run_in_dm"), CommandContext.ERROR)).setEphemeral(true).queue();
                             return;
                         }
                         CommandHook hook = event.getHook();
@@ -206,7 +217,7 @@ public class SlashCommandManager {
                                     if(!member.hasPermission(permission))
                                     {
                                         event.acknowledge(true)
-                                                .flatMap(v -> hook.sendMessage(TranslationHandler.ofGuild(event.getGuild()).get("general.no_perms")))
+                                                .flatMap(v -> hook.sendMessage(I18n.ofGuild(event.getGuild()).get("general.no_perms")))
                                                 .queue();
                                         return;
                                     }
@@ -220,7 +231,7 @@ public class SlashCommandManager {
                                     if(!event.getGuild().getSelfMember().hasPermission(permission))
                                     {
                                         event.acknowledge(true)
-                                                .flatMap(v -> hook.sendMessage(TranslationHandler.ofGuild(event.getGuild()).get("general.no_bot_perms1")))
+                                                .flatMap(v -> hook.sendMessage(I18n.ofGuild(event.getGuild()).get("general.no_bot_perms1")))
                                                 .queue();
                                         return;
                                     }
@@ -231,7 +242,7 @@ public class SlashCommandManager {
                         cmd.executeCommand(event, member, new CommandContext(event));
                     }
                 }
-                if(!foundCommand && member != null) event.reply(TranslationHandler.ofGuild(event.getGuild()).get("commands.disabled_or_unknown")).setEphemeral(true).queue();
+                if(!foundCommand && member != null) event.reply(I18n.ofGuild(event.getGuild()).get("commands.disabled_or_unknown")).setEphemeral(true).queue();
 
             }catch (Exception e)
             {

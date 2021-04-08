@@ -70,7 +70,7 @@ public class ModlogCommand extends Command
                     StringBuilder sb = new StringBuilder();
                     for(Case modcase : allCases)
                     {
-                        sb.append(modcase.getType().getFriendlyName()).append(" (#").append(modcase.getCaseID()).append(") **").append(modcase.getReason()).append("** • ").append(FormattedDuration.getDuration(modcase.getCreatedAt() / 1000, true)).append("\n");
+                        sb.append(modcase.getType().getFriendlyName()).append(" (#").append(modcase.getCaseID()).append(") **").append(modcase.getReason()).append("** • ").append(FormattedDuration.getDuration(modcase.getCreatedAt() / 1000, true, event.getLanguage())).append("\n");
                     }
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(Color.orange)

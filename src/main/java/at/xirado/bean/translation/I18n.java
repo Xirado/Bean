@@ -7,25 +7,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class TranslationHandler
+public class I18n
 {
-    private static final Logger log = LoggerFactory.getLogger(TranslationHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(I18n.class);
 
     public static final List<String> LANGUAGES = new ArrayList<>();
     private static final ThreadLocal<String> ROOT = new ThreadLocal<>();
-    private static Map<String, TranslationHandler> LANGUAGE_MAP;
+    private static Map<String, I18n> LANGUAGE_MAP;
 
     public static void init()
     {
-        Map<String, TranslationHandler> m = new HashMap<>();
+        Map<String, I18n> m = new HashMap<>();
         var mapper = new ObjectMapper();
 
-        try (var is = TranslationHandler.class.getResourceAsStream("/assets/languages/list.txt")) {
+        try (var is = I18n.class.getResourceAsStream("/assets/languages/list.txt")) {
             for (var lang : IOUtils.toString(is, StandardCharsets.UTF_8).trim().split("\n")) {
                 var language = lang.trim();
                 LANGUAGES.add(language);
@@ -36,12 +35,12 @@ public class TranslationHandler
 
         for (String lang : LANGUAGES) {
 
-            try(var is = TranslationHandler.class.getResourceAsStream("/assets/languages/" + lang)) {
+            try(var is = I18n.class.getResourceAsStream("/assets/languages/" + lang)) {
                 @SuppressWarnings("unchecked")
                 Map<String, ?> map = (Map<String, ?>) mapper.readValue(is, Map.class);
 
                 var name = lang.replace(".json", "");
-                m.put(name, new TranslationHandler(map, lang));
+                m.put(name, new I18n(map, lang));
 
                 log.info("Initialized I18n for: {}", name);
             } catch (Exception e) {
@@ -55,12 +54,18 @@ public class TranslationHandler
     private final Map<String, ?> map;
     private final String language;
 
-    private TranslationHandler(Map<String, ?> map, String language) {
+    @Override
+    public String toString()
+    {
+        return this.language;
+    }
+
+    private I18n(Map<String, ?> map, String language) {
         this.map = map;
         this.language = language;
     }
 
-    public static TranslationHandler getForLanguage(String language)
+    public static I18n getForLanguage(String language)
     {
         var lang = LANGUAGE_MAP.get(language);
         if (lang == null) {
@@ -70,7 +75,7 @@ public class TranslationHandler
         return lang;
     }
 
-    public static TranslationHandler ofGuild(Guild guild)
+    public static I18n ofGuild(Guild guild)
     {
         Locale locale = guild.getLocale();
         String tag = locale.toLanguageTag();
@@ -138,6 +143,20 @@ public class TranslationHandler
         }
 
         String result = get(map, actualQuery.split("\\."), false);
+        return result == null ? query : result;
+    }
+
+    public String get(String query, Object... objects) {
+        var root = ROOT.get();
+        String actualQuery;
+
+        if (root == null) {
+            actualQuery = query;
+        } else {
+            actualQuery = root + "." + query;
+        }
+
+        String result = String.format(get(map, actualQuery.split("\\."), false), objects);
         return result == null ? query : result;
     }
 

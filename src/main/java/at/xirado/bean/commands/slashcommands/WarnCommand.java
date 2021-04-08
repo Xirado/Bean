@@ -36,31 +36,31 @@ public class WarnCommand extends SlashCommand
         Guild g = event.getGuild();
         if(!permissionCheckerManager.isModerator(sender) && !sender.hasPermission(Permission.ADMINISTRATOR))
         {
-            ctx.reply(CommandContext.DENY+" You don't have permission to do this!").setEphemeral(true).queue();
+            ctx.reply(CommandContext.DENY+" "+ctx.getLocalized("general.no_perms")).setEphemeral(true).queue();
             return;
         }
         Member targetMember = event.getOption("member").getAsMember();
         if(targetMember == null)
         {
-            ctx.reply(CommandContext.ERROR+" This user is not on this server!").setEphemeral(true).queue();
+            ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.user_not_in_guild")).setEphemeral(true).queue();
             return;
         }
-        String Reason = event.getOption("reason") == null ? "No reason specified" : event.getOption("reason").getAsString();
+        String Reason = event.getOption("reason") == null ? ctx.getLocalized("commands.noreason") : event.getOption("reason").getAsString();
         boolean withReason = event.getOption("reason") != null;
         if(!sender.canInteract(targetMember))
         {
-            ctx.reply(CommandContext.DENY+" You cannot warn this member!").setEphemeral(true).queue();
+            ctx.reply(CommandContext.DENY+" "+ctx.getLocalized("commands.warn.you_cannot_warn")).setEphemeral(true).queue();
             return;
         }
         if(permissionCheckerManager.isModerator(targetMember) || targetMember.hasPermission(Permission.ADMINISTRATOR))
         {
-            ctx.reply(CommandContext.DENY+" You cannot warn a moderator!").setEphemeral(true).queue();
+            ctx.reply(CommandContext.DENY+" "+ctx.getLocalized("commands.warn.you_cannot_warn_moderator")).setEphemeral(true).queue();
             return;
         }
         Case modcase = Case.createCase(CaseType.WARN, g.getIdLong(), targetMember.getIdLong(), sender.getIdLong(), Reason, 0);
         if(modcase == null)
         {
-            ctx.reply(CommandContext.ERROR+" An error occured! Please try again later.").setEphemeral(true).queue();
+            ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
             return;
         }
         targetMember.getUser().openPrivateChannel().queue(
@@ -68,23 +68,23 @@ public class WarnCommand extends SlashCommand
                 {
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(CaseType.WARN.getEmbedColor())
-                            .setAuthor("You have been warned on "+g.getName()+"!", null, g.getIconUrl())
-                            .addField("Reason", Reason, true)
+                            .setAuthor(ctx.getLocalized("commands.warn.you_have_been_warned", g.getName()), null, g.getIconUrl())
+                            .addField(ctx.getLocalized("commands.reason"), Reason, true)
                             .addField("Moderator", sender.getUser().getAsTag(), true);
                     privateChannel.sendMessage(builder.build()).queue(success -> {}, error -> {});
                 }, (e) -> {});
 
-        ctx.reply(CommandContext.SUCCESS+" "+targetMember.getUser().getAsMention()+" has been warned.\n`Reason: "+modcase.getReason()+" (#"+modcase.getCaseID()+")`").setEphemeral(true).queue();
+        ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.warn.has_been_warned", targetMember.getUser().getAsMention())+"\n`"+ctx.getLocalized("commands.reason")+": "+modcase.getReason()+" (#"+modcase.getCaseID()+")`").setEphemeral(true).queue();
 
         EmbedBuilder mainembed = new EmbedBuilder()
                 .setThumbnail(targetMember.getUser().getEffectiveAvatarUrl())
                 .setColor(CaseType.WARN.getEmbedColor())
                 .setTimestamp(Instant.now())
-                .setFooter("Target ID: "+targetMember.getIdLong())
+                .setFooter(ctx.getLocalized("commands.target_id")+": "+targetMember.getIdLong())
                 .setTitle("Warn | Case #"+modcase.getCaseID())
-                .addField("Target", targetMember.getAsMention()+" ("+targetMember.getUser().getAsTag()+")", true)
+                .addField(ctx.getLocalized("commands.target"), targetMember.getAsMention()+" ("+targetMember.getUser().getAsTag()+")", true)
                 .addField("Moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true)
-                .addField("Reason", Reason, false);
+                .addField(ctx.getLocalized("commands.reason"), Reason, false);
         if(!withReason)
         {
             mainembed.addField("", "Use `"+DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())+"case "+modcase.getCaseID()+" reason [Reason]`\n to add a reason to this warn.", false);
@@ -93,32 +93,6 @@ public class WarnCommand extends SlashCommand
         if(logChannel != null)
         {
             logChannel.sendMessage(mainembed.build()).queue(s -> {}, e -> {});
-        }
-    }
-
-    /**
-     * HTL-Server
-     * @param m Member
-     */
-    public static void doWarnPolicy(Member m)
-    {
-        List<Case> cases = Punishments.getAllWarns(m);
-        if(cases == null || cases.isEmpty()) return;
-        int warnsLessThan100DaysOld = 0;
-        for(Case modcase : cases)
-        {
-            if(!modcase.isActive()) continue;
-            if(modcase.getCreatedAt() > System.currentTimeMillis()-8640000000L)
-            {
-                warnsLessThan100DaysOld++;
-            }
-        }
-        switch (warnsLessThan100DaysOld)
-        {
-            case 0:
-                return;
-            case 1:
-
         }
     }
 }

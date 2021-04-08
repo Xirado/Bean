@@ -40,7 +40,7 @@ public class Haste extends Command
                 .setFooter("Hastebin")
                 .setTimestamp(Instant.now())
                 .setAuthor(event.getAuthor().getAsTag(), null, event.getAuthor().getEffectiveAvatarUrl())
-                .setDescription("Your haste is finished: "+linkresponse);
+                .setDescription(event.getLocalized("commands.haste_finished", linkresponse));
         event.reply(builder.build());
 
     }

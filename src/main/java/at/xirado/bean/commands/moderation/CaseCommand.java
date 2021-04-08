@@ -8,7 +8,6 @@ import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.Punishments;
-import at.xirado.bean.translation.TranslationHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -53,13 +52,13 @@ public class CaseCommand extends Command
         {
             if(args[0].length() != 6)
             {
-                event.replyError(event.getLocalized("commands.case.must_be_6_digit"));
+                event.replyError(event.getLocalized("commands.casecmd.must_be_6_digit"));
                 return;
             }
             Case modcase = Punishments.getCaseByID(args[0], g.getIdLong());
             if(modcase == null)
             {
-                event.replyError(event.getLocalized("commands.case.not_exists", args[0]));
+                event.replyError(event.getLocalized("commands.casecmd.not_exists", args[0]));
                 return;
             }
             EmbedBuilder builder = new EmbedBuilder()
@@ -80,13 +79,13 @@ public class CaseCommand extends Command
         {
             if(args.length < 3)
             {
-                event.replyError(event.getLocalized("commands.case.invalid_usage", DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())));
+                event.replyError(event.getLocalized("commands.casecmd.invalid_usage", DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())));
                 return;
             }
             String caseID = args[0];
             if(caseID.length() != 6)
             {
-                event.replyError(event.getLocalized("commands.case.must_be_6_digit"));
+                event.replyError(event.getLocalized("commands.casecmd.must_be_6_digit"));
                 return;
             }
             StringBuilder sb = new StringBuilder();
@@ -98,13 +97,13 @@ public class CaseCommand extends Command
             Case modcase = Punishments.getCaseByID(caseID, g.getIdLong());
             if(modcase == null)
             {
-                event.replyError(event.getLocalized("commands.case.not_exists", caseID));
+                event.replyError(event.getLocalized("commands.casecmd.not_exists", caseID));
                 return;
             }
             modcase.setReason(Reason);
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(Color.green)
-                    .setDescription(event.getLocalized("commands.case.reason_changed", modcase.getCaseID(), Reason))
+                    .setDescription(event.getLocalized("commands.casecmd.reason_changed", modcase.getCaseID(), Reason))
                     .setTimestamp(Instant.now());
             event.reply(builder.build());
             if(event.hasLogChannel())

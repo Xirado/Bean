@@ -11,7 +11,7 @@ import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import at.xirado.bean.punishmentmanager.Punishments;
 import at.xirado.bean.handlers.*;
-import at.xirado.bean.translation.TranslationHandler;
+import at.xirado.bean.translation.I18n;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jmusicbot.Bot;
@@ -104,7 +104,7 @@ public class DiscordBot
         }
         //Util.setLoggingLevel(Level.INFO);
         //Console.info("Logging level set to \"INFO\"");
-        TranslationHandler.init();
+        I18n.init();
         File file = new File("token.txt");
         if(!file.exists())
         {
@@ -130,6 +130,7 @@ public class DiscordBot
 
         this.path = Util.getPath();
         JSONConfig.updateConfig();
+        debugMode = runningFromIntelliJ();
         SQL.connect();
         SQL.initKeepAlive();
         if(!SQL.isConnected())
@@ -262,7 +263,6 @@ public class DiscordBot
             }
         });
         LOGGER.info("Successfully started up!");
-        debugMode = runningFromIntelliJ();
         if(debugMode)
         {
             LOGGER.warn("Debug mode enabled! Not listening for any user-commands.");

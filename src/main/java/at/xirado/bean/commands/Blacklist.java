@@ -57,7 +57,7 @@ public class Blacklist extends Command
 			if(blMan.containsBlacklistedWord(guild.getIdLong(), args[1].toUpperCase()))
 			{
 				EmbedBuilder builder = new EmbedBuilder()
-						.setDescription("Word is already on blacklist!")
+						.setDescription(e.getLocalized("commands.blacklist.already_on_blacklist"))
 						.setColor(Color.RED)
 						.setTimestamp(Instant.now());
 				channel.sendMessage(builder.build()).queue();
@@ -66,10 +66,10 @@ public class Blacklist extends Command
 			}
 			blMan.addBlacklistedWord(guild.getIdLong(), args[1].toUpperCase());
 			EmbedBuilder builder = new EmbedBuilder()
-				.setDescription("Word has been added to blacklist")
+				.setDescription(e.getLocalized("commands.blacklist.added"))
 				.setColor(Color.GREEN)
 				.addField("Moderator", user.getAsMention(), true)
-				.addField("Word", StringUtils.capitalize(args[1].toLowerCase()), true)
+				.addField(e.getLocalized("commands.blacklist.word"), StringUtils.capitalize(args[1].toLowerCase()), true)
 				.setTimestamp(Instant.now());
 			channel.sendMessage(builder.build()).queue();
 		}else if(subcommand.equalsIgnoreCase("remove"))
@@ -83,7 +83,7 @@ public class Blacklist extends Command
 			if(!blMan.containsBlacklistedWord(guild.getIdLong(), args[1].toUpperCase()))
 			{
 				EmbedBuilder builder = new EmbedBuilder()
-						.setDescription("Word is not on blacklist!")
+						.setDescription(e.getLocalized("commands.blacklist.not_on_blacklist"))
 						.setColor(Color.RED)
 						.setTimestamp(Instant.now());
 				channel.sendMessage(builder.build()).queue();
@@ -92,10 +92,10 @@ public class Blacklist extends Command
 			}
 			blMan.removeBlacklistedWord(guild.getIdLong(), args[1].toUpperCase());
 			EmbedBuilder builder = new EmbedBuilder()
-					.setDescription("Word has been removed from blacklist!")
+					.setDescription(e.getLocalized("commands.blacklist.removed"))
 					.setColor(Color.GREEN)
 					.addField("Moderator", user.getAsMention(), true)
-					.addField("Word", StringUtils.capitalize(args[1].toLowerCase()), true)
+					.addField(e.getLocalized("commands.blacklist.word"), StringUtils.capitalize(args[1].toLowerCase()), true)
 					.setTimestamp(Instant.now());
 				channel.sendMessage(builder.build()).queue();
 				return;
@@ -106,7 +106,7 @@ public class Blacklist extends Command
 			if(currentlist.size() <= 0)
 			{
 				EmbedBuilder builder = new EmbedBuilder()
-						.setDescription("There are no bad words set!")
+						.setDescription(e.getLocalized("commands.blacklist.empty"))
 						.setColor(Color.RED)
 						.setTimestamp(Instant.now());
 					channel.sendMessage(builder.build()).queue();
@@ -125,16 +125,14 @@ public class Blacklist extends Command
 						EmbedBuilder builder = new EmbedBuilder()
 								.setColor(Color.green)
 								.setTimestamp(Instant.now())
-								.setFooter("All blacklisted words from "+guild.getName())
-								.setTitle("Blacklisted words")
+								.setFooter(e.getLocalized("commands.blacklist.footer", guild.getName()))
+								.setTitle(e.getLocalized("commands.blacklist.header"))
 								.setDescription("```"+allwords+"```")
 								.setAuthor(guild.getName(), null, guild.getIconUrl());
 						pc.sendMessage(builder.build()).queue(
 								null,
 								Util.handle(channel)
 								);
-						
-						return;
 					},
 					Util.handle(channel)
 			);
