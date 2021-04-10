@@ -78,7 +78,7 @@
 			"no_modlogs": "Von diesem Nutzer sind keine Logs hinterlegt!",
 			"for_user": "Modlogs von %1$s",
 			"last_10_incidents": "Letzte 10 Einträge",
-			"more_infos": "Nutze `%1$s case [Case-ID]` für mehr Infos",
+			"more_infos": "Nutze `%1$scase [Case-ID]` für mehr Infos",
 			"more_infos_slash": "Nutze `/case show [CaseID]` für mehr Infos"
 		},
 		"mute": {
