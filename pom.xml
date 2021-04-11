@@ -54,7 +54,7 @@
         <dependency>
             <groupId>com.github.dv8fromtheworld</groupId>
             <artifactId>jda</artifactId>
-            <version>feature~slash-commands-SNAPSHOT</version>
+            <version>8d511ee</version>
         </dependency>
 
         <dependency>

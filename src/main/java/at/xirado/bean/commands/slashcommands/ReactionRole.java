@@ -62,7 +62,6 @@ public class ReactionRole extends SlashCommand
 
 		Guild guild = event.getGuild();
 		Member bot = guild.getSelfMember();
-
 		String subcommand = event.getSubcommandName();
 		if(subcommand == null){
 			ctx.reply(ctx.getLocalized("commands.invalid_subcommand")).setEphemeral(true).queue();
@@ -70,7 +69,7 @@ public class ReactionRole extends SlashCommand
 		}
 		if(subcommand.equalsIgnoreCase("remove"))
 		{
-			TextChannel channel = (TextChannel) event.getOption("channel").getAsChannel();
+			TextChannel channel = (TextChannel) event.getOption("channel").getAsGuildChannel();
 			if(channel == null)
 			{
 				ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.channel_not_exists")).setEphemeral(true).queue();
@@ -100,7 +99,7 @@ public class ReactionRole extends SlashCommand
 			);
 		}else if(subcommand.equalsIgnoreCase("create"))
 		{
-			TextChannel channel = (TextChannel) event.getOption("channel").getAsChannel();
+			TextChannel channel = (TextChannel) event.getOption("channel").getAsGuildChannel();
 			if(channel == null)
 			{
 				ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.channel_not_exists")).setEphemeral(true).queue();
