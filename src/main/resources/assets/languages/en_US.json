@@ -138,7 +138,12 @@
 			
 		},
 		"message_clear" : "Deleted %1$s messages!",
-		"haste_finished" : "Your hastebin-link: %1$s"
+		"haste_finished" : "Your hastebin-link: %1$s",
+		"fact": {
+			"api_down" : "The API cannot be reached at the moment. Please try again later!",
+			"title" : "Useless fact",
+			"source" : "Source"
+		}
 	},
 	"time": {
 		"january" : "January",

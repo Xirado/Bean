@@ -41,6 +41,7 @@ public class TempbanCommand extends SlashCommand
                 .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "reason", "the reason for this ban")
                         .setRequired(false))
         );
+
         setNeededUserPermissions(Arrays.asList(Permission.BAN_MEMBERS));
         setNeededBotPermissions(Arrays.asList(Permission.BAN_MEMBERS));
     }

@@ -138,7 +138,12 @@
 			
 		},
 		"message_clear" : "Habe %1$s Nachrichten gelöscht!",
-		"haste_finished" : "Dein Hastebin-link: %1$s"
+		"haste_finished" : "Dein Hastebin-link: %1$s",
+		"fact": {
+			"api_down" : "Die API kann momentan nicht erreicht werden. Bitte versuche es später erneut!",
+			"title" : "Nutzloser Fakt",
+			"source" : "Quelle"
+		}
 	},
 	"time": {
 		"january" : "Januar",

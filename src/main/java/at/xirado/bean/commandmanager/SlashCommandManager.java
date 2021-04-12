@@ -55,6 +55,7 @@ public class SlashCommandManager {
         registerCommand(new Avatar());
         registerCommand(new TestCommand());
         registerCommand(new ModlogCommand());
+        registerCommand(new RandomFactCommand());
 
         queueToDiscord();
     }

@@ -5,9 +5,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,6 +113,6 @@ public abstract class SlashCommand
      * @param sender The member who sent the command (null if sent via DM)
      * @param ctx Helpful methods in context of the event
      */
-    public abstract void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull CommandContext ctx);
+    public abstract void executeCommand(@Nonnull SlashCommandEvent event, @Nullable Member sender, @Nonnull CommandContext ctx);
 
 }
