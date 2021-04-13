@@ -143,6 +143,23 @@
 			"api_down" : "The API cannot be reached at the moment. Please try again later!",
 			"title" : "Useless fact",
 			"source" : "Source"
+		},
+		"joke": {
+			"pun" : "Pun",
+			"nsfw" : "NSFW",
+			"religious" : "Religious",
+			"political" : "Political",
+			"racist" : "Racist",
+			"sexist" : "Sexist",
+			"explicit" : "Explicit",
+			"misc" : "Miscellaneous",
+			"dark" : "Dark",
+			"spooky" : "Spooky",
+			"christmas" : "Christmas",
+			"flags" : "Flag(s)",
+			"none" : "None",
+			"category" : "Category: %1$s"
+			
 		}
 	},
 	"time": {

@@ -1,0 +1,11 @@
+{
+  "token" : "yourbottokengoeshere",
+  "debug": false,
+  "database" : {
+    "host": "localhost",
+    "database": "Bean",
+    "username": "Bean",
+    "password": "Bean",
+    "port": 3306
+  }
+}

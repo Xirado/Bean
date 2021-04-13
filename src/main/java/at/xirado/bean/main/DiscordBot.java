@@ -4,6 +4,7 @@ import at.xirado.bean.commandmanager.CommandManager;
 import at.xirado.bean.commandmanager.ConsoleCommandManager;
 import at.xirado.bean.commandmanager.SlashCommandManager;
 import at.xirado.bean.logging.Shell;
+import at.xirado.bean.misc.JSON;
 import at.xirado.bean.misc.JSONConfig;
 import at.xirado.bean.misc.SQL;
 import at.xirado.bean.misc.Util;
@@ -30,10 +31,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -74,63 +76,41 @@ public class DiscordBot
     public final CommandManager commandManager;
     public final ConsoleCommandManager consoleCommandManager;
     public static boolean debugMode;
+    public final JSON config;
 
     public final String VERSION;
 
 
-    public DiscordBot()
+    public DiscordBot() throws Exception
     {
         instance = this;
         Thread.currentThread().setName("Main-Thread");
         final Properties properties = new Properties();
-        try
-        {
-            properties.load(this.getClass().getClassLoader().getResourceAsStream("settings.properties"));
-        } catch (IOException e)
-        {
-            LOGGER.error("Could not retrieve project metadata!", e);
-        }
+        properties.load(this.getClass().getClassLoader().getResourceAsStream("settings.properties"));
         VERSION = properties.getProperty("app-version");
         Shell.startShell();
         while(!Shell.startedSuccessfully)
         {
-            try
-            {
-                Thread.sleep(10);
-            } catch (InterruptedException e)
-            {
-                LOGGER.error("", e);
-            }
+            Thread.sleep(10);
         }
-        //Util.setLoggingLevel(Level.INFO);
-        //Console.info("Logging level set to \"INFO\"");
         I18n.init();
-        File file = new File("token.txt");
+        this.path = Util.getPath();
+        File file = new File("config.json");
         if(!file.exists())
         {
-            try
+            InputStream inputStream = DiscordBot.class.getResourceAsStream("config.json");
+            if(inputStream != null)
             {
-                file.createNewFile();
-            } catch (IOException e)
-            {
-                e.printStackTrace();
+                Path path = Paths.get(this.path);
+                Files.copy(inputStream, path);
             }
-            LOGGER.warn("token.txt has been created. Please add your Discord Bot Token to it, save and start again!");
-            System.exit(1);
-        }
-        try
-        {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            token = br.readLine();
-            br.close();
-        } catch (IOException e)
-        {
-            LOGGER.error(ExceptionUtils.getStackTrace(e));
-        }
 
-        this.path = Util.getPath();
-        JSONConfig.updateConfig();
-        debugMode = runningFromIntelliJ();
+        }
+        config = JSON.parse(new File("config.json"));
+        if(config == null) System.exit(0);
+        token = config.getString("token");
+
+        debugMode = config.getBoolean("debug");
         SQL.connect();
         SQL.initKeepAlive();
         if(!SQL.isConnected())
@@ -140,23 +120,10 @@ public class DiscordBot
         }
         SQLHelper.createTables();
         permissionCheckerManager = new PermissionCheckerManager();
-        jda = null;
-        try
-        {
-            jda = JDABuilder.create(token, EnumSet.allOf(GatewayIntent.class)).setMemberCachePolicy(MemberCachePolicy.ONLINE).build();
-        } catch (LoginException e)
-        {
-            LOGGER.error(ExceptionUtils.getStackTrace(e));
-        }
+        jda = JDABuilder.create(token, EnumSet.allOf(GatewayIntent.class)).setMemberCachePolicy(MemberCachePolicy.ONLINE).build();
 
         addShutdownHook();
-        try
-        {
-            this.jda.awaitReady();
-        } catch (InterruptedException e)
-        {
-            System.exit(0);
-        }
+        this.jda.awaitReady();
         LOGGER.info("Successfully logged in as @"+this.jda.getSelfUser().getAsTag());
         this.jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching("www.bean.bz | +help"), false);
         Util.addListeners();

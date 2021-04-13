@@ -56,6 +56,7 @@ public class SlashCommandManager {
         registerCommand(new TestCommand());
         registerCommand(new ModlogCommand());
         registerCommand(new RandomFactCommand());
+        registerCommand(new JokeCommand());
 
         queueToDiscord();
     }
@@ -77,16 +78,13 @@ public class SlashCommandManager {
             if(slashCommands.isEmpty()) continue;
             Guild guild = DiscordBot.getInstance().jda.getGuildById(guildID);
             if(guild == null) continue;
-            System.out.println("Registered commands for "+guild.getName()+":");
             CommandUpdateAction guildCommandUpdateAction = guild.updateCommands();
             boolean shouldQueue = false;
             for(SlashCommand cmd : slashCommands)
             {
                 guildCommandUpdateAction = guildCommandUpdateAction.addCommands(cmd.getCommandData());
-                System.out.print(cmd.getCommandData().getName()+" ");
                 if(!shouldQueue) shouldQueue = true;
             }
-            System.out.println();
             if(shouldQueue)  guildCommandUpdateAction.queue();
         }
     }
@@ -129,7 +127,6 @@ public class SlashCommandManager {
                 {
                     registeredGuildCommands.put(testServerID, alreadyRegistered);
                 }
-                System.out.println("Registered guild-only command ("+guild.getName()+") -> "+command.getCommandData().getName());
             }
             return;
         }

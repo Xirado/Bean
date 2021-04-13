@@ -1,8 +1,6 @@
 *.txt
-*.csv
 *.json
 *.properties
 target/
-wss_nodejs/
 lib/
 .idea/

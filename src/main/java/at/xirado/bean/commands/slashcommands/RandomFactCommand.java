@@ -34,8 +34,7 @@ public class RandomFactCommand extends SlashCommand
                 requestURL = "https://uselessfacts.jsph.pl/random.json?language=en";
             }
             URL url = new URL(requestURL);
-            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            JSON json = JSON.parse(conn.getInputStream());
+            JSON json = JSON.parse(url);
             if(json == null)
             {
                 ctx.replyError(ctx.getLocalized("commands.fact.api_down")).queue();
@@ -43,7 +42,7 @@ public class RandomFactCommand extends SlashCommand
             }
             EmbedBuilder builder = new EmbedBuilder()
                     .setTitle(ctx.getLocalized("commands.fact.title"))
-                    .setDescription(json.get("text")+"\n\n["+ctx.getLocalized("commands.fact.source")+"]("+json.get("source_url")+")")
+                    .setDescription(json.getString("text")+"\n\n["+ctx.getLocalized("commands.fact.source")+"]("+json.getString("source_url")+")")
                     .setColor(0x152238);
             ctx.reply(builder.build()).queue();
 

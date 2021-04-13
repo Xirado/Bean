@@ -19,7 +19,7 @@ public class SQL {
 
 	private static final Logger logger = LoggerFactory.getLogger(SQL.class);
 
-	private static HikariConfig config = new HikariConfig();
+	private static final HikariConfig config = new HikariConfig();
 	private static HikariDataSource ds;
 
 	public static Connection getConnectionFromPool()
@@ -40,11 +40,11 @@ public class SQL {
 	public static void connect() {
 
 		logger.info("Connecting to MySQL-Database...");
-		String host = JSONConfig.config.get("Host");
-		String database = JSONConfig.config.get("Database");
-		String username = JSONConfig.config.get("Username");
-		String password = JSONConfig.config.get("Password");
-		int port = Integer.parseInt(JSONConfig.config.get("Port"));
+		String host = DiscordBot.getInstance().config.getString("database.host");
+		String database = DiscordBot.getInstance().config.getString("database.database");
+		String username = DiscordBot.getInstance().config.getString("database.username");
+		String password = DiscordBot.getInstance().config.getString("database.password");
+		int port = DiscordBot.getInstance().config.getInt("database.port");
 		if(!isConnected()) {
 
 			config.setJdbcUrl("jdbc:mariadb://" + host + ":" + port + "/" + database);

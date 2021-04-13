@@ -2,6 +2,7 @@ package at.xirado.bean.commands.slashcommands;
 
 import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.SlashCommand;
+import at.xirado.bean.misc.JSON;
 import at.xirado.bean.translation.FormattedDuration;
 import at.xirado.bean.translation.I18n;
 import net.dv8tion.jda.api.entities.Command;
@@ -11,8 +12,11 @@ import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.net.ssl.HttpsURLConnection;
+import java.net.URL;
 import java.text.Format;
 import java.util.Arrays;
+import java.util.Map;
 
 public class TestCommand extends SlashCommand
 {
@@ -28,10 +32,27 @@ public class TestCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull CommandContext ctx)
     {
-        I18n language = ctx.getLanguage();
-        String a = FormattedDuration.getDuration(9, false, language)+"\n";
-        a += FormattedDuration.getDuration(11, false, language)+"\n";
-        a+= FormattedDuration.getDuration(61, false, language)+"\n";
-        ctx.reply(a).queue();
+        try
+        {
+            String requestURL = "https://v2.jokeapi.dev/joke/Miscellaneous,Dark,Pun";
+            URL url = new URL(requestURL);
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            JSON json = JSON.parse(conn.getInputStream());
+            if(json == null)
+            {
+                ctx.replyError(ctx.getLocalized("commands.fact.api_down")).queue();
+                return;
+            }
+            Map<String, Boolean> flags = (Map<String, Boolean>) json.getObject("flags");
+            for(Map.Entry<String, Boolean> entry : flags.entrySet())
+            {
+                String flag = entry.getKey();
+                Boolean value = entry.getValue();
+                System.out.println(flag+" "+value);
+            }
+        }catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 }

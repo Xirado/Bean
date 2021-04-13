@@ -143,6 +143,23 @@
 			"api_down" : "Die API kann momentan nicht erreicht werden. Bitte versuche es später erneut!",
 			"title" : "Nutzloser Fakt",
 			"source" : "Quelle"
+		},
+		"joke": {
+			"pun" : "Wortspiel",
+			"nsfw" : "NSFW",
+			"religious" : "religiös",
+			"political" : "politisch",
+			"racist" : "rassistisch",
+			"sexist" : "sexistisch",
+			"explicit" : "explizit",
+			"misc" : "Sonstiges",
+			"dark" : "Schwarz",
+			"spooky" : "Spooky",
+			"christmas" : "Weihnachten",
+			"flags" : "Flag(s)",
+			"none" : "keine",
+			"category" : "Kategorie: %1$s"
+
 		}
 	},
 	"time": {
