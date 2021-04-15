@@ -117,21 +117,7 @@ public class Util
 			return null;
 		}
 	}
-	/**
-	 * Sends a private message to a User
-	 * @param user The User
-	 * @param content The Message to be sent
-	 */
-	public static void sendPrivateMessage(User user, Message content)
-	{
-		user.openPrivateChannel().queue(
-				(c) ->
-				{
-					c.sendMessage(content).queue(null,null);
-				}
-		);
 
-	}
 	public static void setLoggingLevel(Level level) {
 		ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
 		root.setLevel(level);
@@ -142,13 +128,7 @@ public class Util
 		return new ErrorHandler().ignore(EnumSet.allOf(ErrorResponse.class));
 	}
 
-	public static void sendPrivateMessage(User user, MessageEmbed embed)
-	{
-		user.openPrivateChannel()
-				.flatMap(privateChannel -> privateChannel.sendMessage(embed))
-				.queue(null, new ErrorHandler()
-						.ignore(EnumSet.allOf(ErrorResponse.class)));
-	}
+
 
 	public static ErrorHandler handle(TextChannel c)
 	{
@@ -193,11 +173,6 @@ public class Util
 		}
 	}
 
-	public static TextChannel getLogChannel(@NotNull Guild g)
-	{
-		return DiscordBot.instance.logChannelManager.getLogChannel(g.getIdLong());
-		
-	}
 
 	public static String getLengthWithDelimiter(long seconds, String delimiter)
 	{

@@ -196,4 +196,17 @@ public class JSON
         }
         return get(map, actualQuery.split("\\."));
     }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, ?> getMap(String query)
+    {
+        String actualQuery;
+
+        if (root == null) {
+            actualQuery = query;
+        } else {
+            actualQuery = root + "." + query;
+        }
+        return (Map<String, ?>) get(map, actualQuery.split("\\."));
+    }
 }

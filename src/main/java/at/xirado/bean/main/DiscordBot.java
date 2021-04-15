@@ -5,7 +5,6 @@ import at.xirado.bean.commandmanager.ConsoleCommandManager;
 import at.xirado.bean.commandmanager.SlashCommandManager;
 import at.xirado.bean.logging.Shell;
 import at.xirado.bean.misc.JSON;
-import at.xirado.bean.misc.JSONConfig;
 import at.xirado.bean.misc.SQL;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.punishmentmanager.Case;
@@ -26,13 +25,10 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.security.auth.login.LoginException;
 import java.io.*;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -125,6 +121,7 @@ public class DiscordBot
         addShutdownHook();
         this.jda.awaitReady();
         LOGGER.info("Successfully logged in as @"+this.jda.getSelfUser().getAsTag());
+
         this.jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching("www.bean.bz | +help"), false);
         Util.addListeners();
 
@@ -239,11 +236,6 @@ public class DiscordBot
     public static void main(String[] args) throws Exception {
         new DiscordBot();
 
-    }
-
-    public static boolean runningFromIntelliJ()
-    {
-        return Boolean.parseBoolean(JSONConfig.config.get("Debug"));
     }
 
     public static void addShutdownHook()

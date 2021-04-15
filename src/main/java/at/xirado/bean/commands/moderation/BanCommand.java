@@ -3,7 +3,6 @@ package at.xirado.bean.commands.moderation;
 import at.xirado.bean.commandmanager.Command;
 import at.xirado.bean.commandmanager.CommandEvent;
 import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.translation.Phrase;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;

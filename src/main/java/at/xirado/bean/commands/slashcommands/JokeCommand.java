@@ -27,8 +27,7 @@ public class JokeCommand extends SlashCommand
     {
         try
         {
-            String requestURL = "";
-            requestURL = "https://v2.jokeapi.dev/joke/Miscellaneous,Dark,Pun";
+            String requestURL = "https://v2.jokeapi.dev/joke/Miscellaneous,Dark,Pun";
             URL url = new URL(requestURL);
             JSON json = JSON.parse(url);
             if(json == null)

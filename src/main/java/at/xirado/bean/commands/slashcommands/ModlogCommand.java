@@ -40,7 +40,7 @@ public class ModlogCommand extends SlashCommand
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
         if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
         {
-            ctx.replyError(ctx.getLocalized("general.no_perms")).queue();
+            ctx.replyError(ctx.getLocalized("general.no_perms")).setEphemeral(true).queue();
             return;
         }
         Guild g = event.getGuild();

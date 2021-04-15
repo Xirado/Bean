@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.net.URL;
 
 public class RandomFactCommand extends SlashCommand
