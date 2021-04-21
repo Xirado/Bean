@@ -4,7 +4,7 @@ import at.xirado.bean.commandmanager.CommandManager;
 import at.xirado.bean.commandmanager.ConsoleCommandManager;
 import at.xirado.bean.commandmanager.SlashCommandManager;
 import at.xirado.bean.logging.Shell;
-import at.xirado.bean.misc.JSON;
+import at.xirado.bean.misc.JSONParser;
 import at.xirado.bean.misc.SQL;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.punishmentmanager.Case;
@@ -72,7 +72,7 @@ public class DiscordBot
     public final CommandManager commandManager;
     public final ConsoleCommandManager consoleCommandManager;
     public static boolean debugMode;
-    public final JSON config;
+    public final JSONParser config;
 
     public final String VERSION;
 
@@ -102,7 +102,7 @@ public class DiscordBot
             }
 
         }
-        config = JSON.parse(new File("config.json"));
+        config = JSONParser.parse(new File("config.json"));
         if(config == null) System.exit(0);
         token = config.getString("token");
 

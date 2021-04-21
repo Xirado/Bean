@@ -2,7 +2,6 @@ package at.xirado.bean.commands;
 
 import at.xirado.bean.commandmanager.Command;
 import at.xirado.bean.commandmanager.CommandEvent;
-import at.xirado.bean.translation.ServerLanguage;
 import net.dv8tion.jda.api.JDA;
 
 import java.util.Arrays;
@@ -21,7 +20,5 @@ public class LanguageTest extends Command
     @Override
     public void executeCommand(CommandEvent event)
     {
-        Locale language = ServerLanguage.getLanguage(event.getGuild());
-        event.reply("Server-Locale: "+language.getDisplayLanguage(language));
     }
 }

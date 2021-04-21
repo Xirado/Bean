@@ -7,24 +7,24 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 
-public class JSON
+public class JSONParser
 {
 
     private String root = null;
     private final Map<String, ?> map;
 
-    private JSON(Map<String, ?> map)
+    private JSONParser(Map<String, ?> map)
     {
         this.map = map;
     }
 
     @SuppressWarnings("unchecked")
-    public static JSON parse(String jsonString)
+    public static JSONParser parse(String jsonString)
     {
         try{
             ObjectMapper mapper = new ObjectMapper();
             Map<String, ?> map = (Map<String, ?>) mapper.readValue(jsonString, Map.class);
-            return new JSON(map);
+            return new JSONParser(map);
         }catch (Exception ex)
         {
             ex.printStackTrace();
@@ -33,12 +33,12 @@ public class JSON
     }
 
     @SuppressWarnings("unchecked")
-    public static JSON parse(URL url)
+    public static JSONParser parse(URL url)
     {
         try{
             ObjectMapper mapper = new ObjectMapper();
             Map<String, ?> map = (Map<String, ?>) mapper.readValue(url, Map.class);
-            return new JSON(map);
+            return new JSONParser(map);
         }catch (Exception ex)
         {
             ex.printStackTrace();
@@ -47,13 +47,13 @@ public class JSON
     }
 
     @SuppressWarnings("unchecked")
-    public static JSON parse(File file)
+    public static JSONParser parse(File file)
     {
         try{
             if(!file.exists()) return null;
             ObjectMapper mapper = new ObjectMapper();
             Map<String, ?> map = (Map<String, ?>) mapper.readValue(file, Map.class);
-            return new JSON(map);
+            return new JSONParser(map);
         }catch (Exception ex)
         {
             ex.printStackTrace();
@@ -62,12 +62,12 @@ public class JSON
     }
 
     @SuppressWarnings("unchecked")
-    public static JSON parse(InputStream is)
+    public static JSONParser parse(InputStream is)
     {
         try{
             ObjectMapper mapper = new ObjectMapper();
             Map<String, ?> map = (Map<String, ?>) mapper.readValue(is, Map.class);
-            return new JSON(map);
+            return new JSONParser(map);
         }catch (Exception ex)
         {
             ex.printStackTrace();
@@ -105,7 +105,7 @@ public class JSON
     {
         String actualQuery;
 
-        if (root == null) {
+        if (root == null || root.equals("")) {
             actualQuery = query;
         } else {
             actualQuery = root + "." + query;
@@ -119,7 +119,7 @@ public class JSON
     {
         String actualQuery;
 
-        if (root == null) {
+        if (root == null || root.equals("")) {
             actualQuery = query;
         } else {
             actualQuery = root + "." + query;
@@ -133,7 +133,7 @@ public class JSON
     {
         String actualQuery;
 
-        if (root == null) {
+        if (root == null || root.equals("")) {
             actualQuery = query;
         } else {
             actualQuery = root + "." + query;
@@ -147,7 +147,7 @@ public class JSON
     {
         String actualQuery;
 
-        if (root == null) {
+        if (root == null || root.equals("")) {
             actualQuery = query;
         } else {
             actualQuery = root + "." + query;
@@ -161,7 +161,7 @@ public class JSON
     {
         String actualQuery;
 
-        if (root == null) {
+        if (root == null || root.equals("")) {
             actualQuery = query;
         } else {
             actualQuery = root + "." + query;
@@ -175,7 +175,7 @@ public class JSON
     {
         String actualQuery;
 
-        if (root == null) {
+        if (root == null || root.equals("")) {
             actualQuery = query;
         } else {
             actualQuery = root + "." + query;
@@ -189,7 +189,7 @@ public class JSON
     {
         String actualQuery;
 
-        if (root == null) {
+        if (root == null || root.equals("")) {
             actualQuery = query;
         } else {
             actualQuery = root + "." + query;
@@ -202,11 +202,22 @@ public class JSON
     {
         String actualQuery;
 
-        if (root == null) {
+        if (root == null || root.equals("")) {
             actualQuery = query;
         } else {
             actualQuery = root + "." + query;
         }
         return (Map<String, ?>) get(map, actualQuery.split("\\."));
+    }
+
+    public <T> T get(String query, Class<T> type)
+    {
+        String actualQuery;
+        if (root == null || root.equals("")) actualQuery = query;
+        else actualQuery = root + "." + query;
+        Object result = get(map, actualQuery.split("\\."));
+        if(result == null) return null;
+        if(!type.isInstance(result)) throw new IllegalArgumentException(result.getClass().getName()+" cannot be cast to "+type.getName()+"!");
+        return type.cast(result);
     }
 }

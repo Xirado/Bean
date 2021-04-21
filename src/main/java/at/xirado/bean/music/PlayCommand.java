@@ -26,7 +26,6 @@ public class PlayCommand extends Command
     @Override
     public void executeCommand(CommandEvent event)
     {
-        Bot bot = DiscordBot.instance.musicinstance;
         CommandArgument commandArgument = event.getArguments();
         String asWhole = commandArgument.toString(0);
         String[] args = commandArgument.toStringArray();
@@ -50,17 +49,15 @@ public class PlayCommand extends Command
                 if (event.isDJ()) {
                     handler.getPlayer().setPaused(false);
                     event.replySuccess("Resumed **" + handler.getPlayer().getPlayingTrack().getInfo().title + "**.");
-                    return;
                 }
                 else {
                     event.replyError("Only DJs can unpause the player!");
-                    return;
                 }
             }else
             {
                 event.replyWarning("The player is not paused!");
-                return;
             }
+            return;
         }
         event.replyErrorUsage();
     }

@@ -2,9 +2,7 @@ package at.xirado.bean.commands.slashcommands;
 
 import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.SlashCommand;
-import at.xirado.bean.misc.JSON;
-import at.xirado.bean.translation.FormattedDuration;
-import at.xirado.bean.translation.I18n;
+import at.xirado.bean.misc.JSONParser;
 import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -14,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.net.URL;
-import java.text.Format;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -37,7 +34,7 @@ public class TestCommand extends SlashCommand
             String requestURL = "https://v2.jokeapi.dev/joke/Miscellaneous,Dark,Pun";
             URL url = new URL(requestURL);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            JSON json = JSON.parse(conn.getInputStream());
+            JSONParser json = JSONParser.parse(conn.getInputStream());
             if(json == null)
             {
                 ctx.replyError(ctx.getLocalized("commands.fact.api_down")).queue();
