@@ -1,0 +1,233 @@
+[04.04.2021 00:00:17] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:00:17] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:00:47] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:00:47] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:01:17] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:01:17] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:01:47] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:01:47] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:02:17] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:02:17] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:02:47] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:02:47] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:03:17] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:03:17] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:03:47] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:03:47] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:03:55] [Threadpool (Thread 0)] [DEBUG]: Gave Connection instance to Threadpool (Thread 0)
+[04.04.2021 00:04:17] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:04:17] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:04:47] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:04:47] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:05:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:05:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:05:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:05:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:06:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:06:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:06:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:06:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:07:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:07:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:07:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:07:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:08:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:08:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:08:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:08:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:09:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:09:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:09:23] [Threadpool (Thread 169)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@2da98f76: (connection has passed maxLifetime)
+[04.04.2021 00:09:23] [Threadpool (Thread 170)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@1a34b95
+[04.04.2021 00:09:39] [Threadpool (Thread 171)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@5cdd1bbe: (connection has passed maxLifetime)
+[04.04.2021 00:09:39] [Threadpool (Thread 172)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@120cd9a0
+[04.04.2021 00:09:42] [Threadpool (Thread 171)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@1327e46e: (connection has passed maxLifetime)
+[04.04.2021 00:09:42] [Threadpool (Thread 172)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@1ccb3591
+[04.04.2021 00:09:46] [Threadpool (Thread 171)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@562570ce: (connection has passed maxLifetime)
+[04.04.2021 00:09:46] [Threadpool (Thread 172)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@18f4b2d0
+[04.04.2021 00:09:47] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:09:47] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:09:54] [Threadpool (Thread 173)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@521aee55: (connection has passed maxLifetime)
+[04.04.2021 00:09:54] [Threadpool (Thread 174)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@10564265
+[04.04.2021 00:09:56] [Threadpool (Thread 173)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@45a7416e: (connection has passed maxLifetime)
+[04.04.2021 00:09:56] [Threadpool (Thread 174)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@1e91ae1f
+[04.04.2021 00:09:56] [Threadpool (Thread 173)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:10:02] [Threadpool (Thread 175)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@ee9849: (connection has passed maxLifetime)
+[04.04.2021 00:10:02] [Threadpool (Thread 176)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@59290fda
+[04.04.2021 00:10:17] [Threadpool (Thread 177)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@4e3429dd: (connection has passed maxLifetime)
+[04.04.2021 00:10:17] [Threadpool (Thread 178)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@785f3e6b
+[04.04.2021 00:10:17] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:10:17] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:10:19] [Threadpool (Thread 177)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@1719c2a5: (connection has passed maxLifetime)
+[04.04.2021 00:10:19] [Threadpool (Thread 178)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@7698df10
+[04.04.2021 00:10:21] [Threadpool (Thread 177)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@b36be7f: (connection has passed maxLifetime)
+[04.04.2021 00:10:21] [Threadpool (Thread 178)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@72a7551b
+[04.04.2021 00:10:23] [Threadpool (Thread 177)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@44cc42ad: (connection has passed maxLifetime)
+[04.04.2021 00:10:23] [Threadpool (Thread 178)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@37a5d52b
+[04.04.2021 00:10:25] [Threadpool (Thread 177)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@19de2e36: (connection has passed maxLifetime)
+[04.04.2021 00:10:25] [Threadpool (Thread 178)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@360819d2
+[04.04.2021 00:10:30] [Threadpool (Thread 177)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@54a63ddd: (connection has passed maxLifetime)
+[04.04.2021 00:10:30] [Threadpool (Thread 178)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@6d8205c
+[04.04.2021 00:10:35] [Threadpool (Thread 177)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@4a0bb444: (connection has passed maxLifetime)
+[04.04.2021 00:10:35] [Threadpool (Thread 178)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@4e9fb211
+[04.04.2021 00:10:38] [Threadpool (Thread 177)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@7ef14d61: (connection has passed maxLifetime)
+[04.04.2021 00:10:38] [Threadpool (Thread 178)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@578a2a64
+[04.04.2021 00:10:45] [Threadpool (Thread 179)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@1b5cd302: (connection has passed maxLifetime)
+[04.04.2021 00:10:45] [Threadpool (Thread 180)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@2b0395fb
+[04.04.2021 00:10:47] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:10:47] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:10:48] [Threadpool (Thread 179)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@5a61d939: (connection has passed maxLifetime)
+[04.04.2021 00:10:48] [Threadpool (Thread 180)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@25c47eeb
+[04.04.2021 00:10:58] [Threadpool (Thread 181)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@4f95aad0: (connection has passed maxLifetime)
+[04.04.2021 00:10:58] [Threadpool (Thread 182)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@1bed793c
+[04.04.2021 00:11:00] [Threadpool (Thread 181)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@5e5e56ad: (connection has passed maxLifetime)
+[04.04.2021 00:11:00] [Threadpool (Thread 182)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@152a9431
+[04.04.2021 00:11:03] [Threadpool (Thread 181)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@12495198: (connection has passed maxLifetime)
+[04.04.2021 00:11:03] [Threadpool (Thread 182)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@1115124c
+[04.04.2021 00:11:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:11:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:11:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:11:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:12:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:12:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:12:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:12:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:13:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:13:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:13:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:13:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:14:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:14:17] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:14:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:14:47] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:15:17] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:15:17] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:15:48] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:15:48] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:16:18] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:16:18] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:16:48] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:16:48] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:17:18] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:17:18] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:17:48] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:17:48] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 00:18:18] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 00:18:18] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:44] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[04.04.2021 03:18:44] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[04.04.2021 03:18:44] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[04.04.2021 03:18:44] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[04.04.2021 03:18:44] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[04.04.2021 03:18:44] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[04.04.2021 03:18:44] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[04.04.2021 03:18:44] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[04.04.2021 03:18:44] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[04.04.2021 03:18:44] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[04.04.2021 03:18:44] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[04.04.2021 03:18:45] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@1a34b95: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@3ad6bf78
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@10564265: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@34114652
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@18f4b2d0: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@120cd9a0: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@1ccb3591: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@302ed408
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@1e91ae1f: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@72a7551b: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@785f3e6b: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@752c4c69
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@59290fda: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@4e9fb211: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@7698df10: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@37a5d52b: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@7a8e00cb
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@360819d2: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@1bed793c: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@6d8205c: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@4493fa1e
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@578a2a64: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@2b0395fb: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@1115124c: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@25c47eeb: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@2dbe810
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@152a9431: (connection has passed maxLifetime)
+[04.04.2021 03:18:45] [Threadpool (Thread 184)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@1503b326
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@1f816115
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@44192bf1
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@19dfc00a
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@114dca94
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@5d09861
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@89b6d89
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@6f233300
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@10c55d1a
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@11d7dcf3
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@42730c65
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@343e8c18
+[04.04.2021 03:18:45] [Threadpool (Thread 183)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@e293a08
+[04.04.2021 03:18:45] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[04.04.2021 03:18:45] [JDA MainWS-ReconnectThread] [DEBUG]: Got disconnected from WebSocket (Code: 4900). Attempting to resume session
+[04.04.2021 03:18:45] [JDA MainWS-ReconnectThread] [DEBUG]: Attempting to reconnect in 0s
+[04.04.2021 03:18:45] [Threadpool (Thread 0)] [WARN]: HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3h27s73ms107µs200ns).
+[04.04.2021 03:18:45] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[04.04.2021 03:18:45] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[04.04.2021 03:18:45] [JDA MainWS-ReconnectThread] [DEBUG]: Attempting to reconnect!
+[04.04.2021 03:18:45] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[04.04.2021 03:18:46] [JDA MainWS-ReadThread] [DEBUG]: Connected to WebSocket
+[04.04.2021 03:18:46] [JDA MainWS-ReadThread] [DEBUG]: Sending Resume-packet...
+[04.04.2021 03:18:46] [JDA MainWS-ReadThread] [DEBUG]: Got HELLO packet (OP 10). Initializing keep-alive.
+[04.04.2021 03:18:46] [JDA MainWS-ReadThread] [DEBUG]: Got Invalidate request (OP 9). Invalidating...
+[04.04.2021 03:18:47] [JDA MainWS-ReadThread] [WARN]: Got disconnected from WebSocket (Code 1000). Appending to reconnect queue
+[04.04.2021 03:18:47] [JDA MainWS-ReadThread] [DEBUG]: Running worker
+[04.04.2021 03:18:47] [ConcurrentSessionController-Worker-0] [DEBUG]: Running connect node for shard Shard [0 / 1]
+[04.04.2021 03:18:47] [ConcurrentSessionController-Worker-0] [DEBUG]: Queue is attempting to reconnect a shard... Shard: [0 / 1] Attempting to reconnect in 2s
+[04.04.2021 03:18:49] [ConcurrentSessionController-Worker-0] [DEBUG]: Attempting to reconnect!
+[04.04.2021 03:18:49] [JDA MainWS-ReadThread] [DEBUG]: Got HELLO packet (OP 10). Initializing keep-alive.
+[04.04.2021 03:18:49] [JDA MainWS-WriteThread] [INFO]: Connected to WebSocket
+[04.04.2021 03:18:49] [JDA MainWS-WriteThread] [DEBUG]: Connected with gateway intents: 111111111101111
+[04.04.2021 03:18:49] [JDA MainWS-WriteThread] [DEBUG]: Sending Identify-packet...
+[04.04.2021 03:18:49] [JDA MainWS-ReadThread] [DEBUG]: Setting incomplete count to 2
+[04.04.2021 03:18:49] [JDA MainWS-ReadThread] [DEBUG]: Starting 75 second timeout for 2 guilds
+[04.04.2021 03:18:49] [JDA MainWS-ReadThread] [DEBUG]: Cannot create channel for type 13
+[04.04.2021 03:18:49] [JDA MainWS-ReadThread] [DEBUG]: Finished setup for guild 815597207617142814 firing cached events 0
+[04.04.2021 03:18:49] [JDA MainWS-ReadThread] [INFO]: Finished (Re)Loading!
+[04.04.2021 03:18:49] [JDA MainWS-ReadThread] [DEBUG]: Finished setup for guild 780051735891804181 firing cached events 0

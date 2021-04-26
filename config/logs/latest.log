@@ -1,0 +1,748 @@
+[24.04.2021 21:06:53] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:53] [JDA MainWS-WriteThread] [DEBUG]: Encountered I/O error
+com.neovisionaries.ws.client.WebSocketException: Flushing frames to the server failed: Connection or outbound has closed
+	at com.neovisionaries.ws.client.WritingThread.doFlush(WritingThread.java:434)
+	at com.neovisionaries.ws.client.WritingThread.sendFrames(WritingThread.java:384)
+	at com.neovisionaries.ws.client.WritingThread.main(WritingThread.java:108)
+	at com.neovisionaries.ws.client.WritingThread.runMain(WritingThread.java:55)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+Caused by: java.net.SocketException: Connection or outbound has closed
+	at java.base/sun.security.ssl.SSLSocketImpl$AppOutputStream.write(SSLSocketImpl.java:1179)
+	at java.base/java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:81)
+	at java.base/java.io.BufferedOutputStream.flush(BufferedOutputStream.java:142)
+	at java.base/java.io.BufferedOutputStream.flush(BufferedOutputStream.java:143)
+	at com.neovisionaries.ws.client.WritingThread.flush(WritingThread.java:271)
+	at com.neovisionaries.ws.client.WritingThread.doFlush(WritingThread.java:422)
+	... 4 common frames omitted
+
+[24.04.2021 21:06:54] [JDA MainWS-ReadThread] [DEBUG]: Encountered I/O error
+com.neovisionaries.ws.client.WebSocketException: An I/O error occurred while a frame was being read from the web socket: Connection reset
+	at com.neovisionaries.ws.client.ReadingThread.readFrame(ReadingThread.java:375)
+	at com.neovisionaries.ws.client.ReadingThread.main(ReadingThread.java:99)
+	at com.neovisionaries.ws.client.ReadingThread.runMain(ReadingThread.java:64)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+Caused by: javax.net.ssl.SSLException: Connection reset
+	at java.base/sun.security.ssl.Alert.createSSLException(Alert.java:127)
+	at java.base/sun.security.ssl.TransportContext.fatal(TransportContext.java:352)
+	at java.base/sun.security.ssl.TransportContext.fatal(TransportContext.java:295)
+	at java.base/sun.security.ssl.TransportContext.fatal(TransportContext.java:290)
+	at java.base/sun.security.ssl.SSLSocketImpl.handleException(SSLSocketImpl.java:1521)
+	at java.base/sun.security.ssl.SSLSocketImpl$AppInputStream.read(SSLSocketImpl.java:965)
+	at java.base/java.io.BufferedInputStream.fill(BufferedInputStream.java:252)
+	at java.base/java.io.BufferedInputStream.read1(BufferedInputStream.java:292)
+	at java.base/java.io.BufferedInputStream.read(BufferedInputStream.java:351)
+	at java.base/java.io.FilterInputStream.read(FilterInputStream.java:133)
+	at com.neovisionaries.ws.client.WebSocketInputStream.readBytes(WebSocketInputStream.java:165)
+	at com.neovisionaries.ws.client.WebSocketInputStream.readFrame(WebSocketInputStream.java:46)
+	at com.neovisionaries.ws.client.ReadingThread.readFrame(ReadingThread.java:338)
+	... 3 common frames omitted
+	Suppressed: java.net.SocketException: Connection reset by peer: socket write error
+		at java.base/java.net.SocketOutputStream.socketWrite0(Native Method)
+		at java.base/java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:110)
+		at java.base/java.net.SocketOutputStream.write(SocketOutputStream.java:150)
+		at java.base/sun.security.ssl.SSLSocketOutputRecord.encodeAlert(SSLSocketOutputRecord.java:83)
+		at java.base/sun.security.ssl.TransportContext.fatal(TransportContext.java:383)
+		... 14 common frames omitted
+Caused by: java.net.SocketException: Connection reset
+	at java.base/java.net.SocketInputStream.read(SocketInputStream.java:186)
+	at java.base/java.net.SocketInputStream.read(SocketInputStream.java:140)
+	at java.base/sun.security.ssl.SSLSocketInputRecord.read(SSLSocketInputRecord.java:478)
+	at java.base/sun.security.ssl.SSLSocketInputRecord.readHeader(SSLSocketInputRecord.java:472)
+	at java.base/sun.security.ssl.SSLSocketInputRecord.bytesInCompletePacket(SSLSocketInputRecord.java:70)
+	at java.base/sun.security.ssl.SSLSocketImpl.readApplicationRecord(SSLSocketImpl.java:1308)
+	at java.base/sun.security.ssl.SSLSocketImpl$AppInputStream.read(SSLSocketImpl.java:949)
+	... 10 common frames omitted
+
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:55] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:56] [JDA MainWS-WriteThread] [DEBUG]: Encountered I/O error
+com.neovisionaries.ws.client.WebSocketException: Flushing frames to the server failed: Connection or outbound has closed
+	at com.neovisionaries.ws.client.WritingThread.doFlush(WritingThread.java:434)
+	at com.neovisionaries.ws.client.WritingThread.sendFrames(WritingThread.java:384)
+	at com.neovisionaries.ws.client.WritingThread.main(WritingThread.java:120)
+	at com.neovisionaries.ws.client.WritingThread.runMain(WritingThread.java:55)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+Caused by: java.net.SocketException: Connection or outbound has closed
+	at java.base/sun.security.ssl.SSLSocketImpl$AppOutputStream.write(SSLSocketImpl.java:1179)
+	at java.base/java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:81)
+	at java.base/java.io.BufferedOutputStream.flush(BufferedOutputStream.java:142)
+	at java.base/java.io.BufferedOutputStream.flush(BufferedOutputStream.java:143)
+	at com.neovisionaries.ws.client.WritingThread.flush(WritingThread.java:271)
+	at com.neovisionaries.ws.client.WritingThread.doFlush(WritingThread.java:422)
+	... 4 common frames omitted
+
+[24.04.2021 21:06:56] [JDA MainWS-WriteThread] [DEBUG]: Got disconnected from WebSocket (Code: 4900). Attempting to resume session
+[24.04.2021 21:06:56] [JDA MainWS-WriteThread] [DEBUG]: Attempting to reconnect in 0s
+[24.04.2021 21:06:56] [JDA Gateway-Worker 1] [WARN]: Missed 2 heartbeats! Trying to reconnect...
+[24.04.2021 21:06:56] [JDA MainWS-WriteThread] [DEBUG]: Attempting to reconnect!
+[24.04.2021 21:06:57] [JDA MainWS-WriteThread] [WARN]: Reconnect failed! Next attempt in 2s
+[24.04.2021 21:06:59] [JDA MainWS-WriteThread] [DEBUG]: Attempting to reconnect!
+[24.04.2021 21:07:07] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 2)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:07] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:07] [Threadpool (Thread 4)] [DEBUG]: HikariPool-1 - Add connection elided, waiting 0, queue 1
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@302ed408: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@89b6d89: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@3ad6bf78: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@752c4c69: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@114dca94: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@2dbe810: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@34114652: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@44192bf1: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@10c55d1a: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@e293a08: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@19dfc00a: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@1f816115: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@4493fa1e: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@11d7dcf3: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@1503b326: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@343e8c18: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@42730c65: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@7a8e00cb: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@5d09861: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Closing connection org.mariadb.jdbc.MariaDbConnection@6f233300: (connection has passed maxLifetime)
+[24.04.2021 21:07:08] [Threadpool (Thread 185)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@f09076
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@e376e18
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@a08fb06
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@4f0a6423
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@4bfd2e94
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 0)] [WARN]: HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=20d17h48m27s380ms146µs600ns).
+[24.04.2021 21:07:08] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Pool stats (total=5, active=1, idle=4, waiting=0)
+[24.04.2021 21:07:08] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:07:08] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@7e8fce5d
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@3392da41
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 2)] [DEBUG]: Gave Connection instance to Threadpool (Thread 2)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@2f259b6c
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@d0e9992
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@df35348
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:08] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@2896d065
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@2b6bc0e0
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@52501e16
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@452e6e07
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@5b258b3f
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@2ebc2c7b
+[24.04.2021 21:07:09] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@7cce3714
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@4aa630dc
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@3dad36c4
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 186)] [DEBUG]: HikariPool-1 - Added connection org.mariadb.jdbc.MariaDbConnection@723d1afe
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:09] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:10] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:11] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:18] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:19] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:20] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:21] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 1)] [DEBUG]: Gave Connection instance to Threadpool (Thread 1)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:22] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:23] [Threadpool (Thread 4)] [DEBUG]: Gave Connection instance to Threadpool (Thread 4)
+[24.04.2021 21:07:25] [JDA RateLimit-Worker 4] [DEBUG]: Removed 1 expired buckets
+[24.04.2021 21:07:25] [JDA RateLimit-Worker 5] [DEBUG]: Removed 1 expired buckets
+[24.04.2021 21:07:25] [JDA RateLimit-Worker 5] [DEBUG]: Removed 1 expired buckets
+[24.04.2021 21:07:25] [JDA RateLimit-Worker 5] [DEBUG]: Removed 1 expired buckets
+[24.04.2021 21:07:25] [JDA RateLimit-Worker 4] [DEBUG]: Received response with following cf-rays: [64519d4d494d38c0-VIE]
+[24.04.2021 21:07:26] [JDA MainWS-ReadThread] [DEBUG]: Connected to WebSocket
+[24.04.2021 21:07:26] [JDA MainWS-ReadThread] [DEBUG]: Sending Resume-packet...
+[24.04.2021 21:07:26] [JDA MainWS-ReadThread] [DEBUG]: Got HELLO packet (OP 10). Initializing keep-alive.
+[24.04.2021 21:07:26] [JDA MainWS-ReadThread] [DEBUG]: Got Invalidate request (OP 9). Invalidating...
+[24.04.2021 21:07:26] [JDA MainWS-ReadThread] [WARN]: Got disconnected from WebSocket (Code 1000). Appending to reconnect queue
+[24.04.2021 21:07:26] [JDA MainWS-ReadThread] [DEBUG]: Running worker
+[24.04.2021 21:07:26] [ConcurrentSessionController-Worker-0] [DEBUG]: Running connect node for shard Shard [0 / 1]
+[24.04.2021 21:07:26] [ConcurrentSessionController-Worker-0] [DEBUG]: Queue is attempting to reconnect a shard... Shard: [0 / 1] Attempting to reconnect in 4s
+[24.04.2021 21:07:28] [JDA RateLimit-Worker 5] [DEBUG]: Removed 1 expired buckets
+[24.04.2021 21:07:30] [ConcurrentSessionController-Worker-0] [DEBUG]: Attempting to reconnect!
+[24.04.2021 21:07:30] [JDA MainWS-ReadThread] [INFO]: Connected to WebSocket
+[24.04.2021 21:07:30] [JDA MainWS-ReadThread] [DEBUG]: Connected with gateway intents: 111111111101111
+[24.04.2021 21:07:30] [JDA MainWS-ReadThread] [DEBUG]: Sending Identify-packet...
+[24.04.2021 21:07:30] [JDA MainWS-ReadThread] [DEBUG]: Got HELLO packet (OP 10). Initializing keep-alive.
+[24.04.2021 21:07:31] [JDA MainWS-ReadThread] [DEBUG]: Setting incomplete count to 2
+[24.04.2021 21:07:31] [JDA MainWS-ReadThread] [DEBUG]: Starting 75 second timeout for 2 guilds
+[24.04.2021 21:07:31] [JDA MainWS-ReadThread] [DEBUG]: Cannot create channel for type 13
+[24.04.2021 21:07:31] [JDA MainWS-ReadThread] [DEBUG]: Finished setup for guild 815597207617142814 firing cached events 0
+[24.04.2021 21:07:31] [JDA MainWS-ReadThread] [INFO]: Finished (Re)Loading!
+[24.04.2021 21:07:31] [JDA MainWS-ReadThread] [DEBUG]: Finished setup for guild 780051735891804181 firing cached events 0
+[24.04.2021 21:07:45] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[24.04.2021 21:07:45] [Threadpool (Thread 0)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:08:15] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+[24.04.2021 21:08:15] [Threadpool (Thread 1)] [DEBUG]: HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+[24.04.2021 21:08:16] [Threadpool (Thread 0)] [INFO]: Shutting down...
+[24.04.2021 21:08:16] [Terminal Worker] [ERROR]: An error occured
+org.jline.reader.EndOfFileException: null
+	at org.jline.reader.impl.LineReaderImpl.readLine(LineReaderImpl.java:653)
+	at at.xirado.bean.logging.Shell.lambda$startShell$0(Shell.java:75)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+
+[24.04.2021 21:08:16] [Thread-2] [INFO]: Shutting down...
+[24.04.2021 21:08:16] [Terminal Worker] [ERROR]: An error occured
+org.jline.reader.EndOfFileException: null
+	at org.jline.reader.impl.LineReaderImpl.readLine(LineReaderImpl.java:653)
+	at at.xirado.bean.logging.Shell.lambda$startShell$0(Shell.java:75)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+

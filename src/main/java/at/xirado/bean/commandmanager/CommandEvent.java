@@ -1,7 +1,8 @@
 package at.xirado.bean.commandmanager;
 
-import at.xirado.bean.translation.I18n;
 import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.misc.JSON;
+import at.xirado.bean.translation.LanguageLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -106,7 +107,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(Color.red)
                 .setAuthor(this.event.getMember().getUser().getAsTag(), null, this.event.getMember().getUser().getEffectiveAvatarUrl())
-                .setTitle(I18n.ofGuild(this.event.getGuild()).get("general.invalid_arguments"))
+                .setTitle(LanguageLoader.ofGuild(this.event.getGuild()).get("general.invalid_arguments", String.class))
                 .setTimestamp(Instant.now());
         String usage = this.getCommand().getUsage();
         List<String> aliases = this.getCommand().getAliases();
@@ -123,7 +124,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
         String description = "`"+usage+"`\n"+this.getCommand().description;
         if(aliases.size() > 0 && aliasesstring != null)
         {
-            description+="\n"+ I18n.ofGuild(event.getGuild()).get("general.aliases")+": `"+aliasesstring+"`";
+            description+="\n"+ LanguageLoader.ofGuild(event.getGuild()).get("general.aliases", String.class)+": `"+aliasesstring+"`";
         }
         builder.setDescription(description);
         this.getChannel().sendMessage(builder.build()).queue();
@@ -279,10 +280,10 @@ public class CommandEvent extends GuildMessageReceivedEvent
         );
     }
 
-    public I18n getLanguage()
+    public JSON getLanguage()
     {
         Guild g = event.getGuild();
-        return I18n.ofGuild(g);
+        return LanguageLoader.ofGuild(g);
     }
 
     public void replyInDM(String message, Consumer<Message> success)
@@ -299,7 +300,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
 
     public String getLocalized(String query, Object... objects)
     {
-        return String.format(I18n.ofGuild(guild).get(query), objects);
+        return String.format(LanguageLoader.ofGuild(guild).get(query, String.class), objects);
     }
 
     public void replyInDM(String message)

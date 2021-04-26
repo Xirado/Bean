@@ -4,14 +4,13 @@ import at.xirado.bean.commandmanager.CommandManager;
 import at.xirado.bean.commandmanager.ConsoleCommandManager;
 import at.xirado.bean.commandmanager.SlashCommandManager;
 import at.xirado.bean.logging.Shell;
-import at.xirado.bean.misc.JSONParser;
+import at.xirado.bean.misc.JSON;
 import at.xirado.bean.misc.SQL;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import at.xirado.bean.punishmentmanager.Punishments;
 import at.xirado.bean.handlers.*;
-import at.xirado.bean.translation.I18n;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jmusicbot.Bot;
@@ -72,7 +71,7 @@ public class DiscordBot
     public final CommandManager commandManager;
     public final ConsoleCommandManager consoleCommandManager;
     public static boolean debugMode;
-    public final JSONParser config;
+    public final JSON config;
 
     public final String VERSION;
 
@@ -89,7 +88,6 @@ public class DiscordBot
         {
             Thread.sleep(10);
         }
-        I18n.init();
         this.path = Util.getPath();
         File file = new File("config.json");
         if(!file.exists())
@@ -102,7 +100,7 @@ public class DiscordBot
             }
 
         }
-        config = JSONParser.parse(new File("config.json"));
+        config = JSON.parse(new File("config.json"));
         if(config == null) System.exit(0);
         token = config.getString("token");
 

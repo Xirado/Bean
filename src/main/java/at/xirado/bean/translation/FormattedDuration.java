@@ -1,5 +1,7 @@
 package at.xirado.bean.translation;
 
+import at.xirado.bean.misc.JSON;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.time.Period;
@@ -118,45 +120,45 @@ public class FormattedDuration
 
     }
 
-    public static String getDuration(long seconds, boolean calcDifference, I18n language)
+    public static String getDuration(long seconds, boolean calcDifference, JSON language)
     {
         if(calcDifference) seconds = (System.currentTimeMillis()/1000)-seconds;
         if(seconds < 0) throw new IllegalArgumentException("Negative Duration Value!");
-        if(seconds < 10) return language.get("time.now");
-        if(seconds < 60) return language.get("time.less_than_min");
+        if(seconds < 10) return language.get("time.now", String.class);
+        if(seconds < 60) return language.get("time.less_than_min", String.class);
         if(seconds < 3600) // less than an hour
         {
             int minutes = (int) (seconds/60);
-            if(minutes == 1) return language.get("time.min_ago");
-            return language.get("time.mins_ago", String.valueOf(minutes));
+            if(minutes == 1) return language.get("time.min_ago", String.class);
+            return language.getString("time.mins_ago", String.valueOf(minutes));
         }
         if(seconds < 86400) // less than a day
         {
             int hours = (int) (seconds/60)/60;
-            if(hours == 1) return language.get("time.hour_ago");
-            return language.get("time.hours_ago", String.valueOf(hours));
+            if(hours == 1) return language.get("time.hour_ago", String.class);
+            return language.getString("time.hours_ago", String.valueOf(hours));
         }
         if(seconds < 604800) // less than a week
         {
             int days = (int) ((seconds/60)/60)/24;
-            if(days == 1) return language.get("time.yesterday");
-            return language.get("time.days_ago", String.valueOf(days));
+            if(days == 1) return language.get("time.yesterday", String.class);
+            return language.getString("time.days_ago", String.valueOf(days));
         }
         if(seconds < 2.628e+6) // less than a month
         {
             int weeks = (int) (((seconds/60)/60)/24)/7;
-            if(weeks == 1) return language.get("time.week_ago");
-            return language.get("time.weeks_ago", String.valueOf(weeks));
+            if(weeks == 1) return language.get("time.week_ago", String.class);
+            return language.getString("time.weeks_ago", String.valueOf(weeks));
         }
         if(seconds < 3.154e+7) // less than a year
         {
             int months = (int) (((seconds/60)/60)/24)/30;
-            if(months == 1) return language.get("time.month_ago");
-            return language.get("time.months_ago", String.valueOf(months));
+            if(months == 1) return language.get("time.month_ago", String.class);
+            return language.getString("time.months_ago", String.valueOf(months));
         }
         int years = (int) ((seconds/3600)/24)/365;
-        if(years == 1) return language.get("time.year_ago");
-        return language.get("time.years_ago", String.valueOf(years));
+        if(years == 1) return language.get("time.year_ago", String.class);
+        return language.getString("time.years_ago", String.valueOf(years));
 
     }
 }

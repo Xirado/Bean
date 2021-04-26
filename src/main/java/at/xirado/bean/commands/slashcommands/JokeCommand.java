@@ -2,7 +2,7 @@ package at.xirado.bean.commands.slashcommands;
 
 import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.SlashCommand;
-import at.xirado.bean.misc.JSONParser;
+import at.xirado.bean.misc.JSON;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -28,7 +28,7 @@ public class JokeCommand extends SlashCommand
         {
             String requestURL = "https://v2.jokeapi.dev/joke/Miscellaneous,Dark,Pun";
             URL url = new URL(requestURL);
-            JSONParser json = JSONParser.parse(url);
+            JSON json = JSON.parse(url);
             if(json == null)
             {
                 ctx.replyError(ctx.getLocalized("commands.fact.api_down")).queue();

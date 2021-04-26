@@ -1,6 +1,7 @@
 package at.xirado.bean.commandmanager;
 
-import at.xirado.bean.translation.I18n;
+import at.xirado.bean.misc.JSON;
+import at.xirado.bean.translation.LanguageLoader;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -26,7 +27,7 @@ public class CommandContext
         if(event.getGuild() != null)
         {
             Locale serverLocale = event.getGuild().getLocale();
-            if(I18n.getForLanguage(serverLocale.toLanguageTag()) == null)
+            if(LanguageLoader.getForLanguage(serverLocale.toLanguageTag()) == null)
             {
                 this.language = "en_US";
             }else
@@ -44,16 +45,16 @@ public class CommandContext
     public String getLocalized(String query, Object... objects)
     {
         Guild g = event.getGuild();
-        if(g != null) return String.format(I18n.ofGuild(g).get(query), objects);
-        return String.format(I18n.getForLanguage("en_US").get(query), objects);
+        if(g != null) return String.format(LanguageLoader.ofGuild(g).get(query, String.class), objects);
+        return String.format(LanguageLoader.getForLanguage("en_US").get(query, String.class), objects);
     }
 
-    public I18n getLanguage()
+    public JSON getLanguage()
     {
         Guild g = event.getGuild();
-        I18n language;
-        if(g != null) language =  I18n.ofGuild(g);
-        else language = I18n.getForLanguage("en_US");
+        JSON language;
+        if(g != null) language =  LanguageLoader.ofGuild(g);
+        else language = LanguageLoader.getForLanguage("en_US");
         return language;
     }
 

@@ -3,7 +3,7 @@ package at.xirado.bean.commandmanager;
 
 import at.xirado.bean.commands.slashcommands.*;
 import at.xirado.bean.main.DiscordBot;
-import at.xirado.bean.translation.I18n;
+import at.xirado.bean.translation.LanguageLoader;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.commands.CommandHook;
 import net.dv8tion.jda.api.entities.Guild;
@@ -165,7 +165,7 @@ public class SlashCommandManager {
                                         if(!member.hasPermission(permission))
                                         {
                                             event.acknowledge(true)
-                                                    .flatMap(v -> hook.sendMessage(I18n.ofGuild(guild).get("general.no_perms")))
+                                                    .flatMap(v -> hook.sendMessage(LanguageLoader.ofGuild(guild).get("general.no_perms", String.class)))
                                                     .queue();
                                             return;
                                         }
@@ -179,7 +179,7 @@ public class SlashCommandManager {
                                         if(!event.getGuild().getSelfMember().hasPermission(permission))
                                         {
                                             event.acknowledge(true)
-                                                    .flatMap(v -> hook.sendMessage(I18n.ofGuild(guild).get("general.no_bot_perms1")))
+                                                    .flatMap(v -> hook.sendMessage(LanguageLoader.ofGuild(guild).get("general.no_bot_perms1", String.class)))
                                                     .queue();
                                             return;
                                         }
@@ -200,7 +200,7 @@ public class SlashCommandManager {
                         foundCommand = true;
                         if(member == null && !cmd.isRunnableInDM())
                         {
-                            event.reply(String.format(I18n.getForLanguage("en_US").get("commands.cannot_run_in_dm"), CommandContext.ERROR)).setEphemeral(true).queue();
+                            event.reply(String.format(LanguageLoader.getForLanguage("en_US").get("commands.cannot_run_in_dm", String.class), CommandContext.ERROR)).setEphemeral(true).queue();
                             return;
                         }
                         CommandHook hook = event.getHook();
@@ -215,7 +215,7 @@ public class SlashCommandManager {
                                     if(!member.hasPermission(permission))
                                     {
                                         event.acknowledge(true)
-                                                .flatMap(v -> hook.sendMessage(I18n.ofGuild(event.getGuild()).get("general.no_perms")))
+                                                .flatMap(v -> hook.sendMessage(LanguageLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)))
                                                 .queue();
                                         return;
                                     }
@@ -229,7 +229,7 @@ public class SlashCommandManager {
                                     if(!event.getGuild().getSelfMember().hasPermission(permission))
                                     {
                                         event.acknowledge(true)
-                                                .flatMap(v -> hook.sendMessage(I18n.ofGuild(event.getGuild()).get("general.no_bot_perms1")))
+                                                .flatMap(v -> hook.sendMessage(LanguageLoader.ofGuild(event.getGuild()).get("general.no_bot_perms1", String.class)))
                                                 .queue();
                                         return;
                                     }
@@ -240,7 +240,7 @@ public class SlashCommandManager {
                         cmd.executeCommand(event, member, new CommandContext(event));
                     }
                 }
-                if(!foundCommand && member != null) event.reply(I18n.ofGuild(event.getGuild()).get("commands.disabled_or_unknown")).setEphemeral(true).queue();
+                if(!foundCommand && member != null) event.reply(LanguageLoader.ofGuild(event.getGuild()).get("commands.disabled_or_unknown", String.class)).setEphemeral(true).queue();
 
             }catch (Exception e)
             {
