@@ -88,5 +88,9 @@ public class CommandContext
         return event.replyFormat(ERROR+" "+format, args).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
     }
 
+    public String parseDuration(long seconds, String delimiter)
+    {
+        return LanguageLoader.parseDuration(seconds, getLanguage(), delimiter);
+    }
 
 }

@@ -75,7 +75,7 @@ public class CommandEvent extends GuildMessageReceivedEvent
     {
         this.command = command;
     }
-    public void replyinLogChannel(String message)
+    public void replyInLogChannel(String message)
     {
         TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
         if(logchannel != null) logchannel.sendMessage(message).queue();
@@ -92,12 +92,12 @@ public class CommandEvent extends GuildMessageReceivedEvent
         return DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong()) != null;
     }
 
-    public void replyinLogChannel(Message message)
+    public void replyInLogChannel(Message message)
     {
         TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
         if(logchannel != null) logchannel.sendMessage(message).queue();
     }
-    public void replyinLogChannel(MessageEmbed message)
+    public void replyInLogChannel(MessageEmbed message)
     {
         TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
         if(logchannel != null) logchannel.sendMessage(message).queue();
@@ -301,6 +301,11 @@ public class CommandEvent extends GuildMessageReceivedEvent
     public String getLocalized(String query, Object... objects)
     {
         return String.format(LanguageLoader.ofGuild(guild).get(query, String.class), objects);
+    }
+
+    public String parseDuration(long seconds, String delimiter)
+    {
+        return LanguageLoader.parseDuration(seconds, getLanguage(), delimiter);
     }
 
     public void replyInDM(String message)
