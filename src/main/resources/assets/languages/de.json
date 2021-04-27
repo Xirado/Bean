@@ -202,6 +202,7 @@
 		"month_ago" : "vor einem Monat",
 		"months_ago" : "vor %1$s Monaten",
 		"year_ago" : "vor einem Jahr",
-		"years_ago" : "vor %1$s Jahren"
+		"years_ago" : "vor %1$s Jahren",
+		"permanent" : "permanent"
 	}
 }

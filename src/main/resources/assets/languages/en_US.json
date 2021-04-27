@@ -202,7 +202,7 @@
 		"month_ago" : "a month ago",
 		"months_ago" : "%1$s months ago",
 		"year_ago" : "a years ago",
-		"years_ago" : "%1$s years ago"
-		
+		"years_ago" : "%1$s years ago",
+		"permanent" : "permanent"
 	}
 }
