@@ -86,7 +86,7 @@ public class TempbanCommand extends SlashCommand
             return;
         }
         boolean withReason = event.getOption("reason") != null;
-        final String Reason = withReason ? event.getOption("reason").getAsString() : "No reason specified";
+        final String Reason = withReason ? event.getOption("reason").getAsString() : ctx.getLocalized("commands.noreason");
         User targetUser = targetMember.getUser();
         long channelid = event.getChannel().getIdLong();
         guild.ban(targetMember, 0, Reason).queue(
@@ -112,7 +112,7 @@ public class TempbanCommand extends SlashCommand
                                 .addField("banned", targetUser.getAsMention()+" ("+targetUser.getAsTag()+")", true)
                                 .addField("moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true)
                                 .addField("reason", Reason, false)
-                                .addField("duration", Util.getLength(time/1000), true);
+                                .addField("duration", ctx.parseDuration(time/1000, " "), true);
                         if(!withReason)
                         {
                             builder.addField("", "Use `/case reason "+modcase.getCaseID()+"`\n to add a reason to this ban.", false);
