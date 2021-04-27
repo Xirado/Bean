@@ -108,7 +108,7 @@ public class CaseCommand extends Command
             event.reply(builder.build());
             if(event.hasLogChannel())
             {
-                event.replyinLogChannel(builder.build());
+                event.replyInLogChannel(builder.build());
             }
 
         }

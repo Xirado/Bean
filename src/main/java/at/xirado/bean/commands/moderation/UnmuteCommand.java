@@ -92,7 +92,7 @@ public class UnmuteCommand extends Command
                                 .setThumbnail(targetMember.getUser().getEffectiveAvatarUrl())
                                 .addField(event.getLocalized("commands.target"), targetMember.getAsMention()+" ("+targetMember.getUser().getAsTag()+")" , true)
                                 .addField("Moderator", m.getAsMention()+" ("+m.getUser().getAsTag()+")", true);
-                        event.replyinLogChannel(builder2.build());
+                        event.replyInLogChannel(builder2.build());
                     }
                 }
         );

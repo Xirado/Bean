@@ -157,7 +157,7 @@ public class MuteCommand extends Command
                                 }else
                                 {
                                     event.reply(small.build());
-                                    event.replyinLogChannel(big.build());
+                                    event.replyInLogChannel(big.build());
                                 }
                             },
                             (failure) ->

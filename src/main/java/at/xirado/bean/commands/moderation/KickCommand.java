@@ -146,7 +146,7 @@ public class KickCommand extends Command
             event.reply(builder.build());
         }else
         {
-            event.replyinLogChannel(builder.build());
+            event.replyInLogChannel(builder.build());
         }
     }
 }

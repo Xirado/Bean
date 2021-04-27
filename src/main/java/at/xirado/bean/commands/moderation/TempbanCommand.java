@@ -124,7 +124,7 @@ public class TempbanCommand extends Command
                                     event.reply(builder.build());
                                 }else
                                 {
-                                    event.replyinLogChannel(builder.build());
+                                    event.replyInLogChannel(builder.build());
                                 }
                             },
                             (error) -> event.replyError(event.getLocalized("commands.ban.could_not_ban_user"))

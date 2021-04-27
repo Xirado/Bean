@@ -89,7 +89,7 @@ public class Unban extends Command
                                             .setThumbnail(user.getEffectiveAvatarUrl())
                                             .addField(e.getLocalized("commands.target"), user.getAsMention()+" ("+user.getAsTag()+")" , true)
                                             .addField("Moderator", m.getAsMention()+" ("+m.getUser().getAsTag()+")", true);
-                                    e.replyinLogChannel(builder2.build());
+                                    e.replyInLogChannel(builder2.build());
                                 }
                             },
                             (error) ->
