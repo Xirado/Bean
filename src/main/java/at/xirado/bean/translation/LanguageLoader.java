@@ -1,7 +1,6 @@
 package at.xirado.bean.translation;
 
 import at.xirado.bean.misc.JSON;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.dv8tion.jda.api.entities.Guild;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -10,20 +9,24 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class LanguageLoader {
 
     private static final Logger log = LoggerFactory.getLogger(LanguageLoader.class);
 
     public static final List<String> LANGUAGES = new ArrayList<>();
-    private static Map<String, JSON> LANGUAGE_MAP;
+    private static final Map<String, JSON> LANGUAGE_MAP;
 
     static
     {
         Map<String, JSON> m = new HashMap<>();
-        var mapper = new ObjectMapper();
 
         try (var is = LanguageLoader.class.getResourceAsStream("/assets/languages/list.txt")) {
+            if(is == null)
+            {
+                throw new ExceptionInInitializerError("Could not initialize Language loader because list.txt does not exist!");
+            }
             for (var lang : IOUtils.toString(is, StandardCharsets.UTF_8).trim().split("\n")) {
                 var language = lang.trim();
                 LANGUAGES.add(language);
@@ -42,8 +45,7 @@ public class LanguageLoader {
                 m.put(name, json.setMetadata(new String[]{name}));
                 log.info("Initialized translation file {}", name);
             } catch (Exception e) {
-                log.error("Could not initialize Language!");
-                throw new ExceptionInInitializerError(e);
+                log.error("Could not initialize Language!", e);
             }
         }
 
@@ -54,6 +56,7 @@ public class LanguageLoader {
     {
         return (String[]) LANGUAGES.toArray();
     }
+
     public static JSON getForLanguage(String language)
     {
         var lang = LANGUAGE_MAP.get(language);
@@ -79,4 +82,49 @@ public class LanguageLoader {
     public static boolean isValidLanguage(String lang) {
         return LANGUAGE_MAP.containsKey(lang);
     }
+
+
+    public static String parseDuration(long seconds, JSON languageJSON, String delimiter)
+    {
+        if(seconds == -1)
+        {
+            return languageJSON.getString("time.permanent");
+        }
+        long days = TimeUnit.SECONDS.toDays(seconds);
+        long hours = TimeUnit.SECONDS.toHours(seconds) - (days *24);
+        long minutes = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds)* 60);
+        long seconds1 = TimeUnit.SECONDS.toSeconds(seconds) - (TimeUnit.SECONDS.toMinutes(seconds) *60);
+        StringBuilder ges = new StringBuilder();
+        if(days != 0) {
+            if(days == 1) {
+                ges.append(days).append(" ").append(languageJSON.getString("time.day")).append(delimiter);
+            }else {
+                ges.append(days).append(" ").append(languageJSON.getString("time.days")).append(delimiter);
+            }
+        }
+        if(hours != 0) {
+            if(hours == 1) {
+                ges.append(hours).append(" ").append(languageJSON.getString("time.hour")).append(delimiter);
+            }else {
+                ges.append(hours).append(" ").append(languageJSON.getString("time.hours")).append(delimiter);
+            }
+        }
+        if(minutes != 0) {
+            if(minutes == 1) {
+                ges.append(minutes).append(" ").append(languageJSON.getString("time.minute")).append(delimiter);
+            }else {
+                ges.append(minutes).append(" ").append(languageJSON.getString("time.minutes")).append(delimiter);
+            }
+        }
+        if(seconds1 != 0) {
+            if(seconds1 == 1) {
+                ges.append(seconds1).append(" ").append(languageJSON.getString("time.second")).append(delimiter);
+            }else {
+                ges.append(seconds1).append(" ").append(languageJSON.getString("time.seconds")).append(delimiter);
+            }
+        }
+        String result = ges.toString();
+        return result.substring(0, result.length()-delimiter.length());
+    }
+
 }
