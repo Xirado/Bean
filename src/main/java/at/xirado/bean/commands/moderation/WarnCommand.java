@@ -7,7 +7,6 @@ import at.xirado.bean.handlers.PermissionCheckerManager;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
-import at.xirado.bean.punishmentmanager.Punishments;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -18,7 +17,6 @@ import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.time.Instant;
-import java.util.List;
 
 public class WarnCommand extends Command
 {
@@ -116,7 +114,7 @@ public class WarnCommand extends Command
                                 .setDescription(CommandEvent.SUCCESS_EMOTE+" "+event.getLocalized("commands.warn.has_been_warned", target_User.getAsTag()))
                                 .setFooter("Case #"+modcase.getCaseID()+" ("+Reason+")");
                         event.reply(simple.build());
-                        event.replyinLogChannel(mainembed.build());
+                        event.replyInLogChannel(mainembed.build());
                     }
                 }, new ErrorHandler()
                     .handle(ErrorResponse.UNKNOWN_MEMBER, err -> event.replyError(event.getLocalized("commands.user_not_in_guild")))
