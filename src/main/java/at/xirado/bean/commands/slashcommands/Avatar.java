@@ -29,8 +29,10 @@ public class Avatar extends SlashCommand
 	@Override
 	public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull CommandContext ctx)
 	{
-		User user = event.getOption("user").getAsUser();
-		if(user == null) return;
+		User user;
+		SlashCommandEvent.OptionData option = event.getOption("user");
+		if(option != null) user = option.getAsUser();
+		else user = event.getUser();
 		EmbedBuilder b = new EmbedBuilder()
 				.setImage(user.getEffectiveAvatarUrl()+"?size=512")
 				.setColor(Color.magenta)
