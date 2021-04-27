@@ -1,13 +1,14 @@
 package at.xirado.bean.commands;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.time.Instant;
@@ -28,15 +29,15 @@ public class Settings extends Command
 	}
 
 	@Override
-	public void executeCommand(CommandEvent e)
+	public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
 	{
-		String[] args = e.getArguments().toStringArray();
-		Member m = e.getMember();
-		Guild g = e.getGuild();
+		String[] args = context.getArguments().toStringArray();
+		Member m = context.getMember();
+		Guild g = event.getGuild();
 		String Prefix = DiscordBot.instance.prefixManager.getPrefix(g.getIdLong());
-		User u = e.getAuthor();
+		User u = event.getAuthor();
 		Member bot = g.getMember(DiscordBot.instance.jda.getSelfUser());
-		TextChannel channel = e.getChannel();
+		TextChannel channel = event.getChannel();
 		if (args.length == 0)
 		{
 			EmbedBuilder builder = new EmbedBuilder()
@@ -55,7 +56,7 @@ public class Settings extends Command
 		}
 		if (args[0].equalsIgnoreCase("setLogChannel"))
 		{
-			if (e.getMessage().getMentionedChannels().size() != 1)
+			if (event.getMessage().getMentionedChannels().size() != 1)
 			{
 				EmbedBuilder builder = new EmbedBuilder()
 						.setAuthor(u.getAsTag(), null, u.getAvatarUrl())
@@ -68,7 +69,7 @@ public class Settings extends Command
 				channel.sendMessage(builder.build()).queue();
 				return;
 			}
-			TextChannel newchannel = e.getMessage().getMentionedChannels().get(0);
+			TextChannel newchannel = event.getMessage().getMentionedChannels().get(0);
 			if (newchannel.getGuild().getIdLong() != g.getIdLong())
 			{
 				return;
@@ -130,7 +131,7 @@ public class Settings extends Command
 				channel.sendMessage(builder.build()).queue();
 				return;
 			}
-			Role role = e.getMessage().getMentionedRoles().get(0);
+			Role role = event.getMessage().getMentionedRoles().get(0);
 			if (!bot.canInteract(role))
 			{
 				EmbedBuilder builder = new EmbedBuilder()

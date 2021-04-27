@@ -1,7 +1,7 @@
 package at.xirado.bean.commands.moderation;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.handlers.PermissionCheckerManager;
 import at.xirado.bean.main.DiscordBot;
@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -32,25 +33,25 @@ public class ListModeratorsCommand extends Command
         this.neededPermissions = Collections.singletonList(Permission.ADMINISTRATOR);
     }
     @Override
-    public void executeCommand(CommandEvent event)
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        Member member = event.getMember();
+        Member member = context.getMember();
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
         if(!permissionCheckerManager.isModerator(member) && !member.hasPermission(Permission.ADMINISTRATOR))
         {
-            event.replyError(event.getLocalized("general.no_perms"));
+            context.replyError(context.getLocalized("general.no_perms"));
             return;
         }
         Guild guild = event.getGuild();
         ArrayList<Long> allowedRoles = permissionCheckerManager.getAllowedRoles(guild.getIdLong());
         if(allowedRoles == null || allowedRoles.isEmpty())
         {
-            event.replyWarning(event.getLocalized("commands.listmods.no_roles_found"));
+            context.replyWarning(context.getLocalized("commands.listmods.no_roles_found"));
             return;
         }
         StringBuilder sb = new StringBuilder();
         Color firstColor = null;
-        ArrayList<Role> allowedRolesasObject = new ArrayList<>();
+        ArrayList<Role> allowedRolesAsObject = new ArrayList<>();
         for(Long roleID : allowedRoles)
         {
             Role role = guild.getRoleById(roleID);
@@ -59,14 +60,14 @@ public class ListModeratorsCommand extends Command
                 permissionCheckerManager.removeAllowedRole(guild.getIdLong(), roleID);
                 continue;
             }
-            allowedRolesasObject.add(role);
+            allowedRolesAsObject.add(role);
         }
-        if(allowedRolesasObject.size() > 1)
+        if(allowedRolesAsObject.size() > 1)
         {
-            allowedRolesasObject = allowedRolesasObject.stream().sorted(Comparator.comparingInt(Role::getPosition)).collect(Collectors.toCollection(ArrayList::new));
-            Collections.reverse(allowedRolesasObject);
+            allowedRolesAsObject = allowedRolesAsObject.stream().sorted(Comparator.comparingInt(Role::getPosition)).collect(Collectors.toCollection(ArrayList::new));
+            Collections.reverse(allowedRolesAsObject);
         }
-        for(Role r : allowedRolesasObject)
+        for(Role r : allowedRolesAsObject)
         {
             if(firstColor == null) firstColor = r.getColor();
             sb.append(r.getAsMention()).append(", ");
@@ -75,8 +76,8 @@ public class ListModeratorsCommand extends Command
         description = description.substring(0, description.length()-2);
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(firstColor == null ? Color.green : firstColor)
-                .setDescription(event.getLocalized("commands.listmods.all_mod_roles")+":\n"+description);
-        event.reply(builder.build());
+                .setDescription(context.getLocalized("commands.listmods.all_mod_roles")+":\n"+description);
+        context.reply(builder.build());
 
     }
 }

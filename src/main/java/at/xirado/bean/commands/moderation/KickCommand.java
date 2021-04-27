@@ -1,7 +1,7 @@
 package at.xirado.bean.commands.moderation;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.punishmentmanager.Case;
@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.slf4j.Logger;
@@ -37,20 +38,20 @@ public class KickCommand extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent event)
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
         Guild guild = event.getGuild();
-        Member sender = event.getMember();
-        String[] args = event.getArguments().toStringArray();
+        Member sender = context.getMember();
+        String[] args = context.getArguments().toStringArray();
         if(args.length < 1)
         {
-            event.replyErrorUsage();
+            context.replyErrorUsage();
             return;
         }
         String target_ID = args[0].replaceAll("[^0-9]", "");
         if(target_ID.length() == 0)
         {
-            event.replyError(event.getLocalized("commands.id_empty"));
+            context.replyError(context.getLocalized("commands.id_empty"));
             return;
         }
         Member target_Member = null;
@@ -61,43 +62,43 @@ public class KickCommand extends Command
         {
             if(e.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER)
             {
-                event.replyError(event.getLocalized("commands.user_not_in_guild"));
+                context.replyError(context.getLocalized("commands.user_not_in_guild"));
                 return;
             }else if(e.getErrorResponse() == ErrorResponse.UNKNOWN_USER)
             {
-                event.replyError(event.getLocalized("commands.user_not_exists"));
+                context.replyError(context.getLocalized("commands.user_not_exists"));
                 return;
             }
         }
         if(target_Member == null)
         {
-            event.replyError(event.getLocalized("commands.user_not_exists"));
+            context.replyError(context.getLocalized("commands.user_not_exists"));
             return;
         }
         if(!sender.canInteract(target_Member))
         {
-            event.replyError(event.getLocalized("commands.kick.you_cannot_kick"));
+            context.replyError(context.getLocalized("commands.kick.you_cannot_kick"));
             return;
         }
-        if(!event.getSelfMember().canInteract(target_Member))
+        if(!guild.getSelfMember().canInteract(target_Member))
         {
-            event.replyError(event.getLocalized("commands.kick.i_cannot_kick"));
+            context.replyError(context.getLocalized("commands.kick.i_cannot_kick"));
             return;
         }
         if(DiscordBot.getInstance().permissionCheckerManager.isModerator(target_Member))
         {
-            event.replyError(event.getLocalized("commands.kick.you_cannot_kick_moderator"));
+            context.replyError(context.getLocalized("commands.kick.you_cannot_kick_moderator"));
             return;
         }
         boolean withReason = args.length > 1;
-        final String Reason = withReason ? event.getArguments().toString(1) : event.getLocalized("commands.noreason");
+        final String Reason = withReason ? context.getArguments().toString(1) : context.getLocalized("commands.noreason");
         User target_User = target_Member.getUser();
         try
         {
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(CaseType.KICK.getEmbedColor())
-                    .setTitle(event.getLocalized("commands.kick.you_have_been_kicked", guild.getName()))
-                    .addField(event.getLocalized("reason"), Reason, true)
+                    .setTitle(context.getLocalized("commands.kick.you_have_been_kicked", guild.getName()))
+                    .addField(context.getLocalized("reason"), Reason, true)
                     .addField("Moderator", sender.getUser().getAsTag(), true);
             PrivateChannel privateChannel = target_User.openPrivateChannel().complete();
             privateChannel.sendMessage(builder.build()).complete();
@@ -110,43 +111,43 @@ public class KickCommand extends Command
             guild.kick(target_Member, Reason).complete();
         } catch (ErrorResponseException e)
         {
-            event.replyError(event.getLocalized("commands.kick.could_not_kick_member"));
+            context.replyError(context.getLocalized("commands.kick.could_not_kick_member"));
             return;
         }
         Case modcase = Case.createCase(CaseType.KICK, guild.getIdLong(), target_Member.getIdLong(), sender.getIdLong(), Reason, 0);
         if(modcase == null)
         {
-            event.replyError(event.getLocalized("general.unknown_error_occured"));
+            context.replyError(context.getLocalized("general.unknown_error_occured"));
             return;
         }
-        if(event.hasLogChannel())
+        if(context.hasLogChannel())
         {
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(CaseType.KICK.getEmbedColor())
-                    .setDescription(CommandEvent.SUCCESS_EMOTE +" "+event.getLocalized("commands.kick.has_been_kicked", target_User.getAsTag()))
+                    .setDescription(CommandContext.SUCCESS_EMOTE +" "+context.getLocalized("commands.kick.has_been_kicked", target_User.getAsTag()))
                     .setFooter("Case #"+modcase.getCaseID()+" ("+Reason+")");
-            event.reply(builder.build());
+            context.reply(builder.build());
         }
         EmbedBuilder builder = new EmbedBuilder()
                 .setTimestamp(Instant.now())
                 .setColor(CaseType.KICK.getEmbedColor())
                 .setThumbnail(target_User.getEffectiveAvatarUrl())
-                .setFooter(event.getLocalized("commands.target_id")+": "+target_User.getIdLong())
+                .setFooter(context.getLocalized("commands.target_id")+": "+target_User.getIdLong())
                 .setTitle("Kick | Case "+modcase.getCaseID())
-                .addField(event.getLocalized("commands.target"), target_User.getAsMention()+" ("+target_User.getAsTag()+")", true)
+                .addField(context.getLocalized("commands.target"), target_User.getAsMention()+" ("+target_User.getAsTag()+")", true)
                 .addField("Moderator", sender.getAsMention()+" ("+event.getAuthor().getAsTag()+")", true)
-                .addField(event.getLocalized("commands.reason"), Reason, false);
+                .addField(context.getLocalized("commands.reason"), Reason, false);
         if(!withReason)
         {
             builder.addField("", "Use `"+ DiscordBot.getInstance().prefixManager.getPrefix(guild.getIdLong())+"reason "+modcase.getCaseID()+" [Reason]` to add a reason to this kick.", false);
 
         }
-        if(!event.hasLogChannel())
+        if(!context.hasLogChannel())
         {
-            event.reply(builder.build());
+            context.reply(builder.build());
         }else
         {
-            event.replyInLogChannel(builder.build());
+            context.replyInLogChannel(builder.build());
         }
     }
 }

@@ -2,7 +2,7 @@ package at.xirado.bean.commands;
 
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.Arrays;
 
@@ -27,25 +28,25 @@ public class Announce extends Command
 	}
 
 	@Override
-	public void executeCommand(CommandEvent e)
+	public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
 	{
 
-		String[] args = e.getArguments().toStringArray();
-		e.getMessage().delete().queue();
-		Guild g = e.getGuild();
-		TextChannel c = e.getChannel();
+		String[] args = context.getArguments().toStringArray();
+		event.getMessage().delete().queue();
+		Guild g = event.getGuild();
+		TextChannel c = event.getChannel();
 		if(args.length < 2)
 		{
-			e.replyErrorUsage();
+			context.replyErrorUsage();
 			return;
 		}
-		TextChannel targetChannel = e.getGuild().getTextChannelById(args[0].replaceAll("[^0-9]", ""));
+		TextChannel targetChannel = event.getGuild().getTextChannelById(args[0].replaceAll("[^0-9]", ""));
 		if(targetChannel == null)
 		{
-			e.replyError("Invalid channel!");
+			context.replyError("Invalid channel!");
 			return;
 		}
-		String message = e.getArguments().toString(1);
+		String message = context.getArguments().toString(1);
 		targetChannel.sendMessage(
 				new EmbedBuilder()
 					.setAuthor(g.getName(), null, g.getIconUrl())

@@ -1,20 +1,24 @@
 package at.xirado.bean.commands.moderation;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.handlers.MutedRoleManager;
 import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.translation.FormattedDuration;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import at.xirado.bean.punishmentmanager.Punishments;
+import at.xirado.bean.translation.FormattedDuration;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 
@@ -36,56 +40,56 @@ public class MuteCommand extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent event)
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        Member m = event.getMember();
+        Member m = context.getMember();
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
         if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
         {
-            event.replyError(event.getLocalized("general.no_perms"));
+            context.replyError(context.getLocalized("general.no_perms"));
             return;
         }
         Guild g = event.getGuild();
-        String[] args = event.getArguments().toStringArray();
+        String[] args = context.getArguments().toStringArray();
         if(args.length < 2)
         {
-            event.replyErrorUsage();
+            context.replyErrorUsage();
             return;
         }
         String targetID = args[0].replaceAll("[^0-9]", "");
         if(targetID.length() == 0)
         {
-            event.replyError(event.getLocalized("commands.id_empty"));
+            context.replyError(context.getLocalized("commands.id_empty"));
             return;
         }
         Long time = FormattedDuration.parsePeriod(args[1]);
         if(time == null)
         {
-            event.replyErrorUsage();
+            context.replyErrorUsage();
             return;
         }
         if(time < 1000)
         {
-            event.replyError(event.getLocalized("commands.mute.duration_too_short"));
+            context.replyError(context.getLocalized("commands.mute.duration_too_short"));
             return;
         }
-        String Reason = args.length > 2 ? event.getArguments().toString(2) : event.getLocalized("commands.noreason");
+        String Reason = args.length > 2 ? context.getArguments().toString(2) : context.getLocalized("commands.noreason");
         g.retrieveMemberById(targetID).queue(
                 (target_Member) ->
                 {
                     if(!m.canInteract(target_Member))
                     {
-                        event.replyError(event.getLocalized("commands.mute.you_cannot_mute"));
+                        context.replyError(context.getLocalized("commands.mute.you_cannot_mute"));
                         return;
                     }
-                    if(!event.getSelfMember().canInteract(target_Member))
+                    if(!event.getGuild().getSelfMember().canInteract(target_Member))
                     {
-                        event.replyError(event.getLocalized("commands.mute.i_cannot_mute"));
+                        context.replyError(context.getLocalized("commands.mute.i_cannot_mute"));
                         return;
                     }
                     if(DiscordBot.getInstance().permissionCheckerManager.isModerator(target_Member))
                     {
-                        event.replyError(event.getLocalized("commands.mute.you_cannot_mute_moderator"));
+                        context.replyError(context.getLocalized("commands.mute.you_cannot_mute_moderator"));
                         return;
                     }
                     MutedRoleManager mutedRoleManager = DiscordBot.getInstance().mutedRoleManager;
@@ -95,7 +99,7 @@ public class MuteCommand extends Command
                         EmbedBuilder builder = new EmbedBuilder()
                                 .setColor(Color.red)
                                 .setDescription("You have not set up a muted-role!\nAfter you have created and/or configured your muted-role, use `"+DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())+"setmutedrole [@Role/ID]`");
-                        event.reply(builder.build());
+                        context.reply(builder.build());
                         return;
                     }
                     Role role = g.getRoleById(mutedrole);
@@ -103,16 +107,16 @@ public class MuteCommand extends Command
                     {
                         EmbedBuilder builder = new EmbedBuilder()
                                 .setColor(Color.red)
-                                .setDescription(event.getLocalized("commands.mute.no_role_setup", DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())));
-                        event.reply(builder.build());
+                                .setDescription(context.getLocalized("commands.mute.no_role_setup", DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())));
+                        context.reply(builder.build());
                         return;
                     }
-                    if(!event.getSelfMember().canInteract(role))
+                    if(!event.getGuild().getSelfMember().canInteract(role))
                     {
                         EmbedBuilder builder = new EmbedBuilder()
                                 .setColor(Color.red)
-                                .setDescription(event.getLocalized("commands.cannot_interact_role", role.getAsMention()));
-                        event.reply(builder.build());
+                                .setDescription(context.getLocalized("commands.cannot_interact_role", role.getAsMention()));
+                        context.reply(builder.build());
                         return;
                     }
                     Case previouscase = Punishments.getActiveMuteCase(target_Member);
@@ -127,7 +131,7 @@ public class MuteCommand extends Command
                                 Case modcase = Case.createCase(CaseType.MUTE, g.getIdLong(), target_Member.getIdLong(), m.getIdLong(), Reason, time);
                                 if(modcase == null)
                                 {
-                                    event.replyError(event.getLocalized("general.unknown_error_occured"));
+                                    context.replyError(context.getLocalized("general.unknown_error_occured"));
                                     return;
                                 }
                                 Runnable runnable = () ->
@@ -139,35 +143,35 @@ public class MuteCommand extends Command
                                 DiscordBot.getInstance().scheduledExecutorService.schedule(runnable, time, TimeUnit.MILLISECONDS);
                                 EmbedBuilder small = new EmbedBuilder()
                                         .setColor(CaseType.MUTE.getEmbedColor())
-                                        .setDescription(CommandEvent.SUCCESS_EMOTE+" "+event.getLocalized("commands.mute.has_been_muted", target_Member.getUser().getAsTag(), Util.getLength(time/1000)))
+                                        .setDescription(CommandContext.SUCCESS_EMOTE+" "+context.getLocalized("commands.mute.has_been_muted", target_Member.getUser().getAsTag(), Util.getLength(time/1000)))
                                         .setFooter("Case #"+modcase.getCaseID()+" ("+Reason+")");
                                 EmbedBuilder big = new EmbedBuilder()
                                         .setTimestamp(Instant.now())
                                         .setColor(CaseType.MUTE.getEmbedColor())
                                         .setThumbnail(target_Member.getUser().getEffectiveAvatarUrl())
-                                        .setFooter(event.getLocalized("commands.target_id")+": "+target_Member.getIdLong())
+                                        .setFooter(context.getLocalized("commands.target_id")+": "+target_Member.getIdLong())
                                         .setTitle("Mute | Case #"+modcase.getCaseID())
-                                        .addField(event.getLocalized("commands.target"), target_Member.getAsMention()+" ("+target_Member.getUser().getAsTag()+")", true)
+                                        .addField(context.getLocalized("commands.target"), target_Member.getAsMention()+" ("+target_Member.getUser().getAsTag()+")", true)
                                         .addField("Moderator", m.getAsMention()+" ("+event.getAuthor().getAsTag()+")", true)
-                                        .addField(event.getLocalized("commands.reason"), Reason, false)
-                                        .addField(event.getLocalized("commands.duration"), Util.getLength(time/1000), true);
-                                if(!event.hasLogChannel())
+                                        .addField(context.getLocalized("commands.reason"), Reason, false)
+                                        .addField(context.getLocalized("commands.duration"), Util.getLength(time/1000), true);
+                                if(!context.hasLogChannel())
                                 {
-                                    event.reply(big.build());
+                                    context.reply(big.build());
                                 }else
                                 {
-                                    event.reply(small.build());
-                                    event.replyInLogChannel(big.build());
+                                    context.reply(small.build());
+                                    context.replyInLogChannel(big.build());
                                 }
                             },
                             (failure) ->
                             {
-                                event.replyError(event.getLocalized("general.unknown_error_occured"));
+                                context.replyError(context.getLocalized("general.unknown_error_occured"));
                             }
                     );
                 }, new ErrorHandler()
-                .handle(ErrorResponse.UNKNOWN_MEMBER, err -> event.replyError(event.getLocalized("general.user_not_in_guild")))
-                .handle(ErrorResponse.UNKNOWN_USER, err -> event.replyError(event.getLocalized("general.user_not_exists")))
+                .handle(ErrorResponse.UNKNOWN_MEMBER, err -> context.replyError(context.getLocalized("general.user_not_in_guild")))
+                .handle(ErrorResponse.UNKNOWN_USER, err -> context.replyError(context.getLocalized("general.user_not_exists")))
         );
     }
 }

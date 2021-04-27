@@ -1,7 +1,7 @@
 package at.xirado.bean.commands.moderation;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.misc.SQL;
@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.sql.Connection;
@@ -33,23 +34,23 @@ public class Unban extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent e)
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        String[] args = e.getArguments().toStringArray();
-        User u = e.getAuthor();
-        Guild g = e.getGuild();
-        Member m = e.getMember();
+        String[] args = context.getArguments().toStringArray();
+        User u = event.getAuthor();
+        Guild g = event.getGuild();
+        Member m = context.getMember();
         Member bot = g.getMember(DiscordBot.instance.jda.getSelfUser());
-        TextChannel c = e.getChannel();
+        TextChannel c = event.getChannel();
         if (args.length != 1)
         {
-            e.replyErrorUsage();
+            context.replyErrorUsage();
             return;
         }
         String ID = args[0].replaceAll("[^0-9]", "");
         if(ID.length() == 0)
         {
-            e.replyError("ID may not be empty!");
+            context.replyError("ID may not be empty!");
             return;
         }
         DiscordBot.instance.jda.retrieveUserById(ID).queue(
@@ -62,7 +63,7 @@ public class Unban extends Command
                                 Connection connection = SQL.getConnectionFromPool();
                                 if(connection == null)
                                 {
-                                    e.replyError(e.getLocalized("general.db_error"));
+                                    context.replyError(context.getLocalized("general.db_error"));
                                     return;
                                 }
                                 try(var ps = connection.prepareStatement(qry))
@@ -74,27 +75,27 @@ public class Unban extends Command
                                     connection.close();
                                 }catch (SQLException ex)
                                 {
-                                    e.replyError(e.getLocalized("general.db_error"));
+                                    context.replyError(context.getLocalized("general.db_error"));
                                     return;
                                 }
                                 EmbedBuilder builder = new EmbedBuilder()
                                         .setColor(Color.green)
-                                        .setDescription(e.getLocalized("commands.unban.has_been_unbanned", user.getAsMention()));
-                                e.reply(builder.build());
-                                if(e.hasLogChannel())
+                                        .setDescription(context.getLocalized("commands.unban.has_been_unbanned", user.getAsMention()));
+                                context.reply(builder.build());
+                                if(context.hasLogChannel())
                                 {
                                     EmbedBuilder builder2 = new EmbedBuilder()
                                             .setColor(Color.green)
                                             .setTitle("Unban")
                                             .setThumbnail(user.getEffectiveAvatarUrl())
-                                            .addField(e.getLocalized("commands.target"), user.getAsMention()+" ("+user.getAsTag()+")" , true)
+                                            .addField(context.getLocalized("commands.target"), user.getAsMention()+" ("+user.getAsTag()+")" , true)
                                             .addField("Moderator", m.getAsMention()+" ("+m.getUser().getAsTag()+")", true);
-                                    e.replyInLogChannel(builder2.build());
+                                    context.replyInLogChannel(builder2.build());
                                 }
                             },
                             (error) ->
                             {
-                                e.replyError(e.getLocalized("commands.unban.could_not_unban"));
+                                context.replyError(context.getLocalized("commands.unban.could_not_unban"));
                             }
                     );
                 }

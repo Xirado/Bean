@@ -1,13 +1,14 @@
 package at.xirado.bean.commands;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 
@@ -28,7 +29,7 @@ public class PostEmbedFromJSON extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent event)
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
         TextChannel channel = event.getChannel();
         DataObject dataObject = DataObject.fromJson("some long json text");

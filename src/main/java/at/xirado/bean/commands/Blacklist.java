@@ -1,7 +1,7 @@
 package at.xirado.bean.commands;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.handlers.BlacklistManager;
 import at.xirado.bean.main.DiscordBot;
@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
@@ -33,16 +34,16 @@ public class Blacklist extends Command
 	}
 
 	@Override
-	public void executeCommand(CommandEvent e)
+	public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
 	{
-		String[] args = e.getArguments().toStringArray();
-		User user = e.getAuthor();
-		Guild guild = e.getGuild();
-		TextChannel channel = e.getChannel();
+		String[] args = context.getArguments().toStringArray();
+		User user = event.getAuthor();
+		Guild guild = event.getGuild();
+		TextChannel channel = event.getChannel();
 		BlacklistManager blMan = DiscordBot.instance.blacklistManager;
 		if(args.length < 1)
 		{
-			e.replyErrorUsage();
+			context.replyErrorUsage();
 			return;
 		}
 		String subcommand = args[0];
@@ -51,13 +52,13 @@ public class Blacklist extends Command
 		{
 			if(args.length != 2)
 			{
-				e.replyErrorUsage();
+				context.replyErrorUsage();
 				return;
 			}
 			if(blMan.containsBlacklistedWord(guild.getIdLong(), args[1].toUpperCase()))
 			{
 				EmbedBuilder builder = new EmbedBuilder()
-						.setDescription(e.getLocalized("commands.blacklist.already_on_blacklist"))
+						.setDescription(context.getLocalized("commands.blacklist.already_on_blacklist"))
 						.setColor(Color.RED)
 						.setTimestamp(Instant.now());
 				channel.sendMessage(builder.build()).queue();
@@ -66,24 +67,24 @@ public class Blacklist extends Command
 			}
 			blMan.addBlacklistedWord(guild.getIdLong(), args[1].toUpperCase());
 			EmbedBuilder builder = new EmbedBuilder()
-				.setDescription(e.getLocalized("commands.blacklist.added"))
+				.setDescription(context.getLocalized("commands.blacklist.added"))
 				.setColor(Color.GREEN)
 				.addField("Moderator", user.getAsMention(), true)
-				.addField(e.getLocalized("commands.blacklist.word"), StringUtils.capitalize(args[1].toLowerCase()), true)
+				.addField(context.getLocalized("commands.blacklist.word"), StringUtils.capitalize(args[1].toLowerCase()), true)
 				.setTimestamp(Instant.now());
 			channel.sendMessage(builder.build()).queue();
 		}else if(subcommand.equalsIgnoreCase("remove"))
 		{
 			if(args.length != 2)
 			{
-				e.replyErrorUsage();
+				context.replyErrorUsage();
 				return;
 			}
 			List<String> currentlist = DiscordBot.instance.blacklistManager.getBlacklistedWords(guild.getIdLong());
 			if(!blMan.containsBlacklistedWord(guild.getIdLong(), args[1].toUpperCase()))
 			{
 				EmbedBuilder builder = new EmbedBuilder()
-						.setDescription(e.getLocalized("commands.blacklist.not_on_blacklist"))
+						.setDescription(context.getLocalized("commands.blacklist.not_on_blacklist"))
 						.setColor(Color.RED)
 						.setTimestamp(Instant.now());
 				channel.sendMessage(builder.build()).queue();
@@ -92,10 +93,10 @@ public class Blacklist extends Command
 			}
 			blMan.removeBlacklistedWord(guild.getIdLong(), args[1].toUpperCase());
 			EmbedBuilder builder = new EmbedBuilder()
-					.setDescription(e.getLocalized("commands.blacklist.removed"))
+					.setDescription(context.getLocalized("commands.blacklist.removed"))
 					.setColor(Color.GREEN)
 					.addField("Moderator", user.getAsMention(), true)
-					.addField(e.getLocalized("commands.blacklist.word"), StringUtils.capitalize(args[1].toLowerCase()), true)
+					.addField(context.getLocalized("commands.blacklist.word"), StringUtils.capitalize(args[1].toLowerCase()), true)
 					.setTimestamp(Instant.now());
 				channel.sendMessage(builder.build()).queue();
 				return;
@@ -106,7 +107,7 @@ public class Blacklist extends Command
 			if(currentlist.size() <= 0)
 			{
 				EmbedBuilder builder = new EmbedBuilder()
-						.setDescription(e.getLocalized("commands.blacklist.empty"))
+						.setDescription(context.getLocalized("commands.blacklist.empty"))
 						.setColor(Color.RED)
 						.setTimestamp(Instant.now());
 					channel.sendMessage(builder.build()).queue();
@@ -125,8 +126,8 @@ public class Blacklist extends Command
 						EmbedBuilder builder = new EmbedBuilder()
 								.setColor(Color.green)
 								.setTimestamp(Instant.now())
-								.setFooter(e.getLocalized("commands.blacklist.footer", guild.getName()))
-								.setTitle(e.getLocalized("commands.blacklist.header"))
+								.setFooter(context.getLocalized("commands.blacklist.footer", guild.getName()))
+								.setTitle(context.getLocalized("commands.blacklist.header"))
 								.setDescription("```"+allwords+"```")
 								.setAuthor(guild.getName(), null, guild.getIconUrl());
 						pc.sendMessage(builder.build()).queue(

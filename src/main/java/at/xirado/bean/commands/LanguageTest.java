@@ -1,11 +1,11 @@
 package at.xirado.bean.commands;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.Arrays;
-import java.util.Locale;
 
 public class LanguageTest extends Command
 {
@@ -18,7 +18,7 @@ public class LanguageTest extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent event)
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
     }
 }

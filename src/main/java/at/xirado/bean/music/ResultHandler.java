@@ -1,6 +1,6 @@
 package at.xirado.bean.music;
 
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.main.DiscordBot;
 import com.jagrosh.jdautilities.menu.ButtonMenu;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class ResultHandler implements AudioLoadResultHandler
 {
     private final Message m;
-    private final CommandEvent event;
+    private final CommandContext context;
     private final boolean ytsearch;
 
     public static AudioHandler getHandler(Guild g)
@@ -32,37 +32,37 @@ public class ResultHandler implements AudioLoadResultHandler
         return (AudioHandler)g.getAudioManager().getSendingHandler();
 
     }
-    public static boolean init(CommandEvent event)
+    public static boolean init(CommandContext context)
     {
-        VoiceChannel current = event.getGuild().getSelfMember().getVoiceState().getChannel();
-        final GuildVoiceState userState = event.getMember().getVoiceState();
+        VoiceChannel current = context.getEvent().getGuild().getSelfMember().getVoiceState().getChannel();
+        final GuildVoiceState userState = context.getMember().getVoiceState();
         if (!userState.inVoiceChannel() || userState.isDeafened() || (current != null && !userState.getChannel().equals(current))) {
-            event.replyError("You must be listening in " + ((current == null) ? "a voice channel" : ("**" + current.getName() + "**")) + " to use that!");
+            context.replyError("You must be listening in " + ((current == null) ? "a voice channel" : ("**" + current.getName() + "**")) + " to use that!");
             return true;
         }
         final VoiceChannel afkChannel = userState.getGuild().getAfkChannel();
         if (afkChannel != null && afkChannel.equals(userState.getChannel())) {
-            event.replyError("You cannot use that command in an AFK channel!");
+            context.replyError("You cannot use that command in an AFK channel!");
             return true;
         }
-        if (!event.getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
+        if (!context.getEvent().getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
             try {
-                event.getGuild().getAudioManager().openAudioConnection(userState.getChannel());
+                context.getEvent().getGuild().getAudioManager().openAudioConnection(userState.getChannel());
             }
             catch (PermissionException ex) {
-                event.replyError("I am unable to connect to **" + userState.getChannel().getName() + "**!");
+                context.replyError("I am unable to connect to **" + userState.getChannel().getName() + "**!");
                 return true;
             }
         }
-        final AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
+        final AudioHandler handler = (AudioHandler)context.getEvent().getGuild().getAudioManager().getSendingHandler();
         if(handler == null)
-            DiscordBot.instance.musicinstance.getPlayerManager().setUpHandler(event.getGuild());
+            DiscordBot.instance.musicinstance.getPlayerManager().setUpHandler(context.getEvent().getGuild());
         return false;
     }
 
-    public ResultHandler(final Message m, final CommandEvent event, final boolean ytsearch) {
+    public ResultHandler(final Message m, final CommandContext context, final boolean ytsearch) {
         this.m = m;
-        this.event = event;
+        this.context = context;
         this.ytsearch = ytsearch;
     }
 
@@ -71,8 +71,8 @@ public class ResultHandler implements AudioLoadResultHandler
             this.m.editMessage(FormatUtil.filter(" This track (**" + track.getInfo().title + "**) is longer than the allowed maximum: `" + FormatUtil.formatTime(track.getDuration()) + "` > `" + FormatUtil.formatTime(DiscordBot.instance.musicinstance.getConfig().getMaxSeconds() * 1000L) + "`")).queue();
             return;
         }
-        final AudioHandler handler = (AudioHandler)this.event.getGuild().getAudioManager().getSendingHandler();
-        final int pos = handler.addTrack(new QueuedTrack(track, this.event.getAuthor())) + 1;
+        final AudioHandler handler = (AudioHandler)this.context.getEvent().getGuild().getAudioManager().getSendingHandler();
+        final int pos = handler.addTrack(new QueuedTrack(track, this.context.getEvent().getAuthor())) + 1;
         String addMsg;
         if(pos == 0)
         {
@@ -81,7 +81,7 @@ public class ResultHandler implements AudioLoadResultHandler
         {
             addMsg = FormatUtil.filter("Added **"+track.getInfo().title+"** (`"+FormatUtil.formatTime(track.getDuration())+"`) to queue. (Position "+pos+")");
         }
-        if (playlist == null || !this.event.getSelfMember().hasPermission(this.event.getChannel(), Permission.MESSAGE_ADD_REACTION)) {
+        if (playlist == null || !this.context.getEvent().getGuild().getSelfMember().hasPermission(this.context.getEvent().getChannel(), Permission.MESSAGE_ADD_REACTION)) {
             this.m.editMessage(addMsg).queue();
         }
         else {
@@ -112,8 +112,8 @@ public class ResultHandler implements AudioLoadResultHandler
         final int n;
         playlist.getTracks().stream().forEach(track -> {
             if (!DiscordBot.instance.musicinstance.getConfig().isTooLong(track) && !track.equals(exclude)) {
-                AudioHandler handler = (AudioHandler)this.event.getGuild().getAudioManager().getSendingHandler();
-                handler.addTrack(new QueuedTrack(track, this.event.getAuthor()));
+                AudioHandler handler = (AudioHandler)this.context.getEvent().getGuild().getAudioManager().getSendingHandler();
+                handler.addTrack(new QueuedTrack(track, this.context.getEvent().getAuthor()));
                 count[0]++;
             }
         });
@@ -149,10 +149,10 @@ public class ResultHandler implements AudioLoadResultHandler
     @Override
     public void noMatches() {
         if (this.ytsearch) {
-            this.m.editMessage(FormatUtil.filter("No results found for `" + this.event.getArguments().toString(0) + "`.")).queue();
+            this.m.editMessage(FormatUtil.filter("No results found for `" + this.context.getArguments().toString(0) + "`.")).queue();
         }
         else {
-            DiscordBot.instance.musicinstance.getPlayerManager().loadItemOrdered(this.event.getGuild(), "ytsearch:" + this.event.getArguments().toString(0), new ResultHandler(this.m, this.event, true));
+            DiscordBot.instance.musicinstance.getPlayerManager().loadItemOrdered(this.context.getEvent().getGuild(), "ytsearch:" + this.context.getArguments().toString(0), new ResultHandler(this.m, this.context, true));
         }
     }
 

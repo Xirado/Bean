@@ -1,12 +1,15 @@
 package at.xirado.bean.commands;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -26,13 +29,13 @@ public class PostEmbed extends Command
 	}
 
 	@Override
-	public void executeCommand(CommandEvent e)
+	public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
 	{
-		String[] args = e.getArguments().toStringArray();
-		e.getMessage().delete().complete();
-		Member m = e.getMember();
-		User u = e.getAuthor();
-		TextChannel c = e.getChannel();
+		String[] args = context.getArguments().toStringArray();
+		event.getMessage().delete().queue();
+		Member m = context.getMember();
+		User u = event.getAuthor();
+		TextChannel c = event.getChannel();
 		if(args.length >= 1)
 		{
 			StringBuilder sb = new StringBuilder();

@@ -5,12 +5,13 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.Arrays;
 
@@ -28,15 +29,16 @@ public class NowPlayingCommand extends Command
     }
 
     @Override
-    public void executeCommand(final CommandEvent event) {
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
+    {
         final AudioHandler handler = (AudioHandler)ResultHandler.getHandler(event.getGuild());
         final Message m = handler.getNowPlaying(event.getJDA());
         if (m == null) {
-            event.reply(handler.getNoMusicPlaying(event.getJDA()));
+            context.reply(handler.getNoMusicPlaying(event.getJDA()));
             DiscordBot.instance.musicinstance.getNowplayingHandler().clearLastNPMessage(event.getGuild());
         }
         else {
-            event.reply(m, msg -> DiscordBot.instance.musicinstance.getNowplayingHandler().setLastNPMessage(msg));
+            context.reply(m, msg -> DiscordBot.instance.musicinstance.getNowplayingHandler().setLastNPMessage(msg));
         }
     }
 }

@@ -2,12 +2,12 @@ package at.xirado.bean.music;
 
 import at.xirado.bean.commandmanager.Command;
 import at.xirado.bean.commandmanager.CommandArgument;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
-import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.Arrays;
 
@@ -24,12 +24,12 @@ public class PlayCommand extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent event)
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        CommandArgument commandArgument = event.getArguments();
+        CommandArgument commandArgument = context.getArguments();
         String asWhole = commandArgument.toString(0);
         String[] args = commandArgument.toStringArray();
-        if(ResultHandler.init(event))
+        if(ResultHandler.init(context))
             return;
         final AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
         if (args.length != 0 || !event.getMessage().getAttachments().isEmpty()) {
@@ -39,26 +39,26 @@ public class PlayCommand extends Command
                 event.getGuild().getAudioManager().setSelfDeafened(true);
             }
             final String argument = (asWhole.startsWith("<") && asWhole.endsWith(">")) ? asWhole.substring(1, asWhole.length() - 1) : (asWhole.isEmpty() ? event.getMessage().getAttachments().get(0).getUrl() : asWhole);
-            event.reply(CommandEvent.LOADING_EMOTE + " Loading... `[" + asWhole + "]`", m -> DiscordBot.instance.musicinstance.getPlayerManager().loadItemOrdered(event.getGuild(), asWhole, new ResultHandler(m, event, false)));
+            context.reply(CommandContext.LOADING_EMOTE + " Loading... `[" + asWhole + "]`", m -> DiscordBot.instance.musicinstance.getPlayerManager().loadItemOrdered(event.getGuild(), asWhole, new ResultHandler(m, context, false)));
             return;
         }
         if(handler.getPlayer().getPlayingTrack() != null)
         {
             if(handler.getPlayer().isPaused())
             {
-                if (event.isDJ()) {
+                if (context.isDJ()) {
                     handler.getPlayer().setPaused(false);
-                    event.replySuccess("Resumed **" + handler.getPlayer().getPlayingTrack().getInfo().title + "**.");
+                    context.replySuccess("Resumed **" + handler.getPlayer().getPlayingTrack().getInfo().title + "**.");
                 }
                 else {
-                    event.replyError("Only DJs can unpause the player!");
+                    context.replyError("Only DJs can unpause the player!");
                 }
             }else
             {
-                event.replyWarning("The player is not paused!");
+                context.replyWarning("The player is not paused!");
             }
             return;
         }
-        event.replyErrorUsage();
+        context.replyErrorUsage();
     }
 }

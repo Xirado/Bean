@@ -1,13 +1,14 @@
 package at.xirado.bean.commands;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 
@@ -34,13 +35,14 @@ public class Clear extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent event) {
-        String[] args = event.getArguments().toStringArray();
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
+    {
+        String[] args = context.getArguments().toStringArray();
         TextChannel channel = event.getChannel();
 
         if(args.length < 1)
         {
-            event.replyErrorUsage();
+            context.replyErrorUsage();
             return;
         }
         String arg0 = args[0];
@@ -48,7 +50,7 @@ public class Clear extends Command
         try {
             amount = Integer.parseInt(arg0);
         } catch (NumberFormatException e) {
-            event.replyErrorUsage();
+            context.replyErrorUsage();
             return;
         }
         final OffsetDateTime twoWeeksAgo = OffsetDateTime.now().minus(2, ChronoUnit.WEEKS);
@@ -79,7 +81,7 @@ public class Clear extends Command
                                             (success) -> {
                                                 EmbedBuilder builder = new EmbedBuilder()
                                                         .setColor(Color.green)
-                                                        .setDescription(event.getLocalized("commands.message_clear", String.valueOf(amount1)));
+                                                        .setDescription(context.getLocalized("commands.message_clear", String.valueOf(amount1)));
                                                 channel.sendMessage(builder.build()).queue(response -> response.delete().queueAfter(2, TimeUnit.SECONDS));
 
                                             }, null

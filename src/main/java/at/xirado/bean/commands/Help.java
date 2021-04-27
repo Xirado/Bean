@@ -1,15 +1,15 @@
 package at.xirado.bean.commands;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
@@ -29,19 +29,19 @@ public class Help extends Command
 	}
 
 	@Override
-	public void executeCommand(CommandEvent e)
+	public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
 	{
-		String[] args = e.getArguments().toStringArray();
-		User user = e.getAuthor();
-		Guild guild = e.getGuild();
+		String[] args = context.getArguments().toStringArray();
+		User user = event.getAuthor();
+		Guild guild = event.getGuild();
 		String Prefix = DiscordBot.instance.prefixManager.getPrefix(guild.getIdLong());
-		TextChannel channel = e.getChannel();
+		TextChannel channel = event.getChannel();
 		if(args.length != 1)
 		{
 			EmbedBuilder builder = new EmbedBuilder()
 					.setColor(0x551a8b)
 					.setAuthor(user.getAsTag(), null, user.getAvatarUrl())
-					.setTitle("BeanBot command list")
+					.setTitle("Bean command list")
 					.setTimestamp(Instant.now());
 			for(CommandType type : CommandType.values())
 			{
@@ -63,7 +63,7 @@ public class Help extends Command
 			return;
 		if(subarg.equalsIgnoreCase("modules"))
 		{
-			ArrayList<Command> modules = DiscordBot.instance.commandManager.getRegisteredModules(e.getGuild().getIdLong());
+			ArrayList<Command> modules = DiscordBot.instance.commandManager.getRegisteredModules(event.getGuild().getIdLong());
 			modules = modules.stream().filter((c) -> c.getCommandType() != CommandType.EXCLUDED).collect(Collectors.toCollection(ArrayList::new));
 			if(modules.size() == 0)
 			{

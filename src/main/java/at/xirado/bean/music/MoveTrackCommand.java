@@ -5,12 +5,13 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.audio.QueuedTrack;
 import com.jagrosh.jmusicbot.queue.FairQueue;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class MoveTrackCommand extends Command
 {
@@ -25,15 +26,16 @@ public class MoveTrackCommand extends Command
     }
 
     @Override
-    public void executeCommand(final CommandEvent event) {
-        final String[] parts = event.getArguments().toStringArray();
-        if(!event.isDJ())
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
+    {
+        final String[] parts = context.getArguments().toStringArray();
+        if(!context.isDJ())
         {
-            event.replyError("You need to be a DJ to do this!");
+            context.replyError("You need to be a DJ to do this!");
             return;
         }
         if (parts.length < 2) {
-            event.replyError("Please include two valid indexes.");
+            context.replyError("Please include two valid indexes.");
             return;
         }
         int from;
@@ -43,29 +45,29 @@ public class MoveTrackCommand extends Command
             to = Integer.parseInt(parts[1]);
         }
         catch (NumberFormatException e) {
-            event.replyError("Please provide two valid indexes.");
+            context.replyError("Please provide two valid indexes.");
             return;
         }
         if (from == to) {
-            event.replyError("Can't move a track to the same position.");
+            context.replyError("Can't move a track to the same position.");
             return;
         }
-        final AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
+        final AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         final FairQueue<QueuedTrack> queue = handler.getQueue();
         if (isUnavailablePosition(queue, from)) {
             final String reply = String.format("`%d` is not a valid position in the queue!", from);
-            event.replyError(reply);
+            context.replyError(reply);
             return;
         }
         if (isUnavailablePosition(queue, to)) {
             final String reply = String.format("`%d` is not a valid position in the queue!", to);
-            event.replyError(reply);
+            context.replyError(reply);
             return;
         }
         final QueuedTrack track = queue.moveItem(from - 1, to - 1);
         final String trackTitle = track.getTrack().getInfo().title;
         final String reply2 = String.format("Moved **%s** from position `%d` to `%d`.", trackTitle, from, to);
-        event.replySuccess(reply2);
+        context.replySuccess(reply2);
     }
 
     private static boolean isUnavailablePosition(final FairQueue<QueuedTrack> queue, final int position) {

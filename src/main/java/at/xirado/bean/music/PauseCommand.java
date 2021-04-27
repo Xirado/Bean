@@ -1,13 +1,14 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class PauseCommand extends Command
 {
@@ -23,35 +24,35 @@ public class PauseCommand extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent e)
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        GuildVoiceState guildVoiceState = e.getMember().getVoiceState();
+        GuildVoiceState guildVoiceState = context.getMember().getVoiceState();
         if(guildVoiceState == null || !guildVoiceState.inVoiceChannel())
         {
-            e.replyError("You need to be in a Voicechannel to do this!");
+            context.replyError("You need to be in a Voicechannel to do this!");
             return;
         }
         VoiceChannel voiceChannel = guildVoiceState.getChannel();
-        if(e.getGuild().getAfkChannel() != null)
+        if(event.getGuild().getAfkChannel() != null)
         {
-            if(e.getGuild().getAfkChannel().getIdLong() == voiceChannel.getIdLong())
+            if(event.getGuild().getAfkChannel().getIdLong() == voiceChannel.getIdLong())
             {
-                e.replyError("You can't do this in an AFK-Channel!");
+                context.replyError("You can't do this in an AFK-Channel!");
                 return;
             }
         }
-        if(!e.isDJ())
+        if(!context.isDJ())
         {
-            e.replyError("You need to be a DJ to do this!");
+            context.replyError("You need to be a DJ to do this!");
             return;
         }
-        String Prefix = DiscordBot.instance.prefixManager.getPrefix(e.getGuild().getIdLong());
-        final AudioHandler handler = (com.jagrosh.jmusicbot.audio.AudioHandler)e.getGuild().getAudioManager().getSendingHandler();
+        String Prefix = DiscordBot.instance.prefixManager.getPrefix(event.getGuild().getIdLong());
+        final AudioHandler handler = (com.jagrosh.jmusicbot.audio.AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
         if (handler.getPlayer().isPaused()) {
-            e.replyWarning("The player is already paused! Use `" + Prefix + "play` to unpause!");
+            context.replyWarning("The player is already paused! Use `" + Prefix + "play` to unpause!");
             return;
         }
         handler.getPlayer().setPaused(true);
-        e.replySuccess("Paused **" + handler.getPlayer().getPlayingTrack().getInfo().title + "**. Type `" + Prefix + "play` to unpause!");
+        context.replySuccess("Paused **" + handler.getPlayer().getPlayingTrack().getInfo().title + "**. Type `" + Prefix + "play` to unpause!");
     }
 }

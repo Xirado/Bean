@@ -1,7 +1,7 @@
 package at.xirado.bean.commands.moderation;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.handlers.PermissionCheckerManager;
 import at.xirado.bean.main.DiscordBot;
@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.sql.Connection;
@@ -29,26 +30,26 @@ public class UnmuteCommand extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent event)
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        Member m = event.getMember();
+        Member m = context.getMember();
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
         Guild g = event.getGuild();
         if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
         {
-            event.replyError(event.getLocalized("general.no_perms"));
+            context.replyError(context.getLocalized("general.no_perms"));
             return;
         }
-        String[] args = event.getArguments().toStringArray();
+        String[] args = context.getArguments().toStringArray();
         if(args.length < 1)
         {
-            event.replyErrorUsage();
+            context.replyErrorUsage();
             return;
         }
         String target_ID = args[0].replaceAll("[^0-9]", "");
         if(target_ID.length() == 0)
         {
-            event.replyError(event.getLocalized("commands.id_empty"));
+            context.replyError(context.getLocalized("commands.id_empty"));
             return;
         }
         g.retrieveMemberById(target_ID).queue(
@@ -57,7 +58,7 @@ public class UnmuteCommand extends Command
                     Role r = g.getRoleById(DiscordBot.getInstance().mutedRoleManager.getMutedRole(g.getIdLong()));
                     if(!targetMember.getRoles().contains(r))
                     {
-                        event.replyError(event.getLocalized("commands.unmute.member_not_muted"));
+                        context.replyError(context.getLocalized("commands.unmute.member_not_muted"));
                         return;
                     }
                     g.removeRoleFromMember(targetMember, r).queue(s -> {}, e -> {});
@@ -65,7 +66,7 @@ public class UnmuteCommand extends Command
                     Connection connection = SQL.getConnectionFromPool();
                     if(connection == null)
                     {
-                        event.replyError(event.getLocalized("general.db_error"));
+                        context.replyError(context.getLocalized("general.db_error"));
                         return;
                     }
                     try(var ps = connection.prepareStatement(qry))
@@ -77,22 +78,22 @@ public class UnmuteCommand extends Command
                         connection.close();
                     }catch (SQLException ex)
                     {
-                        event.replyError(event.getLocalized("general.db_error"));
+                        context.replyError(context.getLocalized("general.db_error"));
                         return;
                     }
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(Color.green)
-                            .setDescription(event.getLocalized("commands.unmute.user_unmuted", targetMember.getAsMention()));
-                    event.reply(builder.build());
-                    if(event.hasLogChannel())
+                            .setDescription(context.getLocalized("commands.unmute.user_unmuted", targetMember.getAsMention()));
+                    context.reply(builder.build());
+                    if(context.hasLogChannel())
                     {
                         EmbedBuilder builder2 = new EmbedBuilder()
                                 .setColor(Color.green)
                                 .setTitle("Unmute")
                                 .setThumbnail(targetMember.getUser().getEffectiveAvatarUrl())
-                                .addField(event.getLocalized("commands.target"), targetMember.getAsMention()+" ("+targetMember.getUser().getAsTag()+")" , true)
+                                .addField(context.getLocalized("commands.target"), targetMember.getAsMention()+" ("+targetMember.getUser().getAsTag()+")" , true)
                                 .addField("Moderator", m.getAsMention()+" ("+m.getUser().getAsTag()+")", true);
-                        event.replyInLogChannel(builder2.build());
+                        context.replyInLogChannel(builder2.build());
                     }
                 }
         );

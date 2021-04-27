@@ -1,13 +1,14 @@
 package at.xirado.bean.commands;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.time.Instant;
@@ -27,31 +28,31 @@ public class Avatar extends Command
 	}
 
 	@Override
-	public void executeCommand(CommandEvent e)
+	public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
 	{
-		String[] args = e.getArguments().toStringArray();
+		String[] args = context.getArguments().toStringArray();
 		if(args.length < 1)
 		{
-			e.reply(getAvatarEmbed(e.getAuthor(), e));
+			context.reply(getAvatarEmbed(event.getAuthor(), context));
 			return;
 		}
 		String ID = args[0].replaceAll("[^0-9]", "");
 		if(ID.length() == 0)
 		{
-			e.replyError(e.getLocalized("commands.id_empty"));
+			context.replyError(context.getLocalized("commands.id_empty"));
 			return;
 		}
 		DiscordBot.instance.jda.retrieveUserById(ID).queue(
 				(target) ->
 				{
-					e.reply(getAvatarEmbed(target, e));
+					context.reply(getAvatarEmbed(target, context));
 				},
-				(error) -> e.reply(getAvatarEmbed(e.getAuthor(), e)));
+				(error) -> context.reply(getAvatarEmbed(event.getAuthor(), context)));
 	}
 
 
 
-	private MessageEmbed getAvatarEmbed(User user, CommandEvent e)
+	private MessageEmbed getAvatarEmbed(User user, CommandContext e)
 	{
 		return new EmbedBuilder()
 				.setImage(user.getEffectiveAvatarUrl()+"?size=512")

@@ -5,7 +5,7 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
 import com.jagrosh.jdautilities.menu.Paginator;
@@ -16,6 +16,7 @@ import com.jagrosh.jmusicbot.utils.FormatUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 
 import java.util.Arrays;
@@ -38,7 +39,8 @@ public class QueueCommand extends Command
 
 
     @Override
-    public void executeCommand(final CommandEvent event) {
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
+    {
         Bot bot = DiscordBot.instance.musicinstance;
         Paginator.Builder builder = new Paginator.Builder().setColumns(1).setFinalAction(m -> {
             try {
@@ -51,7 +53,7 @@ public class QueueCommand extends Command
         int pagenum = 1;
 
         try {
-            pagenum = Integer.parseInt(event.getArguments().toString(0));
+            pagenum = Integer.parseInt(context.getArguments().toString(0));
         }
         catch (NumberFormatException ex) {}
         final AudioHandler ah = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
@@ -59,8 +61,8 @@ public class QueueCommand extends Command
         if (list.isEmpty()) {
             final Message nowp = ah.getNowPlaying(event.getJDA());
             final Message nonowp = ah.getNoMusicPlaying(event.getJDA());
-            final Message built = new MessageBuilder().setContent(CommandEvent.WARNING_EMOTE + " There is no music in the queue!").setEmbed(((nowp == null) ? nonowp : nowp).getEmbeds().get(0)).build();
-            event.reply(built, m -> {
+            final Message built = new MessageBuilder().setContent(CommandContext.WARNING_EMOTE + " There is no music in the queue!").setEmbed(((nowp == null) ? nonowp : nowp).getEmbeds().get(0)).build();
+            context.reply(built, m -> {
                 if (nowp != null) {
                     bot.getNowplayingHandler().setLastNPMessage(m);
                 }
@@ -74,8 +76,8 @@ public class QueueCommand extends Command
             songs[i] = list.get(i).toString();
         }
         final long fintotal = total;                                                                                        // REPEAT MODE!!!!!
-        builder.setText((i1, i2) -> this.getQueueTitle(ah, event.SUCCESS_EMOTE, songs.length, fintotal, false)).setItems(songs)
-                .setUsers(event.getAuthor()).setColor(event.getSelfMember().getColor());
+        builder.setText((i1, i2) -> this.getQueueTitle(ah, context.SUCCESS_EMOTE, songs.length, fintotal, false)).setItems(songs)
+                .setUsers(event.getAuthor()).setColor(event.getGuild().getSelfMember().getColor());
         builder.build().paginate(event.getChannel(), pagenum);
     }
 

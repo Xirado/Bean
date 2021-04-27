@@ -1,7 +1,7 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,28 +32,29 @@ public class ForceRemove extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent event) {
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
+    {
         Bot bot = DiscordBot.instance.musicinstance;
-        String[] args = event.getArguments().toStringArray();
-        String whole = event.getArguments().toString(0);
+        String[] args = context.getArguments().toStringArray();
+        String whole = context.getArguments().toString(0);
         Guild g = event.getGuild();
-        if(!event.isDJ())
+        if(!context.isDJ())
         {
-            event.replyError("You need to be a DJ to do this!");
+            context.replyError("You need to be a DJ to do this!");
             return;
         }
         if (args.length == 0) {
-            event.replyError("You need to mention a user!");
+            context.replyError("You need to mention a user!");
             return;
         }
         final AudioHandler handler = ResultHandler.getHandler(g);
         if (handler.getQueue().isEmpty()) {
-            event.replyError("There is nothing in the queue!");
+            context.replyError("There is nothing in the queue!");
             return;
         }
         final List<Member> found = FinderUtil.findMembers(whole, event.getGuild());
         if (found.isEmpty()) {
-            event.replyError("Unable to find the user!");
+            context.replyError("Unable to find the user!");
             return;
         }
         if (found.size() > 1) {
@@ -64,9 +66,9 @@ public class ForceRemove extends Command
 
             builder.setSelection(
                     (msg, i) ->
-                            this.removeAllEntries(found.get(i - 1).getUser(), event))
+                            this.removeAllEntries(found.get(i - 1).getUser(), context))
                     .setText("Found multiple users:")
-                    .setColor(event.getSelfMember().getColor()).useNumbers()
+                    .setColor(event.getGuild().getSelfMember().getColor()).useNumbers()
                     .setUsers(event.getAuthor())
                     .useCancelButton(true)
                     .setCancel(msg -> {})
@@ -75,16 +77,16 @@ public class ForceRemove extends Command
             return;
         }
         final User target = found.get(0).getUser();
-        this.removeAllEntries(target, event);
+        this.removeAllEntries(target, context);
     }
 
-    private void removeAllEntries(final User target, final CommandEvent event) {
-        final int count = ((AudioHandler)event.getGuild().getAudioManager().getSendingHandler()).getQueue().removeAll(target.getIdLong());
+    private void removeAllEntries(final User target, final CommandContext context) {
+        final int count = ((AudioHandler)context.getEvent().getGuild().getAudioManager().getSendingHandler()).getQueue().removeAll(target.getIdLong());
         if (count == 0) {
-            event.replyWarning("**" + target.getName() + "** doesn't have any songs in the queue!");
+            context.replyWarning("**" + target.getName() + "** doesn't have any songs in the queue!");
         }
         else {
-            event.replySuccess("Successfully removed `" + count + "` entries from **" + target.getName() + "**#" + target.getDiscriminator() + ".");
+            context.replySuccess("Successfully removed `" + count + "` entries from **" + target.getName() + "**#" + target.getDiscriminator() + ".");
         }
     }
 }

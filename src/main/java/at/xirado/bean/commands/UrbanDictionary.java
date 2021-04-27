@@ -1,7 +1,7 @@
 package at.xirado.bean.commands;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.urbanapi.Definition;
@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.time.Instant;
@@ -33,13 +34,14 @@ public class UrbanDictionary extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent e) {
-        String[] args = e.getArguments().toStringArray();
-        TextChannel channel = e.getChannel();
-        Member m = e.getMember();
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
+    {
+        String[] args = context.getArguments().toStringArray();
+        TextChannel channel = event.getChannel();
+        Member m = context.getMember();
         if(args.length == 0)
         {
-            e.replyErrorUsage();
+            context.replyErrorUsage();
             return;
         }
         StringBuilder b = new StringBuilder();
@@ -52,7 +54,7 @@ public class UrbanDictionary extends Command
                 index = Integer.parseInt(args[args.length-1])-1;
                 if(index < 0)
                 {
-                    e.replyError(index+1+" is not a valid index!");
+                    context.replyError(index+1+" is not a valid index!");
                     return;
                 }
                 List<String> arl = new ArrayList<>(Arrays.asList(args));
@@ -101,7 +103,7 @@ public class UrbanDictionary extends Command
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(Color.decode("#1D2439"))
                 .setTitle(result.getWordName())
-                .setFooter(Util.ordinal(index+1)+" definition | requested by "+e.getAuthor().getAsTag())
+                .setFooter(Util.ordinal(index+1)+" definition | requested by "+event.getAuthor().getAsTag())
                 .setTimestamp(Instant.now())
                 .setImage("https://bean.bz/assets/urban.png")
                 .setDescription(description);

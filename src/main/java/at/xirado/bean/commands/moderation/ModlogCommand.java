@@ -1,18 +1,20 @@
 package at.xirado.bean.commands.moderation;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.translation.FormattedDuration;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.Punishments;
+import at.xirado.bean.translation.FormattedDuration;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.time.Instant;
@@ -29,58 +31,43 @@ public class ModlogCommand extends Command
         this.aliases = Arrays.asList("modlogs", "infraction", "infractions", "moderatorlog", "moderatorlogs");
         this.commandType = CommandType.MODERATION;
         this.description = "Shows the modlog of a user";
-        this.usage = "modlog [@user/id]";
+        this.usage = "modlog [@user]";
     }
 
     @Override
-    public void executeCommand(CommandEvent event)
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        Member m = event.getMember();
+        Member m = context.getMember();
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
         if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
         {
-            event.replyError(event.getLocalized("general.no_perms"));
+            context.replyError(context.getLocalized("general.no_perms"));
             return;
         }
         Guild g = event.getGuild();
-        String[] args = event.getArguments().toStringArray();
-        if(args.length != 1)
+        if(event.getMessage().getMentionedUsers().size() == 0)
         {
-            event.replyErrorUsage();
+            context.replyErrorUsage();
             return;
         }
-        long targetID;
-        try
+        User user = event.getMessage().getMentionedUsers().get(0);
+        List<Case> allCases = Punishments.getModlog(g.getIdLong(), user.getIdLong(), 10);
+        if(allCases.isEmpty())
         {
-            targetID = Long.parseLong(args[0].replaceAll("[^0-9]", ""));
-        } catch (NumberFormatException e)
-        {
-            event.replyError(event.getLocalized("commands.id_empty"));
+            context.replyWarning(context.getLocalized("commands.modlog.no_modlogs"));
             return;
         }
-        DiscordBot.getInstance().jda.retrieveUserById(targetID).queue(
-                (targetUser) ->
-                {
-                    List<Case> allCases = Punishments.getModlog(g.getIdLong(), targetUser.getIdLong(), 10);
-                    if(allCases.isEmpty())
-                    {
-                        event.replyWarning(event.getLocalized("commands.modlog.no_modlogs"));
-                        return;
-                    }
-                    StringBuilder sb = new StringBuilder();
-                    for(Case modcase : allCases)
-                    {
-                        sb.append(modcase.getType().getFriendlyName()).append(" (#").append(modcase.getCaseID()).append(") **").append(modcase.getReason()).append("** • ").append(FormattedDuration.getDuration(modcase.getCreatedAt() / 1000, true, event.getLanguage())).append("\n");
-                    }
-                    EmbedBuilder builder = new EmbedBuilder()
-                            .setColor(Color.orange)
-                            .setFooter(event.getLocalized("commands.target_id")+": "+targetUser.getIdLong())
-                            .setTimestamp(Instant.now())
-                            .setAuthor(event.getLocalized("commands.modlog.for_user", targetUser.getAsTag()), null, targetUser.getEffectiveAvatarUrl())
-                            .setDescription("**"+event.getLocalized("commands.modlog.last_10_incidents")+":**\n\n"+sb.toString().trim()+"\n\n"+event.getLocalized("commands.modlog.more_infos", DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())));
-                    event.reply(builder.build());
-                },
-                (error) -> event.replyError(event.getLocalized("commands.user_not_exists"))
-        );
+        StringBuilder sb = new StringBuilder();
+        for(Case modcase : allCases)
+        {
+            sb.append(modcase.getType().getFriendlyName()).append(" (#").append(modcase.getCaseID()).append(") **").append(modcase.getReason()).append("** • ").append(FormattedDuration.getDuration(modcase.getCreatedAt() / 1000, true, context.getLanguage())).append("\n");
+        }
+        EmbedBuilder builder = new EmbedBuilder()
+                .setColor(Color.orange)
+                .setFooter(context.getLocalized("commands.target_id")+": "+user.getIdLong())
+                .setTimestamp(Instant.now())
+                .setAuthor(context.getLocalized("commands.modlog.for_user", user.getAsTag()), null, user.getEffectiveAvatarUrl())
+                .setDescription("**"+context.getLocalized("commands.modlog.last_10_incidents")+":**\n\n"+sb.toString().trim()+"\n\n"+context.getLocalized("commands.modlog.more_infos", DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())));
+        context.reply(builder.build());
     }
 }

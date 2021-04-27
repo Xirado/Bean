@@ -1,7 +1,7 @@
 package at.xirado.bean.commands;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.misc.Util;
@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -29,23 +30,24 @@ public class EditMessage extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent e) {
-        String[] args = e.getArguments().toStringArray();
-        TextChannel channel = e.getChannel();
-        Member m = e.getMember();
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
+    {
+        String[] args = context.getArguments().toStringArray();
+        TextChannel channel = event.getChannel();
+        Member m = context.getMember();
         if (args.length < 3)
         {
-            e.replyErrorUsage();
+            context.replyErrorUsage();
             return;
         }
         String channelid = args[0].replaceAll("[^0-9]", "");
-        TextChannel targetchannel = e.getGuild().getTextChannelById(channelid);
+        TextChannel targetchannel = event.getGuild().getTextChannelById(channelid);
         if(targetchannel == null)
         {
-            e.replyErrorUsage();
+            context.replyErrorUsage();
             return;
         }
-        if(targetchannel.getGuild().getIdLong() != e.getGuild().getIdLong())
+        if(targetchannel.getGuild().getIdLong() != event.getGuild().getIdLong())
         {
             return;
         }
@@ -53,7 +55,7 @@ public class EditMessage extends Command
                 message ->
                 {
                     if (!message.getAuthor().getId().equals(DiscordBot.instance.jda.getSelfUser().getId())) {
-                        channel.sendMessage(Util.SimpleEmbed(Color.red, e.getLocalized("commands.message_not_sent_by_me"))).queue();
+                        channel.sendMessage(Util.SimpleEmbed(Color.red, context.getLocalized("commands.message_not_sent_by_me"))).queue();
                         return;
                     }
                     StringBuilder sb = new StringBuilder();
@@ -71,7 +73,7 @@ public class EditMessage extends Command
                         message.editMessage(b.build()).queue(
                                 success ->
                                 {
-                                    channel.sendMessage(Util.SimpleEmbed(Color.green, e.getLocalized("commands.message_edited"))).queue();
+                                    channel.sendMessage(Util.SimpleEmbed(Color.green, context.getLocalized("commands.message_edited"))).queue();
                                 },
                                 Util.handle(channel)
                         );
@@ -80,14 +82,14 @@ public class EditMessage extends Command
                     message.editMessage(sbtostring).queue(
                             success ->
                             {
-                                channel.sendMessage(Util.SimpleEmbed(Color.green, e.getLocalized("commands.message_edited"))).queue();
+                                channel.sendMessage(Util.SimpleEmbed(Color.green, context.getLocalized("commands.message_edited"))).queue();
                             },
                             Util.handle(channel)
                     );
                 },
                 error ->
                 {
-                    channel.sendMessage(Util.SimpleEmbed(Color.red, e.getLocalized("commands.message_not_exists"))).queue();
+                    channel.sendMessage(Util.SimpleEmbed(Color.red, context.getLocalized("commands.message_not_exists"))).queue();
                 }
         );
     }

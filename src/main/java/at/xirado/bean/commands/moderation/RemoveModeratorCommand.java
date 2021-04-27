@@ -1,7 +1,7 @@
 package at.xirado.bean.commands.moderation;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.handlers.PermissionCheckerManager;
 import at.xirado.bean.main.DiscordBot;
@@ -9,8 +9,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,32 +32,31 @@ public class RemoveModeratorCommand extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent event)
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        Member member = event.getMember();
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
-        String[] args = event.getArguments().toStringArray();
+        String[] args = context.getArguments().toStringArray();
         if(args.length != 1)
         {
-            event.replyErrorUsage();
+            context.replyErrorUsage();
             return;
         }
         Guild guild = event.getGuild();
         String roleID = args[0].replaceAll("[^0-9]", "");
         if(roleID.length() == 0)
         {
-            event.replyError(event.getLocalized("commands.id_empty"));
+            context.replyError(context.getLocalized("commands.id_empty"));
             return;
         }
         Role role = guild.getRoleById(roleID);
         if(role == null)
         {
-            event.replyError(event.getLocalized("commands.invalid_role"));
+            context.replyError(context.getLocalized("commands.invalid_role"));
             return;
         }
         if(!permissionCheckerManager.isAllowedRole(guild.getIdLong(), role.getIdLong()))
         {
-            event.replyWarning(event.getLocalized("commands.moderator.not_added"));
+            context.replyWarning(context.getLocalized("commands.moderator.not_added"));
             return;
         }
         boolean success = permissionCheckerManager.removeAllowedRole(guild.getIdLong(), role.getIdLong());
@@ -65,13 +64,13 @@ public class RemoveModeratorCommand extends Command
         {
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(role.getColor())
-                    .setDescription(event.getLocalized("commands.moderator.removed", role.getAsMention()));
-            event.reply(builder.build());
+                    .setDescription(context.getLocalized("commands.moderator.removed", role.getAsMention()));
+            context.reply(builder.build());
             logger.debug("Removed moderator role "+role.getIdLong()+" (@"+role.getName()+") from guild "+guild.getIdLong()+" ("+guild.getName()+")");
 
         }else
         {
-            event.replyError(event.getLocalized("general.unknown_error_occured"));
+            context.replyError(context.getLocalized("general.unknown_error_occured"));
         }
 
     }

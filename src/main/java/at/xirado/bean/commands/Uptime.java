@@ -1,13 +1,13 @@
 package at.xirado.bean.commands;
 
 import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandEvent;
+import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.CommandType;
 import at.xirado.bean.main.DiscordBot;
-import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.time.Instant;
@@ -27,15 +27,15 @@ public class Uptime extends Command
     }
 
     @Override
-    public void executeCommand(CommandEvent e)
+    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        long thistime = System.currentTimeMillis() / 1000;
-        TextChannel c = e.getChannel();
+        long currentTime = System.currentTimeMillis() / 1000;
+        TextChannel c = event.getChannel();
         c.sendMessage(
                 new EmbedBuilder()
                         .setColor(Color.green)
                         .setTimestamp(Instant.now())
-                        .setDescription("Uptime: " + Util.getLength(thistime - DiscordBot.STARTTIME) + "")
+                        .setDescription("Uptime: " + context.parseDuration(currentTime - DiscordBot.STARTTIME, " ") + "")
                         .build()
         ).queue();
     }
