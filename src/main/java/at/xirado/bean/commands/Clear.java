@@ -80,7 +80,7 @@ public class Clear extends Command
                                                 EmbedBuilder builder = new EmbedBuilder()
                                                         .setColor(Color.green)
                                                         .setDescription(event.getLocalized("commands.message_clear", String.valueOf(amount1)));
-                                                channel.sendMessage(builder.build()).queue(response -> response.delete().queueAfter(5, TimeUnit.SECONDS));
+                                                channel.sendMessage(builder.build()).queue(response -> response.delete().queueAfter(2, TimeUnit.SECONDS));
 
                                             }, null
                                     );
