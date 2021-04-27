@@ -1,13 +1,13 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.*;
+import at.xirado.bean.commandmanager.SlashCommand;
+import at.xirado.bean.commandmanager.SlashCommandContext;
 import at.xirado.bean.handlers.PermissionCheckerManager;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.Punishments;
 import at.xirado.bean.translation.FormattedDuration;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Guild;
@@ -20,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
 public class ModlogCommand extends SlashCommand
@@ -34,7 +33,7 @@ public class ModlogCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull CommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         Member m = event.getMember();
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;

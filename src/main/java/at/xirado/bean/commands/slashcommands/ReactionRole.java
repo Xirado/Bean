@@ -1,12 +1,10 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.*;
+import at.xirado.bean.commandmanager.SlashCommand;
+import at.xirado.bean.commandmanager.SlashCommandContext;
 import at.xirado.bean.misc.ReactionHelper;
-import at.xirado.bean.misc.Util;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
@@ -16,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.regex.Matcher;
@@ -57,7 +54,7 @@ public class ReactionRole extends SlashCommand
 	}
 
 	@Override
-	public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull CommandContext ctx)
+	public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
 	{
 
 		Guild guild = event.getGuild();
@@ -72,7 +69,7 @@ public class ReactionRole extends SlashCommand
 			TextChannel channel = (TextChannel) event.getOption("channel").getAsGuildChannel();
 			if(channel == null)
 			{
-				ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.channel_not_exists")).setEphemeral(true).queue();
+				ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("commands.channel_not_exists")).setEphemeral(true).queue();
 				return;
 			}
 			long messageID = 0;
@@ -81,7 +78,7 @@ public class ReactionRole extends SlashCommand
 				messageID = Long.parseLong(event.getOption("message_id").getAsString());
 			} catch (Exception e)
 			{
-				ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.message_invalid")).setEphemeral(true).queue();
+				ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("commands.message_invalid")).setEphemeral(true).queue();
 				return;
 			}
 			channel.retrieveMessageById(messageID).queue(
@@ -89,11 +86,11 @@ public class ReactionRole extends SlashCommand
 					{
 						ReactionHelper.removeAllReactions(message.getIdLong());
 						message.clearReactions().queue(s -> {}, e -> {});
-						ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.reactionroles.removed_success")).setEphemeral(true).queue();
+						ctx.reply(SlashCommandContext.SUCCESS+" "+ctx.getLocalized("commands.reactionroles.removed_success")).setEphemeral(true).queue();
 					}, new ErrorHandler()
-							.handle(ErrorResponse.UNKNOWN_MESSAGE, (err) -> ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.message_not_exists")).setEphemeral(true).queue())
+							.handle(ErrorResponse.UNKNOWN_MESSAGE, (err) -> ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("commands.message_not_exists")).setEphemeral(true).queue())
 							.handle(EnumSet.allOf(ErrorResponse.class), (err) -> {
-								ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
+								ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
 								LOGGER.error("An error occured whilst trying to remove reaction-roles!", err);
 							})
 			);
@@ -102,7 +99,7 @@ public class ReactionRole extends SlashCommand
 			TextChannel channel = (TextChannel) event.getOption("channel").getAsGuildChannel();
 			if(channel == null)
 			{
-				ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.channel_not_exists")).setEphemeral(true).queue();
+				ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("commands.channel_not_exists")).setEphemeral(true).queue();
 				return;
 			}
 			long messageID = 0;
@@ -111,7 +108,7 @@ public class ReactionRole extends SlashCommand
 				messageID = Long.parseLong(event.getOption("message_id").getAsString());
 			} catch (Exception e)
 			{
-				ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.message_invalid")).setEphemeral(true).queue();
+				ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("commands.message_invalid")).setEphemeral(true).queue();
 				return;
 			}
 			channel.retrieveMessageById(messageID).queue(
@@ -120,7 +117,7 @@ public class ReactionRole extends SlashCommand
 						Role role = event.getOption("role").getAsRole();
 						if(!bot.canInteract(role))
 						{
-							ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.cannot_interact_role", role.getAsMention())).setEphemeral(true).queue();
+							ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("commands.cannot_interact_role", role.getAsMention())).setEphemeral(true).queue();
 							return;
 						}
 						String emoticon = event.getOption("emote").getAsString();
@@ -137,17 +134,17 @@ public class ReactionRole extends SlashCommand
 								(success) ->
 								{
 									ReactionHelper.addReaction(message.getIdLong(), finalEmote, role.getIdLong());
-									ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.reactionroles.added_success")).setEphemeral(true).queue();
+									ctx.reply(SlashCommandContext.SUCCESS+" "+ctx.getLocalized("commands.reactionroles.added_success")).setEphemeral(true).queue();
 								},
 								new ErrorHandler()
-								.handle(ErrorResponse.UNKNOWN_EMOJI, (e) -> ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.emote_invalid")).setEphemeral(true).queue())
+								.handle(ErrorResponse.UNKNOWN_EMOJI, (e) -> ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("commands.emote_invalid")).setEphemeral(true).queue())
 								.handle(EnumSet.allOf(ErrorResponse.class), (e) -> {
-									ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
+									ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
 									LOGGER.error("An error occured whilst adding reaction-role!", e);
 								})
 						);
 					},
-					(error) -> ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.message_not_exists")).setEphemeral(true).queue());
+					(error) -> ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("commands.message_not_exists")).setEphemeral(true).queue());
 		}
 	}
 }

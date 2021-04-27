@@ -1,23 +1,23 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.*;
+import at.xirado.bean.commandmanager.SlashCommand;
+import at.xirado.bean.commandmanager.SlashCommandContext;
 import at.xirado.bean.handlers.PermissionCheckerManager;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
-import at.xirado.bean.punishmentmanager.Punishments;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Command;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
-import java.util.Collections;
-import java.util.List;
 
 public class WarnCommand extends SlashCommand
 {
@@ -30,37 +30,37 @@ public class WarnCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull CommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
         Guild g = event.getGuild();
         if(!permissionCheckerManager.isModerator(sender) && !sender.hasPermission(Permission.ADMINISTRATOR))
         {
-            ctx.reply(CommandContext.DENY+" "+ctx.getLocalized("general.no_perms")).setEphemeral(true).queue();
+            ctx.reply(SlashCommandContext.DENY+" "+ctx.getLocalized("general.no_perms")).setEphemeral(true).queue();
             return;
         }
         Member targetMember = event.getOption("member").getAsMember();
         if(targetMember == null)
         {
-            ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.user_not_in_guild")).setEphemeral(true).queue();
+            ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("commands.user_not_in_guild")).setEphemeral(true).queue();
             return;
         }
         String Reason = event.getOption("reason") == null ? ctx.getLocalized("commands.noreason") : event.getOption("reason").getAsString();
         boolean withReason = event.getOption("reason") != null;
         if(!sender.canInteract(targetMember))
         {
-            ctx.reply(CommandContext.DENY+" "+ctx.getLocalized("commands.warn.you_cannot_warn")).setEphemeral(true).queue();
+            ctx.reply(SlashCommandContext.DENY+" "+ctx.getLocalized("commands.warn.you_cannot_warn")).setEphemeral(true).queue();
             return;
         }
         if(permissionCheckerManager.isModerator(targetMember) || targetMember.hasPermission(Permission.ADMINISTRATOR))
         {
-            ctx.reply(CommandContext.DENY+" "+ctx.getLocalized("commands.warn.you_cannot_warn_moderator")).setEphemeral(true).queue();
+            ctx.reply(SlashCommandContext.DENY+" "+ctx.getLocalized("commands.warn.you_cannot_warn_moderator")).setEphemeral(true).queue();
             return;
         }
         Case modcase = Case.createCase(CaseType.WARN, g.getIdLong(), targetMember.getIdLong(), sender.getIdLong(), Reason, 0);
         if(modcase == null)
         {
-            ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
+            ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
             return;
         }
         targetMember.getUser().openPrivateChannel().queue(
@@ -74,7 +74,7 @@ public class WarnCommand extends SlashCommand
                     privateChannel.sendMessage(builder.build()).queue(success -> {}, error -> {});
                 }, (e) -> {});
 
-        ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.warn.has_been_warned", targetMember.getUser().getAsMention())+"\n`"+ctx.getLocalized("commands.reason")+": "+modcase.getReason()+" (#"+modcase.getCaseID()+")`").setEphemeral(true).queue();
+        ctx.reply(SlashCommandContext.SUCCESS+" "+ctx.getLocalized("commands.warn.has_been_warned", targetMember.getUser().getAsMention())+"\n`"+ctx.getLocalized("commands.reason")+": "+modcase.getReason()+" (#"+modcase.getCaseID()+")`").setEphemeral(true).queue();
 
         EmbedBuilder mainembed = new EmbedBuilder()
                 .setThumbnail(targetMember.getUser().getEffectiveAvatarUrl())

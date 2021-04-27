@@ -113,6 +113,6 @@ public abstract class SlashCommand
      * @param sender The member who sent the command (null if sent via DM)
      * @param ctx Helpful methods in context of the event
      */
-    public abstract void executeCommand(@Nonnull SlashCommandEvent event, @Nullable Member sender, @Nonnull CommandContext ctx);
+    public abstract void executeCommand(@Nonnull SlashCommandEvent event, @Nullable Member sender, @Nonnull SlashCommandContext ctx);
 
 }

@@ -1,17 +1,13 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.*;
+import at.xirado.bean.commandmanager.SlashCommand;
+import at.xirado.bean.commandmanager.SlashCommandContext;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.misc.SQL;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Command;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
@@ -22,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -39,7 +34,7 @@ public class Unban extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull CommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         Guild g = event.getGuild();
         if(g == null) return;
@@ -70,7 +65,7 @@ public class Unban extends SlashCommand
                                 {
                                     Util.closeQuietly(connection);
                                 }
-                                ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.unban.has_been_unbanned", target.getAsTag())).setEphemeral(true).queue();
+                                ctx.reply(SlashCommandContext.SUCCESS+" "+ctx.getLocalized("commands.unban.has_been_unbanned", target.getAsTag())).setEphemeral(true).queue();
                                 TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(g.getIdLong());
                                 EmbedBuilder builder = new EmbedBuilder()
                                         .setColor(Color.green)
@@ -85,12 +80,12 @@ public class Unban extends SlashCommand
 
                             },
                             (error) ->
-                                    ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue()
+                                    ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue()
                     );
                 },
                 new ErrorHandler()
-                    .handle(ErrorResponse.UNKNOWN_BAN, (ex) -> ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("commands.unban.not_banned")).setEphemeral(true).queue())
-                    .handle(EnumSet.allOf(ErrorResponse.class), (ex) -> ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue())
+                    .handle(ErrorResponse.UNKNOWN_BAN, (ex) -> ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("commands.unban.not_banned")).setEphemeral(true).queue())
+                    .handle(EnumSet.allOf(ErrorResponse.class), (ex) -> ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue())
         );
     }
 }

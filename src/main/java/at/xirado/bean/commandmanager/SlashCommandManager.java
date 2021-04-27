@@ -185,7 +185,7 @@ public class SlashCommandManager {
                                         }
                                     }
                                 }
-                                cmd.executeCommand(event, member, new CommandContext(event));
+                                cmd.executeCommand(event, member, new SlashCommandContext(event));
                                 return;
                             }
                         }
@@ -200,7 +200,7 @@ public class SlashCommandManager {
                         foundCommand = true;
                         if(member == null && !cmd.isRunnableInDM())
                         {
-                            event.reply(String.format(LanguageLoader.getForLanguage("en_US").get("commands.cannot_run_in_dm", String.class), CommandContext.ERROR)).setEphemeral(true).queue();
+                            event.reply(String.format(LanguageLoader.getForLanguage("en_US").get("commands.cannot_run_in_dm", String.class), SlashCommandContext.ERROR)).setEphemeral(true).queue();
                             return;
                         }
                         CommandHook hook = event.getHook();
@@ -237,7 +237,7 @@ public class SlashCommandManager {
                             }
                         }
 
-                        cmd.executeCommand(event, member, new CommandContext(event));
+                        cmd.executeCommand(event, member, new SlashCommandContext(event));
                     }
                 }
                 if(!foundCommand && member != null) event.reply(LanguageLoader.ofGuild(event.getGuild()).get("commands.disabled_or_unknown", String.class)).setEphemeral(true).queue();

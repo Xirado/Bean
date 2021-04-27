@@ -2,6 +2,7 @@ package at.xirado.bean.commandmanager;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +89,6 @@ public abstract class Command
         this.ifNotPermissedCheckForModRole = false;
     }
 
-    public abstract void executeCommand(CommandEvent event);
+    public abstract void executeCommand(GuildMessageReceivedEvent event, CommandContext context);
 
 }

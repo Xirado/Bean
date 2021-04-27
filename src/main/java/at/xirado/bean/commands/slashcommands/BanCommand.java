@@ -1,7 +1,7 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.commandmanager.SlashCommand;
+import at.xirado.bean.commandmanager.SlashCommandContext;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
@@ -32,7 +32,7 @@ public class BanCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull CommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         Guild g = event.getGuild();
         if(g == null) return;
@@ -50,26 +50,26 @@ public class BanCommand extends SlashCommand
 
             if (!sender.canInteract(targetMember))
             {
-                ctx.reply(CommandContext.DENY+" "+ctx.getLocalized("commands.ban.you_cannot_ban_this_member")).setEphemeral(true).queue();
+                ctx.reply(SlashCommandContext.DENY+" "+ctx.getLocalized("commands.ban.you_cannot_ban_this_member")).setEphemeral(true).queue();
                 return;
             }
 
             if(DiscordBot.getInstance().permissionCheckerManager.isModerator(targetMember))
             {
-                event.reply(CommandContext.DENY+" "+ctx.getLocalized("commands.ban.cannot_ban_moderator")).setEphemeral(true).queue();
+                event.reply(SlashCommandContext.DENY+" "+ctx.getLocalized("commands.ban.cannot_ban_moderator")).setEphemeral(true).queue();
                 return;
             }
 
             if (!g.getSelfMember().canInteract(targetMember))
             {
-                ctx.reply(CommandContext.DENY+" "+ctx.getLocalized("commands.ban.i_cannot_ban_this_member")).setEphemeral(true).queue();
+                ctx.reply(SlashCommandContext.DENY+" "+ctx.getLocalized("commands.ban.i_cannot_ban_this_member")).setEphemeral(true).queue();
                 return;
             }
         }
         Case bancase = Case.createCase(CaseType.BAN, g.getIdLong(), targetUser.getIdLong(), sender.getIdLong(), reason != null ? reason : ctx.getLocalized("commands.noreason"), -1);
         if(bancase == null)
         {
-            ctx.reply(CommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
+            ctx.reply(SlashCommandContext.ERROR+" "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
             return;
         }
         try
@@ -88,7 +88,7 @@ public class BanCommand extends SlashCommand
         g.ban(targetUser, deldays, bancase.getReason()).queue(
                 (success) ->
                 {
-                    ctx.reply(CommandContext.SUCCESS+" "+ctx.getLocalized("commands.ban.has_been_banned", targetUser.getAsMention())+"\n`"+ctx.getLocalized("commands.reason")+": "+bancase.getReason()+" (#"+bancase.getCaseID()+")`").setEphemeral(true).queue();
+                    ctx.reply(SlashCommandContext.SUCCESS+" "+ctx.getLocalized("commands.ban.has_been_banned", targetUser.getAsMention())+"\n`"+ctx.getLocalized("commands.reason")+": "+bancase.getReason()+" (#"+bancase.getCaseID()+")`").setEphemeral(true).queue();
                     TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(g.getIdLong());
                     EmbedBuilder builder2 = new EmbedBuilder()
                             .setTimestamp(Instant.now())
@@ -103,7 +103,7 @@ public class BanCommand extends SlashCommand
                 },
                 (error) ->
                 {
-                    ctx.reply(CommandContext.ERROR + " "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
+                    ctx.reply(SlashCommandContext.ERROR + " "+ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
                 }
         );
     }

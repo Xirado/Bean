@@ -1,6 +1,5 @@
 package at.xirado.bean.listeners;
 
-import at.xirado.bean.commandmanager.CommandContext;
 import at.xirado.bean.main.DiscordBot;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;

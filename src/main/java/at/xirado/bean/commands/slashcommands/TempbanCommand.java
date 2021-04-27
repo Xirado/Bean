@@ -1,16 +1,15 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.*;
-import at.xirado.bean.translation.FormattedDuration;
+import at.xirado.bean.commandmanager.SlashCommand;
+import at.xirado.bean.commandmanager.SlashCommandContext;
 import at.xirado.bean.main.DiscordBot;
-import at.xirado.bean.misc.Util;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import at.xirado.bean.punishmentmanager.Punishments;
+import at.xirado.bean.translation.FormattedDuration;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import org.jetbrains.annotations.NotNull;
@@ -47,13 +46,13 @@ public class TempbanCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull CommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         Guild guild = event.getGuild();
         Member targetMember = event.getOption("user").getAsMember();
         if(targetMember == null)
         {
-            ctx.reply(CommandContext.ERROR+" This user is not in this guild!").setEphemeral(true).queue();
+            ctx.reply(SlashCommandContext.ERROR+" This user is not in this guild!").setEphemeral(true).queue();
             return;
         }
         Long time;
@@ -62,27 +61,27 @@ public class TempbanCommand extends SlashCommand
             time = FormattedDuration.parsePeriod(event.getOption("time").getAsLong()+event.getOption("timeunit").getAsString());
         } catch (Exception e)
         {
-            ctx.reply(CommandContext.ERROR+" This is not a valid time-format!").setEphemeral(true).queue();
+            ctx.reply(SlashCommandContext.ERROR+" This is not a valid time-format!").setEphemeral(true).queue();
             return;
         }
         if(time == null)
         {
-            ctx.reply(CommandContext.ERROR+" This is not a valid time-format!").setEphemeral(true).queue();
+            ctx.reply(SlashCommandContext.ERROR+" This is not a valid time-format!").setEphemeral(true).queue();
             return;
         }
         if(!sender.canInteract(targetMember))
         {
-            ctx.reply(CommandContext.ERROR+" You cannot ban this member!").setEphemeral(true).queue();
+            ctx.reply(SlashCommandContext.ERROR+" You cannot ban this member!").setEphemeral(true).queue();
             return;
         }
         if(!event.getGuild().getSelfMember().canInteract(targetMember))
         {
-            ctx.reply(CommandContext.ERROR+" I cannot ban this member!").setEphemeral(true).queue();
+            ctx.reply(SlashCommandContext.ERROR+" I cannot ban this member!").setEphemeral(true).queue();
             return;
         }
         if(DiscordBot.getInstance().permissionCheckerManager.isModerator(targetMember))
         {
-            ctx.reply(CommandContext.ERROR+" You cannot ban a moderator!").setEphemeral(true).queue();
+            ctx.reply(SlashCommandContext.ERROR+" You cannot ban a moderator!").setEphemeral(true).queue();
             return;
         }
         boolean withReason = event.getOption("reason") != null;
@@ -99,7 +98,7 @@ public class TempbanCommand extends SlashCommand
 
                     };
                     DiscordBot.getInstance().scheduledExecutorService.schedule(r, time, TimeUnit.MILLISECONDS);
-                    ctx.reply(CommandContext.SUCCESS+" "+targetMember.getAsMention()+" has been banned!\n`"+"Case #"+modcase.getCaseID()+" ("+Reason+")`").setEphemeral(true).queue();
+                    ctx.reply(SlashCommandContext.SUCCESS+" "+targetMember.getAsMention()+" has been banned!\n`"+"Case #"+modcase.getCaseID()+" ("+Reason+")`").setEphemeral(true).queue();
                     TextChannel logChannel = DiscordBot.getInstance().logChannelManager.getLogChannel(guild.getIdLong());
                     if(logChannel != null)
                     {
@@ -120,7 +119,7 @@ public class TempbanCommand extends SlashCommand
                         logChannel.sendMessage(builder.build()).queue();
                     }
                 },
-                (error) -> ctx.reply(CommandContext.ERROR+" Could not ban this user!").setEphemeral(true).queue()
+                (error) -> ctx.reply(SlashCommandContext.ERROR+" Could not ban this user!").setEphemeral(true).queue()
         );
     }
 }
