@@ -1,13 +1,11 @@
 package at.xirado.bean.commandmanager;
 
-import at.xirado.bean.commands.moderation.BanCommand;
-import at.xirado.bean.commands.moderation.KickCommand;
+import at.xirado.bean.commands.*;
+import at.xirado.bean.commands.moderation.*;
 import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.modules.GabrielHelp;
 import at.xirado.bean.modules.LukasHelp;
 import at.xirado.bean.modules.ReneHelp;
-import at.xirado.bean.commands.*;
-import at.xirado.bean.commands.moderation.*;
 import at.xirado.bean.music.*;
 import at.xirado.bean.translation.LanguageLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -122,10 +120,8 @@ public class CommandManager
                                 return;
                             }
                         }
-                        CommandEvent ice = new CommandEvent(arguments, e);
-                        ice.setMember(member);
-                        ice.setCommand(cmd);
-                        cmd.executeCommand(ice);
+                        CommandContext context = new CommandContext(e, arguments, cmd, member);
+                        cmd.executeCommand(e, context);
                         break;
                     }
                 }
