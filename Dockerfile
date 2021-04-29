@@ -1,5 +1,7 @@
 FROM adoptopenjdk:15-jdk-hotspot
 WORKDIR /home/bean/
+RUN apt update
+RUN apt upgrade
 RUN apt install git
 RUN apt install maven
 RUN git clone https://github.com/Xirado/beanbot.git .
