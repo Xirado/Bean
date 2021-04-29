@@ -1,7 +1,7 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.SlashCommand;
-import at.xirado.bean.commandmanager.SlashCommandContext;
+import at.xirado.bean.commandutil.SlashCommandContext;
+import at.xirado.bean.objects.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Member;

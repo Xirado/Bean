@@ -1,10 +1,9 @@
 package at.xirado.bean.commands;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -12,20 +11,17 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
-import java.util.Arrays;
 
 public class PostEmbed extends Command
 
 {
 
-	public PostEmbed(JDA jda)
+	public PostEmbed()
 	{
-		super(jda);
-		this.invoke = "embed";
-		this.description = "Posts an embed";
-		this.usage = "embed [Text]";
-		this.commandType = CommandType.MODERATION;
-		this.neededPermissions = Arrays.asList(Permission.MESSAGE_MANAGE);
+		super("embed", "Posts an embed", "embed [Text]");
+		setCommandCategory(CommandCategory.MODERATION);
+		setRequiredPermissions(Permission.MESSAGE_MANAGE);
+		setRequiredBotPermissions(Permission.MESSAGE_MANAGE);
 	}
 
 	@Override

@@ -1,13 +1,12 @@
 package at.xirado.bean.commands.moderation;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -17,19 +16,15 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 import java.time.Instant;
-import java.util.Arrays;
 
 public class BanCommand extends Command
 {
-    public BanCommand(JDA jda)
+    public BanCommand()
     {
-        super(jda);
-        this.invoke = "ban";
-        this.commandType = CommandType.MODERATION;
-        this.neededPermissions = Arrays.asList(Permission.BAN_MEMBERS);
-        this.neededBotPermissions = Arrays.asList(Permission.BAN_MEMBERS);
-        this.description = "permanently bans a user from the server";
-        this.usage = "ban [@Mention/ID] (optional reason)";
+        super("ban", "permanently bans a user from this guild", "ban [@user/id] (reason)");
+        setCommandCategory(CommandCategory.MODERATION);
+        setRequiredPermissions(Permission.BAN_MEMBERS);
+        setRequiredBotPermissions(Permission.BAN_MEMBERS);
     }
 
     @Override
@@ -51,7 +46,7 @@ public class BanCommand extends Command
         User target_User = null;
         try
         {
-            target_User = DiscordBot.getInstance().jda.retrieveUserById(target_ID).complete();
+            target_User = Bean.getInstance().jda.retrieveUserById(target_ID).complete();
         } catch (ErrorResponseException e)
         {
             context.replyError(context.getLocalized("commands.user_not_exists"));
@@ -79,7 +74,7 @@ public class BanCommand extends Command
                 context.replyError(context.getLocalized("commands.ban.i_cannot_ban_this_member"));
                 return;
             }
-            if(DiscordBot.getInstance().permissionCheckerManager.isModerator(target_Member))
+            if(Bean.getInstance().permissionCheckerManager.isModerator(target_Member))
             {
                 context.replyError(context.getLocalized("commands.ban.cannot_ban_moderator"));
                 return;
@@ -147,7 +142,7 @@ public class BanCommand extends Command
                 .addField(context.getLocalized("commands.reason"), Reason, false);
         if(!withReason)
         {
-            builder.addField("", "Use `"+DiscordBot.getInstance().prefixManager.getPrefix(guild.getIdLong())+"case "+bancase.getCaseID()+" reason [Reason]`\n to add a reason to this ban.", false);
+            builder.addField("", "Use `"+ Bean.getInstance().prefixManager.getPrefix(guild.getIdLong())+"case "+bancase.getCaseID()+" reason [Reason]`\n to add a reason to this ban.", false);
 
         }
         if(!context.hasLogChannel())

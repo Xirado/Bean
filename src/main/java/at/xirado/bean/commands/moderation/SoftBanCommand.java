@@ -1,13 +1,12 @@
 package at.xirado.bean.commands.moderation;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -19,21 +18,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.util.Arrays;
 
 public class SoftBanCommand extends Command
 {
     private static final Logger logger = LoggerFactory.getLogger(SoftBanCommand.class);
 
-    public SoftBanCommand(JDA jda)
+    public SoftBanCommand()
     {
-        super(jda);
-        this.invoke = "softban";
-        this.commandType = CommandType.MODERATION;
-        this.neededPermissions = Arrays.asList(Permission.BAN_MEMBERS);
-        this.neededBotPermissions = Arrays.asList(Permission.BAN_MEMBERS);
-        this.description = "softbans an user from the server (Kick + delete recent messages)";
-        this.usage = "softban [@Mention/ID] (optional reason)";
+        super("softban", "softbans a user from this guild", "softban [@member/id] (reason)");
+        setCommandCategory(CommandCategory.MODERATION);
+        setRequiredPermissions(Permission.BAN_MEMBERS);
+        setRequiredBotPermissions(Permission.BAN_MEMBERS);
     }
 
     @Override
@@ -67,7 +62,7 @@ public class SoftBanCommand extends Command
                         context.replyError(context.getLocalized("commands.softban.i_cannot_softban_this_member"));
                         return;
                     }
-                    if(DiscordBot.getInstance().permissionCheckerManager.isModerator(target_Member))
+                    if(Bean.getInstance().permissionCheckerManager.isModerator(target_Member))
                     {
                         context.replyError(context.getLocalized("commands.softban.cannot_softban_moderator"));
                         return;
@@ -127,7 +122,7 @@ public class SoftBanCommand extends Command
                                                     .addField(context.getLocalized("commands.reason"), Reason, false);
                                             if(!withReason)
                                             {
-                                                builder.addField("", "Use `"+DiscordBot.getInstance().prefixManager.getPrefix(guild.getIdLong())+"reason "+modcase.getCaseID()+" [Reason]` to add a reason to this softban.", false);
+                                                builder.addField("", "Use `"+ Bean.getInstance().prefixManager.getPrefix(guild.getIdLong())+"reason "+modcase.getCaseID()+" [Reason]` to add a reason to this softban.", false);
 
                                             }
                                             if(!context.hasLogChannel())

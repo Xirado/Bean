@@ -1,12 +1,11 @@
 package at.xirado.bean.commands.moderation;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
 import at.xirado.bean.misc.SQL;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -17,20 +16,16 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
 
 public class Unban extends Command
 {
 
-    public Unban(JDA jda)
+    public Unban()
     {
-        super(jda);
-        this.invoke = "unban";
-        this.usage = "unban [@User/ID]";
-        this.description = "Unbans an user";
-        this.neededPermissions = Collections.singletonList(Permission.BAN_MEMBERS);
-        this.neededBotPermissions = Collections.singletonList(Permission.BAN_MEMBERS);
-        this.commandType = CommandType.MODERATION;
+        super("unban", "unban [@user/id]", "Unbans a user");
+        setRequiredPermissions(Permission.BAN_MEMBERS);
+        setRequiredBotPermissions(Permission.BAN_MEMBERS);
+        setCommandCategory(CommandCategory.MODERATION);
     }
 
     @Override
@@ -40,7 +35,7 @@ public class Unban extends Command
         User u = event.getAuthor();
         Guild g = event.getGuild();
         Member m = context.getMember();
-        Member bot = g.getMember(DiscordBot.instance.jda.getSelfUser());
+        Member bot = g.getMember(Bean.instance.jda.getSelfUser());
         TextChannel c = event.getChannel();
         if (args.length != 1)
         {
@@ -53,7 +48,7 @@ public class Unban extends Command
             context.replyError("ID may not be empty!");
             return;
         }
-        DiscordBot.instance.jda.retrieveUserById(ID).queue(
+        Bean.instance.jda.retrieveUserById(ID).queue(
                 (user) ->
                 {
                     g.unban(user).queue(

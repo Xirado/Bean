@@ -1,8 +1,10 @@
-package at.xirado.bean.commandmanager;
+package at.xirado.bean.handlers;
 
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.commands.slashcommands.*;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.commandutil.SlashCommandContext;
+import at.xirado.bean.objects.SlashCommand;
 import at.xirado.bean.translation.LanguageLoader;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.commands.CommandHook;
@@ -24,20 +26,21 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Commandmanager for slash-commands
  */
-public class SlashCommandManager {
+public class SlashCommandHandler
+{
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SlashCommandManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SlashCommandHandler.class);
 
     public final List<SlashCommand> registeredCommands;
     public final ConcurrentHashMap<Long, List<SlashCommand>> registeredGuildCommands;
     private final CommandUpdateAction commandUpdateAction;
 
 
-    public SlashCommandManager()
+    public SlashCommandHandler()
     {
         registeredCommands = Collections.synchronizedList(new ArrayList<>());
         registeredGuildCommands = new ConcurrentHashMap<>();
-        commandUpdateAction = DiscordBot.getInstance().jda.updateCommands();
+        commandUpdateAction = Bean.getInstance().jda.updateCommands();
     }
 
 
@@ -63,11 +66,11 @@ public class SlashCommandManager {
 
     private void queueToDiscord()
     {
-        if(!DiscordBot.debugMode)
+        if(!Bean.debugMode)
         {
             commandUpdateAction.queue();
         }else {
-            DiscordBot.getInstance().jda.updateCommands().queue();
+            Bean.getInstance().jda.updateCommands().queue();
         }
         for(Map.Entry<Long, List<SlashCommand>> entrySet : registeredGuildCommands.entrySet())
         {
@@ -76,7 +79,7 @@ public class SlashCommandManager {
 
             if(guildID == null || slashCommands == null) continue;
             if(slashCommands.isEmpty()) continue;
-            Guild guild = DiscordBot.getInstance().jda.getGuildById(guildID);
+            Guild guild = Bean.getInstance().jda.getGuildById(guildID);
             if(guild == null) continue;
             CommandUpdateAction guildCommandUpdateAction = guild.updateCommands();
             boolean shouldQueue = false;
@@ -98,7 +101,7 @@ public class SlashCommandManager {
             if(command.getEnabledGuilds().isEmpty()) return;
             for(Long guildID : command.getEnabledGuilds())
             {
-                Guild guild = DiscordBot.getInstance().jda.getGuildById(guildID);
+                Guild guild = Bean.getInstance().jda.getGuildById(guildID);
                 if(guild == null) continue;
                 List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(guildID) ? registeredGuildCommands.get(guildID) : new ArrayList<>();
                 alreadyRegistered.add(command);
@@ -112,10 +115,10 @@ public class SlashCommandManager {
             }
             return;
         }
-        if(DiscordBot.debugMode)
+        if(Bean.debugMode)
         {
             long testServerID = 815597207617142814L;
-            Guild guild = DiscordBot.getInstance().jda.getGuildById(testServerID);
+            Guild guild = Bean.getInstance().jda.getGuildById(testServerID);
             if(guild != null)
             {
                 List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(testServerID) ? registeredGuildCommands.get(testServerID) : new ArrayList<>();
@@ -247,7 +250,7 @@ public class SlashCommandManager {
                 LOGGER.error("Could not execute slash-command", e);
             }
         };
-        DiscordBot.getInstance().scheduledExecutorService.submit(r);
+        Bean.getInstance().scheduledExecutorService.submit(r);
     }
 
 }

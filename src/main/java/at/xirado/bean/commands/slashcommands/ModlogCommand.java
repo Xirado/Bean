@@ -1,9 +1,9 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.SlashCommand;
-import at.xirado.bean.commandmanager.SlashCommandContext;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.SlashCommandContext;
 import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.objects.SlashCommand;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.Punishments;
 import at.xirado.bean.translation.FormattedDuration;
@@ -36,7 +36,7 @@ public class ModlogCommand extends SlashCommand
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         Member m = event.getMember();
-        PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
+        PermissionCheckerManager permissionCheckerManager = Bean.getInstance().permissionCheckerManager;
         if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
         {
             ctx.replyError(ctx.getLocalized("general.no_perms")).setEphemeral(true).queue();

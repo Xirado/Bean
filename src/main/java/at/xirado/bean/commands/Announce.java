@@ -1,30 +1,25 @@
 package at.xirado.bean.commands;
 
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-import java.util.Arrays;
-
 public class Announce extends Command
 {
 
-	public Announce(JDA jda)
+	public Announce()
 	{
-		super(jda);
-		this.invoke = "announce";
-		this.neededPermissions = Arrays.asList(Permission.MESSAGE_MENTION_EVERYONE, Permission.MESSAGE_MANAGE);
-		this.description = "Creates an announcement in a channel";
-		this.usage = "announce #Channel [Text]";
-		this.commandType = CommandType.ADMIN;
+		super("announce", "Creates an announcement in a channel", "announce [#Channel] [Message]");
+		setRequiredPermissions(Permission.MESSAGE_MENTION_EVERYONE, Permission.MESSAGE_MANAGE);
+		setRequiredBotPermissions(Permission.MESSAGE_MENTION_EVERYONE, Permission.MESSAGE_MANAGE);
+		setCommandCategory(CommandCategory.ADMIN);
 	}
 
 	@Override
@@ -34,7 +29,6 @@ public class Announce extends Command
 		String[] args = context.getArguments().toStringArray();
 		event.getMessage().delete().queue();
 		Guild g = event.getGuild();
-		TextChannel c = event.getChannel();
 		if(args.length < 2)
 		{
 			context.replyErrorUsage();

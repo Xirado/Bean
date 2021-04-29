@@ -1,6 +1,6 @@
 package at.xirado.bean.handlers;
 
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
 import at.xirado.bean.misc.SQL;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -56,7 +56,7 @@ public class LogChannelManager
 
         if(this.logChannel.containsKey(guildid))
         {
-            channel = DiscordBot.instance.jda.getTextChannelById(this.logChannel.get(guildid));
+            channel = Bean.instance.jda.getTextChannelById(this.logChannel.get(guildid));
         }else
         {
             Connection connection = SQL.getConnectionFromPool();
@@ -71,7 +71,7 @@ public class LogChannelManager
                 ResultSet rs = ps.executeQuery();
                 if(rs.next())
                 {
-                    channel = DiscordBot.instance.jda.getTextChannelById(rs.getLong("channelID"));
+                    channel = Bean.instance.jda.getTextChannelById(rs.getLong("channelID"));
                     this.logChannel.put(guildid, channel.getIdLong());
                 }
             } catch (SQLException throwables) {

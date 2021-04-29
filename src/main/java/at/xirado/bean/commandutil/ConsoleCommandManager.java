@@ -1,7 +1,9 @@
-package at.xirado.bean.commandmanager;
+package at.xirado.bean.commandutil;
 
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.consolecommands.Shutdown;
 import at.xirado.bean.consolecommands.*;
+import at.xirado.bean.objects.ConsoleCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +38,7 @@ public class ConsoleCommandManager
                  logger.error("Could not execute console-command", e);
              }
          };
-        DiscordBot.instance.scheduledExecutorService.submit(r);
+        Bean.instance.scheduledExecutorService.submit(r);
     }
     public void registerCommand(ConsoleCommand ccmd)
     {

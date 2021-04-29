@@ -1,8 +1,8 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.SlashCommand;
-import at.xirado.bean.commandmanager.SlashCommandContext;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.SlashCommandContext;
+import at.xirado.bean.objects.SlashCommand;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import at.xirado.bean.punishmentmanager.Punishments;
@@ -79,7 +79,7 @@ public class TempbanCommand extends SlashCommand
             ctx.reply(SlashCommandContext.ERROR+" I cannot ban this member!").setEphemeral(true).queue();
             return;
         }
-        if(DiscordBot.getInstance().permissionCheckerManager.isModerator(targetMember))
+        if(Bean.getInstance().permissionCheckerManager.isModerator(targetMember))
         {
             ctx.reply(SlashCommandContext.ERROR+" You cannot ban a moderator!").setEphemeral(true).queue();
             return;
@@ -94,12 +94,12 @@ public class TempbanCommand extends SlashCommand
                     Case modcase = Case.createCase(CaseType.TEMPBAN, guild.getIdLong(), targetMember.getIdLong(), sender.getIdLong(), Reason, time);
                     Runnable r = () ->
                     {
-                        Punishments.unban(modcase, DiscordBot.getInstance().jda.getTextChannelById(channelid));
+                        Punishments.unban(modcase, Bean.getInstance().jda.getTextChannelById(channelid));
 
                     };
-                    DiscordBot.getInstance().scheduledExecutorService.schedule(r, time, TimeUnit.MILLISECONDS);
+                    Bean.getInstance().scheduledExecutorService.schedule(r, time, TimeUnit.MILLISECONDS);
                     ctx.reply(SlashCommandContext.SUCCESS+" "+targetMember.getAsMention()+" has been banned!\n`"+"Case #"+modcase.getCaseID()+" ("+Reason+")`").setEphemeral(true).queue();
-                    TextChannel logChannel = DiscordBot.getInstance().logChannelManager.getLogChannel(guild.getIdLong());
+                    TextChannel logChannel = Bean.getInstance().logChannelManager.getLogChannel(guild.getIdLong());
                     if(logChannel != null)
                     {
                         EmbedBuilder builder = new EmbedBuilder()

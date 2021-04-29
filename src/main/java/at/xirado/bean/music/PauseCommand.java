@@ -1,11 +1,10 @@
 package at.xirado.bean.music;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -14,13 +13,10 @@ public class PauseCommand extends Command
 {
 
 
-    public PauseCommand(JDA jda)
+    public PauseCommand()
     {
-        super(jda);
-        this.invoke = "pause";
-        this.description = "Pauses the currently playing song";
-        this.usage = "pause";
-        this.commandType = CommandType.MUSIC;
+        super("pause", "pauses the currently playing song", "pause");
+        setCommandCategory(CommandCategory.MUSIC);
     }
 
     @Override
@@ -46,7 +42,7 @@ public class PauseCommand extends Command
             context.replyError("You need to be a DJ to do this!");
             return;
         }
-        String Prefix = DiscordBot.instance.prefixManager.getPrefix(event.getGuild().getIdLong());
+        String Prefix = Bean.instance.prefixManager.getPrefix(event.getGuild().getIdLong());
         final AudioHandler handler = (com.jagrosh.jmusicbot.audio.AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
         if (handler.getPlayer().isPaused()) {
             context.replyWarning("The player is already paused! Use `" + Prefix + "play` to unpause!");

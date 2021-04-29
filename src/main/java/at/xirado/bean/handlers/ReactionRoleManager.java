@@ -1,12 +1,10 @@
 package at.xirado.bean.handlers;
 
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
 import at.xirado.bean.misc.ReactionHelper;
 import net.dv8tion.jda.api.entities.Role;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ReactionRoleManager
@@ -30,7 +28,7 @@ public class ReactionRoleManager
             HashMap<String, Long> hm = reactionRoles.get(messageID);
             if(hm.containsKey(emoticon))
             {
-                return DiscordBot.instance.jda.getRoleById(hm.get(emoticon));
+                return Bean.instance.jda.getRoleById(hm.get(emoticon));
             }else{
                 Role r = ReactionHelper.getRoleIfAvailable(messageID, emoticon);
                 if(r != null)

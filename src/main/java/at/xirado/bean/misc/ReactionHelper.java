@@ -1,6 +1,6 @@
 package at.xirado.bean.misc;
 
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
 import net.dv8tion.jda.api.entities.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public class ReactionHelper
 			if(rs.next())
 			{
 				connection.close();
-				return DiscordBot.instance.jda.getRoleById(rs.getLong("roleID"));
+				return Bean.instance.jda.getRoleById(rs.getLong("roleID"));
 			}
 			return null;
 		} catch (SQLException e)

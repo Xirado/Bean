@@ -1,40 +1,35 @@
 package at.xirado.bean.music;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import com.jagrosh.jdautilities.menu.OrderedMenu;
 import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class ForceRemove extends Command
 {
 
-    public ForceRemove(JDA jda)
+    public ForceRemove()
     {
-        super(jda);
-        this.invoke = "forceremove";
-        this.description = "Removes all songs from the queue that are from a certain member";
-        this.usage = "forceremove [@Member]";
-        this.commandType = CommandType.MUSIC;
-        this.aliases = Arrays.asList("forcedelete");
+        super("forceremove", "Removes all songs from the queue that are from a certain member", "forceremove [@member]");
+        setCommandCategory(CommandCategory.MUSIC);
+        setAliases("forcedelete");
     }
 
     @Override
     public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        Bot bot = DiscordBot.instance.musicinstance;
+        Bot bot = Bean.instance.musicinstance;
         String[] args = context.getArguments().toStringArray();
         String whole = context.getArguments().toString(0);
         Guild g = event.getGuild();

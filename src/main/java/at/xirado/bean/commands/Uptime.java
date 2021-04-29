@@ -1,11 +1,10 @@
 package at.xirado.bean.commands;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -16,13 +15,10 @@ public class Uptime extends Command
 {
 
 
-    public Uptime(JDA jda)
+    public Uptime()
     {
-        super(jda);
-        this.invoke = "uptime";
-        this.description = "Shows the bot's uptime";
-        this.usage = "uptime";
-        this.commandType = CommandType.BEAN;
+        super("uptime", "Shows the bot's uptime", "uptime");
+        setCommandCategory(CommandCategory.BEAN);
 
     }
 
@@ -35,7 +31,7 @@ public class Uptime extends Command
                 new EmbedBuilder()
                         .setColor(Color.green)
                         .setTimestamp(Instant.now())
-                        .setDescription("Uptime: " + context.parseDuration(currentTime - DiscordBot.STARTTIME, " ") + "")
+                        .setDescription("Uptime: " + context.parseDuration(currentTime - Bean.STARTTIME, " ") + "")
                         .build()
         ).queue();
     }

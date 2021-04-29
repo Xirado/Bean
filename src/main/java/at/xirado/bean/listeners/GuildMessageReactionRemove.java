@@ -1,8 +1,9 @@
 package at.xirado.bean.listeners;
 
-import at.xirado.bean.main.DiscordBot;
-import net.dv8tion.jda.api.entities.*;
+import at.xirado.bean.Bean;
 import net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveAllEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -20,7 +21,7 @@ public class GuildMessageReactionRemove extends ListenerAdapter
 		try
 		{
 			long messageid = e.getMessageIdLong();
-			DiscordBot.instance.reactionRoleManager.removeAllReactionRoles(messageid);
+			Bean.instance.reactionRoleManager.removeAllReactionRoles(messageid);
 		} catch (Exception exception)
 		{
 			LOGGER.error("An error occured while executing GuildMessageReactionRemoveAllEvent!", exception);
@@ -39,7 +40,7 @@ public class GuildMessageReactionRemove extends ListenerAdapter
 						if(user.isBot()) return;
 						ReactionEmote reactionemote = e.getReactionEmote();
 						String reacted = reactionemote.isEmoji() ? reactionemote.getAsReactionCode() : reactionemote.getEmote().getId();
-						Role r = DiscordBot.instance.reactionRoleManager.getRoleIfAvailable(e.getMessageIdLong(), reacted);
+						Role r = Bean.instance.reactionRoleManager.getRoleIfAvailable(e.getMessageIdLong(), reacted);
 						if(r != null)
 						{
 							e.getGuild().removeRoleFromMember(member, r).queue();

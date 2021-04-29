@@ -1,27 +1,22 @@
 package at.xirado.bean.commands;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.Arrays;
 
 public class Haste extends Command
 {
-    public Haste(JDA jda)
+    public Haste()
     {
-        super(jda);
-        this.invoke = "haste";
-        this.aliases = Arrays.asList("posthaste", "hastebin");
-        this.commandType = CommandType.UTILITIES;
-        this.description = "Creates a haste and gives you the link";
-        this.usage = "haste [Content]";
+        super("haste", "Creates a haste and gives you the link", "haste [Text]");
+        setAliases("posthaste", "hastebin");
+        setCommandCategory(CommandCategory.UTILITIES);
     }
 
     @Override

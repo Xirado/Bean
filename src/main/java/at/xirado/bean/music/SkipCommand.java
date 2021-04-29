@@ -4,24 +4,20 @@
 
 package at.xirado.bean.music;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class SkipCommand extends Command
 {
 
-    public SkipCommand(JDA jda)
+    public SkipCommand()
     {
-        super(jda);
-        this.invoke = "skip";
-        this.description = "Vote to skip the currently playing song";
-        this.usage = "skip";
-        this.commandType = CommandType.MUSIC;
+        super("skip", "Vote to skip the currently playing song", "skip");
+        setCommandCategory(CommandCategory.MUSIC);
     }
 
     @Override

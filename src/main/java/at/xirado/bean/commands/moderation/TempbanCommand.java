@@ -1,16 +1,15 @@
 package at.xirado.bean.commands.moderation;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.objects.Command;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import at.xirado.bean.punishmentmanager.Punishments;
 import at.xirado.bean.translation.FormattedDuration;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -20,21 +19,17 @@ import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class TempbanCommand extends Command
 {
 
-    public TempbanCommand(JDA jda)
+    public TempbanCommand()
     {
-        super(jda);
-        this.invoke = "tempban";
-        this.commandType = CommandType.MODERATION;
-        this.neededPermissions = Arrays.asList(Permission.BAN_MEMBERS);
-        this.neededBotPermissions = Arrays.asList(Permission.BAN_MEMBERS);
-        this.description = "Temporarily bans a member from the server";
-        this.usage = "tempban [@Mention/ID] [Duration] (optional reason)";
+        super("tempban", "Temporarily bans a member from the server", "tempban [@user/id] [duration] (reason)");
+        setCommandCategory(CommandCategory.MODERATION);
+        setRequiredPermissions(Permission.BAN_MEMBERS);
+        setRequiredBotPermissions(Permission.BAN_MEMBERS);
     }
 
     @Override
@@ -73,7 +68,7 @@ public class TempbanCommand extends Command
                         context.replyError(context.getLocalized("commands.ban.i_cannot_ban_this_member"));
                         return;
                     }
-                    if(DiscordBot.getInstance().permissionCheckerManager.isModerator(target_Member))
+                    if(Bean.getInstance().permissionCheckerManager.isModerator(target_Member))
                     {
                         context.replyError(context.getLocalized("commands.ban.cannot_ban_moderator"));
                         return;
@@ -93,10 +88,10 @@ public class TempbanCommand extends Command
                                 }
                                 Runnable r = () ->
                                 {
-                                    Punishments.unban(modcase, DiscordBot.getInstance().jda.getTextChannelById(channelid));
+                                    Punishments.unban(modcase, Bean.getInstance().jda.getTextChannelById(channelid));
 
                                 };
-                                DiscordBot.getInstance().scheduledExecutorService.schedule(r, time, TimeUnit.MILLISECONDS);
+                                Bean.getInstance().scheduledExecutorService.schedule(r, time, TimeUnit.MILLISECONDS);
                                 if(context.hasLogChannel())
                                 {
                                     EmbedBuilder builder = new EmbedBuilder()
@@ -117,7 +112,7 @@ public class TempbanCommand extends Command
                                         .addField(context.getLocalized("commands.duration"), Util.getLength(time/1000), true);
                                 if(!withReason)
                                 {
-                                    builder.addField("", "Use `"+DiscordBot.getInstance().prefixManager.getPrefix(guild.getIdLong())+"case "+modcase.getCaseID()+" reason [Reason]`\n to add a reason to this ban.", false);
+                                    builder.addField("", "Use `"+ Bean.getInstance().prefixManager.getPrefix(guild.getIdLong())+"case "+modcase.getCaseID()+" reason [Reason]`\n to add a reason to this ban.", false);
 
                                 }
                                 if(!context.hasLogChannel())

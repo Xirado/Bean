@@ -1,11 +1,12 @@
 package at.xirado.bean.consolecommands;
 
-import at.xirado.bean.commandmanager.ConsoleCommand;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.objects.ConsoleCommand;
 import ch.qos.logback.classic.Level;
 
-import static org.fusesource.jansi.Ansi.*;
-import static org.fusesource.jansi.Ansi.Color.*;
+import static org.fusesource.jansi.Ansi.Color.GREEN;
+import static org.fusesource.jansi.Ansi.Color.RED;
+import static org.fusesource.jansi.Ansi.ansi;
 public class LogLevel extends ConsoleCommand
 {
     public LogLevel()

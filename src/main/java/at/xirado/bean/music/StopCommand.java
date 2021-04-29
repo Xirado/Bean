@@ -1,25 +1,19 @@
 package at.xirado.bean.music;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-
-import java.util.Arrays;
 
 public class StopCommand extends Command
 {
 
-    public StopCommand(JDA jda)
+    public StopCommand()
     {
-        super(jda);
-        this.invoke = "stop";
-        this.description = "Stops the player and clears the queue";
-        this.usage = "stop";
-        this.aliases = Arrays.asList("leave", "quit", "disconnect");
-        this.commandType = CommandType.MUSIC;
+        super("stop", "stops the player and clears the queue", "stop");
+        setAliases("leave", "quit", "disconnect");
+        setCommandCategory(CommandCategory.MUSIC);
     }
 
     @Override

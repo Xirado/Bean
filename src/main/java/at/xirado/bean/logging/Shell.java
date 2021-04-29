@@ -1,6 +1,6 @@
 package at.xirado.bean.logging;
 
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
 import org.fusesource.jansi.AnsiConsole;
 import org.jline.reader.*;
 import org.jline.terminal.Terminal;
@@ -35,11 +35,11 @@ public class Shell
             .style(BLUE).append("\\  ").style(BLUE).append("__\\").style(PINK).append("   \\ ").style(BLUE).append("\\  __ \\  ").style(PINK).append("\\ ")
             .style(BLUE).append("\\ \\").style(BLUE).append("-.  ").style(BLUE).append("\\\n").style(PINK).append("           \\ ").style(BLUE)
             .append("\\_____\\  ").style(PINK).append("\\ ").style(BLUE).append("\\_____\\  ").style(PINK).append("\\ ").style(BLUE).append("\\_\\ \\_\\  ")
-            .style(PINK).append("\\ ").style(BLUE).append("\\_\\").style(PINK).append("\\\"").style(BLUE).append("\\_\\\n").style(PINK).append("            \\/_____/   \\/_____/   \\/_/\\/_/   \\/_/ \\/_/\n\n                      Bean v").append(DiscordBot.instance.VERSION).append(" by Xirado\n                          Logo by Feesh\n").toAnsi();
+            .style(PINK).append("\\ ").style(BLUE).append("\\_\\").style(PINK).append("\\\"").style(BLUE).append("\\_\\\n").style(PINK).append("            \\/_____/   \\/_____/   \\/_/\\/_/   \\/_/ \\/_/\n\n                      Bean v").append(Bean.instance.VERSION).append(" by Xirado\n").toAnsi();
 
 
 
-    public static void startShell()
+    public static void startShell(Runnable success)
     {
         Thread t = new Thread(() ->
         {
@@ -68,7 +68,7 @@ public class Shell
             System.setOut(CustomPrintStream.getPrintStream());
             System.setErr(CustomPrintStream.getPrintStream());
             terminal.writer().println(LOGO);
-            startedSuccessfully = true;
+            success.run();
             while (true) {
                 String line;
                 try {
@@ -78,7 +78,7 @@ public class Shell
                     if(line.length() == 0) continue;
                     ParsedLine pl = reader.getParser().parse(line, 0);
                     String[] argv = pl.words().subList(1, pl.words().size()).toArray(new String[0]);
-                    DiscordBot.instance.consoleCommandManager.handleConsoleCommand(pl.word(), argv);
+                    Bean.instance.consoleCommandManager.handleConsoleCommand(pl.word(), argv);
 
                 } catch (UserInterruptException e)
                 {
@@ -91,6 +91,7 @@ public class Shell
             }
         });
         t.setName("Terminal Worker");
+        t.setDaemon(true);
         t.start();
     }
 }

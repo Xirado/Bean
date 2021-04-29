@@ -1,10 +1,9 @@
 package at.xirado.bean.punishmentmanager;
 
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
 import at.xirado.bean.misc.SQL;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,7 @@ public class Punishments
     {
         if(c == null) return;
         c.fetchUpdate();
-        Guild g = DiscordBot.getInstance().jda.getGuildById(c.getGuildID());
+        Guild g = Bean.getInstance().jda.getGuildById(c.getGuildID());
         if(g == null) return;
         if(c.isActive())
         {
@@ -57,11 +56,11 @@ public class Punishments
                     (unbanned) ->
                     {
                         c.setActive(false);
-                        DiscordBot.getInstance().jda.retrieveUserById(c.getTargetID()).queue(
+                        Bean.getInstance().jda.retrieveUserById(c.getTargetID()).queue(
                                 (targetuser) ->
                                 {
-                                    TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(g.getIdLong());
-                                    User selfuser = DiscordBot.getInstance().jda.getSelfUser();
+                                    TextChannel logchannel = Bean.getInstance().logChannelManager.getLogChannel(g.getIdLong());
+                                    User selfuser = Bean.getInstance().jda.getSelfUser();
                                     EmbedBuilder builder = new EmbedBuilder()
                                             .setColor(Color.green)
                                             .setTitle("Unban | #"+c.getCaseID())
@@ -127,12 +126,12 @@ public class Punishments
     {
         c.fetchUpdate(); // fetch update from DB
         if(!c.isActive()) return;
-        Guild g = DiscordBot.getInstance().jda.getGuildById(c.getGuildID());
+        Guild g = Bean.getInstance().jda.getGuildById(c.getGuildID());
         if(g == null) return;
         g.retrieveMemberById(c.getTargetID()).queue(
                 (member) ->
                 {
-                    Role role = g.getRoleById(DiscordBot.getInstance().mutedRoleManager.getMutedRole(c.getGuildID()));
+                    Role role = g.getRoleById(Bean.getInstance().mutedRoleManager.getMutedRole(c.getGuildID()));
                     if(role == null) return;
                     if(!c.isActive() && member.getRoles().contains(role))
                     {
@@ -141,8 +140,8 @@ public class Punishments
                     }
                     c.setActive(false);
                     g.removeRoleFromMember(member, role).queue(s -> {}, e -> {});
-                    TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(g.getIdLong());
-                    User selfuser = DiscordBot.getInstance().jda.getSelfUser();
+                    TextChannel logchannel = Bean.getInstance().logChannelManager.getLogChannel(g.getIdLong());
+                    User selfuser = Bean.getInstance().jda.getSelfUser();
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(Color.green)
                             .setTitle("Unmute | #"+c.getCaseID())

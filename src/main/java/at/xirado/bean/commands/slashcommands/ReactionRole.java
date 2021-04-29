@@ -1,8 +1,8 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.SlashCommand;
-import at.xirado.bean.commandmanager.SlashCommandContext;
+import at.xirado.bean.commandutil.SlashCommandContext;
 import at.xirado.bean.misc.ReactionHelper;
+import at.xirado.bean.objects.SlashCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;

@@ -1,6 +1,6 @@
 package at.xirado.bean.listeners;
 
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
 import at.xirado.bean.misc.SQL;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.Member;
@@ -43,7 +43,7 @@ public class GuildMemberJoin extends ListenerAdapter
 				long creationDate = rs.getLong("creationDate");
 				if(creationDate+duration > System.currentTimeMillis())
 				{
-					Role role = e.getGuild().getRoleById(DiscordBot.getInstance().mutedRoleManager.getMutedRole(e.getGuild().getIdLong()));
+					Role role = e.getGuild().getRoleById(Bean.getInstance().mutedRoleManager.getMutedRole(e.getGuild().getIdLong()));
 					if(role != null) e.getGuild().addRoleToMember(m, role).queue(s -> {}, ex -> {});
 
 				}

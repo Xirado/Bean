@@ -1,47 +1,34 @@
 package at.xirado.bean.commands.moderation;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.commandutil.CommandFlag;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.objects.Command;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.Punishments;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.Arrays;
 
 public class CaseCommand extends Command
 {
-    public CaseCommand(JDA jda)
+    public CaseCommand()
     {
-        super(jda);
-        this.invoke = "case";
-        this.commandType = CommandType.MODERATION;
-        this.aliases = Arrays.asList("incident");
-        this.description = "Shows information of a case or changes the reason.";
-        this.usage = "case [Case ID] || case [Case ID] reason [New Reason] || case [Case ID] delete";
+        super("case", "Shows information of a case or changes the reason.", "case [Case ID] || case [Case ID] reason [New Reason] || case [Case ID] delete");
+        setCommandCategory(CommandCategory.MODERATION);
+        setAliases("incident");
+        setCommandFlags(CommandFlag.MODERATOR_ONLY);
     }
 
     @Override
     public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        Member m = context.getMember();
-        PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
-        if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
-        {
-            context.replyError(context.getLocalized("general.no_perms"));
-            return;
-        }
         String[] args = context.getArguments().toStringArray();
         Guild g = event.getGuild();
         if(args.length < 1)
@@ -80,7 +67,7 @@ public class CaseCommand extends Command
         {
             if(args.length < 3)
             {
-                context.replyError(context.getLocalized("commands.casecmd.invalid_usage", DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())));
+                context.replyError(context.getLocalized("commands.casecmd.invalid_usage", Bean.getInstance().prefixManager.getPrefix(g.getIdLong())));
                 return;
             }
             String caseID = args[0];

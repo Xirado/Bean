@@ -1,31 +1,27 @@
 package at.xirado.bean.commands;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 
-import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Help extends Command
 {
 
-	public Help(JDA jda)
+	public Help()
 	{
-		super(jda);
-		this.invoke = "help";
-		this.global = true;
-
+		super("help", "shows a list of all commands", "help (Category)");
 	}
 
 	@Override
@@ -34,7 +30,7 @@ public class Help extends Command
 		String[] args = context.getArguments().toStringArray();
 		User user = event.getAuthor();
 		Guild guild = event.getGuild();
-		String Prefix = DiscordBot.instance.prefixManager.getPrefix(guild.getIdLong());
+		String Prefix = Bean.instance.prefixManager.getPrefix(guild.getIdLong());
 		TextChannel channel = event.getChannel();
 		if(args.length != 1)
 		{
@@ -43,15 +39,15 @@ public class Help extends Command
 					.setAuthor(user.getAsTag(), null, user.getAvatarUrl())
 					.setTitle("Bean command list")
 					.setTimestamp(Instant.now());
-			for(CommandType type : CommandType.values())
+			for(CommandCategory type : CommandCategory.values())
 			{
-				if(type == CommandType.EXCLUDED)
+				if(type == CommandCategory.NONE)
 					continue;
 				String name = StringUtils.capitalize(type.toString().toLowerCase());
-				String aswhole = type.getEmoji()+" "+name;
+				String header = type.getEmoji()+" "+name;
 				String command = "`"+Prefix+"help "+name+"`";
 
-				builder.addField(aswhole, command, true);
+				builder.addField(header, command, true);
 			}
 			builder.addField("Modules", "`"+Prefix+"help Modules`", true);
 			builder.addField("⏬ Support? ⏬", "[Click here](https://discord.gg/SxjyBuD)", false);
@@ -59,16 +55,16 @@ public class Help extends Command
 			return;
 		}
 		String subarg = args[0];
-		if(subarg.equalsIgnoreCase("Excluded"))
+		if(subarg.equalsIgnoreCase("None"))
 			return;
 		if(subarg.equalsIgnoreCase("modules"))
 		{
-			ArrayList<Command> modules = DiscordBot.instance.commandManager.getRegisteredModules(event.getGuild().getIdLong());
-			modules = modules.stream().filter((c) -> c.getCommandType() != CommandType.EXCLUDED).collect(Collectors.toCollection(ArrayList::new));
+			List<Command> modules = Bean.getInstance().commandHandler.getGuildCommands(guild.getIdLong());
+			modules = modules.stream().filter((c) -> c.getCommandCategory() != CommandCategory.NONE).collect(Collectors.toCollection(ArrayList::new));
 			if(modules.size() == 0)
 			{
 				EmbedBuilder builder = new EmbedBuilder()
-						.setColor(Color.red)
+						.setColor(0x551a8b)
 						.setTimestamp(Instant.now())
 						.setDescription("\uD83D\uDEAB No modules have been enabled! \uD83D\uDEAB")
 						.setAuthor(user.getAsTag(), null, user.getAvatarUrl());
@@ -78,34 +74,33 @@ public class Help extends Command
 			StringBuilder sb = new StringBuilder();
 			for(Command module : modules)
 			{
-				if(module.usage == null || module.description == null) continue;
-				sb.append("`").append(Prefix).append(module.usage).append("`\n").append(module.description).append("\n");
+				sb.append("`").append(Prefix).append(module.getUsage()).append("`\n").append(module.getDescription()).append("\n");
 			}
 			String tostring = sb.toString().trim();
 			EmbedBuilder embed = new EmbedBuilder()
-					.setColor(Color.decode("#FEFEFE"))
+					.setColor(0x551a8b)
 					.setAuthor(user.getAsTag(), null, user.getAvatarUrl())
 					.setTitle("Enabled Modules")
-					.setThumbnail(DiscordBot.instance.jda.getSelfUser().getAvatarUrl())
+					.setThumbnail(Bean.instance.jda.getSelfUser().getAvatarUrl())
 					.setDescription(tostring)
 					.setTimestamp(Instant.now());
 			channel.sendMessage(embed.build()).queue();
 			return;
 		}
-		CommandType type;
+		CommandCategory type;
 		try {
-			type = CommandType.valueOf(subarg.toUpperCase());
+			type = CommandCategory.valueOf(subarg.toUpperCase());
 		} catch (IllegalArgumentException illegalArgumentException) {
 			return;
 		}
 		String name = StringUtils.capitalize(type.toString().toLowerCase());
-		ArrayList<Command> commands = DiscordBot.instance.commandManager.registeredCommands.stream().filter(command -> command.commandType == type && command.accessibleOn(guild.getIdLong())).collect(Collectors.toCollection(ArrayList::new));
+		ArrayList<Command> commands = Bean.getInstance().commandHandler.getRegisteredCommands(guild.getIdLong()).stream().filter(command -> command.getCommandCategory() == type).collect(Collectors.toCollection(ArrayList::new));
 		if(commands.size() == 0)
 		{
 			EmbedBuilder builder = new EmbedBuilder()
-					.setColor(Color.decode("#FEFEFE"))
+					.setColor(0x551a8b)
 					.setTitle("Help - "+name)
-					.setDescription("Oh, there's nothing there (yet?)")
+					.setDescription("I haven't found any commands")
 					.setTimestamp(Instant.now());
 			channel.sendMessage(builder.build()).queue();
 			return;
@@ -115,17 +110,16 @@ public class Help extends Command
 		{
 			sb.append("`").append(Prefix).append(command.getUsage()).append("` - ").append(command.getDescription()).append("\n");
 		}
-		String tostring = sb.toString().trim();
+		String toString = sb.toString().trim();
 		EmbedBuilder embed = new EmbedBuilder()
-				.setColor(Color.decode("#FEFEFE"))
+				.setColor(0x551a8b)
 				.setTitle("Help - "+name)
 				.setTimestamp(Instant.now());
 		String description = type.getNotes();
 		if(description.length() > 0)
 			embed.addField("", description, false);
-		embed.addField("", tostring,false);
+		embed.addField("", toString,false);
 		channel.sendMessage(embed.build()).queue();
-		return;
 	}
 
 

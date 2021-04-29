@@ -1,14 +1,13 @@
 package at.xirado.bean.commands;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.commandutil.CommandFlag;
 import at.xirado.bean.handlers.BlacklistManager;
-import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -17,20 +16,16 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
 public class Blacklist extends Command
 {
 
-	public Blacklist(JDA jda)
+	public Blacklist()
 	{
-		super(jda);
-		this.invoke = "blacklist";
-		this.usage = "blacklist [add/remove/list] (word)";
-		this.description = "Modifies the list of blacklisted words";
-		this.neededPermissions = Arrays.asList(Permission.MESSAGE_MANAGE);
-		this.commandType = CommandType.MODERATION;
+		super("blacklist", "Modifies the list of blacklisted words", "blacklist [add/remove/list] (word)");
+		setCommandFlags(CommandFlag.MODERATOR_ONLY);
+		setCommandCategory(CommandCategory.MODERATION);
 	}
 
 	@Override
@@ -40,7 +35,7 @@ public class Blacklist extends Command
 		User user = event.getAuthor();
 		Guild guild = event.getGuild();
 		TextChannel channel = event.getChannel();
-		BlacklistManager blMan = DiscordBot.instance.blacklistManager;
+		BlacklistManager blMan = Bean.instance.blacklistManager;
 		if(args.length < 1)
 		{
 			context.replyErrorUsage();
@@ -80,7 +75,7 @@ public class Blacklist extends Command
 				context.replyErrorUsage();
 				return;
 			}
-			List<String> currentlist = DiscordBot.instance.blacklistManager.getBlacklistedWords(guild.getIdLong());
+			List<String> currentlist = Bean.instance.blacklistManager.getBlacklistedWords(guild.getIdLong());
 			if(!blMan.containsBlacklistedWord(guild.getIdLong(), args[1].toUpperCase()))
 			{
 				EmbedBuilder builder = new EmbedBuilder()
@@ -103,7 +98,7 @@ public class Blacklist extends Command
 			
 		}else if(subcommand.equalsIgnoreCase("list"))
 		{
-			List<String> currentlist = DiscordBot.instance.blacklistManager.getBlacklistedWords(guild.getIdLong());
+			List<String> currentlist = Bean.instance.blacklistManager.getBlacklistedWords(guild.getIdLong());
 			if(currentlist.size() <= 0)
 			{
 				EmbedBuilder builder = new EmbedBuilder()

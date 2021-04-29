@@ -1,14 +1,12 @@
 package at.xirado.bean.commands.moderation;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.commandutil.CommandFlag;
 import at.xirado.bean.misc.SQL;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -20,26 +18,18 @@ import java.sql.SQLException;
 
 public class UnmuteCommand extends Command
 {
-    public UnmuteCommand(JDA jda)
+    public UnmuteCommand()
     {
-        super(jda);
-        this.invoke = "unmute";
-        this.commandType = CommandType.MODERATION;
-        this.description = "Unmutes a member";
-        this.usage = "unmute [@Member/ID]";
+        super("unmute", "Unmutes a member", "unmute [@member/id]");
+        setCommandCategory(CommandCategory.MODERATION);
+        setCommandFlags(CommandFlag.MODERATOR_ONLY);
     }
 
     @Override
     public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
         Member m = context.getMember();
-        PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
         Guild g = event.getGuild();
-        if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
-        {
-            context.replyError(context.getLocalized("general.no_perms"));
-            return;
-        }
         String[] args = context.getArguments().toStringArray();
         if(args.length < 1)
         {
@@ -55,7 +45,7 @@ public class UnmuteCommand extends Command
         g.retrieveMemberById(target_ID).queue(
                 (targetMember) ->
                 {
-                    Role r = g.getRoleById(DiscordBot.getInstance().mutedRoleManager.getMutedRole(g.getIdLong()));
+                    Role r = g.getRoleById(Bean.getInstance().mutedRoleManager.getMutedRole(g.getIdLong()));
                     if(!targetMember.getRoles().contains(r))
                     {
                         context.replyError(context.getLocalized("commands.unmute.member_not_muted"));

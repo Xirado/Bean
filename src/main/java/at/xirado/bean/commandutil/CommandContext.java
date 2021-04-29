@@ -1,7 +1,8 @@
-package at.xirado.bean.commandmanager;
+package at.xirado.bean.commandutil;
 
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
 import at.xirado.bean.misc.JSON;
+import at.xirado.bean.objects.Command;
 import at.xirado.bean.translation.LanguageLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -24,12 +25,12 @@ public class CommandContext
     public static final String SUCCESS_EMOTE = "✅";
 
     private final GuildMessageReceivedEvent event;
-    private final Command command;
+    private final at.xirado.bean.objects.Command command;
     private final Member member;
     private final CommandArgument commandArgument;
 
 
-    public CommandContext(GuildMessageReceivedEvent event, CommandArgument commandArgument, Command command, Member member)
+    public CommandContext(GuildMessageReceivedEvent event, CommandArgument commandArgument, at.xirado.bean.objects.Command command, Member member)
     {
         this.event = event;
         this.commandArgument = commandArgument;
@@ -74,29 +75,29 @@ public class CommandContext
 
     public void replyInLogChannel(String message)
     {
-        TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
+        TextChannel logchannel = Bean.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
         if(logchannel != null) logchannel.sendMessage(message).queue();
     }
 
 
     public TextChannel getLogChannel()
     {
-        return DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
+        return Bean.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
     }
 
     public boolean hasLogChannel()
     {
-        return DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong()) != null;
+        return Bean.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong()) != null;
     }
 
     public void replyInLogChannel(Message message)
     {
-        TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
+        TextChannel logchannel = Bean.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
         if(logchannel != null) logchannel.sendMessage(message).queue();
     }
     public void replyInLogChannel(MessageEmbed message)
     {
-        TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
+        TextChannel logchannel = Bean.getInstance().logChannelManager.getLogChannel(this.event.getGuild().getIdLong());
         if(logchannel != null) logchannel.sendMessage(message).queue();
     }
     public void replyErrorUsage()
@@ -118,7 +119,7 @@ public class CommandContext
             }
             aliasesstring = sb.toString().trim();
         }
-        String description = "`"+usage+"`\n"+this.getCommand().description;
+        String description = "`"+usage+"`\n"+this.getCommand().getDescription();
         if(aliases.size() > 0 && aliasesstring != null)
         {
             description+="\n"+ LanguageLoader.ofGuild(event.getGuild()).get("general.aliases", String.class)+": `"+aliasesstring+"`";

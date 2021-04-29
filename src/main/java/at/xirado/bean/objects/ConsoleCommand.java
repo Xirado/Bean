@@ -1,4 +1,4 @@
-package at.xirado.bean.commandmanager;
+package at.xirado.bean.objects;
 
 import java.util.ArrayList;
 import java.util.List;

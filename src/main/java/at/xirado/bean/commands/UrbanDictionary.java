@@ -1,13 +1,12 @@
 package at.xirado.bean.commands;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.objects.Command;
 import at.xirado.bean.urbanapi.Definition;
 import at.xirado.bean.urbanapi.UDParser;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -22,15 +21,11 @@ import java.util.regex.Pattern;
 
 public class UrbanDictionary extends Command
 {
-    public UrbanDictionary(JDA jda)
+    public UrbanDictionary()
     {
-        super(jda);
-        this.invoke = "urbandict";
-        this.usage = "urbandict [Word(s)]";
-        this.description = "Shows the first explanation of a word on UrbanDictionary";
-        this.commandType = CommandType.FUN;
-        this.aliases = Arrays.asList("urbandictionary", "urban");
-
+        super("urban", "Search phrases on urbandictionary", "urban [Phrase]");
+        setAliases("urbandict", "urbandictionary");
+        setCommandCategory(CommandCategory.FUN);
     }
 
     @Override

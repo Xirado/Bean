@@ -1,13 +1,12 @@
 package at.xirado.bean.commands.moderation;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -20,21 +19,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.util.Arrays;
 
 public class KickCommand extends Command
 {
     private static final Logger logger = LoggerFactory.getLogger(KickCommand.class);
 
-    public KickCommand(JDA jda)
+    public KickCommand()
     {
-        super(jda);
-        this.invoke = "kick";
-        this.commandType = CommandType.MODERATION;
-        this.description = "Kicks a member from the server";
-        this.neededBotPermissions = Arrays.asList(Permission.KICK_MEMBERS);
-        this.neededPermissions = Arrays.asList(Permission.KICK_MEMBERS);
-        this.usage = "kick [@Mention/ID] (optional reason)";
+        super("kick", "Kicks a member from this guild", "kick [@user/id] (reason)");
+        setCommandCategory(CommandCategory.MODERATION);
+        setRequiredPermissions(Permission.KICK_MEMBERS);
+        setRequiredBotPermissions(Permission.KICK_MEMBERS);
     }
 
     @Override
@@ -85,7 +80,7 @@ public class KickCommand extends Command
             context.replyError(context.getLocalized("commands.kick.i_cannot_kick"));
             return;
         }
-        if(DiscordBot.getInstance().permissionCheckerManager.isModerator(target_Member))
+        if(Bean.getInstance().permissionCheckerManager.isModerator(target_Member))
         {
             context.replyError(context.getLocalized("commands.kick.you_cannot_kick_moderator"));
             return;
@@ -139,7 +134,7 @@ public class KickCommand extends Command
                 .addField(context.getLocalized("commands.reason"), Reason, false);
         if(!withReason)
         {
-            builder.addField("", "Use `"+ DiscordBot.getInstance().prefixManager.getPrefix(guild.getIdLong())+"reason "+modcase.getCaseID()+" [Reason]` to add a reason to this kick.", false);
+            builder.addField("", "Use `"+ Bean.getInstance().prefixManager.getPrefix(guild.getIdLong())+"reason "+modcase.getCaseID()+" [Reason]` to add a reason to this kick.", false);
 
         }
         if(!context.hasLogChannel())

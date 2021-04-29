@@ -1,24 +1,22 @@
 package at.xirado.bean.commands;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import net.dv8tion.jda.api.JDA;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.commandutil.CommandFlag;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-
-import java.util.Arrays;
 
 public class LanguageTest extends Command
 {
-    public LanguageTest(JDA jda)
+    public LanguageTest()
     {
-        super(jda);
-        this.invoke = "language";
-        this.global = false;
-        this.enabledGuilds = Arrays.asList(713469621532885002L);
+        super("test", "langtest", "test");
+        setCommandFlags(CommandFlag.PRIVATE_COMMAND, CommandFlag.DEVELOPER_ONLY);
+        addAllowedGuilds(815597207617142814L);
     }
 
     @Override
     public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
+        context.reply("SUPERPOWER!!!!");
     }
 }

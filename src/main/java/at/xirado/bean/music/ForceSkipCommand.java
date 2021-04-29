@@ -4,28 +4,22 @@
 
 package at.xirado.bean.music;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-
-import java.util.Arrays;
 
 public class ForceSkipCommand extends Command
 {
 
 
-    public ForceSkipCommand(JDA jda)
+    public ForceSkipCommand()
     {
-        super(jda);
-        this.invoke = "forceskip";
-        this.usage = "forceskip";
-        this.description = "Force-skips the currently playing song";
-        this.commandType = CommandType.MUSIC;
-        this.aliases = Arrays.asList("fskip", "fs");
+        super("forceskip", "force-skips the currently playing song", "forceskip");
+        setAliases("fskip", "fs");
+        setCommandCategory(CommandCategory.MUSIC);
     }
 
     @Override

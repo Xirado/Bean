@@ -1,7 +1,7 @@
 package at.xirado.bean.consolecommands;
 
-import at.xirado.bean.commandmanager.ConsoleCommand;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.objects.ConsoleCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class Debug extends ConsoleCommand
 
         System.out.println("Ping!");
         System.err.println("ERROR ERROR ERROR");
-        DiscordBot.instance.scheduledExecutorService.schedule(() ->
+        Bean.instance.scheduledExecutorService.schedule(() ->
         {
             Throwable t = new ArrayIndexOutOfBoundsException("Exception text goes here blah blah");
             logger.error("Pong!", t);

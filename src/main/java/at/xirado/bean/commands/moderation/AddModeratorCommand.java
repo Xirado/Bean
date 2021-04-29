@@ -1,41 +1,34 @@
 package at.xirado.bean.commands.moderation;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
 import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-
 public class AddModeratorCommand extends Command
 {
-    private static final Logger logger = LoggerFactory.getLogger(AddModeratorCommand.class);
-    public AddModeratorCommand(JDA jda)
+    private static final Logger LOGGER = LoggerFactory.getLogger(AddModeratorCommand.class);
+
+    public AddModeratorCommand()
     {
-        super(jda);
-        this.invoke = "addmod";
-        this.aliases = Arrays.asList("addmoderator");
-        this.commandType = CommandType.ADMIN;
-        this.usage = "addmod [@role/id]";
-        this.description = "Allows a certain role to use mod-commands";
-        this.neededPermissions = Arrays.asList(Permission.ADMINISTRATOR);
+        super("addmod", "Allows a certain role to use moderator-commands", "addmod [@role/id]");
+        setAliases("addmoderator");
+        setCommandCategory(CommandCategory.ADMIN);
+        setRequiredPermissions(Permission.ADMINISTRATOR);
     }
 
     @Override
     public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        Member member = context.getMember();
-        PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
+        PermissionCheckerManager permissionCheckerManager = Bean.getInstance().permissionCheckerManager;
         String[] args = context.getArguments().toStringArray();
         if(args.length != 1)
         {
@@ -67,7 +60,7 @@ public class AddModeratorCommand extends Command
                     .setColor(role.getColor())
                     .setDescription(context.getLocalized("commands.moderator.added", role.getAsMention()));
             context.reply(builder.build());
-            logger.debug("Added moderator role "+role.getIdLong()+" (@"+role.getName()+") to guild "+guild.getIdLong()+" ("+guild.getName()+")");
+            LOGGER.debug("Added moderator role "+role.getIdLong()+" (@"+role.getName()+") to guild "+guild.getIdLong()+" ("+guild.getName()+")");
 
         }else
         {

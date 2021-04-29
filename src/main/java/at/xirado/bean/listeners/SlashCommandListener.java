@@ -1,6 +1,6 @@
 package at.xirado.bean.listeners;
 
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -16,10 +16,10 @@ public class SlashCommandListener extends ListenerAdapter
         User user = event.getUser();
         if(g == null)
         {
-            DiscordBot.getInstance().slashCommandManager.handleSlashCommand(event, null);
+            Bean.getInstance().slashCommandHandler.handleSlashCommand(event, null);
             return;
         }
-        g.retrieveMember(user).queue((member) -> DiscordBot.getInstance().slashCommandManager.handleSlashCommand(event, member), (error) -> {});
+        g.retrieveMember(user).queue((member) -> Bean.getInstance().slashCommandHandler.handleSlashCommand(event, member), (error) -> {});
 
     }
 

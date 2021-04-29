@@ -4,25 +4,21 @@
 
 package at.xirado.bean.music;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.audio.QueuedTrack;
 import com.jagrosh.jmusicbot.queue.FairQueue;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class MoveTrackCommand extends Command
 {
 
-    public MoveTrackCommand(JDA jda)
+    public MoveTrackCommand()
     {
-        super(jda);
-        this.invoke = "movetrack";
-        this.description = "Moves a track in the queue to a different position";
-        this.usage = "movetrack [from] [to]";
-        this.commandType = CommandType.MUSIC;
+        super("movetrack", "Moves a track in the queue to a different position", "movetrack [from] [to]");
+        setCommandCategory(CommandCategory.MUSIC);
     }
 
     @Override

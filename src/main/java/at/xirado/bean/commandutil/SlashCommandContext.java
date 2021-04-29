@@ -1,4 +1,4 @@
-package at.xirado.bean.commandmanager;
+package at.xirado.bean.commandutil;
 
 import at.xirado.bean.misc.JSON;
 import at.xirado.bean.translation.LanguageLoader;

@@ -1,10 +1,10 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.SlashCommand;
-import at.xirado.bean.commandmanager.SlashCommandContext;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.SlashCommandContext;
 import at.xirado.bean.misc.SQL;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.objects.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -66,7 +66,7 @@ public class Unban extends SlashCommand
                                     Util.closeQuietly(connection);
                                 }
                                 ctx.reply(SlashCommandContext.SUCCESS+" "+ctx.getLocalized("commands.unban.has_been_unbanned", target.getAsTag())).setEphemeral(true).queue();
-                                TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(g.getIdLong());
+                                TextChannel logchannel = Bean.getInstance().logChannelManager.getLogChannel(g.getIdLong());
                                 EmbedBuilder builder = new EmbedBuilder()
                                         .setColor(Color.green)
                                         .setTitle(ctx.getLocalized("commands.unban.unban"))

@@ -1,13 +1,14 @@
 package at.xirado.bean.consolecommands;
 
-import at.xirado.bean.commandmanager.ConsoleCommand;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.objects.ConsoleCommand;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.LoggerFactory;
 
-import static org.fusesource.jansi.Ansi.*;
-import static org.fusesource.jansi.Ansi.Color.*;
+import static org.fusesource.jansi.Ansi.Color.GREEN;
+import static org.fusesource.jansi.Ansi.Color.RED;
+import static org.fusesource.jansi.Ansi.ansi;
 public class SendMessage extends ConsoleCommand
 {
     public static ch.qos.logback.classic.Logger logger =  (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(SendMessage.class);
@@ -26,7 +27,7 @@ public class SendMessage extends ConsoleCommand
             return;
         }
 
-        Guild g = DiscordBot.instance.jda.getGuildById(args[0]);
+        Guild g = Bean.instance.jda.getGuildById(args[0]);
         if(g == null)
         {
             System.out.println(ansi().fg(RED).a("Fehler: Ungültige Guild-ID!"));

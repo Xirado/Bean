@@ -1,29 +1,24 @@
 package at.xirado.bean.commands.moderation;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
-import java.util.Collections;
 
 public class SetMutedRoleCommand extends Command
 {
-    public SetMutedRoleCommand(JDA jda)
+    public SetMutedRoleCommand()
     {
-        super(jda);
-        this.invoke = "setmutedrole";
-        this.commandType = CommandType.ADMIN;
-        this.neededPermissions = Collections.singletonList(Permission.ADMINISTRATOR);
-        this.description = "Sets the role given to muted members";
-        this.usage = "setmutedrole [@Role/ID]";
+        super("setmutedrole", "Sets the role given to muted members", "setmutedrole [@role/id]");
+        setCommandCategory(CommandCategory.ADMIN);
+        setRequiredPermissions(Permission.ADMINISTRATOR);
     }
 
     @Override
@@ -54,7 +49,7 @@ public class SetMutedRoleCommand extends Command
             context.replyError(context.getLocalized("commands.cannot_interact_role", role.getAsMention()));
             return;
         }
-        DiscordBot.getInstance().mutedRoleManager.setMutedRole(g.getIdLong(), role.getIdLong());
+        Bean.getInstance().mutedRoleManager.setMutedRole(g.getIdLong(), role.getIdLong());
         context.reply(new EmbedBuilder()
             .setColor(Color.green)
             .setDescription(context.getLocalized("commands.set_muted_role", role.getAsMention()))

@@ -4,23 +4,19 @@
 
 package at.xirado.bean.music;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class SkipToCommand extends Command
 {
 
-    public SkipToCommand(JDA jda)
+    public SkipToCommand()
     {
-        super(jda);
-        this.invoke = "skipto";
-        this.usage = "skipto [Number in Queue]";
-        this.description = "Skips to another song in the queue";
-        this.commandType = CommandType.MUSIC;
+        super("skipto", "Skips to another song in the queue", "skipto [index]");
+        setCommandCategory(CommandCategory.MUSIC);
 
     }
 
@@ -32,7 +28,7 @@ public class SkipToCommand extends Command
             context.replyError("You need to be a DJ to do this!");
             return;
         }
-        int index = 0;
+        int index;
         try {
             index = Integer.parseInt(context.getArguments().toString(0));
         }

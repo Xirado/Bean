@@ -1,7 +1,7 @@
 package at.xirado.bean.consolecommands;
 
-import at.xirado.bean.commandmanager.ConsoleCommand;
 import at.xirado.bean.logging.ColorCode;
+import at.xirado.bean.objects.ConsoleCommand;
 
 public class Echo extends ConsoleCommand
 {

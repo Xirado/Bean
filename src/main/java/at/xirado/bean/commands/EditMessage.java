@@ -1,12 +1,11 @@
 package at.xirado.bean.commands;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -14,19 +13,15 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
-import java.util.Arrays;
 
 public class EditMessage extends Command
 {
 
-    public EditMessage(JDA jda)
+    public EditMessage()
     {
-        super(jda);
-        this.invoke = "edit";
-        this.description = "Edits a message posted by me";
-        this.usage = "edit [#TextChannel] [Message-ID] [New Content]";
-        this.neededPermissions = Arrays.asList(Permission.ADMINISTRATOR);
-        this.commandType = CommandType.ADMIN;
+        super("edit", "Edits a message posted by me", "edit [#channel] [messageID] [Text]");
+        setRequiredPermissions(Permission.ADMINISTRATOR);
+        setCommandCategory(CommandCategory.ADMIN);
     }
 
     @Override
@@ -54,7 +49,7 @@ public class EditMessage extends Command
         targetchannel.retrieveMessageById(args[1]).queue(
                 message ->
                 {
-                    if (!message.getAuthor().getId().equals(DiscordBot.instance.jda.getSelfUser().getId())) {
+                    if (!message.getAuthor().getId().equals(Bean.instance.jda.getSelfUser().getId())) {
                         channel.sendMessage(Util.SimpleEmbed(Color.red, context.getLocalized("commands.message_not_sent_by_me"))).queue();
                         return;
                     }

@@ -1,9 +1,9 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.SlashCommand;
-import at.xirado.bean.commandmanager.SlashCommandContext;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.SlashCommandContext;
 import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.objects.SlashCommand;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -32,7 +32,7 @@ public class WarnCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
-        PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
+        PermissionCheckerManager permissionCheckerManager = Bean.getInstance().permissionCheckerManager;
         Guild g = event.getGuild();
         if(!permissionCheckerManager.isModerator(sender) && !sender.hasPermission(Permission.ADMINISTRATOR))
         {
@@ -87,9 +87,9 @@ public class WarnCommand extends SlashCommand
                 .addField(ctx.getLocalized("commands.reason"), Reason, false);
         if(!withReason)
         {
-            mainembed.addField("", "Use `"+DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())+"case "+modcase.getCaseID()+" reason [Reason]`\n to add a reason to this warn.", false);
+            mainembed.addField("", "Use `"+ Bean.getInstance().prefixManager.getPrefix(g.getIdLong())+"case "+modcase.getCaseID()+" reason [Reason]`\n to add a reason to this warn.", false);
         }
-        TextChannel logChannel = DiscordBot.getInstance().logChannelManager.getLogChannel(g.getIdLong());
+        TextChannel logChannel = Bean.getInstance().logChannelManager.getLogChannel(g.getIdLong());
         if(logChannel != null)
         {
             logChannel.sendMessage(mainembed.build()).queue(s -> {}, e -> {});

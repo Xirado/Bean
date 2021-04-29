@@ -1,10 +1,10 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.SlashCommand;
-import at.xirado.bean.commandmanager.SlashCommandContext;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.SlashCommandContext;
 import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.main.DiscordBot;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.objects.SlashCommand;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.Punishments;
 import at.xirado.bean.translation.FormattedDuration;
@@ -42,7 +42,7 @@ public class CaseCommand extends SlashCommand
     {
         Guild g = event.getGuild();
         if(sender == null || g == null) return;
-        PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
+        PermissionCheckerManager permissionCheckerManager = Bean.getInstance().permissionCheckerManager;
         if(!permissionCheckerManager.isModerator(sender) && !sender.hasPermission(Permission.ADMINISTRATOR))
         {
             ctx.reply(SlashCommandContext.DENY+" "+ctx.getLocalized("general.no_perms")).setEphemeral(true).queue();

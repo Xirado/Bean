@@ -1,8 +1,8 @@
 package at.xirado.bean.commands.slashcommands;
 
-import at.xirado.bean.commandmanager.SlashCommand;
-import at.xirado.bean.commandmanager.SlashCommandContext;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.SlashCommandContext;
+import at.xirado.bean.objects.SlashCommand;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -54,7 +54,7 @@ public class BanCommand extends SlashCommand
                 return;
             }
 
-            if(DiscordBot.getInstance().permissionCheckerManager.isModerator(targetMember))
+            if(Bean.getInstance().permissionCheckerManager.isModerator(targetMember))
             {
                 event.reply(SlashCommandContext.DENY+" "+ctx.getLocalized("commands.ban.cannot_ban_moderator")).setEphemeral(true).queue();
                 return;
@@ -89,7 +89,7 @@ public class BanCommand extends SlashCommand
                 (success) ->
                 {
                     ctx.reply(SlashCommandContext.SUCCESS+" "+ctx.getLocalized("commands.ban.has_been_banned", targetUser.getAsMention())+"\n`"+ctx.getLocalized("commands.reason")+": "+bancase.getReason()+" (#"+bancase.getCaseID()+")`").setEphemeral(true).queue();
-                    TextChannel logchannel = DiscordBot.getInstance().logChannelManager.getLogChannel(g.getIdLong());
+                    TextChannel logchannel = Bean.getInstance().logChannelManager.getLogChannel(g.getIdLong());
                     EmbedBuilder builder2 = new EmbedBuilder()
                             .setTimestamp(Instant.now())
                             .setColor(0x8b0000)

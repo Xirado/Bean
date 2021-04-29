@@ -1,6 +1,6 @@
 package at.xirado.bean.consolecommands;
 
-import at.xirado.bean.commandmanager.ConsoleCommand;
+import at.xirado.bean.objects.ConsoleCommand;
 
 public class Embed extends ConsoleCommand
 {

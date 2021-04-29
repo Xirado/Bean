@@ -1,7 +1,7 @@
 package at.xirado.bean.music;
 
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandContext;
 import com.jagrosh.jdautilities.menu.ButtonMenu;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.audio.QueuedTrack;
@@ -28,7 +28,7 @@ public class ResultHandler implements AudioLoadResultHandler
     public static AudioHandler getHandler(Guild g)
     {
         if(g.getAudioManager().getSendingHandler() == null)
-            DiscordBot.instance.musicinstance.getPlayerManager().setUpHandler(g);
+            Bean.instance.musicinstance.getPlayerManager().setUpHandler(g);
         return (AudioHandler)g.getAudioManager().getSendingHandler();
 
     }
@@ -56,7 +56,7 @@ public class ResultHandler implements AudioLoadResultHandler
         }
         final AudioHandler handler = (AudioHandler)context.getEvent().getGuild().getAudioManager().getSendingHandler();
         if(handler == null)
-            DiscordBot.instance.musicinstance.getPlayerManager().setUpHandler(context.getEvent().getGuild());
+            Bean.instance.musicinstance.getPlayerManager().setUpHandler(context.getEvent().getGuild());
         return false;
     }
 
@@ -67,8 +67,8 @@ public class ResultHandler implements AudioLoadResultHandler
     }
 
     private void loadSingle(final AudioTrack track, final AudioPlaylist playlist) {
-        if (DiscordBot.instance.musicinstance.getConfig().isTooLong(track)) {
-            this.m.editMessage(FormatUtil.filter(" This track (**" + track.getInfo().title + "**) is longer than the allowed maximum: `" + FormatUtil.formatTime(track.getDuration()) + "` > `" + FormatUtil.formatTime(DiscordBot.instance.musicinstance.getConfig().getMaxSeconds() * 1000L) + "`")).queue();
+        if (Bean.instance.musicinstance.getConfig().isTooLong(track)) {
+            this.m.editMessage(FormatUtil.filter(" This track (**" + track.getInfo().title + "**) is longer than the allowed maximum: `" + FormatUtil.formatTime(track.getDuration()) + "` > `" + FormatUtil.formatTime(Bean.instance.musicinstance.getConfig().getMaxSeconds() * 1000L) + "`")).queue();
             return;
         }
         final AudioHandler handler = (AudioHandler)this.context.getEvent().getGuild().getAudioManager().getSendingHandler();
@@ -88,7 +88,7 @@ public class ResultHandler implements AudioLoadResultHandler
             new ButtonMenu.Builder()
                     .setText(addMsg + "\nThis playlist has **" + playlist.getTracks().size() + "** tracks attached. Select " + "\ud83d\udce5" + " to load it.")
                     .setChoices("\ud83d\udce5", "\ud83d\udeab")
-                    .setEventWaiter(DiscordBot.instance.musicinstance.getWaiter())
+                    .setEventWaiter(Bean.instance.musicinstance.getWaiter())
                     .setTimeout(30L, TimeUnit.SECONDS)
                     .setAction(re -> {
                         if (re.getName().equals("\ud83d\udce5")) {
@@ -111,7 +111,7 @@ public class ResultHandler implements AudioLoadResultHandler
         final Object o;
         final int n;
         playlist.getTracks().stream().forEach(track -> {
-            if (!DiscordBot.instance.musicinstance.getConfig().isTooLong(track) && !track.equals(exclude)) {
+            if (!Bean.instance.musicinstance.getConfig().isTooLong(track) && !track.equals(exclude)) {
                 AudioHandler handler = (AudioHandler)this.context.getEvent().getGuild().getAudioManager().getSendingHandler();
                 handler.addTrack(new QueuedTrack(track, this.context.getEvent().getAuthor()));
                 count[0]++;
@@ -138,10 +138,10 @@ public class ResultHandler implements AudioLoadResultHandler
         else {
             final int count = this.loadPlaylist(playlist, null);
             if (count == 0) {
-                this.m.editMessage(FormatUtil.filter(" All entries in the playlist " + ((playlist.getName() == null) ? "" : ("(**" + playlist.getName() + "**) ")) + "were longer than the allowed maximum (`" + DiscordBot.instance.musicinstance.getConfig().getMaxTime() + "`)")).queue();
+                this.m.editMessage(FormatUtil.filter(" All entries in the playlist " + ((playlist.getName() == null) ? "" : ("(**" + playlist.getName() + "**) ")) + "were longer than the allowed maximum (`" + Bean.instance.musicinstance.getConfig().getMaxTime() + "`)")).queue();
             }
             else {
-                this.m.editMessage(FormatUtil.filter(" Found " + ((playlist.getName() == null) ? "a playlist" : ("playlist **" + playlist.getName() + "**")) + " with `" + playlist.getTracks().size() + "` entries; added to the queue!" + ((count < playlist.getTracks().size()) ? ("\nTracks longer than the allowed maximum (`" + DiscordBot.instance.musicinstance.getConfig().getMaxTime() + "`) have been omitted.") : ""))).queue();
+                this.m.editMessage(FormatUtil.filter(" Found " + ((playlist.getName() == null) ? "a playlist" : ("playlist **" + playlist.getName() + "**")) + " with `" + playlist.getTracks().size() + "` entries; added to the queue!" + ((count < playlist.getTracks().size()) ? ("\nTracks longer than the allowed maximum (`" + Bean.instance.musicinstance.getConfig().getMaxTime() + "`) have been omitted.") : ""))).queue();
             }
         }
     }
@@ -152,7 +152,7 @@ public class ResultHandler implements AudioLoadResultHandler
             this.m.editMessage(FormatUtil.filter("No results found for `" + this.context.getArguments().toString(0) + "`.")).queue();
         }
         else {
-            DiscordBot.instance.musicinstance.getPlayerManager().loadItemOrdered(this.context.getEvent().getGuild(), "ytsearch:" + this.context.getArguments().toString(0), new ResultHandler(this.m, this.context, true));
+            Bean.instance.musicinstance.getPlayerManager().loadItemOrdered(this.context.getEvent().getGuild(), "ytsearch:" + this.context.getArguments().toString(0), new ResultHandler(this.m, this.context, true));
         }
     }
 

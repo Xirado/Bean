@@ -1,7 +1,7 @@
 package at.xirado.bean.consolecommands;
 
-import at.xirado.bean.commandmanager.ConsoleCommand;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.objects.ConsoleCommand;
 
 import java.util.Arrays;
 
@@ -19,7 +19,7 @@ public class Help extends ConsoleCommand
     {
         StringBuilder builder = new StringBuilder();
         int neededspaces = 0;
-        for(ConsoleCommand ccmd : DiscordBot.instance.consoleCommandManager.consoleCommands)
+        for(ConsoleCommand ccmd : Bean.instance.consoleCommandManager.consoleCommands)
         {
             if(neededspaces < ccmd.getInvoke().length()+2)
             {
@@ -27,7 +27,7 @@ public class Help extends ConsoleCommand
             }
         }
         builder.append("\n");
-        for(ConsoleCommand ccmd : DiscordBot.instance.consoleCommandManager.consoleCommands)
+        for(ConsoleCommand ccmd : Bean.instance.consoleCommandManager.consoleCommands)
         {
             builder.append("|» ").append(ccmd.getInvoke());
             int remainingspaces = (neededspaces)-(ccmd.getInvoke().length());

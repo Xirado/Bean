@@ -1,30 +1,25 @@
 package at.xirado.bean.commands;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.Arrays;
 
 public class Avatar extends Command
 {
 
-	public Avatar(JDA jda)
+	public Avatar()
 	{
-		super(jda);
-		this.invoke = "avatar";
-		this.usage = "avatar [@User/ID]";
-		this.description = "Gets the avatar of a user";
-		this.commandType = CommandType.FUN;
-		this.aliases = Arrays.asList("getavatar");
+		super("avatar", "Gets the avatar of a user", "avatar [@user/id]");
+		setCommandCategory(CommandCategory.UTILITIES);
+		setAliases("getavatar");
 	}
 
 	@Override
@@ -42,7 +37,7 @@ public class Avatar extends Command
 			context.replyError(context.getLocalized("commands.id_empty"));
 			return;
 		}
-		DiscordBot.instance.jda.retrieveUserById(ID).queue(
+		Bean.instance.jda.retrieveUserById(ID).queue(
 				(target) ->
 				{
 					context.reply(getAvatarEmbed(target, context));

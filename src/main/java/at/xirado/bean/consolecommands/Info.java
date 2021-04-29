@@ -1,8 +1,8 @@
 package at.xirado.bean.consolecommands;
 
-import at.xirado.bean.commandmanager.ConsoleCommand;
+import at.xirado.bean.Bean;
 import at.xirado.bean.logging.Shell;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.objects.ConsoleCommand;
 import net.dv8tion.jda.api.JDAInfo;
 
 import java.util.Arrays;
@@ -22,8 +22,8 @@ public class Info extends ConsoleCommand
         String logo = Shell.LOGO;
         StringBuilder sb = new StringBuilder();
         long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        sb.append("\nBean version ").append(DiscordBot.instance.VERSION).append("\nJDA ").append(JDAInfo.VERSION+" ("+JDAInfo.GITHUB+")");
-        sb.append("\nCurrently playing music in ").append(DiscordBot.getInstance().jda.getAudioManagers().size()).append(" guilds\nmemory info:\n")
+        sb.append("\nBean version ").append(Bean.instance.VERSION).append("\nJDA ").append(JDAInfo.VERSION+" ("+JDAInfo.GITHUB+")");
+        sb.append("\nCurrently playing music in ").append(Bean.getInstance().jda.getAudioManagers().size()).append(" guilds\nmemory info:\n")
                 .append("   max memory:       ").append(convertBytes(Runtime.getRuntime().maxMemory())).append("\n")
                 .append("   allocated memory: ").append(convertBytes(Runtime.getRuntime().totalMemory())).append("\n")
                 .append("   free memory:      ").append(convertBytes(Runtime.getRuntime().freeMemory())).append("\n")

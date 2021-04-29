@@ -1,33 +1,24 @@
 package at.xirado.bean.commands;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Member;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-
-import java.awt.*;
 
 public class Mock extends Command
 {
 
-    public Mock(JDA jda)
+    public Mock()
     {
-        super(jda);
-        this.invoke = "mock";
-        this.description = "gEt mOcKeD kId";
-        this.commandType = CommandType.FUN;
-        this.usage = "mock [Text]";
+        super("mock", "vAcCiNeS cAuSe AuTiSm", "mock [Text]");
+        setCommandCategory(CommandCategory.FUN);
     }
 
     @Override
     public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
         String[] args = context.getArguments().toStringArray();
-        Member member = context.getMember();
         TextChannel channel = event.getChannel();
         event.getMessage().delete().queue();
         if(args.length < 1)
@@ -54,11 +45,7 @@ public class Mock extends Command
                 sensitive.append(String.valueOf(tomock.charAt(i)).toUpperCase());
             }
         }
-        EmbedBuilder builder = new EmbedBuilder()
-                .setColor(Color.YELLOW)
-                .setFooter("requested by "+event.getAuthor().getAsTag())
-                .setDescription("<:mock:773566020588666961> "+ sensitive +" <:mock:773566020588666961>");
-        channel.sendMessage(builder.build()).queue();
+        channel.sendMessage("<:mock:773566020588666961> "+ sensitive +" <:mock:773566020588666961>").queue();
 
     }
 }

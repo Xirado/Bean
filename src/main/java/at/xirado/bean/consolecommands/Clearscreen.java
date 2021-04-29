@@ -1,7 +1,7 @@
 package at.xirado.bean.consolecommands;
 
-import at.xirado.bean.commandmanager.ConsoleCommand;
 import at.xirado.bean.logging.Shell;
+import at.xirado.bean.objects.ConsoleCommand;
 import org.jline.utils.InfoCmp;
 
 import java.util.Arrays;

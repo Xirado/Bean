@@ -1,49 +1,36 @@
 package at.xirado.bean.commands.moderation;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.commandutil.CommandFlag;
+import at.xirado.bean.objects.Command;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.Punishments;
 import at.xirado.bean.translation.FormattedDuration;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
 public class ModlogCommand extends Command
 {
 
-    public ModlogCommand(JDA jda)
+    public ModlogCommand()
     {
-        super(jda);
-        this.invoke = "modlog";
-        this.aliases = Arrays.asList("modlogs", "infraction", "infractions", "moderatorlog", "moderatorlogs");
-        this.commandType = CommandType.MODERATION;
-        this.description = "Shows the modlog of a user";
-        this.usage = "modlog [@user]";
+        super("modlog", "Shows modlogs of a user", "modlog [@user/id]");
+        setAliases("modlogs", "infraction", "infractions", "moderatorlog", "moderatorlogs");
+        setCommandCategory(CommandCategory.MODERATION);
+        setCommandFlags(CommandFlag.MODERATOR_ONLY);
     }
 
     @Override
     public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        Member m = context.getMember();
-        PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
-        if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
-        {
-            context.replyError(context.getLocalized("general.no_perms"));
-            return;
-        }
         Guild g = event.getGuild();
         if(event.getMessage().getMentionedUsers().size() == 0)
         {
@@ -67,7 +54,7 @@ public class ModlogCommand extends Command
                 .setFooter(context.getLocalized("commands.target_id")+": "+user.getIdLong())
                 .setTimestamp(Instant.now())
                 .setAuthor(context.getLocalized("commands.modlog.for_user", user.getAsTag()), null, user.getEffectiveAvatarUrl())
-                .setDescription("**"+context.getLocalized("commands.modlog.last_10_incidents")+":**\n\n"+sb.toString().trim()+"\n\n"+context.getLocalized("commands.modlog.more_infos", DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())));
+                .setDescription("**"+context.getLocalized("commands.modlog.last_10_incidents")+":**\n\n"+sb.toString().trim()+"\n\n"+context.getLocalized("commands.modlog.more_infos", Bean.getInstance().prefixManager.getPrefix(g.getIdLong())));
         context.reply(builder.build());
     }
 }

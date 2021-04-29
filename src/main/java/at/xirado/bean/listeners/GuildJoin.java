@@ -1,6 +1,6 @@
 package at.xirado.bean.listeners;
 
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -14,7 +14,7 @@ public class GuildJoin extends ListenerAdapter
 	@Override
 	public void onGuildJoin(GuildJoinEvent e)
 	{
-		DiscordBot.instance.prefixManager.setPrefix(e.getGuild().getIdLong(), "+");
+		Bean.instance.prefixManager.setPrefix(e.getGuild().getIdLong(), "+");
 		if(e.getGuild().getSystemChannel() != null)
 		{
 			e.getGuild().getSystemChannel().sendMessage(

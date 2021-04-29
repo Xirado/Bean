@@ -1,26 +1,25 @@
 package at.xirado.bean.misc;
 
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
 import at.xirado.bean.listeners.*;
 import ch.qos.logback.classic.Level;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
-import org.jetbrains.annotations.NotNull;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
@@ -146,7 +145,7 @@ public class Util
 	
 	public static void addListeners()
 	{
-		JDA jda = DiscordBot.instance.jda;
+		JDA jda = Bean.instance.jda;
 		jda.addEventListener(new LogListeners());
 		jda.addEventListener(new GuildJoin());
 		jda.addEventListener(new GuildMessageReceivedListener());
@@ -162,7 +161,7 @@ public class Util
 	{
 		try
 		{
-			String path2 = DiscordBot.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			String path2 = Bean.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			String decodedPath = URLDecoder.decode(path2, StandardCharsets.UTF_8);
 			decodedPath = decodedPath.substring(0,decodedPath.lastIndexOf("/"));
 			return decodedPath;
@@ -262,7 +261,7 @@ public class Util
 	
 	public static void doAsynchronously(Runnable r)
 	{
-		DiscordBot.instance.scheduledExecutorService.submit(r);
+		Bean.instance.scheduledExecutorService.submit(r);
 	}
 
 	

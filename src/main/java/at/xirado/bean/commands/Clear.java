@@ -1,10 +1,9 @@
 package at.xirado.bean.commands;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -16,7 +15,6 @@ import java.awt.*;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -24,14 +22,12 @@ import java.util.concurrent.TimeUnit;
 public class Clear extends Command
 {
 
-    public Clear(JDA jda)
+    public Clear()
     {
-        super(jda);
-        this.invoke = "clear";
-        this.description = "Bulk-delete messages";
-        this.usage = "clear [Amount]";
-        this.commandType = CommandType.MODERATION;
-        this.neededPermissions = Arrays.asList(Permission.MESSAGE_MANAGE);
+        super("clear", "Bulk-delete messages", "clear [Amount]");
+        setCommandCategory(CommandCategory.MODERATION);
+        setRequiredPermissions(Permission.MESSAGE_MANAGE);
+        setRequiredBotPermissions(Permission.MESSAGE_MANAGE);
     }
 
     @Override

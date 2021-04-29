@@ -1,12 +1,11 @@
 package at.xirado.bean.commands.moderation;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
 import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -15,28 +14,24 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
 public class ListModeratorsCommand extends Command
 {
-    public ListModeratorsCommand(JDA jda)
+    public ListModeratorsCommand()
     {
-        super(jda);
-        this.invoke = "listmods";
-        this.aliases = Arrays.asList("listmoderator", "listmoderators");
-        this.commandType = CommandType.ADMIN;
-        this.usage = "listmods";
-        this.description = "lists all roles that are allowed to use moderator-commands (Administrators excluded)";
-        this.neededPermissions = Collections.singletonList(Permission.ADMINISTRATOR);
+        super("listmods", "lists all roles that are allowed to use moderator-commands", "listmods");
+        setAliases("listmoderator", "listmoderators");
+        setCommandCategory(CommandCategory.ADMIN);
+        setRequiredPermissions(Permission.ADMINISTRATOR);
     }
     @Override
     public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
         Member member = context.getMember();
-        PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
+        PermissionCheckerManager permissionCheckerManager = Bean.getInstance().permissionCheckerManager;
         if(!permissionCheckerManager.isModerator(member) && !member.hasPermission(Permission.ADMINISTRATOR))
         {
             context.replyError(context.getLocalized("general.no_perms"));

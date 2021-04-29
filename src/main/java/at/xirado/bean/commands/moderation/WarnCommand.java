@@ -1,14 +1,14 @@
 package at.xirado.bean.commands.moderation;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.commandutil.CommandFlag;
 import at.xirado.bean.handlers.PermissionCheckerManager;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.objects.Command;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -21,26 +21,19 @@ import java.time.Instant;
 
 public class WarnCommand extends Command
 {
-    public WarnCommand(JDA jda)
+    public WarnCommand()
     {
-        super(jda);
-        this.invoke = "warn";
-        this.commandType = CommandType.MODERATION;
-        this.description = "Warns a member";
-        this.usage = "warn [@Member/ID] (optional reason)";
+        super("warn", "Warns a member", "warn [@Member/ID] (optional reason)");
+        setCommandCategory(CommandCategory.MODERATION);
+        setCommandFlags(CommandFlag.MODERATOR_ONLY);
     }
 
     @Override
     public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
         Member m = context.getMember();
-        PermissionCheckerManager permissionCheckerManager = DiscordBot.getInstance().permissionCheckerManager;
+        PermissionCheckerManager permissionCheckerManager = Bean.getInstance().permissionCheckerManager;
         Guild g = event.getGuild();
-        if(!permissionCheckerManager.isModerator(m) && !m.hasPermission(Permission.ADMINISTRATOR))
-        {
-            context.replyError(context.getLocalized("general.no_perms"));
-            return;
-        }
         String[] args = context.getArguments().toStringArray();
         if(args.length < 1)
         {
@@ -55,7 +48,7 @@ public class WarnCommand extends Command
         }
         String Reason = args.length < 2 ? context.getLocalized("commands.noreason") : context.getArguments().toString(1);
         boolean withReason = args.length > 1;
-        DiscordBot.getInstance().jda.retrieveUserById(target_ID).queue();
+        Bean.getInstance().jda.retrieveUserById(target_ID).queue();
         g.retrieveMemberById(target_ID).queue(
                 (target_Member) ->
                 {
@@ -103,7 +96,7 @@ public class WarnCommand extends Command
                             .addField(context.getLocalized("commands.reason"), Reason, false);
                     if(!withReason)
                     {
-                        mainembed.addField("", "Use `"+DiscordBot.getInstance().prefixManager.getPrefix(g.getIdLong())+"case "+modcase.getCaseID()+" reason [Reason]`\n to add a reason to this warn.", false);
+                        mainembed.addField("", "Use `"+ Bean.getInstance().prefixManager.getPrefix(g.getIdLong())+"case "+modcase.getCaseID()+" reason [Reason]`\n to add a reason to this warn.", false);
                     }
                     if(!context.hasLogChannel())
                     {

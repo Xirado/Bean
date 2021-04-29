@@ -4,22 +4,20 @@
 
 package at.xirado.bean.music;
 
-import at.xirado.bean.commandmanager.Command;
-import at.xirado.bean.commandmanager.CommandContext;
-import at.xirado.bean.commandmanager.CommandType;
-import at.xirado.bean.main.DiscordBot;
+import at.xirado.bean.Bean;
+import at.xirado.bean.commandutil.CommandCategory;
+import at.xirado.bean.commandutil.CommandContext;
+import at.xirado.bean.objects.Command;
 import com.jagrosh.jdautilities.menu.Paginator;
 import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.audio.QueuedTrack;
 import com.jagrosh.jmusicbot.utils.FormatUtil;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,21 +25,18 @@ public class QueueCommand extends Command
 {
     private static final String REPEAT = "\ud83d\udd01";
 
-    public QueueCommand(JDA jda)
+    public QueueCommand()
     {
-        super(jda);
-        this.invoke = "queue";
-        this.aliases = Arrays.asList("q");
-        this.description = "Shows the queue";
-        this.usage = "queue (Page)";
-        this.commandType = CommandType.MUSIC;
+        super("queue", "lists the queue", "queue (Page)");
+        setAliases("q");
+        setCommandCategory(CommandCategory.MUSIC);
     }
 
 
     @Override
     public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
     {
-        Bot bot = DiscordBot.instance.musicinstance;
+        Bot bot = Bean.instance.musicinstance;
         Paginator.Builder builder = new Paginator.Builder().setColumns(1).setFinalAction(m -> {
             try {
                 m.clearReactions().queue();
