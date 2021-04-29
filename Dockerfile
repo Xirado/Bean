@@ -1,4 +1,4 @@
-FROM openjdk:11-alpine
+FROM openjdk:11-jre-slim
 WORKDIR /home/bean/build
 RUN git pull
 RUN mvn clean compile assembly:single
