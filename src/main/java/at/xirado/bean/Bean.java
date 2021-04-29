@@ -82,167 +82,165 @@ public class Bean
 
     public Bean() throws Exception
     {
+        System.out.println("Starting");
         instance = this;
         Thread.currentThread().setName("Main-Thread");
         final Properties properties = new Properties();
         properties.load(this.getClass().getClassLoader().getResourceAsStream("settings.properties"));
         VERSION = properties.getProperty("app-version");
         this.path = Util.getPath();
-        Shell.startShell(() -> {
-            File file = new File("config.json");
-            if(!file.exists())
+        Shell.startShell(() -> { });
+        File file = new File("config.json");
+        if(!file.exists())
+        {
+            InputStream inputStream = Bean.class.getResourceAsStream("config.json");
+            if(inputStream != null)
             {
-                InputStream inputStream = Bean.class.getResourceAsStream("config.json");
-                if(inputStream != null)
-                {
-                    Path path = Paths.get(this.path);
-                    try
-                    {
-                        Files.copy(inputStream, path);
-                    } catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-
-            }
-            config = JSON.parse(new File("config.json"));
-            if(config == null){
-                System.out.println("Config file not existing. Aborting...");
-                System.exit(0);
-            }
-            token = config.getString("token");
-            debugMode = config.getBoolean("debug");
-            SQL.connect(() -> {
-                permissionCheckerManager = new PermissionCheckerManager();
+                Path path = Paths.get(this.path);
                 try
                 {
-                    jda = JDABuilder.create(token, EnumSet.allOf(GatewayIntent.class)).setMemberCachePolicy(MemberCachePolicy.ONLINE).build();
-                } catch (LoginException e)
+                    Files.copy(inputStream, path);
+                } catch (IOException e)
                 {
                     e.printStackTrace();
                 }
+            }
 
-                addShutdownHook();
-                try
+        }
+        config = JSON.parse(new File("config.json"));
+        if(config == null){
+            System.out.println("Config file not existing. Aborting...");
+            System.exit(0);
+        }
+        token = config.getString("token");
+        debugMode = config.getBoolean("debug");
+        SQL.connect(() -> { permissionCheckerManager = new PermissionCheckerManager();});
+        try
+        {
+            jda = JDABuilder.create(token, EnumSet.allOf(GatewayIntent.class)).setMemberCachePolicy(MemberCachePolicy.ONLINE).build();
+        } catch (LoginException e)
+        {
+            e.printStackTrace();
+        }
+
+        addShutdownHook();
+        try
+        {
+            this.jda.awaitReady();
+        } catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        LOGGER.info("Successfully logged in as @"+this.jda.getSelfUser().getAsTag());
+
+        this.jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching("www.bean.bz | +help"), false);
+        Util.addListeners();
+
+        commandHandler = new CommandHandler();
+        slashCommandHandler = new SlashCommandHandler();
+        slashCommandHandler.registerAllCommands();
+        consoleCommandManager = new ConsoleCommandManager();
+        consoleCommandManager.registerAllCommands();
+        mutedRoleManager = new MutedRoleManager();
+        BotConfig config = new BotConfig(null);
+        config.load();
+        if(!config.isValid())
+            return;
+
+        EventWaiter waiter = new EventWaiter();
+        SettingsManager settings = new SettingsManager();
+        this.musicinstance = new Bot(waiter, config, settings);
+
+        this.musicinstance.setJDA(instance.jda);
+        this.jda.addEventListener(waiter);
+        this.jda.addEventListener(new Listener(this.musicinstance));
+        scheduledExecutorService.submit(() ->
+        {
+            String qry = "SELECT * FROM modCases WHERE active = 1 AND duration > 0";
+            Connection connection = SQL.getConnectionFromPool();
+            if(connection == null)
+            {
+                LOGGER.error("Could not load pending punishments!", new Exception());
+                return;
+            }
+            try(PreparedStatement ps = connection.prepareStatement(qry))
+            {
+                ResultSet rs = ps.executeQuery();
+                List<Case> cases = new ArrayList<>();
+                while(rs.next())
                 {
-                    this.jda.awaitReady();
-                } catch (InterruptedException e)
-                {
-                    e.printStackTrace();
+                    cases.add(new Case(CaseType.valueOf(rs.getString("caseType").toUpperCase()), rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID"), rs.getBoolean("active")));
+
                 }
-                LOGGER.info("Successfully logged in as @"+this.jda.getSelfUser().getAsTag());
-
-                this.jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching("www.bean.bz | +help"), false);
-                Util.addListeners();
-
-                commandHandler = new CommandHandler();
-                slashCommandHandler = new SlashCommandHandler();
-                slashCommandHandler.registerAllCommands();
-                consoleCommandManager = new ConsoleCommandManager();
-                consoleCommandManager.registerAllCommands();
-                mutedRoleManager = new MutedRoleManager();
-                BotConfig config = new BotConfig(null);
-                config.load();
-                if(!config.isValid())
-                    return;
-
-                EventWaiter waiter = new EventWaiter();
-                SettingsManager settings = new SettingsManager();
-                this.musicinstance = new Bot(waiter, config, settings);
-
-                this.musicinstance.setJDA(instance.jda);
-                this.jda.addEventListener(waiter);
-                this.jda.addEventListener(new Listener(this.musicinstance));
-                scheduledExecutorService.submit(() ->
+                connection.close();
+                for(Case modcase : cases)
                 {
-                    String qry = "SELECT * FROM modCases WHERE active = 1 AND duration > 0";
-                    Connection connection = SQL.getConnectionFromPool();
-                    if(connection == null)
+                    if (modcase.getType() == CaseType.TEMPBAN)
                     {
-                        LOGGER.error("Could not load pending punishments!", new Exception());
-                        return;
-                    }
-                    try(PreparedStatement ps = connection.prepareStatement(qry))
-                    {
-                        ResultSet rs = ps.executeQuery();
-                        List<Case> cases = new ArrayList<>();
-                        while(rs.next())
+                        if(modcase.getCreatedAt()+modcase.getDuration() < System.currentTimeMillis())
                         {
-                            cases.add(new Case(CaseType.valueOf(rs.getString("caseType").toUpperCase()), rs.getLong("guildID"), rs.getLong("targetID"), rs.getLong("moderatorID"), rs.getString("reason"), rs.getLong("duration"), rs.getLong("creationDate"), rs.getString("caseID"), rs.getBoolean("active")));
-
-                        }
-                        connection.close();
-                        for(Case modcase : cases)
-                        {
-                            if (modcase.getType() == CaseType.TEMPBAN)
+                            try
                             {
-                                if(modcase.getCreatedAt()+modcase.getDuration() < System.currentTimeMillis())
+                                Guild g = instance.jda.getGuildById(modcase.getGuildID());
+                                if(g == null)
                                 {
-                                    try
-                                    {
-                                        Guild g = instance.jda.getGuildById(modcase.getGuildID());
-                                        if(g == null)
-                                        {
-                                            modcase.setActive(false);
-                                            continue;
-                                        }
-                                        Punishments.unban(modcase, null);
-                                        continue;
-                                    }catch (Exception e)
-                                    {
-                                        LOGGER.error("Could not undo punishment", e);
-                                        continue;
-                                    }
+                                    modcase.setActive(false);
+                                    continue;
                                 }
-                                Runnable r = () ->
-                                {
-                                    Punishments.unban(modcase, null);
-                                };
-                                scheduledExecutorService.schedule(r, (modcase.getDuration()+modcase.getCreatedAt())-System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-                            }else if(modcase.getType() == CaseType.MUTE)
+                                Punishments.unban(modcase, null);
+                                continue;
+                            }catch (Exception e)
                             {
-                                if(modcase.getCreatedAt()+modcase.getDuration() < System.currentTimeMillis())
-                                {
-                                    try
-                                    {
-                                        Guild g = instance.jda.getGuildById(modcase.getGuildID());
-                                        if(g == null)
-                                        {
-                                            modcase.setActive(false);
-                                            continue;
-                                        }
-
-                                        Punishments.unmute(modcase, null);
-                                        continue;
-                                    }catch (Exception e)
-                                    {
-                                        LOGGER.error("Could not undo punishment", e);
-                                        continue;
-                                    }
-                                }
-                                Runnable r = () ->
-                                {
-                                    Punishments.unmute(modcase, null);
-                                };
-                                scheduledExecutorService.schedule(r, (modcase.getDuration()+modcase.getCreatedAt())-System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                                LOGGER.error("Could not undo punishment", e);
+                                continue;
                             }
                         }
-                    } catch (SQLException throwables)
+                        Runnable r = () ->
+                        {
+                            Punishments.unban(modcase, null);
+                        };
+                        scheduledExecutorService.schedule(r, (modcase.getDuration()+modcase.getCreatedAt())-System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                    }else if(modcase.getType() == CaseType.MUTE)
                     {
-                        LOGGER.error("An error occured", throwables);
-                    }finally
-                    {
-                        Util.closeQuietly(connection);
+                        if(modcase.getCreatedAt()+modcase.getDuration() < System.currentTimeMillis())
+                        {
+                            try
+                            {
+                                Guild g = instance.jda.getGuildById(modcase.getGuildID());
+                                if(g == null)
+                                {
+                                    modcase.setActive(false);
+                                    continue;
+                                }
+
+                                Punishments.unmute(modcase, null);
+                                continue;
+                            }catch (Exception e)
+                            {
+                                LOGGER.error("Could not undo punishment", e);
+                                continue;
+                            }
+                        }
+                        Runnable r = () ->
+                        {
+                            Punishments.unmute(modcase, null);
+                        };
+                        scheduledExecutorService.schedule(r, (modcase.getDuration()+modcase.getCreatedAt())-System.currentTimeMillis(), TimeUnit.MILLISECONDS);
                     }
-                });
-                LOGGER.info("Successfully started up!");
-                if(debugMode)
-                {
-                    LOGGER.warn("Debug mode enabled! Not listening for any user-commands.");
                 }
-            });
+            } catch (SQLException throwables)
+            {
+                LOGGER.error("An error occured", throwables);
+            }finally
+            {
+                Util.closeQuietly(connection);
+            }
         });
+        LOGGER.info("Successfully started up!");
+        if(debugMode)
+        {
+            LOGGER.warn("Debug mode enabled! Not listening for any user-commands.");
+        }
     }
 
     public static void main(String[] args) throws Exception {
