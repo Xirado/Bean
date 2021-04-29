@@ -5,5 +5,5 @@ RUN apt install git -y
 RUN apt install maven -y
 RUN git clone https://github.com/Xirado/beanbot.git .
 RUN mvn clean compile assembly:single
-COPY target/beanbot-7.0.0-jar-with-dependencies.jar Bean.jar
+COPY /home/bean/target/beanbot-7.0.0-jar-with-dependencies.jar Bean.jar
 ENTRYPOINT java -server -Xmx10G -Dnogui=true -jar Bean.jar
