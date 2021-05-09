@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class TempbanCommand extends SlashCommand
@@ -46,8 +45,8 @@ public class TempbanCommand extends SlashCommand
                         .setRequired(false))
         );
 
-        setNeededUserPermissions(Arrays.asList(Permission.BAN_MEMBERS));
-        setNeededBotPermissions(Arrays.asList(Permission.BAN_MEMBERS));
+        setRequiredUserPermissions(Permission.BAN_MEMBERS);
+        setRequiredBotPermissions(Permission.BAN_MEMBERS);
     }
 
     @Override

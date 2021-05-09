@@ -10,8 +10,6 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-
 public class TestCommand extends SlashCommand
 {
     public TestCommand()
@@ -20,7 +18,7 @@ public class TestCommand extends SlashCommand
                 .addOption(new OptionData(OptionType.INTEGER, "time", "The duration to be parsed").setRequired(true))
         );
         Global(false);
-        setEnabledGuilds(Collections.singletonList(815597207617142814L));
+        setEnabledGuilds(815597207617142814L);
     }
 
     @Override

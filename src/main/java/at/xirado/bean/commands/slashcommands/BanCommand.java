@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.Objects;
 
 public class BanCommand extends SlashCommand
@@ -29,8 +28,8 @@ public class BanCommand extends SlashCommand
                 .addOption(new OptionData(OptionType.STRING, "reason", "the reason for this ban").setRequired(false))
                 .addOption(new OptionData(OptionType.INTEGER, "deldays", "how many days of messages to delete").setRequired(false))
         );
-        setNeededUserPermissions(Collections.singletonList(Permission.BAN_MEMBERS));
-        setNeededBotPermissions(Collections.singletonList(Permission.BAN_MEMBERS));
+        setRequiredUserPermissions(Permission.BAN_MEMBERS);
+        setRequiredBotPermissions(Permission.BAN_MEMBERS);
     }
 
     @Override

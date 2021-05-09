@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,8 +51,8 @@ public class ReactionRole extends SlashCommand
 						)
 				)
 		);
-		setNeededUserPermissions(Arrays.asList(Permission.ADMINISTRATOR));
-		setNeededBotPermissions(Arrays.asList(Permission.MANAGE_ROLES, Permission.MESSAGE_MANAGE));
+		setRequiredUserPermissions(Permission.ADMINISTRATOR);
+		setRequiredBotPermissions(Permission.MANAGE_ROLES, Permission.MESSAGE_MANAGE);
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import at.xirado.bean.Bean;
 import at.xirado.bean.listeners.*;
 import ch.qos.logback.classic.Level;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -143,18 +142,13 @@ public class Util
 	}
 
 	
-	public static void addListeners()
+	public static Object[] getListeners()
 	{
-		JDA jda = Bean.instance.jda;
-		jda.addEventListener(new LogListeners());
-		jda.addEventListener(new GuildJoin());
-		jda.addEventListener(new GuildMessageReceivedListener());
-		jda.addEventListener(new GuildMemberJoin());
-		jda.addEventListener(new GuildMessageReactionAdd());
-		jda.addEventListener(new GuildMessageReactionRemove());
-		jda.addEventListener(new GuildMessageDelete());
-		jda.addEventListener(new PrivateMessageReceived());
-		jda.addEventListener(new SlashCommandListener());
+		return new Object[]{new LogListeners(), new GuildJoin(), new GuildMessageReceivedListener(),
+				new GuildMemberJoin(), new GuildMessageReactionAdd(), new GuildMessageReactionRemove(),
+				new GuildMessageDelete(), new PrivateMessageReceived(), new SlashCommandListener()
+		};
+
 	}
 	
 	public static String getPath()

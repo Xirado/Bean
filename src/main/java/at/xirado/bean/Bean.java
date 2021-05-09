@@ -88,7 +88,7 @@ public class Bean
         properties.load(this.getClass().getClassLoader().getResourceAsStream("settings.properties"));
         VERSION = properties.getProperty("app-version");
         this.path = Util.getPath();
-        Shell.startShell(() -> { });
+        Shell.startShell(() -> {});
         File file = new File("config.json");
         if(!file.exists())
         {
@@ -99,6 +99,7 @@ public class Bean
                 try
                 {
                     Files.copy(inputStream, path);
+
                 } catch (IOException e)
                 {
                     e.printStackTrace();
@@ -106,7 +107,7 @@ public class Bean
             }
 
         }
-        config = JSON.parse(new File("config.json"));
+        config = JSON.parse(file);
         if(config == null){
             System.out.println("Config file not existing. Aborting...");
             System.exit(0);
@@ -116,24 +117,25 @@ public class Bean
         SQL.connect(() -> { permissionCheckerManager = new PermissionCheckerManager();});
         try
         {
-            jda = JDABuilder.create(token, EnumSet.allOf(GatewayIntent.class)).setMemberCachePolicy(MemberCachePolicy.ONLINE).build();
+            jda = JDABuilder.create(token, EnumSet.allOf(GatewayIntent.class))
+                    .setMemberCachePolicy(MemberCachePolicy.ONLINE)
+                    .addEventListeners(Util.getListeners())
+                    .build();
         } catch (LoginException e)
         {
-            e.printStackTrace();
+            LOGGER.error("Could not login to Discord!", e);
         }
 
-        addShutdownHook();
         try
         {
             this.jda.awaitReady();
         } catch (InterruptedException e)
         {
-            e.printStackTrace();
+            LOGGER.error("Could not login to Discord!", e);
         }
-        LOGGER.info("Successfully logged in as @"+this.jda.getSelfUser().getAsTag());
-
-        this.jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching("www.bean.bz | +help"), false);
-        Util.addListeners();
+        LOGGER.info("Logged in as @"+this.jda.getSelfUser().getAsTag());
+        addShutdownHook();
+        this.jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching("bean.bz | +help"), false);
 
         commandHandler = new CommandHandler();
         slashCommandHandler = new SlashCommandHandler();
@@ -172,21 +174,21 @@ public class Bean
 
                 }
                 connection.close();
-                for(Case modcase : cases)
+                for(Case modCase : cases)
                 {
-                    if (modcase.getType() == CaseType.TEMPBAN)
+                    if (modCase.getType() == CaseType.TEMPBAN)
                     {
-                        if(modcase.getCreatedAt()+modcase.getDuration() < System.currentTimeMillis())
+                        if(modCase.getCreatedAt()+modCase.getDuration() < System.currentTimeMillis())
                         {
                             try
                             {
-                                Guild g = instance.jda.getGuildById(modcase.getGuildID());
+                                Guild g = instance.jda.getGuildById(modCase.getGuildID());
                                 if(g == null)
                                 {
-                                    modcase.setActive(false);
+                                    modCase.setActive(false);
                                     continue;
                                 }
-                                Punishments.unban(modcase, null);
+                                Punishments.unban(modCase, null);
                                 continue;
                             }catch (Exception e)
                             {
@@ -196,23 +198,23 @@ public class Bean
                         }
                         Runnable r = () ->
                         {
-                            Punishments.unban(modcase, null);
+                            Punishments.unban(modCase, null);
                         };
-                        scheduledExecutorService.schedule(r, (modcase.getDuration()+modcase.getCreatedAt())-System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-                    }else if(modcase.getType() == CaseType.MUTE)
+                        scheduledExecutorService.schedule(r, (modCase.getDuration()+modCase.getCreatedAt())-System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                    }else if(modCase.getType() == CaseType.MUTE)
                     {
-                        if(modcase.getCreatedAt()+modcase.getDuration() < System.currentTimeMillis())
+                        if(modCase.getCreatedAt()+modCase.getDuration() < System.currentTimeMillis())
                         {
                             try
                             {
-                                Guild g = instance.jda.getGuildById(modcase.getGuildID());
+                                Guild g = instance.jda.getGuildById(modCase.getGuildID());
                                 if(g == null)
                                 {
-                                    modcase.setActive(false);
+                                    modCase.setActive(false);
                                     continue;
                                 }
 
-                                Punishments.unmute(modcase, null);
+                                Punishments.unmute(modCase, null);
                                 continue;
                             }catch (Exception e)
                             {
@@ -222,9 +224,9 @@ public class Bean
                         }
                         Runnable r = () ->
                         {
-                            Punishments.unmute(modcase, null);
+                            Punishments.unmute(modCase, null);
                         };
-                        scheduledExecutorService.schedule(r, (modcase.getDuration()+modcase.getCreatedAt())-System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                        scheduledExecutorService.schedule(r, (modCase.getDuration()+modCase.getCreatedAt())-System.currentTimeMillis(), TimeUnit.MILLISECONDS);
                     }
                 }
             } catch (SQLException throwables)

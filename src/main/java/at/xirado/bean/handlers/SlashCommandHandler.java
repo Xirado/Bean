@@ -159,8 +159,8 @@ public class SlashCommandHandler
                             if(cmd.getCommandName().equalsIgnoreCase(event.getName()))
                             {
                                 CommandHook hook = event.getHook();
-                                List<Permission> neededPermissions = cmd.getNeededUserPermissions();
-                                List<Permission> neededBotPermissions = cmd.getNeededBotPermissions();
+                                List<Permission> neededPermissions = cmd.getRequiredUserPermissions();
+                                List<Permission> neededBotPermissions = cmd.getRequiredBotPermissions();
                                 if(neededPermissions != null)
                                 {
                                     for(Permission permission : neededPermissions)
@@ -207,8 +207,8 @@ public class SlashCommandHandler
                             return;
                         }
                         CommandHook hook = event.getHook();
-                        List<Permission> neededPermissions = cmd.getNeededUserPermissions();
-                        List<Permission> neededBotPermissions = cmd.getNeededBotPermissions();
+                        List<Permission> neededPermissions = cmd.getRequiredUserPermissions();
+                        List<Permission> neededBotPermissions = cmd.getRequiredBotPermissions();
                         if(member != null)
                         {
                             if(neededPermissions != null)

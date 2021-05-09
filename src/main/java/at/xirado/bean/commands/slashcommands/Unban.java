@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.EnumSet;
 
 public class Unban extends SlashCommand
@@ -34,8 +33,8 @@ public class Unban extends SlashCommand
         setCommandData(new CommandData("unban", "unbans a user")
             .addOption(new OptionData(OptionType.USER, "user", "the user to unban (you can use IDs)").setRequired(true))
         );
-        setNeededUserPermissions(Collections.singletonList(Permission.BAN_MEMBERS));
-        setNeededBotPermissions(Collections.singletonList(Permission.BAN_MEMBERS));
+        setRequiredUserPermissions(Permission.BAN_MEMBERS);
+        setRequiredBotPermissions(Permission.BAN_MEMBERS);
     }
 
     @Override

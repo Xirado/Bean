@@ -5,21 +5,22 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class SlashCommand
 {
 
     private CommandData commandData;
-    private List<Permission> neededUserPermissions;
-    private List<Permission> neededBotPermissions;
+    private final List<Permission> requiredUserPermissions;
+    private final List<Permission> requiredBotPermissions;
     private boolean isGlobal;
-    private List<Long> enabledGuilds;
+    private final List<Long> enabledGuilds;
     private boolean runnableInDM;
 
     public boolean isRunnableInDM()
@@ -34,17 +35,17 @@ public abstract class SlashCommand
 
     public String getCommandName()
     {
-        return (String) this.commandData.toData().get("name");
+        return commandData.getName();
     }
 
     public String getCommandDescription()
     {
-        return (String) this.commandData.toData().get("description");
+        return commandData.getDescription();
     }
 
-    public DataArray getOptions()
+    public List<OptionData> getOptions()
     {
-        return (DataArray) this.commandData.toData().get("options");
+        return commandData.getOptions();
     }
 
 
@@ -58,24 +59,24 @@ public abstract class SlashCommand
         this.commandData = commandData;
     }
 
-    public List<Permission> getNeededUserPermissions()
+    public List<Permission> getRequiredUserPermissions()
     {
-        return neededUserPermissions;
+        return requiredUserPermissions;
     }
 
-    public void setNeededUserPermissions(List<Permission> neededUserPermissions)
+    public void setRequiredUserPermissions(Permission... permissions)
     {
-        this.neededUserPermissions = neededUserPermissions;
+        this.requiredUserPermissions.addAll(Arrays.asList(permissions));
     }
 
-    public List<Permission> getNeededBotPermissions()
+    public List<Permission> getRequiredBotPermissions()
     {
-        return neededBotPermissions;
+        return requiredBotPermissions;
     }
 
-    public void setNeededBotPermissions(List<Permission> neededBotPermissions)
+    public void setRequiredBotPermissions(Permission... permissions)
     {
-        this.neededBotPermissions = neededBotPermissions;
+        this.requiredBotPermissions.addAll(Arrays.asList(permissions));
     }
 
     public boolean isGlobal()
@@ -93,15 +94,17 @@ public abstract class SlashCommand
         return enabledGuilds;
     }
 
-    public void setEnabledGuilds(List<Long> enabledGuilds)
+    public void setEnabledGuilds(Long... enabledGuilds)
     {
-        this.enabledGuilds = enabledGuilds;
+        this.enabledGuilds.addAll(Arrays.asList(enabledGuilds));
     }
 
 
 
     public SlashCommand()
     {
+        this.requiredBotPermissions = new ArrayList<>();
+        this.requiredUserPermissions = new ArrayList<>();
         this.commandData = null;
         this.isGlobal = true;
         this.enabledGuilds = new ArrayList<>();
