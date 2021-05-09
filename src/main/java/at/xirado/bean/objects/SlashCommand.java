@@ -4,7 +4,7 @@ import at.xirado.bean.commandutil.SlashCommandContext;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 
 import javax.annotation.Nonnull;
@@ -15,7 +15,7 @@ import java.util.List;
 public abstract class SlashCommand
 {
 
-    private CommandUpdateAction.CommandData commandData;
+    private CommandData commandData;
     private List<Permission> neededUserPermissions;
     private List<Permission> neededBotPermissions;
     private boolean isGlobal;
@@ -48,12 +48,12 @@ public abstract class SlashCommand
     }
 
 
-    public CommandUpdateAction.CommandData getCommandData()
+    public CommandData getCommandData()
     {
         return commandData;
     }
 
-    public void setCommandData(CommandUpdateAction.CommandData commandData)
+    public void setCommandData(CommandData commandData)
     {
         this.commandData = commandData;
     }

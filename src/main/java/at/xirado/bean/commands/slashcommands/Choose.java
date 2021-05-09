@@ -2,10 +2,11 @@ package at.xirado.bean.commands.slashcommands;
 
 import at.xirado.bean.commandutil.SlashCommandContext;
 import at.xirado.bean.objects.SlashCommand;
-import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,9 +16,9 @@ public class Choose extends SlashCommand
 {
     public Choose()
     {
-        setCommandData(new CommandUpdateAction.CommandData("choose", "Chooses between 2 things")
-                .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "1st", "the first argument").setRequired(true))
-                .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "2nd", "the second argument").setRequired(true))
+        setCommandData(new CommandData("choose", "Chooses between 2 things")
+                .addOption(new OptionData(OptionType.STRING, "1st", "the first argument").setRequired(true))
+                .addOption(new OptionData(OptionType.STRING, "2nd", "the second argument").setRequired(true))
         );
         setRunnableInDM(true);
     }

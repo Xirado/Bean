@@ -9,12 +9,13 @@ import at.xirado.bean.punishmentmanager.Punishments;
 import at.xirado.bean.translation.FormattedDuration;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,8 +28,8 @@ public class ModlogCommand extends SlashCommand
 
     public ModlogCommand()
     {
-        setCommandData(new CommandUpdateAction.CommandData("modlog", "shows the modlog of a user")
-            .addOption(new CommandUpdateAction.OptionData(Command.OptionType.USER, "user", "the user to look for").setRequired(true))
+        setCommandData(new CommandData("modlog", "shows the modlog of a user")
+            .addOption(new OptionData(OptionType.USER, "user", "the user to look for").setRequired(true))
         );
     }
 

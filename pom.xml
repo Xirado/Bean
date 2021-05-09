@@ -15,16 +15,16 @@
     <dependencies>
         <dependency>
             <groupId>com.jagrosh</groupId>
-            <artifactId>JLyrics</artifactId>
-            <version>0.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jagrosh</groupId>
             <artifactId>jda-utilities</artifactId>
             <version>3.0.5</version>
             <scope>compile</scope>
             <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jagrosh</groupId>
+            <artifactId>JLyrics</artifactId>
+            <version>0.4</version>
         </dependency>
 
         <dependency>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>com.github.dv8fromtheworld</groupId>
             <artifactId>jda</artifactId>
-            <version>8d511ee</version>
+            <version>5951675</version>
         </dependency>
 
         <dependency>
@@ -115,15 +115,9 @@
 
     <repositories>
         <repository>
-            <id>jcenter</id>
-            <name>jcenter-bintray</name>
-            <url>https://jcenter.bintray.com</url>
-        </repository>
-
-        <repository>
-            <id>com.sedmelluq</id>
-            <name>sedmelluq</name>
-            <url>https://dl.bintray.com/sedmelluq/com.sedmelluq</url>
+            <id>central</id>
+            <name>bintray</name>
+            <url>http://jcenter.bintray.com</url>
         </repository>
 
         <repository>

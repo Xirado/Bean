@@ -7,11 +7,16 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.objects.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.ErrorResponse;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,8 +31,8 @@ public class Unban extends SlashCommand
 
     public Unban()
     {
-        setCommandData(new CommandUpdateAction.CommandData("unban", "unbans a user")
-            .addOption(new CommandUpdateAction.OptionData(Command.OptionType.USER, "user", "the user to unban (you can use IDs)").setRequired(true))
+        setCommandData(new CommandData("unban", "unbans a user")
+            .addOption(new OptionData(OptionType.USER, "user", "the user to unban (you can use IDs)").setRequired(true))
         );
         setNeededUserPermissions(Collections.singletonList(Permission.BAN_MEMBERS));
         setNeededBotPermissions(Collections.singletonList(Permission.BAN_MEMBERS));

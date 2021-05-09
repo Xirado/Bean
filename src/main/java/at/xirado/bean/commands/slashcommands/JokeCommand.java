@@ -6,7 +6,7 @@ import at.xirado.bean.objects.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +18,7 @@ public class JokeCommand extends SlashCommand
 
     public JokeCommand()
     {
-        setCommandData(new CommandUpdateAction.CommandData("joke", "tells you a random joke"));
+        setCommandData(new CommandData("joke", "tells you a random joke"));
     }
 
     @Override

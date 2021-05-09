@@ -58,7 +58,7 @@ public class CommandHandler
         registerCommand(new PostEmbed());
         registerCommand(new ReactionRole());
         registerCommand(new Settings());
-        registerCommand(new Uptime());
+        registerCommand(new Info());
         registerCommand(new UrbanDictionary());
         registerCommand(new ForceRemove());
         registerCommand(new ForceSkipCommand());

@@ -6,7 +6,7 @@ import at.xirado.bean.objects.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +17,7 @@ public class RandomFactCommand extends SlashCommand
 
     public RandomFactCommand()
     {
-        setCommandData(new CommandUpdateAction.CommandData("fact", "gets a random useless fact"));
+        setCommandData(new CommandData("fact", "gets a random useless fact"));
     }
 
     @Override

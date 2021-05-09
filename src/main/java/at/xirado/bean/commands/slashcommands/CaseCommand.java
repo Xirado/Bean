@@ -9,11 +9,13 @@ import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.Punishments;
 import at.xirado.bean.translation.FormattedDuration;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,16 +25,16 @@ public class CaseCommand extends SlashCommand
 {
     public CaseCommand()
     {
-        setCommandData(new CommandUpdateAction.CommandData("case", "shows/modifies moderation cases")
-                .addSubcommand(new CommandUpdateAction.SubcommandData("show", "shows information about a modcase")
-                        .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "case", "the case to show infos about").setRequired(true))
+        setCommandData(new CommandData("case", "shows/modifies moderation cases")
+                .addSubcommand(new SubcommandData("show", "shows information about a modcase")
+                        .addOption(new OptionData(OptionType.STRING, "case", "the case to show infos about").setRequired(true))
                 )
-                .addSubcommand(new CommandUpdateAction.SubcommandData("reason", "changes the reason of a modcase")
-                        .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "case", "the case you want to change the reason on").setRequired(true))
-                        .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "reason", "the new reason").setRequired(true))
+                .addSubcommand(new SubcommandData("reason", "changes the reason of a modcase")
+                        .addOption(new OptionData(OptionType.STRING, "case", "the case you want to change the reason on").setRequired(true))
+                        .addOption(new OptionData(OptionType.STRING, "reason", "the new reason").setRequired(true))
                 )
-                .addSubcommand(new CommandUpdateAction.SubcommandData("delete", "deletes a modcase")
-                    .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "case", "the case you want to delete").setRequired(true))
+                .addSubcommand(new SubcommandData("delete", "deletes a modcase")
+                    .addOption(new OptionData(OptionType.STRING, "case", "the case you want to delete").setRequired(true))
                 )
         );
     }

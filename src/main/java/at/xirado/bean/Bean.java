@@ -82,7 +82,6 @@ public class Bean
 
     public Bean() throws Exception
     {
-        System.out.println("Starting");
         instance = this;
         Thread.currentThread().setName("Main-Thread");
         final Properties properties = new Properties();

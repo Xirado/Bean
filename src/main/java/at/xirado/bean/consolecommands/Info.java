@@ -28,7 +28,7 @@ public class Info extends ConsoleCommand
                 .append("   allocated memory: ").append(convertBytes(Runtime.getRuntime().totalMemory())).append("\n")
                 .append("   free memory:      ").append(convertBytes(Runtime.getRuntime().freeMemory())).append("\n")
                 .append("   used memory:      ").append(convertBytes(usedMemory)).append("\n");
-        System.out.println("\n"+logo+sb.toString());
+        System.out.println("\n"+logo+ sb);
     }
 
 

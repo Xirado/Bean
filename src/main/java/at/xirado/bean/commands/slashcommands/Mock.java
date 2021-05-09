@@ -2,10 +2,11 @@ package at.xirado.bean.commands.slashcommands;
 
 import at.xirado.bean.commandutil.SlashCommandContext;
 import at.xirado.bean.objects.SlashCommand;
-import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,8 +15,8 @@ public class Mock extends SlashCommand
 
     public Mock()
     {
-        setCommandData(new CommandUpdateAction.CommandData("mock", "vAcCiNeS cAuSe AuTiSm")
-            .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "text", "the text to mock")
+        setCommandData(new CommandData("mock", "vAcCiNeS cAuSe AuTiSm")
+            .addOption(new OptionData(OptionType.STRING, "text", "the text to mock")
                 .setRequired(true)
             )
         );

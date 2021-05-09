@@ -1,7 +1,10 @@
 package at.xirado.bean.punishmentmanager;
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.misc.SQL;
 import at.xirado.bean.misc.Util;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Random;
+import java.util.function.Consumer;
 
 public class Case
 {
@@ -238,4 +242,41 @@ public class Case
             Util.closeQuietly(connection);
         }
     }
+
+    public static void banMember(long guildID, long targetID, long moderatorID, String reason, long duration, Consumer<Case> caseConsumer, Consumer<Throwable> throwableConsumer)
+    {
+        Guild guild = Bean.getInstance().jda.getGuildById(guildID);
+        if(guild == null){
+            throwableConsumer.accept(new IllegalArgumentException("This guild does not exist!"));
+            return;
+        }
+        Bean.getInstance().jda.openPrivateChannelById(targetID).queue(
+                privateChannel ->
+                {
+                    EmbedBuilder builder = new EmbedBuilder()
+                            .setColor(CaseType.BAN.getEmbedColor())
+                            .setTitle("You have been banned from "+guild.getName()+"!")
+                            .addField("Reason", reason, true)
+                            .addField("Moderator", "<@"+moderatorID+">", true);
+                    privateChannel.sendMessage(builder.build()).queue(
+                            s ->
+                            {
+                                guild.ban(String.valueOf(guildID), 0, reason).queue(
+                                        s1 ->
+                                        {
+                                            Case banCase = createCase(CaseType.BAN, guildID, targetID, moderatorID, reason, duration);
+                                            caseConsumer.accept(banCase);
+                                        }, throwableConsumer
+                                );
+                            },
+                            e ->
+                            {
+
+                            }
+                    );
+                }, throwableConsumer
+        );
+        guild.ban(String.valueOf(targetID), 0, reason).queue();
+    }
+
 }

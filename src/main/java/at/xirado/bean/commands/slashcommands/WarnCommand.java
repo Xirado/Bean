@@ -8,12 +8,13 @@ import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,9 +24,9 @@ public class WarnCommand extends SlashCommand
 {
     public WarnCommand()
     {
-        setCommandData(new CommandUpdateAction.CommandData("warn", "warns a member")
-                .addOption(new CommandUpdateAction.OptionData(Command.OptionType.USER, "member", "the member to warn").setRequired(true))
-                .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "reason", "the reason for this warn").setRequired(false))
+        setCommandData(new CommandData("warn", "warns a member")
+                .addOption(new OptionData(OptionType.USER, "member", "the member to warn").setRequired(true))
+                .addOption(new OptionData(OptionType.STRING, "reason", "the reason for this warn").setRequired(false))
         );
     }
 

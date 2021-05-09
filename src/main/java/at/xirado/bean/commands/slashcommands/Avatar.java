@@ -3,11 +3,12 @@ package at.xirado.bean.commands.slashcommands;
 import at.xirado.bean.commandutil.SlashCommandContext;
 import at.xirado.bean.objects.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,8 +20,8 @@ public class Avatar extends SlashCommand
 
 	public Avatar()
 	{
-		setCommandData(new CommandUpdateAction.CommandData("avatar", "Gets the avatar of a user")
-				.addOption(new CommandUpdateAction.OptionData(Command.OptionType.USER, "user", "the user you want to get the avatar from"))
+		setCommandData(new CommandData("avatar", "Gets the avatar of a user")
+				.addOption(new OptionData(OptionType.USER, "user", "the user you want to get the avatar from"))
 		);
 	}
 

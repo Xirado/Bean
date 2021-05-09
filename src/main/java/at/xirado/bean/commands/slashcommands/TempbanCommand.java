@@ -9,9 +9,14 @@ import at.xirado.bean.punishmentmanager.Punishments;
 import at.xirado.bean.translation.FormattedDuration;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,12 +29,12 @@ public class TempbanCommand extends SlashCommand
 
     public TempbanCommand()
     {
-        setCommandData(new CommandUpdateAction.CommandData("tempban", "temporarily bans a user from this guild")
-                .addOption(new CommandUpdateAction.OptionData(Command.OptionType.USER, "user", "the user to ban")
+        setCommandData(new CommandData("tempban", "temporarily bans a user from this guild")
+                .addOption(new OptionData(OptionType.USER, "user", "the user to ban")
                         .setRequired(true))
-                .addOption(new CommandUpdateAction.OptionData(Command.OptionType.INTEGER, "time", "the duration of the ban")
+                .addOption(new OptionData(OptionType.INTEGER, "time", "the duration of the ban")
                         .setRequired(true))
-                .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "timeunit", "the duration of the ban")
+                .addOption(new OptionData(OptionType.STRING, "timeunit", "the duration of the ban")
                         .addChoice("seconds", "s")
                         .addChoice("minutes", "m")
                         .addChoice("hours", "h")
@@ -37,7 +42,7 @@ public class TempbanCommand extends SlashCommand
                         .addChoice("weeks", "w")
                         .setRequired(true)
                 )
-                .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "reason", "the reason for this ban")
+                .addOption(new OptionData(OptionType.STRING, "reason", "the reason for this ban")
                         .setRequired(false))
         );
 

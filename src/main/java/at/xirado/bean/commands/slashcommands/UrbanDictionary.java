@@ -6,10 +6,11 @@ import at.xirado.bean.objects.SlashCommand;
 import at.xirado.bean.urbanapi.Definition;
 import at.xirado.bean.urbanapi.UDParser;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,10 +23,10 @@ public class UrbanDictionary extends SlashCommand
 {
     public UrbanDictionary()
     {
-        setCommandData(new CommandUpdateAction.CommandData("urban", "search for urbandictionary.com definitions")
-                .addOption(new CommandUpdateAction.OptionData(Command.OptionType.STRING, "phrase", "the phrase to search for")
+        setCommandData(new CommandData("urban", "search for urbandictionary.com definitions")
+                .addOption(new OptionData(OptionType.STRING, "phrase", "the phrase to search for")
                         .setRequired(true))
-                .addOption(new CommandUpdateAction.OptionData(Command.OptionType.INTEGER, "definition", "gets a specific definition rather than the first one")
+                .addOption(new OptionData(OptionType.INTEGER, "definition", "gets a specific definition rather than the first one")
                         .setRequired(false))
         );
     }
