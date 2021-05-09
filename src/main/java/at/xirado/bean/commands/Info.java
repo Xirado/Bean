@@ -31,7 +31,7 @@ public class Info extends Command
                 new EmbedBuilder()
                         .setColor(0x3EB489)
                         .setDescription("Uptime: " + context.parseDuration(currentTime - Bean.STARTTIME, " ") + "\n\n" +
-                                "JDA "+jdaVersion+" (Java "+javaVersion+")")
+                                "Bean "+Bean.getInstance().VERSION+", JDA "+jdaVersion+" (Java "+javaVersion+")")
                         .build()
         ).queue();
     }
