@@ -1,6 +1,6 @@
 package at.xirado.bean.handlers;
 
-import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Database;
 import at.xirado.bean.misc.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ public class MutedRoleManager
     {
         mutedRoles.remove(guildID);
         String qry = "DELETE FROM mutedroles WHERE guildID = ?";
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null)
         {
             logger.error("Could not delete muted role!", new Exception());
@@ -54,7 +54,7 @@ public class MutedRoleManager
             mutedRoles.put(guildID, roleID);
         }
         String qry = "INSERT INTO mutedroles (guildID, roleID) values (?,?) ON DUPLICATE KEY UPDATE roleID = ?";
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null)
         {
             logger.error("Could not set muted role!", new Exception());
@@ -82,7 +82,7 @@ public class MutedRoleManager
             return mutedRoles.get(guildID);
         }
         String qry = "SELECT roleID FROM mutedroles WHERE guildID = ?";
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null)
         {
             logger.error("Could not get muted-role!", new Exception());
@@ -113,7 +113,7 @@ public class MutedRoleManager
     private void init()
     {
         String qry = "CREATE TABLE IF NOT EXISTS mutedroles (guildID BIGINT PRIMARY KEY, roleID BIGINT)";
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null)
         {
             logger.error("Could not initialize MutedRole Table!", new Exception());

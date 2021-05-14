@@ -1,7 +1,7 @@
 package at.xirado.bean.punishmentmanager;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Database;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -23,7 +23,7 @@ public class Punishments
 
     public static boolean hasActiveBan(Member m)
     {
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return false;
         String qry = "SELECT 1 from modcases WHERE guildID = ? AND targetID = ? AND caseType = ? AND active = ?";
         try(PreparedStatement ps = connection.prepareStatement(qry))
@@ -96,7 +96,7 @@ public class Punishments
 
     public static List<Case> getAllWarns(Member m)
     {
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return null;
         String qry = "SELECT * from modcases WHERE guildID = ? AND targetID = ? AND caseType = ? AND active = ?";
         try(PreparedStatement ps = connection.prepareStatement(qry))
@@ -168,7 +168,7 @@ public class Punishments
 
     public static Case getActiveMuteCase(Member m)
     {
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         String qry = "SELECT * from modcases WHERE guildID = ? AND targetID = ? AND caseType = ? AND active = ?";
         try(PreparedStatement ps = connection.prepareStatement(qry))
         {
@@ -195,7 +195,7 @@ public class Punishments
     public static Case getCaseByID(String sixDigitID, long guildID)
     {
         String qry = "SELECT * FROM modcases WHERE caseID = ? AND guildID = ? LIMIT 1";
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return null;
         try(PreparedStatement ps = connection.prepareStatement(qry))
         {
@@ -221,7 +221,7 @@ public class Punishments
     public static List<Case> getModlog(long guildID, long targetID, int limit)
     {
         String qry = "SELECT * FROM modcases WHERE guildID = ? AND targetID = ? ORDER BY creationDate DESC LIMIT ?";
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return new ArrayList<>();
         try(PreparedStatement ps = connection.prepareStatement(qry))
         {
@@ -256,7 +256,7 @@ public class Punishments
             usingLimit = " LIMIT "+limit;
         }
         String qry = "SELECT * FROM modcases WHERE guildID = ? AND targetID = ? AND caseType = ? AND creationDate > ? ORDER BY creationDate ASC"+usingLimit;
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return null;
         try(PreparedStatement ps = connection.prepareStatement(qry))
         {
@@ -290,7 +290,7 @@ public class Punishments
             usingLimit = " LIMIT "+limit;
         }
         String qry = "SELECT * FROM modcases WHERE guildID = ? AND targetID = ? AND caseType = ? ORDER BY creationDate ASC"+usingLimit;
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return null;
         try(PreparedStatement ps = connection.prepareStatement(qry))
         {

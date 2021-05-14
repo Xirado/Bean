@@ -12,10 +12,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -146,10 +143,18 @@ public class Util
 	{
 		return new Object[]{new LogListeners(), new GuildJoin(), new GuildMessageReceivedListener(),
 				new GuildMemberJoin(), new GuildMessageReactionAdd(), new GuildMessageReactionRemove(),
-				new GuildMessageDelete(), new PrivateMessageReceived(), new SlashCommandListener()
+				new GuildMessageDelete(), new PrivateMessageReceived(), new SlashCommandListener(),
+				new XPListener()
 		};
 
 	}
+
+
+	public static InputStream getResource(String path)
+	{
+		return Util.class.getResourceAsStream(path);
+	}
+
 	
 	public static String getPath()
 	{

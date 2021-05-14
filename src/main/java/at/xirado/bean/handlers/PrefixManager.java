@@ -1,6 +1,6 @@
 package at.xirado.bean.handlers;
 
-import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Database;
 import at.xirado.bean.misc.Util;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class PrefixManager
     public void setPrefix(long guildid, @NotNull String newPrefix)
     {
         prefixes.put(guildid, newPrefix);
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null)
         {
            LOGGER.error("Could not set Prefix!", new Exception());
@@ -52,7 +52,7 @@ public class PrefixManager
     {
         if(prefixes.containsKey(guildid)) return prefixes.get(guildid);
 
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null)
         {
             LOGGER.error("Could not get Prefix!", new Exception());

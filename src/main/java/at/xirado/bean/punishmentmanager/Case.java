@@ -1,7 +1,7 @@
 package at.xirado.bean.punishmentmanager;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Database;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -42,7 +42,7 @@ public class Case
 
     public void setActive(boolean value)
     {
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return;
         String qry = "UPDATE modcases SET active = ? WHERE caseID = ?";
         try(PreparedStatement ps = connection.prepareStatement(qry))
@@ -64,7 +64,7 @@ public class Case
 
     public void setReason(String reason)
     {
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return;
         String qry = "UPDATE modcases SET reason = ? WHERE caseID = ?";
         try(PreparedStatement ps = connection.prepareStatement(qry))
@@ -143,7 +143,7 @@ public class Case
      */
     public boolean deleteCase()
     {
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return false;
         String qry = "DELETE FROM modcases WHERE caseID = ?";
         try(PreparedStatement ps = connection.prepareStatement(qry))
@@ -182,7 +182,7 @@ public class Case
             String generatedID = generateCaseNumber();
             if(!idAlreadyExists(generatedID)) caseID = generatedID;
         }
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return null;
         String qry = "INSERT INTO modcases (caseID, guildID, targetID, moderatorID, caseType, reason, duration, creationDate, active) values (?,?,?,?,?,?,?,?,?)";
         try(PreparedStatement ps = connection.prepareStatement(qry))
@@ -225,7 +225,7 @@ public class Case
 
     public static boolean idAlreadyExists(String ID)
     {
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         String qry = "SELECT 1 FROM modcases WHERE caseID = ?";
         if(connection == null) return false;
         try(PreparedStatement ps = connection.prepareStatement(qry))

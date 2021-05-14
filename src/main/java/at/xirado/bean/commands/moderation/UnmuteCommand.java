@@ -4,7 +4,7 @@ import at.xirado.bean.Bean;
 import at.xirado.bean.commandutil.CommandCategory;
 import at.xirado.bean.commandutil.CommandContext;
 import at.xirado.bean.commandutil.CommandFlag;
-import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Database;
 import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -53,7 +53,7 @@ public class UnmuteCommand extends Command
                     }
                     g.removeRoleFromMember(targetMember, r).queue(s -> {}, e -> {});
                     String qry = "UPDATE modcases SET active = 0 WHERE guildID = ? AND targetID = ? AND caseType = ? AND active = 1";
-                    Connection connection = SQL.getConnectionFromPool();
+                    Connection connection = Database.getConnectionFromPool();
                     if(connection == null)
                     {
                         context.replyError(context.getLocalized("general.db_error"));

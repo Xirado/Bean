@@ -2,7 +2,7 @@ package at.xirado.bean.commands.slashcommands;
 
 import at.xirado.bean.Bean;
 import at.xirado.bean.commandutil.SlashCommandContext;
-import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Database;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.objects.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -51,7 +51,7 @@ public class Unban extends SlashCommand
                             (success) ->
                             {
                                 String qry = "UPDATE modcases SET active = 0 WHERE guildID = ? AND targetID = ? AND caseType = ? AND active = 1";
-                                Connection connection = SQL.getConnectionFromPool();
+                                Connection connection = Database.getConnectionFromPool();
                                 if(connection == null)
                                 {
                                     return;

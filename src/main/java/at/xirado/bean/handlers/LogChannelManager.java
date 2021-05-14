@@ -1,7 +1,7 @@
 package at.xirado.bean.handlers;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Database;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class LogChannelManager
 
     public void setLogChannel(long guildID, long channelid)
     {
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null)
         {
             LOGGER.error("Could not set logchannel!", new Exception());
@@ -59,7 +59,7 @@ public class LogChannelManager
             channel = Bean.instance.jda.getTextChannelById(this.logChannel.get(guildid));
         }else
         {
-            Connection connection = SQL.getConnectionFromPool();
+            Connection connection = Database.getConnectionFromPool();
             if(connection == null)
             {
                 LOGGER.error("Could not get logchannel!", new Exception());

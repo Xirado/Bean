@@ -11,10 +11,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 
-public class SQL {
+public class Database
+{
 
 
-	private static final Logger logger = LoggerFactory.getLogger(SQL.class);
+	private static final Logger logger = LoggerFactory.getLogger(Database.class);
 
 	private static final HikariConfig config = new HikariConfig();
 	private static HikariDataSource ds;
@@ -23,7 +24,6 @@ public class SQL {
 	{
 		try
 		{
-			logger.debug("Gave Connection instance to "+Thread.currentThread().getName());
 			return ds.getConnection();
 		} catch (SQLException throwables)
 		{
@@ -45,7 +45,7 @@ public class SQL {
 				config.setJdbcUrl("jdbc:mariadb://" + host + ":" + port + "/" + database);
 				config.setUsername(username);
 				config.setPassword(password);
-				config.setMaximumPoolSize(20);
+				config.setMaximumPoolSize(40);
 				config.setDriverClassName("org.mariadb.jdbc.Driver");
 				config.setScheduledExecutor(Bean.getInstance().scheduledExecutorService);
 				config.setThreadFactory(Bean.getInstance().namedThreadFactory);

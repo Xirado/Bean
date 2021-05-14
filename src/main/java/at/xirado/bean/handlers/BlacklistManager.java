@@ -1,6 +1,6 @@
 package at.xirado.bean.handlers;
 
-import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Database;
 import at.xirado.bean.misc.Util;
 
 import java.sql.Connection;
@@ -22,7 +22,7 @@ public class BlacklistManager
     public boolean containsBlacklistedWord(long guildID, String word)
     {
         String qry = "SELECT 1 FROM blacklistedWords WHERE guildID = ? AND word = ?";
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return false;
         try(PreparedStatement ps = connection.prepareStatement(qry))
         {
@@ -51,7 +51,7 @@ public class BlacklistManager
         bannedwords.remove(word.toUpperCase());
         blacklistedWords.put(guildID, bannedwords);
         String qry = "DELETE FROM blacklistedWords WHERE guildID = ? AND word = ?";
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return;
         try(PreparedStatement ps = connection.prepareStatement(qry))
         {
@@ -78,7 +78,7 @@ public class BlacklistManager
         bannedwords.add(word.toUpperCase());
         blacklistedWords.put(guildID, bannedwords);
         String qry = "INSERT INTO blacklistedWords (guildID, word) values (?,?)";
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return;
         try(PreparedStatement ps = connection.prepareStatement(qry))
         {
@@ -102,7 +102,7 @@ public class BlacklistManager
             return this.blacklistedWords.get(guildID);
         }
         String qry = "SELECT word FROM blacklistedWords WHERE guildID = ?";
-        Connection connection = SQL.getConnectionFromPool();
+        Connection connection = Database.getConnectionFromPool();
         if(connection == null) return null;
         try(PreparedStatement ps = connection.prepareStatement(qry))
         {

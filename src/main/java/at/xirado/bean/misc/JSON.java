@@ -1,8 +1,10 @@
 package at.xirado.bean.misc;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
@@ -74,6 +76,27 @@ public class JSON
             ex.printStackTrace();
             return null;
         }
+    }
+
+    public static <T> T getAt(String source, String path, Class<T> type) throws IOException
+    {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(source);
+        return objectMapper.treeToValue(jsonNode.at(path), type);
+    }
+
+    public static <T> T getAt(URL url, String path, Class<T> type) throws IOException
+    {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(url);
+        return objectMapper.treeToValue(jsonNode.at(path), type);
+    }
+
+    public static <T> T getAt(File file, String path, Class<T> type) throws IOException
+    {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(file);
+        return objectMapper.treeToValue(jsonNode.at(path), type);
     }
 
 

@@ -3,6 +3,7 @@ package at.xirado.bean.handlers;
 import at.xirado.bean.Bean;
 import at.xirado.bean.commands.*;
 import at.xirado.bean.commands.moderation.*;
+import at.xirado.bean.commands.xp.Rank;
 import at.xirado.bean.commandutil.CommandArgument;
 import at.xirado.bean.commandutil.CommandContext;
 import at.xirado.bean.commandutil.CommandFlag;
@@ -70,6 +71,8 @@ public class CommandHandler
         registerCommand(new SkipCommand());
         registerCommand(new SkipToCommand());
         registerCommand(new StopCommand());
+        registerCommand(new Rank());
+        registerCommand(new TransferFromMee6());
     }
 
     private void registerCommand(Command command)

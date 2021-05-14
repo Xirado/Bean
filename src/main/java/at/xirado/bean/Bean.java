@@ -3,8 +3,8 @@ package at.xirado.bean;
 import at.xirado.bean.commandutil.ConsoleCommandManager;
 import at.xirado.bean.handlers.*;
 import at.xirado.bean.logging.Shell;
+import at.xirado.bean.misc.Database;
 import at.xirado.bean.misc.JSON;
-import at.xirado.bean.misc.SQL;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.punishmentmanager.Case;
 import at.xirado.bean.punishmentmanager.CaseType;
@@ -76,6 +76,7 @@ public class Bean
     public ConsoleCommandManager consoleCommandManager;
     public static boolean debugMode;
     public JSON config;
+    public boolean runningInAmp;
 
     public final String VERSION;
 
@@ -87,8 +88,8 @@ public class Bean
         final Properties properties = new Properties();
         properties.load(this.getClass().getClassLoader().getResourceAsStream("settings.properties"));
         VERSION = properties.getProperty("app-version");
-        this.path = Util.getPath();
         Shell.startShell(() -> {});
+        this.path = Util.getPath();
         File file = new File("config.json");
         if(!file.exists())
         {
@@ -114,7 +115,7 @@ public class Bean
         }
         token = config.getString("token");
         debugMode = config.getBoolean("debug");
-        SQL.connect(() -> { permissionCheckerManager = new PermissionCheckerManager();});
+        Database.connect(() -> { permissionCheckerManager = new PermissionCheckerManager();});
         try
         {
             jda = JDABuilder.create(token, EnumSet.allOf(GatewayIntent.class))
@@ -158,7 +159,7 @@ public class Bean
         scheduledExecutorService.submit(() ->
         {
             String qry = "SELECT * FROM modCases WHERE active = 1 AND duration > 0";
-            Connection connection = SQL.getConnectionFromPool();
+            Connection connection = Database.getConnectionFromPool();
             if(connection == null)
             {
                 LOGGER.error("Could not load pending punishments!", new Exception());
@@ -241,6 +242,10 @@ public class Bean
         if(debugMode)
         {
             LOGGER.warn("Debug mode enabled! Not listening for any user-commands.");
+        }
+        if(runningInAmp)
+        {
+            System.out.println("runningsuccess");
         }
     }
 

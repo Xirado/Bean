@@ -18,7 +18,7 @@ public class ReactionHelper
 
 	public static Role getRoleIfAvailable(Long messageID, String emoticon)
 	{
-		Connection connection = SQL.getConnectionFromPool();
+		Connection connection = Database.getConnectionFromPool();
 		if(connection == null)
 		{
 			return null;
@@ -45,7 +45,7 @@ public class ReactionHelper
 	}
 	public static void removeAllReactions(Long messageid)
 	{
-		Connection connection = SQL.getConnectionFromPool();
+		Connection connection = Database.getConnectionFromPool();
 		if(connection == null) return;
 		try(PreparedStatement ps = connection.prepareStatement("DELETE FROM reactionRoles WHERE messageID = ?"))
 		{
@@ -62,7 +62,7 @@ public class ReactionHelper
 	}
 	public static boolean duplicateExists(long messageid, String emoticon)
 	{
-		Connection connection = SQL.getConnectionFromPool();
+		Connection connection = Database.getConnectionFromPool();
 		if(connection == null)
 		{
 			return true;
@@ -86,7 +86,7 @@ public class ReactionHelper
 	{
 		if(duplicateExists(messageid, emoticon))
 			return;
-		Connection connection = SQL.getConnectionFromPool();
+		Connection connection = Database.getConnectionFromPool();
 		if(connection == null)
 		{
 			return;
@@ -108,7 +108,7 @@ public class ReactionHelper
 	public static void removeReaction(long messageid, String emoticon, long roleid)
 	{
 
-		Connection connection = SQL.getConnectionFromPool();
+		Connection connection = Database.getConnectionFromPool();
 		if(connection == null) return;
 		try(PreparedStatement ps = connection.prepareStatement("DELETE FROM reactionRoles WHERE messageID = ? AND emoticon = ? AND roleID = ?"))
 		{
@@ -127,7 +127,7 @@ public class ReactionHelper
 
 	public static ArrayList<HashMap<String,Long>> getAllReactions(Long messageID)
 	{
-		Connection connection = SQL.getConnectionFromPool();
+		Connection connection = Database.getConnectionFromPool();
 		if(connection == null) return null;
 		try(PreparedStatement ps = connection.prepareStatement("SELECT * FROM reactionRoles WHERE messageID = ?"))
 		{

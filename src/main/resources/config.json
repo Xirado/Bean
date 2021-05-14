@@ -1,6 +1,7 @@
 {
   "token" : "yourbottokengoeshere",
   "debug": false,
+  "runningInAMP": false,
   "database" : {
     "host": "localhost",
     "database": "Bean",

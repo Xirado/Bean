@@ -1,6 +1,6 @@
 package at.xirado.bean.handlers;
 
-import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Database;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -8,7 +8,10 @@ import net.dv8tion.jda.api.entities.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,7 +40,7 @@ public class PermissionCheckerManager
 
     private void initializeDBTable()
     {
-        Connection con = SQL.getConnectionFromPool();
+        Connection con = Database.getConnectionFromPool();
         if(con == null)
         {
             logger.error("Could not initialize Database Table!", new Exception());
@@ -63,7 +66,7 @@ public class PermissionCheckerManager
             ArrayList<Long> allowedRoles = moderators.get(guildID);
             return allowedRoles.contains(roleID);
         }
-        Connection con = SQL.getConnectionFromPool();
+        Connection con = Database.getConnectionFromPool();
         if(con == null)
         {
             logger.error("Could not check if \""+roleID+"\" is a valid moderator role in \""+guildID+"\"", new Exception());
@@ -89,7 +92,7 @@ public class PermissionCheckerManager
     public boolean addAllowedRole(long guildID, long roleID)
     {
         if(isAllowedRole(guildID, roleID)) return true;
-        Connection con = SQL.getConnectionFromPool();
+        Connection con = Database.getConnectionFromPool();
         if(con == null)
         {
             logger.error("Could not add moderator role \""+roleID+"\" to guild \""+guildID+"\"!", new Exception());
@@ -130,7 +133,7 @@ public class PermissionCheckerManager
     public boolean removeAllowedRole(long guildID, long roleID)
     {
         if(!isAllowedRole(guildID, roleID)) return true;
-        Connection con = SQL.getConnectionFromPool();
+        Connection con = Database.getConnectionFromPool();
         if(con == null)
         {
             logger.error("Could not remove moderator role \""+roleID+"\" from guild \""+guildID+"\"!", new Exception());
@@ -160,7 +163,7 @@ public class PermissionCheckerManager
         {
            return moderators.get(guildID);
         }
-        Connection con = SQL.getConnectionFromPool();
+        Connection con = Database.getConnectionFromPool();
         if(con == null)
         {
             logger.error("Could not fetch allowed roles for guild \""+guildID+"\"", new Exception());

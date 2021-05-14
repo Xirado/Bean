@@ -13,6 +13,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
+
 public class AddModeratorCommand extends Command
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(AddModeratorCommand.class);
@@ -59,8 +61,7 @@ public class AddModeratorCommand extends Command
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(role.getColor())
                     .setDescription(context.getLocalized("commands.moderator.added", role.getAsMention()));
-            context.reply(builder.build());
-            LOGGER.debug("Added moderator role "+role.getIdLong()+" (@"+role.getName()+") to guild "+guild.getIdLong()+" ("+guild.getName()+")");
+            event.getChannel().sendMessage(builder.build()).allowedMentions(Collections.emptyList()).queue();
 
         }else
         {

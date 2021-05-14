@@ -30,8 +30,7 @@ public class Avatar extends SlashCommand
 	{
 		User user;
 		SlashCommandEvent.OptionData option = event.getOption("user");
-		if(option != null) user = option.getAsUser();
-		else user = event.getUser();
+		user = option == null ? event.getUser() : option.getAsUser();
 		EmbedBuilder b = new EmbedBuilder()
 				.setImage(user.getEffectiveAvatarUrl()+"?size=512")
 				.setColor(Color.magenta)

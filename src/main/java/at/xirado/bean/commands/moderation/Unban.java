@@ -3,7 +3,7 @@ package at.xirado.bean.commands.moderation;
 import at.xirado.bean.Bean;
 import at.xirado.bean.commandutil.CommandCategory;
 import at.xirado.bean.commandutil.CommandContext;
-import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Database;
 import at.xirado.bean.objects.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -55,7 +55,7 @@ public class Unban extends Command
                             (success) ->
                             {
                                 String qry = "UPDATE modcases SET active = 0 WHERE guildID = ? AND targetID = ? AND caseType = ? AND active = 1";
-                                Connection connection = SQL.getConnectionFromPool();
+                                Connection connection = Database.getConnectionFromPool();
                                 if(connection == null)
                                 {
                                     context.replyError(context.getLocalized("general.db_error"));

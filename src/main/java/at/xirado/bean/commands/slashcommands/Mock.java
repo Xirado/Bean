@@ -38,7 +38,7 @@ public class Mock extends SlashCommand
                 sensitive.append(String.valueOf(toMock.charAt(i)).toUpperCase());
             }
         }
-        ctx.reply("<:mock:773566020588666961> "+sensitive.toString()+" <:mock:773566020588666961>").queue();
+        ctx.reply("<:mock:773566020588666961> "+ sensitive +" <:mock:773566020588666961>").queue();
 
     }
 }

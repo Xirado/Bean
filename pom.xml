@@ -13,6 +13,13 @@
     </properties>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.12.3</version>
+        </dependency>
+
         <dependency>
             <groupId>com.jagrosh</groupId>
             <artifactId>jda-utilities</artifactId>
@@ -161,8 +168,18 @@
         </plugins>
         <resources>
             <resource>
-                <directory>src/main/resources</directory> <!-- (your resources folder location) -->
-                <filtering>true</filtering> <!-- this is the important part, it's what replaces, filters, all placeholders in the resources folder (such as ${project.version} in plugin.yml) -->
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/*.ttf</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.ttf</include>
+                </includes>
             </resource>
         </resources>
     </build>

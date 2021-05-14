@@ -1,7 +1,7 @@
 package at.xirado.bean.listeners;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.misc.SQL;
+import at.xirado.bean.misc.Database;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -25,7 +25,7 @@ public class GuildMemberJoin extends ListenerAdapter
 	{
 		Member m = e.getMember();
 		String qry = "SELECT * FROM modcases WHERE guildID = ? AND targetID = ? AND caseType = ? AND active = 1";
-		Connection con = SQL.getConnectionFromPool();
+		Connection con = Database.getConnectionFromPool();
 		if(con == null)
 		{
 			LOGGER.error("Could not retrieve Connection!", new Exception());
