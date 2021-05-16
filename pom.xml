@@ -6,7 +6,7 @@
 
     <groupId>at.xirado</groupId>
     <artifactId>beanbot</artifactId>
-    <version>7.1.0</version>
+    <version>feature-leveling-snapshot</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
