@@ -1,6 +1,7 @@
 package at.xirado.bean.data;
 
 import at.xirado.bean.misc.Database;
+import at.xirado.bean.misc.JSON;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
@@ -23,6 +24,7 @@ public class RankingSystem
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RankingSystem.class);
+    private static JSON colorData = null;
     private static Font FONT;
 
     private static final int CARD_WIDTH = 1200;
@@ -45,6 +47,7 @@ public class RankingSystem
     static{
         try{
             FONT = Font.createFont(Font.TRUETYPE_FONT, RankingSystem.class.getResourceAsStream("/assets/fonts/NotoSans.ttf"));
+            colorData = JSON.parse(RankingSystem.class.getResourceAsStream("/assets/wildcards/ColorInfo.json"));
 
         }
         catch(FontFormatException | IOException e){
@@ -319,6 +322,70 @@ public class RankingSystem
         }
     }
 
+    public static String getPreferredCard(@Nonnull User user)
+    {
+        Connection connection = Database.getConnectionFromPool();
+        if(connection == null) return "card1";
+        try(var ps = connection.prepareStatement("SELECT * FROM wildcardSettings WHERE userID = ?"))
+        {
+            ps.setLong(1, user.getIdLong());
+            ResultSet rs = ps.executeQuery();
+            return rs.next() ? rs.getString("card") : "card1";
+        }catch (SQLException ex)
+        {
+            LOGGER.error("Could not get user preferred wildcard background (user "+user.getIdLong()+")", ex);
+            return "card1";
+        } finally
+        {
+            Util.closeQuietly(connection);
+        }
+    }
+
+    public static void setPreferredCard(@Nonnull User user, @Nonnull String card)
+    {
+        Connection connection = Database.getConnectionFromPool();
+        if(connection == null) return;
+        try(var ps = connection.prepareStatement("INSERT INTO wildcardSettings (userID, card) VALUES (?,?) ON DUPLICATE KEY UPDATE card = ?"))
+        {
+            ps.setLong(1, user.getIdLong());
+            ps.setString(2, card);
+            ps.execute();
+        }catch (SQLException ex)
+        {
+            LOGGER.error("Could not get user preferred wildcard background (user "+user.getIdLong()+")", ex);
+        } finally
+        {
+            Util.closeQuietly(connection);
+        }
+    }
+
+    public static String getPreferredCard(@Nonnull Connection connection, @Nonnull User user)
+    {
+        try(var ps = connection.prepareStatement("SELECT * FROM wildcardSettings WHERE userID = ?"))
+        {
+            ps.setLong(1, user.getIdLong());
+            ResultSet rs = ps.executeQuery();
+            return rs.next() ? rs.getString("card") : "card1";
+        }catch (SQLException ex)
+        {
+            LOGGER.error("Could not get user preferred wildcard background (user "+user.getIdLong()+")", ex);
+            return "card1";
+        }
+    }
+
+    public static void setPreferredCard(@Nonnull Connection connection, @Nonnull User user, @Nonnull String card)
+    {
+        try(var ps = connection.prepareStatement("INSERT INTO wildcardSettings (userID, card) VALUES (?,?) ON DUPLICATE KEY UPDATE card = ?"))
+        {
+            ps.setLong(1, user.getIdLong());
+            ps.setString(2, card);
+            ps.execute();
+        }catch (SQLException ex)
+        {
+            LOGGER.error("Could not get user preferred wildcard background (user "+user.getIdLong()+")", ex);
+        }
+    }
+
     public static byte[] generateLevelCard(@Nonnull User user, @Nonnull Guild guild){
         try{
             var avatar = ImageIO.read(new URL(user.getEffectiveAvatarUrl() + "?size=" + RAW_AVATAR_SIZE));
@@ -346,12 +413,12 @@ public class RankingSystem
             downscaledAvatarG.dispose();
 
             // prepare level card
+            String card = getPreferredCard(user);
             var rankCard = new BufferedImage(CARD_WIDTH, CARD_HEIGHT, BufferedImage.TYPE_INT_ARGB);
             var g = rankCard.createGraphics();
 
-            g.setColor(Color.decode("#242526"));
             g.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
-            var background = RankingSystem.class.getResourceAsStream("/assets/card.png");
+            var background = RankingSystem.class.getResourceAsStream("/assets/wildcards/"+card+".png");
             if(background != null){
                 var image = ImageIO.read(background);
                 var width = image.getWidth();
@@ -394,17 +461,13 @@ public class RankingSystem
             var currentLevel = getLevel(totalXP);
             var neededXP = getXPToLevelUp(currentLevel);
             var currentXP = totalXP-getTotalXPNeeded(currentLevel);
+            // draw level
+            Color c = getColor(card);
             g.setFont(g.getFont().deriveFont(FONT_SIZE).deriveFont(Font.BOLD));
             g.setColor(Color.white);
-            var xpString = currentXP + " / " + neededXP + " XP";
-            g.drawString(xpString, CARD_WIDTH - BORDER_SIZE - g.getFontMetrics().stringWidth(xpString), CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT);
-
-            // draw level
-            Color c = Color.decode("#0c71e0");
-            g.setColor(c.brighter().brighter());
-            var levelString = "Level: " + currentLevel;
-            g.drawString(levelString, CARD_WIDTH - BORDER_SIZE - g.getFontMetrics().stringWidth(levelString), BORDER_SIZE + FONT_SIZE);
-
+            var levelString = "Level " + currentLevel;
+            g.drawString(levelString, CARD_WIDTH - BORDER_SIZE - g.getFontMetrics().stringWidth(levelString), CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT);
+            g.setColor(c);
             // draw empty xp bar
             g.setColor(c.darker().darker());
             g.fillRoundRect(leftAvatarAlign, CARD_HEIGHT - XP_BAR_HEIGHT - BORDER_SIZE, XP_BAR_WIDTH, XP_BAR_HEIGHT, XP_BAR_HEIGHT, XP_BAR_HEIGHT);
@@ -413,6 +476,11 @@ public class RankingSystem
             g.setColor(c);
             g.fillRoundRect(leftAvatarAlign, CARD_HEIGHT - XP_BAR_HEIGHT - BORDER_SIZE, (int) (((double) currentXP) / neededXP * XP_BAR_WIDTH), XP_BAR_HEIGHT, XP_BAR_HEIGHT, XP_BAR_HEIGHT);
 
+            g.setFont(g.getFont().deriveFont(FONT_SIZE/2).deriveFont(Font.BOLD));
+            g.setColor(Color.white);
+            var xpString = currentXP + " / " + neededXP + " XP";
+            int xpXPos = ((leftAvatarAlign+CARD_WIDTH-BORDER_SIZE)/2)-(g.getFontMetrics().stringWidth(xpString)/2);
+            g.drawString(xpString, xpXPos, CARD_HEIGHT-BORDER_SIZE-18);
             g.dispose();
 
             var baos = new ByteArrayOutputStream();
@@ -427,7 +495,12 @@ public class RankingSystem
 
     public static String formatXP(int xp)
     {
+        return null;
+    }
 
+    public static Color getColor(String fileName)
+    {
+        return Color.decode("#"+colorData.get(fileName, String.class));
     }
 
 }

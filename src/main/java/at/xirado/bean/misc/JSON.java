@@ -67,6 +67,7 @@ public class JSON
     @SuppressWarnings("unchecked")
     public static JSON parse(InputStream is)
     {
+        if(is == null) throw new IllegalArgumentException("InputStream is null!");
         try{
             ObjectMapper mapper = new ObjectMapper();
             Map<String, ?> map = (Map<String, ?>) mapper.readValue(is, Map.class);

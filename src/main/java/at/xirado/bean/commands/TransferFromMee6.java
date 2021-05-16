@@ -5,6 +5,7 @@ import at.xirado.bean.commandutil.CommandCategory;
 import at.xirado.bean.commandutil.CommandContext;
 import at.xirado.bean.data.RankingSystem;
 import at.xirado.bean.misc.Database;
+import at.xirado.bean.misc.Util;
 import at.xirado.bean.objects.Command;
 import at.xirado.bean.objects.MEE6Player;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -68,6 +69,7 @@ public class TransferFromMee6 extends Command
                 long xp = player.getXp();
                 RankingSystem.setXP(connection, guildID, id, xp);
             }
+            Util.closeQuietly(connection);
             context.replySuccess("XP has been transferred! ("+players.length+" users)");
         } catch (Exception e)
         {
