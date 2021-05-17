@@ -11,7 +11,6 @@ import at.xirado.bean.objects.Command;
 import at.xirado.bean.translation.LanguageLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +122,8 @@ public class CommandHandler
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public void handleCommandFromGuild(@Nonnull GuildMessageReceivedEvent event, @Nonnull Member member)
+    @SuppressWarnings("ConstantConditions")
+    public void handleCommandFromGuild(@Nonnull GuildMessageReceivedEvent event)
     {
         Runnable r = () ->
         {
@@ -137,24 +137,27 @@ public class CommandHandler
                 {
                     if(!command.getAllowedGuilds().contains(event.getGuild().getIdLong())) return;
                 }
+
                 if(command.hasCommandFlag(CommandFlag.DEVELOPER_ONLY))
                 {
-                    if(member.getIdLong() != Bean.OWNER_ID) return;
+                    if(event.getMember().getIdLong() != Bean.OWNER_ID) return;
                 }
+
                 if(command.hasCommandFlag(CommandFlag.DISABLED))
                 {
-                    if(member.getIdLong() != Bean.OWNER_ID) return;
+                    if(event.getMember().getIdLong() != Bean.OWNER_ID) return;
                 }
+
                 if(command.hasCommandFlag(CommandFlag.MODERATOR_ONLY))
                 {
                     PermissionCheckerManager permissionCheckerManager = Bean.getInstance().permissionCheckerManager;
-                    if(!permissionCheckerManager.isModerator(member) && !member.hasPermission(Permission.ADMINISTRATOR))
+                    if(!permissionCheckerManager.isModerator(event.getMember()) && !event.getMember().hasPermission(Permission.ADMINISTRATOR))
                     {
                         event.getMessage().reply(LanguageLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)).mentionRepliedUser(false).queue(s -> {}, ex -> {});
                         return;
                     }
                 }
-                if(!member.hasPermission(command.getRequiredPermissions()))
+                if(!event.getMember().hasPermission(command.getRequiredPermissions()))
                 {
                     event.getMessage().reply(LanguageLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)).mentionRepliedUser(false).queue(s -> {}, ex -> {});
                     return;
@@ -183,7 +186,7 @@ public class CommandHandler
                     event.getChannel().sendMessage(builder.build()).queue();
                     return;
                 }
-                CommandContext context = new CommandContext(event, arguments, command, member);
+                CommandContext context = new CommandContext(event, arguments, command, event.getMember());
                 command.executeCommand(event, context);
             }catch(Exception ex)
             {
