@@ -60,6 +60,7 @@ public class SlashCommandHandler
         registerCommand(new ModlogCommand());
         registerCommand(new RandomFactCommand());
         registerCommand(new JokeCommand());
+        registerCommand(new Rank());
 
         queueToDiscord();
     }

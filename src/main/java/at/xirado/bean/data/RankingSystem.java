@@ -257,34 +257,16 @@ public class RankingSystem
         }
     }
 
-    public static void setXP(@Nonnull Connection connection, long guildID, long userID, long setAmount)
+    public static void setXP(@Nonnull Connection connection, long guildID, long userID, long setAmount) throws SQLException
     {
-        if(hasEntry(guildID, userID))
-        {
-            try(var ps = connection.prepareStatement("UPDATE levels SET totalXP = ? WHERE guildID = ? AND userID = ?"))
-            {
-                ps.setLong(1, setAmount);
-                ps.setLong(2, guildID);
-                ps.setLong(3, userID);
-                ps.execute();
-
-            }catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            }
-        }else {
-            try(var ps = connection.prepareStatement("INSERT INTO levels (guildID, userID, totalXP) values (?,?,?)"))
-            {
-                ps.setLong(1, guildID);
-                ps.setLong(2, userID);
-                ps.setLong(3, setAmount);
-                ps.execute();
-
-            }catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            }
-        }
+        String sql = "INSERT INTO levels (guildID, userID, totalXP) VALUES (?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?";
+        var ps = connection.prepareStatement(sql);
+        ps.setLong(1, guildID);
+        ps.setLong(2, userID);
+        ps.setLong(3, setAmount);
+        ps.setLong(4, setAmount);
+        ps.execute();
+        ps.close();
     }
 
     public static boolean hasEntry(long guildID, long userID)
