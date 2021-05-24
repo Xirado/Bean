@@ -152,67 +152,34 @@ public class RankingSystem
             LOGGER.error("Could not get connection from db pool!", new SQLException("Connection == null!"));
             return;
         }
-        if(hasEntry(guildID, userID))
+        try(var ps = connection.prepareStatement("INSERT INTO levels (guildID, userID, totalXP) values (?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?"))
         {
-            try(var ps = connection.prepareStatement("UPDATE levels SET totalXP = ? WHERE guildID = ? AND userID = ?"))
-            {
-                ps.setLong(1, getTotalXP(connection, guildID, userID)+addedAmount);
-                ps.setLong(2, guildID);
-                ps.setLong(3, userID);
-                ps.execute();
-
-            }catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            } finally
-            {
-                Util.closeQuietly(connection);
-            }
-        }else {
-            try(var ps = connection.prepareStatement("INSERT INTO levels (guildID, userID, totalXP) values (?,?,?)"))
-            {
-                ps.setLong(1, guildID);
-                ps.setLong(2, userID);
-                ps.setLong(3, addedAmount);
-                ps.execute();
-
-            }catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            } finally
-            {
-                Util.closeQuietly(connection);
-            }
+            ps.setLong(1, guildID);
+            ps.setLong(2, userID);
+            ps.setLong(3, getTotalXP(connection, guildID, userID)+addedAmount);
+            ps.setLong(4, getTotalXP(connection, guildID, userID)+addedAmount);
+            ps.execute();
+        }catch (SQLException e)
+        {
+            LOGGER.error("Could not add XP!", e);
+        }finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
     public static void addXP(@Nonnull Connection connection, long guildID, long userID, long addedAmount)
     {
-        if(hasEntry(guildID, userID))
+        try(var ps = connection.prepareStatement("INSERT INTO levels (guildID, userID, totalXP) values (?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?"))
         {
-            try(var ps = connection.prepareStatement("UPDATE levels SET totalXP = ? WHERE guildID = ? AND userID = ?"))
-            {
-                ps.setLong(1, getTotalXP(connection, guildID, userID)+addedAmount);
-                ps.setLong(2, guildID);
-                ps.setLong(3, userID);
-                ps.execute();
-
-            }catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            }
-        }else {
-            try(var ps = connection.prepareStatement("INSERT INTO levels (guildID, userID, totalXP) values (?,?,?)"))
-            {
-                ps.setLong(1, guildID);
-                ps.setLong(2, userID);
-                ps.setLong(3, addedAmount);
-                ps.execute();
-
-            }catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            }
+            ps.setLong(1, guildID);
+            ps.setLong(2, userID);
+            ps.setLong(3, getTotalXP(connection, guildID, userID)+addedAmount);
+            ps.setLong(4, getTotalXP(connection, guildID, userID)+addedAmount);
+            ps.execute();
+        }catch (SQLException e)
+        {
+            LOGGER.error("Could not add XP!", e);
         }
     }
 
@@ -223,84 +190,34 @@ public class RankingSystem
             LOGGER.error("Could not get connection from db pool!", new SQLException("Connection == null!"));
             return;
         }
-        if(hasEntry(guildID, userID))
-        {
-            try(var ps = connection.prepareStatement("UPDATE levels SET totalXP = ? WHERE guildID = ? AND userID = ?"))
-            {
-                ps.setLong(1, setAmount);
-                ps.setLong(2, guildID);
-                ps.setLong(3, userID);
-                ps.execute();
-
-            }catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            } finally
-            {
-                Util.closeQuietly(connection);
-            }
-        }else {
-            try(var ps = connection.prepareStatement("INSERT INTO levels (guildID, userID, totalXP) values (?,?,?)"))
-            {
-                ps.setLong(1, guildID);
-                ps.setLong(2, userID);
-                ps.setLong(3, setAmount);
-                ps.execute();
-
-            }catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            } finally
-            {
-                Util.closeQuietly(connection);
-            }
-        }
-    }
-
-    public static void setXP(@Nonnull Connection connection, long guildID, long userID, long setAmount) throws SQLException
-    {
-        String sql = "INSERT INTO levels (guildID, userID, totalXP) VALUES (?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?";
-        var ps = connection.prepareStatement(sql);
-        ps.setLong(1, guildID);
-        ps.setLong(2, userID);
-        ps.setLong(3, setAmount);
-        ps.setLong(4, setAmount);
-        ps.execute();
-        ps.close();
-    }
-
-    public static boolean hasEntry(long guildID, long userID)
-    {
-        Connection connection = Database.getConnectionFromPool();
-        if(connection == null) return false;
-        try(var ps = connection.prepareStatement("SELECT * FROM levels WHERE guildID = ? AND userID = ?"))
+        try(var ps = connection.prepareStatement("INSERT INTO levels (guildID, userID, totalXP) values (?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?"))
         {
             ps.setLong(1, guildID);
             ps.setLong(2, userID);
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
-        }catch (SQLException ex)
+            ps.setLong(3, setAmount);
+            ps.setLong(4, setAmount);
+            ps.execute();
+        }catch (SQLException e)
         {
-            LOGGER.error("Could not check if user has entry! (guild "+guildID+", user "+userID+")", ex);
-            return false;
+            LOGGER.error("Could not add XP!", e);
         } finally
         {
             Util.closeQuietly(connection);
         }
     }
 
-    public static boolean hasEntry(@Nonnull Connection connection, long guildID, long userID)
+    public static void setXP(@Nonnull Connection connection, long guildID, long userID, long setAmount)
     {
-        try(var ps = connection.prepareStatement("SELECT * FROM levels WHERE guildID = ? AND userID = ?"))
+        try(var ps = connection.prepareStatement("INSERT INTO levels (guildID, userID, totalXP) values (?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?"))
         {
             ps.setLong(1, guildID);
             ps.setLong(2, userID);
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
-        }catch (SQLException ex)
+            ps.setLong(3, setAmount);
+            ps.setLong(4, setAmount);
+            ps.execute();
+        }catch (SQLException e)
         {
-            LOGGER.error("Could not check if user has entry! (guild "+guildID+", user "+userID+")", ex);
-            return false;
+            LOGGER.error("Could not add XP!", e);
         }
     }
 
