@@ -35,8 +35,10 @@ public class Shell
             .style(BLUE).append("\\  ").style(BLUE).append("__\\").style(PINK).append("   \\ ").style(BLUE).append("\\  __ \\  ").style(PINK).append("\\ ")
             .style(BLUE).append("\\ \\").style(BLUE).append("-.  ").style(BLUE).append("\\\n").style(PINK).append("           \\ ").style(BLUE)
             .append("\\_____\\  ").style(PINK).append("\\ ").style(BLUE).append("\\_____\\  ").style(PINK).append("\\ ").style(BLUE).append("\\_\\ \\_\\  ")
-            .style(PINK).append("\\ ").style(BLUE).append("\\_\\").style(PINK).append("\\\"").style(BLUE).append("\\_\\\n").style(PINK).append("            \\/_____/   \\/_____/   \\/_/\\/_/   \\/_/ \\/_/\n\n                      Bean v").append(Bean.instance.VERSION).append(" by Xirado\n").toAnsi();
+            .style(PINK).append("\\ ").style(BLUE).append("\\_\\").style(PINK).append("\\").style(BLUE).append("\"\\_\\\n").style(PINK)
+            .append("            \\/_____/   \\/_____/   \\/_/\\/_/   \\/_/ \\/_/\n\n"+centerText("Bean "+Bean.getInstance().VERSION+" by Xirado")+"\n").toAnsi();
 
+    public static final int LOGO_LENGTH = 44;
 
 
     public static void startShell(Runnable success)
@@ -93,5 +95,16 @@ public class Shell
         t.setName("Terminal Worker");
         t.setDaemon(true);
         t.start();
+    }
+
+    public static String centerText(String text)
+    {
+        text = text.trim();
+        int textLength = text.length();
+        int requiredSpaces = (LOGO_LENGTH/2)-(textLength/2)+10;
+        StringBuilder output = new StringBuilder();
+        output.append(" ".repeat(Math.max(0, requiredSpaces)));
+        output.append(text);
+        return output.toString();
     }
 }
