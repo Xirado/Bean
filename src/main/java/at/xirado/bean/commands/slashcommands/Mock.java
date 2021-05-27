@@ -30,13 +30,9 @@ public class Mock extends SlashCommand
         for(int i = 0; i < toMock.length(); i++)
         {
             if(i%2 == 0)
-            {
                 sensitive.append(String.valueOf(toMock.charAt(i)).toLowerCase());
-            }
             else
-            {
                 sensitive.append(String.valueOf(toMock.charAt(i)).toUpperCase());
-            }
         }
         ctx.reply("<:mock:773566020588666961> "+sensitive.toString()+" <:mock:773566020588666961>").queue();
 
