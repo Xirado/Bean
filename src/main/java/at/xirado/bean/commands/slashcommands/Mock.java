@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,9 +15,7 @@ public class Mock extends SlashCommand
     public Mock()
     {
         setCommandData(new CommandData("mock", "vAcCiNeS cAuSe AuTiSm")
-            .addOption(new OptionData(OptionType.STRING, "text", "the text to mock")
-                .setRequired(true)
-            )
+            .addOption(OptionType.STRING, "text", "the text to mock", true)
         );
     }
 
@@ -30,13 +27,9 @@ public class Mock extends SlashCommand
         for(int i = 0; i < toMock.length(); i++)
         {
             if(i%2 == 0)
-            {
                 sensitive.append(String.valueOf(toMock.charAt(i)).toLowerCase());
-            }
             else
-            {
                 sensitive.append(String.valueOf(toMock.charAt(i)).toUpperCase());
-            }
         }
         ctx.reply("<:mock:773566020588666961> "+ sensitive +" <:mock:773566020588666961>").queue();
 

@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.CommandHook;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -159,7 +159,7 @@ public class SlashCommandHandler
                             if(cmd.getCommandName() == null) continue;
                             if(cmd.getCommandName().equalsIgnoreCase(event.getName()))
                             {
-                                CommandHook hook = event.getHook();
+                                InteractionHook hook = event.getHook();
                                 List<Permission> neededPermissions = cmd.getRequiredUserPermissions();
                                 List<Permission> neededBotPermissions = cmd.getRequiredBotPermissions();
                                 if(neededPermissions != null)
@@ -168,7 +168,7 @@ public class SlashCommandHandler
                                     {
                                         if(!member.hasPermission(permission))
                                         {
-                                            event.acknowledge(true)
+                                            event.deferReply(true)
                                                     .flatMap(v -> hook.sendMessage(LanguageLoader.ofGuild(guild).get("general.no_perms", String.class)))
                                                     .queue();
                                             return;
@@ -182,7 +182,7 @@ public class SlashCommandHandler
                                     {
                                         if(!event.getGuild().getSelfMember().hasPermission(permission))
                                         {
-                                            event.acknowledge(true)
+                                            event.deferReply(true)
                                                     .flatMap(v -> hook.sendMessage(LanguageLoader.ofGuild(guild).get("general.no_bot_perms1", String.class)))
                                                     .queue();
                                             return;
@@ -207,7 +207,7 @@ public class SlashCommandHandler
                             event.reply(String.format(LanguageLoader.getForLanguage("en_US").get("commands.cannot_run_in_dm", String.class), SlashCommandContext.ERROR)).setEphemeral(true).queue();
                             return;
                         }
-                        CommandHook hook = event.getHook();
+                        InteractionHook hook = event.getHook();
                         List<Permission> neededPermissions = cmd.getRequiredUserPermissions();
                         List<Permission> neededBotPermissions = cmd.getRequiredBotPermissions();
                         if(member != null)
@@ -218,7 +218,7 @@ public class SlashCommandHandler
                                 {
                                     if(!member.hasPermission(permission))
                                     {
-                                        event.acknowledge(true)
+                                        event.deferReply(true)
                                                 .flatMap(v -> hook.sendMessage(LanguageLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)))
                                                 .queue();
                                         return;
@@ -232,7 +232,7 @@ public class SlashCommandHandler
                                 {
                                     if(!event.getGuild().getSelfMember().hasPermission(permission))
                                     {
-                                        event.acknowledge(true)
+                                        event.deferReply(true)
                                                 .flatMap(v -> hook.sendMessage(LanguageLoader.ofGuild(event.getGuild()).get("general.no_bot_perms1", String.class)))
                                                 .queue();
                                         return;

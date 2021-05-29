@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,15 +25,15 @@ public class CaseCommand extends SlashCommand
     public CaseCommand()
     {
         setCommandData(new CommandData("case", "shows/modifies moderation cases")
-                .addSubcommand(new SubcommandData("show", "shows information about a modcase")
-                        .addOption(new OptionData(OptionType.STRING, "case", "the case to show infos about").setRequired(true))
+                .addSubcommands(new SubcommandData("show", "shows information about a modcase")
+                        .addOption(OptionType.STRING, "case", "the case to show infos about", true)
                 )
-                .addSubcommand(new SubcommandData("reason", "changes the reason of a modcase")
-                        .addOption(new OptionData(OptionType.STRING, "case", "the case you want to change the reason on").setRequired(true))
-                        .addOption(new OptionData(OptionType.STRING, "reason", "the new reason").setRequired(true))
+                .addSubcommands(new SubcommandData("reason", "changes the reason of a modcase")
+                        .addOption(OptionType.STRING, "case", "the case you want to change the reason on", true)
+                        .addOption(OptionType.STRING, "reason", "the new reason", true)
                 )
-                .addSubcommand(new SubcommandData("delete", "deletes a modcase")
-                    .addOption(new OptionData(OptionType.STRING, "case", "the case you want to delete").setRequired(true))
+                .addSubcommands(new SubcommandData("delete", "deletes a modcase")
+                    .addOption(OptionType.STRING, "case", "the case you want to delete", true)
                 )
         );
     }

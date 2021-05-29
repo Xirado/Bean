@@ -6,9 +6,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,16 +21,15 @@ public class Avatar extends SlashCommand
 	public Avatar()
 	{
 		setCommandData(new CommandData("avatar", "Gets the avatar of a user")
-				.addOption(new OptionData(OptionType.USER, "user", "the user you want to get the avatar from"))
+				.addOption(OptionType.USER, "user", "the user you want to get the avatar from", false)
 		);
 	}
 
 	@Override
 	public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
 	{
-		User user;
-		SlashCommandEvent.OptionData option = event.getOption("user");
-		user = option == null ? event.getUser() : option.getAsUser();
+		OptionMapping option = event.getOption("user");
+		User user = option != null ? option.getAsUser() : event.getUser();
 		EmbedBuilder b = new EmbedBuilder()
 				.setImage(user.getEffectiveAvatarUrl()+"?size=512")
 				.setColor(Color.magenta)

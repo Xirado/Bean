@@ -29,11 +29,9 @@ public class TempbanCommand extends SlashCommand
     public TempbanCommand()
     {
         setCommandData(new CommandData("tempban", "temporarily bans a user from this guild")
-                .addOption(new OptionData(OptionType.USER, "user", "the user to ban")
-                        .setRequired(true))
-                .addOption(new OptionData(OptionType.INTEGER, "time", "the duration of the ban")
-                        .setRequired(true))
-                .addOption(new OptionData(OptionType.STRING, "timeunit", "the duration of the ban")
+                .addOption(OptionType.USER, "user", "the user to ban", true)
+                .addOption(OptionType.INTEGER, "time", "the duration of the ban", true)
+                .addOptions(new OptionData(OptionType.STRING, "timeunit", "the duration of the ban")
                         .addChoice("seconds", "s")
                         .addChoice("minutes", "m")
                         .addChoice("hours", "h")
@@ -41,8 +39,7 @@ public class TempbanCommand extends SlashCommand
                         .addChoice("weeks", "w")
                         .setRequired(true)
                 )
-                .addOption(new OptionData(OptionType.STRING, "reason", "the reason for this ban")
-                        .setRequired(false))
+                .addOption(OptionType.STRING, "reason", "the reason for this ban", false)
         );
 
         setRequiredUserPermissions(Permission.BAN_MEMBERS);

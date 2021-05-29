@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,9 +23,9 @@ public class BanCommand extends SlashCommand
     public BanCommand()
     {
         setCommandData(new CommandData("ban", "permanently bans a user from this guild")
-                .addOption(new OptionData(OptionType.USER, "user", "the user to ban").setRequired(true))
-                .addOption(new OptionData(OptionType.STRING, "reason", "the reason for this ban").setRequired(false))
-                .addOption(new OptionData(OptionType.INTEGER, "deldays", "how many days of messages to delete").setRequired(false))
+                .addOption(OptionType.USER, "user", "the user to ban", true)
+                .addOption(OptionType.STRING, "reason", "the reason for this ban", false)
+                .addOption(OptionType.INTEGER, "deldays", "how many days of messages to delete", false)
         );
         setRequiredUserPermissions(Permission.BAN_MEMBERS);
         setRequiredBotPermissions(Permission.BAN_MEMBERS);
@@ -57,7 +56,7 @@ public class BanCommand extends SlashCommand
 
             if(Bean.getInstance().permissionCheckerManager.isModerator(targetMember))
             {
-                event.reply(SlashCommandContext.DENY+" "+ctx.getLocalized("commands.ban.cannot_ban_moderator")).setEphemeral(true).queue();
+                ctx.reply(SlashCommandContext.DENY+" "+ctx.getLocalized("commands.ban.cannot_ban_moderator")).setEphemeral(true).queue();
                 return;
             }
 
