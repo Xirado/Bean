@@ -31,7 +31,7 @@ public class Unban extends SlashCommand
     public Unban()
     {
         setCommandData(new CommandData("unban", "unbans a user")
-            .addOption(new OptionData(OptionType.USER, "user", "the user to unban (you can use IDs)").setRequired(true))
+            .addOptions(new OptionData(OptionType.USER, "user", "the user to unban (you can use IDs)").setRequired(true))
         );
         setRequiredUserPermissions(Permission.BAN_MEMBERS);
         setRequiredBotPermissions(Permission.BAN_MEMBERS);

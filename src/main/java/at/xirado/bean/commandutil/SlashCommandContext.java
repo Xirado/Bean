@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.requests.restaction.CommandReplyAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -58,32 +58,32 @@ public class SlashCommandContext
         return language;
     }
 
-    public CommandReplyAction reply(String content)
+    public ReplyAction reply(String content)
     {
         return event.reply(content).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
     }
 
-    public CommandReplyAction reply(Message message)
+    public ReplyAction reply(Message message)
     {
         return event.reply(message).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
     }
 
-    public CommandReplyAction reply(MessageEmbed embed, MessageEmbed... embeds)
+    public ReplyAction reply(MessageEmbed embed, MessageEmbed... embeds)
     {
-        return event.reply(embed, embeds).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
+        return event.replyEmbeds(embed, embeds).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
     }
 
-    public CommandReplyAction replyFormat(String format, Object... args)
+    public ReplyAction replyFormat(String format, Object... args)
     {
         return event.replyFormat(format, args).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
     }
 
-    public CommandReplyAction replyError(String content)
+    public ReplyAction replyError(String content)
     {
         return event.reply(ERROR+" "+content).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
     }
 
-    public CommandReplyAction replyErrorFormat(String format, Object... args)
+    public ReplyAction replyErrorFormat(String format, Object... args)
     {
         return event.replyFormat(ERROR+" "+format, args).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
     }

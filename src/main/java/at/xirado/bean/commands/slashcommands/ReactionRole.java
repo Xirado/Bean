@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jetbrains.annotations.NotNull;
@@ -28,27 +27,15 @@ public class ReactionRole extends SlashCommand
 	public ReactionRole()
 	{
 		setCommandData(new CommandData("reactionrole", "Sets up Reaction-Roles")
-				.addSubcommand(new SubcommandData("create", "create Reaction-Roles")
-						.addOption(new OptionData(OptionType.CHANNEL, "channel", "the channel where the message is in")
-							.setRequired(true)
-						)
-						.addOption(new OptionData(OptionType.STRING, "message_id", "the id of the message you want to have the Reaction-Role on")
-							.setRequired(true)
-						)
-						.addOption(new OptionData(OptionType.ROLE, "role", "the role that gets added upon reacting to the message")
-							.setRequired(true)
-						)
-						.addOption(new OptionData(OptionType.STRING, "emote", "the emote/emoji used for the Reaction-Role")
-							.setRequired(true)
-						)
+				.addSubcommands(new SubcommandData("create", "create Reaction-Roles")
+						.addOption(OptionType.CHANNEL, "channel", "the channel where the message is in", true)
+						.addOption(OptionType.STRING, "message_id", "the id of the message you want to have the Reaction-Role on", true)
+						.addOption(OptionType.ROLE, "role", "the role that gets added upon reacting to the message", true)
+						.addOption(OptionType.STRING, "emote", "the emote/emoji used for the Reaction-Role", true)
 				)
-				.addSubcommand(new SubcommandData("remove", "remove Reaction-Roles")
-						.addOption(new OptionData(OptionType.CHANNEL, "channel", "the channel where the message is in")
-							.setRequired(true)
-						)
-						.addOption(new OptionData(OptionType.STRING, "message_id", "the id of the message you want to have Reaction-Roles removed on")
-							.setRequired(true)
-						)
+				.addSubcommands(new SubcommandData("remove", "remove Reaction-Roles")
+						.addOption(OptionType.CHANNEL, "channel", "the channel where the message is in", true)
+						.addOption(OptionType.STRING, "message_id", "the id of the message you want to have Reaction-Roles removed on", true)
 				)
 		);
 		setRequiredUserPermissions(Permission.ADMINISTRATOR);

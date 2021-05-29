@@ -25,8 +25,8 @@ public class WarnCommand extends SlashCommand
     public WarnCommand()
     {
         setCommandData(new CommandData("warn", "warns a member")
-                .addOption(new OptionData(OptionType.USER, "member", "the member to warn").setRequired(true))
-                .addOption(new OptionData(OptionType.STRING, "reason", "the reason for this warn").setRequired(false))
+                .addOptions(new OptionData(OptionType.USER, "member", "the member to warn").setRequired(true))
+                .addOptions(new OptionData(OptionType.STRING, "reason", "the reason for this warn").setRequired(false))
         );
     }
 

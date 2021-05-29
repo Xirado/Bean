@@ -24,9 +24,9 @@ public class UrbanDictionary extends SlashCommand
     public UrbanDictionary()
     {
         setCommandData(new CommandData("urban", "search for urbandictionary.com definitions")
-                .addOption(new OptionData(OptionType.STRING, "phrase", "the phrase to search for")
+                .addOptions(new OptionData(OptionType.STRING, "phrase", "the phrase to search for")
                         .setRequired(true))
-                .addOption(new OptionData(OptionType.INTEGER, "definition", "gets a specific definition rather than the first one")
+                .addOptions(new OptionData(OptionType.INTEGER, "definition", "gets a specific definition rather than the first one")
                         .setRequired(false))
         );
     }

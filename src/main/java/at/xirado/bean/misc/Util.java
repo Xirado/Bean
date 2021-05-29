@@ -4,9 +4,7 @@ import at.xirado.bean.Bean;
 import at.xirado.bean.listeners.*;
 import ch.qos.logback.classic.Level;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 
@@ -146,9 +144,31 @@ public class Util
 	{
 		return new Object[]{new LogListeners(), new GuildJoin(), new GuildMessageReceivedListener(),
 				new GuildMemberJoin(), new GuildMessageReactionAdd(), new GuildMessageReactionRemove(),
-				new GuildMessageDelete(), new PrivateMessageReceived(), new SlashCommandListener()
+				new GuildMessageDelete(), new PrivateMessageReceived(), new SlashCommandListener(),
+				new ButtonListener()
 		};
 
+	}
+
+	public static void sendPM(User user, Message message)
+	{
+		user.openPrivateChannel()
+				.flatMap(x -> x.sendMessage(message))
+				.queue(s -> {}, e -> {});
+	}
+
+	public static void sendPM(User user, CharSequence sequence)
+	{
+		user.openPrivateChannel()
+				.flatMap(x -> x.sendMessage(sequence))
+				.queue(s -> {}, e -> {});
+	}
+
+	public static void sendPM(User user, MessageEmbed embed)
+	{
+		user.openPrivateChannel()
+				.flatMap(x -> x.sendMessage(embed))
+				.queue(s -> {}, e -> {});
 	}
 	
 	public static String getPath()

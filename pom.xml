@@ -54,7 +54,7 @@
         <dependency>
             <groupId>com.github.dv8fromtheworld</groupId>
             <artifactId>jda</artifactId>
-            <version>5951675</version>
+            <version>edf31d5</version>
         </dependency>
 
         <dependency>
