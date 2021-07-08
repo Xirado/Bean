@@ -1,0 +1,6 @@
+*.txt
+*.json
+*.properties
+target/
+lib/
+.idea/
