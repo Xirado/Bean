@@ -34,12 +34,11 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class Bean
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
-    private static Bean instance;
-    private static final String VERSION = loadVersion();
     public static final long OWNER_ID = 184654964122058752L;
     public static final long START_TIME = System.currentTimeMillis() / 1000;
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
+    private static final String VERSION = loadVersion();
+    private static Bean instance;
     private final JDA jda;
     private final DataObject config = loadConfig();
     private final boolean debug;
@@ -68,7 +67,7 @@ public class Bean
                 .enableCache(CacheFlag.VOICE_STATE)
                 .addEventListeners(new OnReadyEvent(), new OnSlashCommand(), new OnGuildMessageReceived(),
                         new OnGainXP(), new OnGuildMessageReactionAdd(), new OnGuildMessageReactionRemove(), new OnVoiceUpdate(),
-                        eventWaiter)
+                        eventWaiter, new OnGuildMemberJoin())
                 .build();
         audioManager = new AudioManager(jda);
     }
@@ -76,6 +75,71 @@ public class Bean
     public static Bean getInstance()
     {
         return instance;
+    }
+
+    public static void main(String[] args)
+    {
+        Thread.currentThread().setName("Main-Thread");
+        try
+        {
+            Shell.startShell();
+            Shell.awaitReady();
+            new Bean();
+        } catch (Exception e)
+        {
+            if (e instanceof LoginException ex)
+            {
+                LOGGER.error("Could not login to Discord!", ex);
+                return;
+            }
+            LOGGER.error("An error occured starting Bean!", e);
+        }
+    }
+
+    private static String loadVersion()
+    {
+        try
+        {
+            Properties properties = new Properties();
+            properties.load(Bean.class.getClassLoader().getResourceAsStream("settings.properties"));
+            return properties.getProperty("app-version");
+        } catch (IOException e)
+        {
+            LOGGER.error("Could not get version!", e);
+            return "0.0.0";
+        }
+    }
+
+    private static Set<GatewayIntent> getIntents()
+    {
+        return Set.of(GatewayIntent.GUILD_BANS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.DIRECT_MESSAGES,
+                GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS,
+                GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_EMOJIS);
+    }
+
+    public static void info(String msg)
+    {
+        LOGGER.info(msg);
+    }
+
+    public static void warn(String msg)
+    {
+        LOGGER.warn(msg);
+    }
+
+    public static void error(String msg)
+    {
+        LOGGER.error(msg);
+    }
+
+    public static void error(String msg, Throwable t)
+    {
+        LOGGER.error(msg, t);
+    }
+
+    public static String getBeanVersion()
+    {
+        return VERSION;
     }
 
     public DataObject getConfig()
@@ -123,26 +187,6 @@ public class Bean
         return eventWaiter;
     }
 
-    public static void main(String[] args)
-    {
-        Thread.currentThread().setName("Main-Thread");
-        try
-        {
-            Shell.startShell();
-            Shell.awaitReady();
-            new Bean();
-        } catch (Exception e)
-        {
-            if (e instanceof LoginException ex)
-            {
-                LOGGER.error("Could not login to Discord!", ex);
-                return;
-            }
-            LOGGER.error("An error occured starting Bean!", e);
-        }
-    }
-
-
     private DataObject loadConfig()
     {
         File configFile = new File("config.json");
@@ -165,51 +209,5 @@ public class Bean
             }
         }
         return DataObject.parse(configFile);
-    }
-
-    private static String loadVersion()
-    {
-        try
-        {
-            Properties properties = new Properties();
-            properties.load(Bean.class.getClassLoader().getResourceAsStream("settings.properties"));
-            return properties.getProperty("app-version");
-        } catch (IOException e)
-        {
-            LOGGER.error("Could not get version!", e);
-            return "0.0.0";
-        }
-    }
-
-    private static Set<GatewayIntent> getIntents()
-    {
-        return Set.of(GatewayIntent.GUILD_BANS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.DIRECT_MESSAGES,
-                GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS,
-                GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_EMOJIS);
-    }
-
-    public static void info(String msg)
-    {
-        LOGGER.info(msg);
-    }
-
-    public static void warn(String msg)
-    {
-        LOGGER.warn(msg);
-    }
-
-    public static void error(String msg)
-    {
-        LOGGER.error(msg);
-    }
-
-    public static void error(String msg, Throwable t)
-    {
-        LOGGER.error(msg, t);
-    }
-
-    public static String getBeanVersion()
-    {
-        return VERSION;
     }
 }

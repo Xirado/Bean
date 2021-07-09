@@ -1,7 +1,6 @@
 package at.xirado.bean.command.handler;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.command.CommandContext;
 import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
@@ -80,6 +79,7 @@ public class SlashCommandHandler
         registerCommand(new Mee6Transfer());
         registerCommand(new ModeratorCommand());
         registerCommand(new InfoCommand());
+        registerCommand(new XPRoleRewardCommand());
     }
 
     public void updateCommands(Consumer<List<Command>> success, Consumer<Throwable> failure)

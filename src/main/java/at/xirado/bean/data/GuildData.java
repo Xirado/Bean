@@ -4,6 +4,7 @@ package at.xirado.bean.data;
 import at.xirado.bean.Bean;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.misc.objects.RoleReward;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -12,12 +13,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.CheckReturnValue;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class GuildData
@@ -167,6 +167,7 @@ public class GuildData
         return reactionRoles;
     }
 
+    @CheckReturnValue
     public GuildData addReactionRoles(ReactionRole... reactionRoles)
     {
         Checks.noneNull(reactionRoles, "Reaction roles");
@@ -175,6 +176,7 @@ public class GuildData
         return this;
     }
 
+    @CheckReturnValue
     public GuildData removeReactionRoles(ReactionRole... reactionRoles)
     {
         Checks.noneNull(reactionRoles, "Reaction roles");
@@ -183,6 +185,7 @@ public class GuildData
         return this;
     }
 
+    @CheckReturnValue
     public GuildData removeReactionRoles(long messageID)
     {
         reactionRoles = reactionRoles.stream()
@@ -207,6 +210,7 @@ public class GuildData
         return roles;
     }
 
+    @CheckReturnValue
     public GuildData addModeratorRoles(Role... roles)
     {
         Checks.notEmpty(roles, "Roles");
@@ -216,6 +220,7 @@ public class GuildData
         return this;
     }
 
+    @CheckReturnValue
     public GuildData removeModeratorRoles(Role... roles)
     {
         Checks.notEmpty(roles, "Roles");
@@ -249,6 +254,7 @@ public class GuildData
         return roles;
     }
 
+    @CheckReturnValue
     public GuildData addDJRoles(Role... roles)
     {
         Checks.notEmpty(roles, "Roles");
@@ -258,6 +264,7 @@ public class GuildData
         return this;
     }
 
+    @CheckReturnValue
     public GuildData removeDJRoles(Role... roles)
     {
         Checks.notEmpty(roles, "Roles");
@@ -294,6 +301,7 @@ public class GuildData
         return members;
     }
 
+    @CheckReturnValue
     public GuildData addDJMembers(Member... members)
     {
         Checks.notEmpty(members, "Members");
@@ -303,6 +311,7 @@ public class GuildData
         return this;
     }
 
+    @CheckReturnValue
     public GuildData removeDJMembers(Member... members)
     {
         Checks.notEmpty(members, "Members");
@@ -311,4 +320,96 @@ public class GuildData
         dataObject.put("dj_members", djMembers);
         return this;
     }
+
+    public Set<RoleReward> getRoleRewards()
+    {
+        if (dataObject.getObject("role_rewards") == null)
+            return Collections.emptySet();
+        return Set.of(dataObject.convertValueAt("role_rewards", RoleReward[].class));
+    }
+
+    @CheckReturnValue
+    public GuildData addRoleReward(int level, long roleId, boolean persist, boolean removeOnNextReward)
+    {
+        RoleReward roleReward = new RoleReward();
+        roleReward.setLevel(level);
+        roleReward.setRoleId(roleId);
+        roleReward.setPersist(persist);
+        roleReward.setRemoveOnNextReward(removeOnNextReward);
+        Set<RoleReward> currentRewards = new HashSet<>(getRoleRewards());
+        if (hasRoleReward(level))
+            currentRewards.remove(getRoleReward(level));
+        currentRewards.add(roleReward);
+        dataObject.put("role_rewards", currentRewards);
+        return this;
+    }
+
+    @CheckReturnValue
+    public GuildData removeRoleReward(int level)
+    {
+        if (!hasRoleReward(level)) return this;
+        Set<RoleReward> currentRewards = new HashSet<>(getRoleRewards());
+        currentRewards.removeIf(reward -> reward.getLevel() == level);
+        dataObject.put("role_rewards", currentRewards);
+        return this;
+    }
+
+    public RoleReward getRoleReward(int level)
+    {
+        return getRoleRewards().stream().filter(reward -> reward.getLevel() == level).findFirst().orElse(null);
+    }
+
+    public boolean hasRoleReward(int level)
+    {
+        return getRoleRewards().stream().anyMatch(reward -> reward.getLevel() == level);
+    }
+
+    public RoleReward getLastRoleReward(int starting)
+    {
+        if (starting < 1) return null;
+        Set<RoleReward> rewards = getRoleRewards();
+        AtomicInteger integer = new AtomicInteger(starting);
+        while (integer.get() > 0)
+        {
+            RoleReward reward = rewards.stream().filter(reward1 -> reward1.getLevel() == integer.get()).findFirst().orElse(null);
+            if (reward != null)
+                return reward;
+            integer.decrementAndGet();
+        }
+        return null;
+    }
+
+    public Set<RoleReward> getAllRoleRewardsUpTo(int level)
+    {
+        if (level < 1) return Collections.emptySet();
+        return getRoleRewards().stream().filter(reward -> reward.getLevel() <= level).collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns a {@link java.util.Set Set} of {@link RoleReward RoleRewards} that should be applied to a member with a given level.
+     * This is not the same as {@link #getAllRoleRewardsUpTo(int)}!
+     *
+     * @param level The level
+     * @return A Set of RoleRewards
+     */
+    public Set<RoleReward> getEffectiveRoleRewards(int level)
+    {
+        List<RoleReward> rewardList = new ArrayList<>(getAllRoleRewardsUpTo(level));
+        if (rewardList.isEmpty())
+            return Collections.emptySet();
+        rewardList.sort(Comparator.comparingInt(RoleReward::getLevel));
+        Set<RoleReward> result = new HashSet<>();
+        RoleReward previous = null;
+        for (RoleReward reward : rewardList)
+        {
+            if (previous != null && previous.doesRemoveOnNextReward())
+            {
+                result.remove(previous);
+            }
+            result.add(reward);
+            previous = reward;
+        }
+        return result;
+    }
+
 }
