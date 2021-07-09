@@ -1,7 +1,7 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.command.slashcommands.music.MusicUtil;
+import at.xirado.bean.misc.MusicUtil;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEvent;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -58,14 +58,14 @@ public class AudioScheduler extends AudioEventAdapter
 
     }
 
-    public void setRepeat(boolean repeat)
-    {
-        this.repeat = repeat;
-    }
-
     public boolean isRepeat()
     {
         return repeat;
+    }
+
+    public void setRepeat(boolean repeat)
+    {
+        this.repeat = repeat;
     }
 
     public BlockingQueue<AudioTrack> getQueue()

@@ -1,7 +1,5 @@
-package at.xirado.bean.command.slashcommands.music;
+package at.xirado.bean.misc;
 
-import at.xirado.bean.misc.FormatUtil;
-import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
@@ -16,7 +14,7 @@ public class MusicUtil
     {
         if (track == null)
             return "Queue is empty!";
-        return "Now playing: "+track.getInfo().title+" by "+track.getInfo().author;
+        return "Now playing: " + track.getInfo().title + " by " + track.getInfo().author;
     }
 
     public static MessageEmbed getAddedToQueueMessage(GuildAudioPlayer player, AudioTrack track)

@@ -1,7 +1,7 @@
 package at.xirado.bean.event;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.command.slashcommands.music.MusicUtil;
+import at.xirado.bean.misc.MusicUtil;
 import at.xirado.bean.music.AudioScheduler;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -50,7 +50,7 @@ public class OnVoiceUpdate extends ListenerAdapter
     @Override
     public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event)
     {
-        if(!event.getMember().equals(event.getGuild().getSelfMember()))
+        if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         AudioPlayer player = audioPlayer.getPlayer();
