@@ -11,6 +11,7 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.AudioManager;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -65,6 +66,7 @@ public class Bean
                 .setMemberCachePolicy(MemberCachePolicy.ONLINE.and(MemberCachePolicy.VOICE))
                 .setActivity(Activity.watching("www.bean.bz"))
                 .enableCache(CacheFlag.VOICE_STATE)
+                .setAudioSendFactory(new NativeAudioSendFactory())
                 .addEventListeners(new OnReadyEvent(), new OnSlashCommand(), new OnGuildMessageReceived(),
                         new OnGainXP(), new OnGuildMessageReactionAdd(), new OnGuildMessageReactionRemove(), new OnVoiceUpdate(),
                         eventWaiter, new OnGuildMemberJoin())
