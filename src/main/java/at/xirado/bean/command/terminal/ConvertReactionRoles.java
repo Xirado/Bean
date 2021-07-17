@@ -7,6 +7,7 @@ import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.data.ReactionRole;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.log.MCColor;
+import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 
@@ -59,6 +60,9 @@ public class ConvertReactionRoles extends ConsoleCommand
         {
             System.out.println(MCColor.translate("&cAn error occured!"));
             ex.printStackTrace();
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 }

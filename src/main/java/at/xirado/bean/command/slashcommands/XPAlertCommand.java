@@ -93,6 +93,9 @@ public class XPAlertCommand extends SlashCommand
         {
             ex.printStackTrace();
             return "none";
+        } finally
+        {
+            Util.closeQuietly(connection);
         }
     }
 
