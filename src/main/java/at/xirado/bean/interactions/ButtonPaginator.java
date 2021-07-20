@@ -84,7 +84,7 @@ public class ButtonPaginator
                 },
                 event ->
                 {
-                    switch (event.getButton().getId())
+                    switch (event.getComponentId())
                     {
                         case "previous" -> {
                             page--;
@@ -102,7 +102,7 @@ public class ButtonPaginator
                             interactionStopped = true;
                             jda.getTextChannelById(channelId).retrieveMessageById(messageId).queue(
                                     (message) ->
-                                            message.editMessageEmbeds(message.getEmbeds()).setActionRows(Collections.emptyList()).queue(s -> {}, e -> {})
+                                            message.editMessageComponents(Collections.emptyList()).queue()
                                     ,
                                     (error) ->
                                     {
@@ -118,7 +118,7 @@ public class ButtonPaginator
                     interactionStopped = true;
                     jda.getTextChannelById(channelId).retrieveMessageById(messageId).queue(
                             message ->
-                                message.editMessageEmbeds(message.getEmbeds()).setActionRows(Collections.emptyList()).queue(s -> {}, e -> {}),
+                                    message.editMessageComponents(Collections.emptyList()).queue(s -> {}, e -> {}),
                             error -> {}
                     );
                 }
