@@ -27,7 +27,7 @@ public class OnGainXP extends ListenerAdapter
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
     {
-        if (event.getAuthor().isBot() || event.isWebhookMessage()) return;
+        if (event.getAuthor().isBot() || event.isWebhookMessage() || event.getMessage().getType().isSystem()) return;
         if (event.getMessage().getContentRaw().startsWith(GuildManager.getGuildData(event.getGuild()).getPrefix()))
             return;
         Bean.getInstance().getExecutor().submit(() ->

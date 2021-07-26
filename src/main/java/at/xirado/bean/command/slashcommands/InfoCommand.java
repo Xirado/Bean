@@ -3,6 +3,9 @@ package at.xirado.bean.command.slashcommands;
 import at.xirado.bean.Bean;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
+import at.xirado.bean.command.terminal.Info;
+import at.xirado.bean.misc.EmbedUtil;
+import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.entities.Member;
@@ -25,13 +28,18 @@ public class InfoCommand extends SlashCommand
         long currentTime = System.currentTimeMillis() / 1000;
         String jdaVersion = JDAInfo.VERSION;
         String javaVersion = System.getProperty("java.version");
-        event.replyEmbeds(
-                new EmbedBuilder()
-                        .setColor(0x3EB489)
-                        .setDescription("Uptime: " + ctx.parseDuration(currentTime - Bean.START_TIME, " ") + "\n\n" +
-                                "Bean Remastered v" + Bean.getBeanVersion() + " (JDA " + jdaVersion+")")
-                        .setFooter("OpenJDK "+javaVersion)
-                        .build()
-        ).queue();
+        String lavaPlayerVersion = PlayerLibrary.VERSION;
+        EmbedBuilder builder = new EmbedBuilder()
+                .setColor(EmbedUtil.DEFAULT_COLOR)
+                .addField("Uptime", ctx.parseDuration(currentTime - Bean.START_TIME, " "), false)
+                .addField("Memory", "max memory: `"+ Info.convertBytes(Runtime.getRuntime().maxMemory())+"`\n" +
+                        "allocated memory: `"+Info.convertBytes(Runtime.getRuntime().totalMemory())+"`\n" +
+                        "free memory: `"+Info.convertBytes(Runtime.getRuntime().freeMemory())+"`\n" +
+                        "used memory: `"+Info.convertBytes(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())+"`", false)
+                .addField("Java", "OpenJDK "+javaVersion, true)
+                .addField("JDA", "JDA "+jdaVersion, true)
+                .addField("Lavaplayer", "Lavaplayer "+lavaPlayerVersion, true)
+                .setFooter("Bean "+Bean.getBeanVersion());
+        event.replyEmbeds(builder.build()).queue();
     }
 }

@@ -92,10 +92,11 @@ public class TempbanCommand extends SlashCommand
         guild.ban(targetMember, 0, Reason).queue(
                 (success) ->
                 {
+
                     Case modcase = Case.createCase(CaseType.TEMPBAN, guild.getIdLong(), targetMember.getIdLong(), sender.getIdLong(), Reason, time);
                     Runnable r = () ->
                     {
-                        Punishments.unban(modcase, Bean.getInstance().getJDA().getTextChannelById(channelid));
+                        Punishments.unban(modcase, Bean.getInstance().getShardManager().getTextChannelById(channelid));
 
                     };
                     Bean.getInstance().getExecutor().schedule(r, time, TimeUnit.MILLISECONDS);

@@ -6,7 +6,10 @@ import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.command.slashcommands.*;
 import at.xirado.bean.command.slashcommands.music.*;
+import at.xirado.bean.data.DataObject;
+import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.translation.LanguageLoader;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
@@ -14,8 +17,10 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -44,7 +49,7 @@ public class SlashCommandHandler
 
     public void initialize()
     {
-        commandUpdateAction = Bean.getInstance().getJDA().updateCommands();
+        commandUpdateAction = Bean.getInstance().getShardManager().getShards().get(0).updateCommands();
         registerAllCommands();
     }
 
@@ -91,7 +96,7 @@ public class SlashCommandHandler
             List<SlashCommand> slashCommands = entrySet.getValue();
             if (guildID == null || slashCommands == null) continue;
             if (slashCommands.isEmpty()) continue;
-            Guild guild = Bean.getInstance().getJDA().getGuildById(guildID);
+            Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
             if (guild == null) continue;
             CommandListUpdateAction guildCommandUpdateAction = guild.updateCommands();
             for (SlashCommand cmd : slashCommands)
@@ -110,7 +115,7 @@ public class SlashCommandHandler
             if (command.getEnabledGuilds().isEmpty()) return;
             for (Long guildID : command.getEnabledGuilds())
             {
-                Guild guild = Bean.getInstance().getJDA().getGuildById(guildID);
+                Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
                 if (guild == null) continue;
                 List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(guildID) ? registeredGuildCommands.get(guildID) : new ArrayList<>();
                 alreadyRegistered.add(command);
@@ -127,7 +132,7 @@ public class SlashCommandHandler
         if (Bean.getInstance().isDebug())
         {
             long testServerID = 815597207617142814L;
-            Guild guild = Bean.getInstance().getJDA().getGuildById(testServerID);
+            Guild guild = Bean.getInstance().getShardManager().getGuildById(testServerID);
             if (guild != null)
             {
                 List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(testServerID) ? registeredGuildCommands.get(testServerID) : new ArrayList<>();
@@ -315,6 +320,23 @@ public class SlashCommandHandler
             } catch (Exception e)
             {
                 LOGGER.error("Could not execute slash-command", e);
+                StringBuilder path = new StringBuilder("/"+event.getCommandPath().replace("/", " "));
+                for(OptionMapping option : event.getOptions())
+                {
+                    path.append(" ").append(option.getName()).append(":").append("`").append(option.getAsString()).append("`");
+                }
+                EmbedBuilder builder = new EmbedBuilder()
+                        .setTitle("An error occurred while executing a slash-command!")
+                        .addField("Guild", (event.getGuild() == null ? "None (Direct message)" : event.getGuild().getIdLong()+" ("+event.getGuild().getName()+")"),true)
+                        .addField("User", event.getUser().getAsMention()+" ("+event.getUser().getAsTag()+")", true)
+                        .addField("Command", path.toString(), false)
+                        .setDescription("```\n"+ExceptionUtils.getStackTrace(e)+"\n```")
+                        .setColor(EmbedUtil.ERROR_COLOR);
+                event.getJDA().openPrivateChannelById(Bean.OWNER_ID)
+                        .flatMap(c -> c.sendMessageEmbeds(builder.build()))
+                        .queue();
+                DataObject translation = event.getGuild() == null ? LanguageLoader.getForLanguage("en_US") : LanguageLoader.ofGuild(event.getGuild());
+                event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {}, ex -> {});
             }
         };
         Bean.getInstance().getExecutor().submit(r);

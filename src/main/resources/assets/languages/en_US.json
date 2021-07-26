@@ -30,6 +30,7 @@
 		"reason": "Reason",
 		"target": "Target",
 		"target_id": "Target ID",
+		"user_id" : "User ID: %1$s",
 		"cannot_interact_role": "I cannot interact with the role %1$s!",
 		"invalid_role": "This role is invalid!",
 		"issued": "Issued",
@@ -161,7 +162,7 @@
 			"category" : "Category: %1$s"
 		},
 		"xp": {
-			"ranked" : "Hey %1$s, you just ranked up to Level **%2$s**!"
+			"ranked" : "Hey %1$s, you just ranked up to level **%2$s**!"
 		}
 	},
 	"time": {

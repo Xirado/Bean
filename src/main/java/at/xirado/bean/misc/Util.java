@@ -12,6 +12,7 @@ import java.io.File;
 import java.security.CodeSource;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ThreadFactory;
 
 public class Util
 {
@@ -111,5 +112,37 @@ public class Util
             LOGGER.error("Could not get path of jar!", e);
             return null;
         }
+    }
+
+    public static ThreadFactory newThreadFactory(String threadName)
+    {
+        return newThreadFactory(threadName, LoggerFactory.getLogger(Bean.class));
+    }
+
+    public static ThreadFactory newThreadFactory(String threadName, boolean isDaemon)
+    {
+        return newThreadFactory(threadName, LoggerFactory.getLogger(Bean.class), isDaemon);
+    }
+
+    public static ThreadFactory newThreadFactory(String threadName, Logger logger)
+    {
+        return newThreadFactory(threadName, logger, true);
+    }
+
+    public static ThreadFactory newThreadFactory(String threadName, Logger logger, boolean isdaemon)
+    {
+        return (r) ->
+        {
+            Thread t = new Thread(r, threadName);
+            t.setDaemon(isdaemon);
+            t.setUncaughtExceptionHandler((final Thread thread, final Throwable throwable) ->
+                    logger.error("There was a uncaught exception in the {} threadpool", thread.getName(), throwable));
+            return t;
+        };
+    }
+
+    public static String replaceLast(final String text, final String regex, final String replacement)
+    {
+        return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
     }
 }

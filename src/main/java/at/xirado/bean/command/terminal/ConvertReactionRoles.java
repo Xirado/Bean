@@ -43,7 +43,7 @@ public class ConvertReactionRoles extends ConsoleCommand
                 long messageId = rs.getLong("messageID");
                 String emote = rs.getString("emoticon");
                 long roleId = rs.getLong("roleID");
-                Role role = Bean.getInstance().getJDA().getRoleById(roleId);
+                Role role = Bean.getInstance().getShardManager().getRoleById(roleId);
                 if (role == null) continue;
                 Guild guild = role.getGuild();
                 GuildData guildData = GuildManager.getGuildData(guild);

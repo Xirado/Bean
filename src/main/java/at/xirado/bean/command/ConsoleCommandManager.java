@@ -60,5 +60,6 @@ public class ConsoleCommandManager
         registerCommand(new PrintGuildData());
         registerCommand(new ConvertReactionRoles());
         registerCommand(new UpdateSlashCommands());
+        registerCommand(new PrintCommandJSON());
     }
 }

@@ -245,13 +245,13 @@ public class Case
 
     public static void banMember(long guildID, long targetID, long moderatorID, String reason, long duration, Consumer<Case> caseConsumer, Consumer<Throwable> throwableConsumer)
     {
-        Guild guild = Bean.getInstance().getJDA().getGuildById(guildID);
+        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
         if (guild == null)
         {
             throwableConsumer.accept(new IllegalArgumentException("This guild does not exist!"));
             return;
         }
-        Bean.getInstance().getJDA().openPrivateChannelById(targetID).queue(
+        Bean.getInstance().getShardManager().getShards().get(0).openPrivateChannelById(targetID).queue(
                 privateChannel ->
                 {
                     EmbedBuilder builder = new EmbedBuilder()

@@ -10,6 +10,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -47,7 +48,7 @@ public class AudioScheduler extends AudioEventAdapter
         AudioTrack track = queue.poll();
         if (track == null)
         {
-            VoiceChannel current = Bean.getInstance().getJDA().getGuildById(guildId).getAudioManager().getConnectedChannel();
+            VoiceChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getAudioManager().getConnectedChannel();
             if (current instanceof StageChannel stageChannel)
             {
                 if (stageChannel.getStageInstance() != null)
@@ -95,7 +96,7 @@ public class AudioScheduler extends AudioEventAdapter
     {
         super.onTrackStart(player, track);
         playingSong = track;
-        VoiceChannel current = Bean.getInstance().getJDA().getGuildById(guildId).getAudioManager().getConnectedChannel();
+        VoiceChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getAudioManager().getConnectedChannel();
         if (current instanceof StageChannel stageChannel)
         {
             if (stageChannel.getStageInstance() == null)

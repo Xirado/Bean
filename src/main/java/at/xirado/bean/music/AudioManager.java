@@ -8,6 +8,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +20,11 @@ public class AudioManager
     private final AudioPlayerManager playerManager;
     private final Map<Long, GuildAudioPlayer> audioPlayers;
     private final Map<Long, CachedMessage> nowPlayingMessages = new HashMap<>();
-    private final JDA jda;
+    private final ShardManager shardManager;
 
-    public AudioManager(JDA jda)
+    public AudioManager(ShardManager manager)
     {
-        this.jda = jda;
+        this.shardManager = manager;
         this.playerManager = new DefaultAudioPlayerManager();
         this.audioPlayers = new ConcurrentHashMap<>();
         AudioSourceManagers.registerRemoteSources(playerManager);
@@ -36,7 +37,7 @@ public class AudioManager
         {
             long guildId = entry.getKey();
             CachedMessage cachedMessage = entry.getValue();
-            Guild guild = jda.getGuildById(guildId);
+            Guild guild = shardManager.getGuildById(guildId);
             if (guild == null)
             {
                 nowPlayingMessages.remove(guildId);

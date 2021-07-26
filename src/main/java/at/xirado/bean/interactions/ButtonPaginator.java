@@ -79,7 +79,14 @@ public class ButtonPaginator
                     if (interactionStopped) return false;
                     if (messageId != event.getMessageIdLong()) return false;
                     if (allowedUsers.size() >= 1)
-                        return allowedUsers.contains(event.getUser().getIdLong());
+                    {
+                        if (!allowedUsers.contains(event.getUser().getIdLong()))
+                        {
+                            event.deferEdit().queue(s -> {}, e -> {});
+                            return false;
+                        }
+                    }
+
                     return true;
                 },
                 event ->

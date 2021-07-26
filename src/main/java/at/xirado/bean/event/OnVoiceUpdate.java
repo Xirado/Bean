@@ -6,6 +6,7 @@ import at.xirado.bean.music.AudioScheduler;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import net.dv8tion.jda.api.entities.StageChannel;
+import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -21,7 +22,7 @@ public class OnVoiceUpdate extends ListenerAdapter
      * The bot will pause the currently playing track instantly and will clear the queue and disconnect
      * after the specified duration.
      */
-    public static final long TIME_UNTIL_AUTO_DISCONNECT = TimeUnit.MINUTES.toSeconds(3);
+    public static final long TIME_UNTIL_AUTO_DISCONNECT = TimeUnit.MINUTES.toSeconds(1);
 
 
     @Override

@@ -159,7 +159,7 @@ public class GuildData
     {
         Long id = dataObject.getLong("log_channel");
         if (id == null) return null;
-        return Bean.getInstance().getJDA().getTextChannelById(id);
+        return Bean.getInstance().getShardManager().getTextChannelById(id);
     }
 
     public Set<ReactionRole> getReactionRoles()
@@ -200,7 +200,7 @@ public class GuildData
         Set<Role> roles = new HashSet<>();
         if (dataObject.getObject("moderator_roles") == null) return roles;
         long[] roleIds = dataObject.convertValueAt("moderator_roles", long[].class);
-        Guild guild = Bean.getInstance().getJDA().getGuildById(guildID);
+        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
         if (guild == null) return roles;
         for (long roleId : roleIds)
         {
@@ -244,7 +244,7 @@ public class GuildData
         if (dataObject.getObject("dj_roles") == null)
             return roles;
         long[] roleIds = dataObject.convertValueAt("dj_roles", long[].class);
-        Guild guild = Bean.getInstance().getJDA().getGuildById(guildID);
+        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
         if (guild == null) return roles;
         for (long roleId : roleIds)
         {

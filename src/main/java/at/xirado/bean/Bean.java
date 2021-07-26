@@ -12,10 +12,10 @@ import at.xirado.bean.music.AudioManager;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class Bean
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
     private static final String VERSION = loadVersion();
     private static Bean instance;
-    private final JDA jda;
+    private final ShardManager shardManager;
     private final DataObject config = loadConfig();
     private final boolean debug;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setNameFormat("Bean Thread %d").build());
@@ -62,16 +62,17 @@ public class Bean
         commandHandler = new CommandHandler();
         eventWaiter = new EventWaiter();
         Class.forName("at.xirado.bean.translation.LanguageLoader");
-        jda = JDABuilder.create(config.getString("token"), getIntents())
+        shardManager = DefaultShardManagerBuilder.create(config.getString("token"), getIntents())
+                .setShardsTotal(-1)
                 .setMemberCachePolicy(MemberCachePolicy.ONLINE.and(MemberCachePolicy.VOICE))
-                .setActivity(Activity.watching("www.bean.bz"))
+                .setActivity(Activity.watching("Invite: bean.bz"))
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setAudioSendFactory(new NativeAudioSendFactory())
                 .addEventListeners(new OnReadyEvent(), new OnSlashCommand(), new OnGuildMessageReceived(),
                         new OnGainXP(), new OnGuildMessageReactionAdd(), new OnGuildMessageReactionRemove(), new OnVoiceUpdate(),
-                        eventWaiter, new OnGuildMemberJoin())
+                        eventWaiter, new OnGuildMemberJoin(), new OnGuildUnban())
                 .build();
-        audioManager = new AudioManager(jda);
+        audioManager = new AudioManager(shardManager);
     }
 
     public static Bean getInstance()
@@ -94,7 +95,7 @@ public class Bean
                 LOGGER.error("Could not login to Discord!", ex);
                 return;
             }
-            LOGGER.error("An error occured starting Bean!", e);
+            LOGGER.error("An error occurred starting the Bot!", e);
         }
     }
 
@@ -159,9 +160,9 @@ public class Bean
         return debug;
     }
 
-    public JDA getJDA()
+    public ShardManager getShardManager()
     {
-        return jda;
+        return shardManager;
     }
 
     public ConsoleCommandManager getConsoleCommandManager()

@@ -24,7 +24,7 @@ public class Info extends ConsoleCommand
         StringBuilder sb = new StringBuilder();
         long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         sb.append("\nBean version ").append(Bean.getBeanVersion()).append("\nJDA ").append(JDAInfo.VERSION + " (" + JDAInfo.GITHUB + ")");
-        sb.append("\nCurrently playing music in ").append(Bean.getInstance().getJDA().getAudioManagers().size()).append(" guilds\nmemory info:\n")
+        sb.append("\nmemory info:\n")
                 .append("   max memory:       ").append(convertBytes(Runtime.getRuntime().maxMemory())).append("\n")
                 .append("   allocated memory: ").append(convertBytes(Runtime.getRuntime().totalMemory())).append("\n")
                 .append("   free memory:      ").append(convertBytes(Runtime.getRuntime().freeMemory())).append("\n")

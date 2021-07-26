@@ -29,7 +29,7 @@ public class SendMessage extends ConsoleCommand
             return;
         }
 
-        Guild g = Bean.getInstance().getJDA().getGuildById(args[0]);
+        Guild g = Bean.getInstance().getShardManager().getGuildById(args[0]);
         if (g == null)
         {
             System.out.println(ConsoleUtils.error("Invalid guild!"));

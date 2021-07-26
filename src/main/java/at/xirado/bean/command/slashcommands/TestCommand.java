@@ -11,12 +11,16 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.OffsetDateTime;
+
 public class TestCommand extends SlashCommand
 {
     public TestCommand()
     {
         setCommandData(new CommandData("test", "this command is only for test purposes")
                 .addOption(OptionType.BOOLEAN, "ephemeral", "if this message is ephemeral", true)
+                .addOption(OptionType.INTEGER, "value", "the value", true)
+                .addOption(OptionType.STRING, "reason", "reason", true)
         );
         Global(false);
         setEnabledGuilds(815597207617142814L);
@@ -25,19 +29,6 @@ public class TestCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
-        System.out.println(JDAInfo.VERSION);
-        event.getGuild().createTextChannel("test123").setTopic("Hello123").queue();
-
-        EmbedBuilder builder = new EmbedBuilder()
-                .setDescription("<a:kekW:859813384244166746>");
-        if (event.getOption("ephemeral").getAsBoolean())
-        {
-            event.replyEmbeds(builder.build()).setEphemeral(true).queue();
-            return;
-        } else
-        {
-            event.replyEmbeds(builder.build()).queue();
-        }
-
+        throw new IllegalArgumentException("Invalid subcommand!");
     }
 }

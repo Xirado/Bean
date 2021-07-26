@@ -31,6 +31,7 @@ public class CommandHandler
     public CommandHandler()
     {
         registerCommand(new Settings());
+        registerCommand(new Eval());
     }
 
     private void registerCommand(Command command)
@@ -102,7 +103,11 @@ public class CommandHandler
 
                 if (command.hasCommandFlag(CommandFlag.DEVELOPER_ONLY))
                 {
-                    if (event.getMember().getIdLong() != Bean.OWNER_ID) return;
+                    if (event.getMember().getIdLong() != Bean.OWNER_ID)
+                    {
+                        event.getMessage().addReaction("❌").queue();
+                        return;
+                    }
                 }
 
                 if (command.hasCommandFlag(CommandFlag.DISABLED))

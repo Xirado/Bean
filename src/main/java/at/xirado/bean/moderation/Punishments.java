@@ -49,7 +49,7 @@ public class Punishments
     {
         if (c == null) return;
         c.fetchUpdate();
-        Guild g = Bean.getInstance().getJDA().getGuildById(c.getGuildID());
+        Guild g = Bean.getInstance().getShardManager().getGuildById(c.getGuildID());
         if (g == null) return;
         if (c.isActive())
         {
@@ -57,11 +57,11 @@ public class Punishments
                     (unbanned) ->
                     {
                         c.setActive(false);
-                        Bean.getInstance().getJDA().retrieveUserById(c.getTargetID()).queue(
+                        Bean.getInstance().getShardManager().retrieveUserById(c.getTargetID()).queue(
                                 (targetuser) ->
                                 {
                                     TextChannel logchannel = GuildManager.getGuildData(g).getLogChannel();
-                                    User selfuser = Bean.getInstance().getJDA().getSelfUser();
+                                    User selfuser = g.getJDA().getSelfUser();
                                     EmbedBuilder builder = new EmbedBuilder()
                                             .setColor(Color.green)
                                             .setTitle("Unban | #" + c.getCaseID())
@@ -127,7 +127,7 @@ public class Punishments
     {
         c.fetchUpdate(); // fetch update from DB
         if (!c.isActive()) return;
-        Guild g = Bean.getInstance().getJDA().getGuildById(c.getGuildID());
+        Guild g = Bean.getInstance().getShardManager().getGuildById(c.getGuildID());
         if (g == null) return;
         g.retrieveMemberById(c.getTargetID()).queue(
                 (member) ->
@@ -150,7 +150,7 @@ public class Punishments
                     {
                     });
                     TextChannel logchannel = GuildManager.getGuildData(g).getLogChannel();
-                    User selfuser = Bean.getInstance().getJDA().getSelfUser();
+                    User selfuser = g.getJDA().getSelfUser();
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(Color.green)
                             .setTitle("Unmute | #" + c.getCaseID())

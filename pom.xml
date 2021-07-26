@@ -16,14 +16,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.dv8fromtheworld</groupId>
-            <artifactId>jda</artifactId>
-            <version>ae39561</version>
+            <groupId>net.dv8tion</groupId>
+            <artifactId>JDA</artifactId>
+            <version>4.3.0_298</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.12.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-jsr223</artifactId>
+            <version>3.0.8</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>

@@ -161,7 +161,7 @@
 			"category" : "Kategorie: %1$s"
 		},
 		"xp": {
-			"ranked" : "Hey %1$s, Du bist gerade auf Level **%2$s** aufgestiegen!"
+			"ranked" : "Hey %1$s, du bist gerade auf Level **%2$s** aufgestiegen!"
 		}
 	},
 	"time": {

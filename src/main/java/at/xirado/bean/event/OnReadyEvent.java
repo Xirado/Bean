@@ -15,6 +15,7 @@ public class OnReadyEvent extends ListenerAdapter
     @Override
     public void onReady(@NotNull ReadyEvent event)
     {
+        LOGGER.info("Successfully started "+Bean.getInstance().getShardManager().getShards().size()+" shards!");
         Bean.getInstance().getSlashCommandHandler().initialize();
         if (Bean.getInstance().isDebug())
         {

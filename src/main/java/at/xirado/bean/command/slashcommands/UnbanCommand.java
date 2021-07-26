@@ -3,6 +3,7 @@ package at.xirado.bean.command.slashcommands;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.database.Database;
+import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -42,53 +43,16 @@ public class UnbanCommand extends SlashCommand
         Guild g = event.getGuild();
         if (g == null) return;
         User target = event.getOption("user").getAsUser();
-        if (target == null) return;
-        g.retrieveBan(target).queue(
-                (ban) ->
-                {
-                    g.unban(target).queue(
-                            (success) ->
-                            {
-                                String qry = "UPDATE modcases SET active = 0 WHERE guildID = ? AND targetID = ? AND caseType = ? AND active = 1";
-                                Connection connection = Database.getConnectionFromPool();
-                                if (connection == null)
-                                {
-                                    return;
-                                }
-                                try (var ps = connection.prepareStatement(qry))
-                                {
-                                    ps.setLong(1, g.getIdLong());
-                                    ps.setLong(2, target.getIdLong());
-                                    ps.setString(3, "Tempban");
-                                    ps.execute();
-                                } catch (SQLException e)
-                                {
-                                    return;
-                                } finally
-                                {
-                                    Util.closeQuietly(connection);
-                                }
-                                ctx.reply(SlashCommandContext.SUCCESS + " " + ctx.getLocalized("commands.unban.has_been_unbanned", target.getAsTag())).setEphemeral(true).queue();
-                                TextChannel logchannel = ctx.getGuildData().getLogChannel();
-                                EmbedBuilder builder = new EmbedBuilder()
-                                        .setColor(Color.green)
-                                        .setTitle(ctx.getLocalized("commands.unban.unban"))
-                                        .setThumbnail(target.getEffectiveAvatarUrl())
-                                        .addField(ctx.getLocalized("commands.target"), target.getAsMention() + " (" + target.getAsTag() + ")", true)
-                                        .addField("Moderator", sender.getAsMention() + " (" + sender.getUser().getAsTag() + ")", true);
-                                if (logchannel != null)
-                                {
-                                    logchannel.sendMessage(builder.build()).queue();
-                                }
-
-                            },
-                            (error) ->
-                                    ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue()
-                    );
-                },
-                new ErrorHandler()
-                        .handle(ErrorResponse.UNKNOWN_BAN, (ex) -> ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("commands.unban.not_banned")).setEphemeral(true).queue())
-                        .handle(EnumSet.allOf(ErrorResponse.class), (ex) -> ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue())
-        );
+        g.retrieveBan(target)
+                .queue(
+                        (ban) ->
+                                g.unban(target)
+                                        .flatMap((x) -> event.replyEmbeds(EmbedUtil.successEmbed(target.getAsTag()+" has been unbanned!")))
+                                        .queue(s -> {},
+                                                new ErrorHandler()
+                                                    .handle(ErrorResponse.MISSING_PERMISSIONS, e -> event.replyEmbeds(EmbedUtil.noEntryEmbed("I do not have the permission to unban users!")).queue())
+                                        )
+                        , new ErrorHandler().handle(ErrorResponse.UNKNOWN_BAN, (e) -> event.replyEmbeds(EmbedUtil.errorEmbed("This user is not banned!")).queue())
+                );
     }
 }
