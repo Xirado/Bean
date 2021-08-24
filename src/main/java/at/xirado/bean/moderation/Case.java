@@ -2,6 +2,7 @@ package at.xirado.bean.moderation;
 
 import at.xirado.bean.Bean;
 import at.xirado.bean.data.database.Database;
+import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -20,16 +21,6 @@ public class Case
 
     private static final Logger logger = LoggerFactory.getLogger(Case.class);
 
-    /**
-     * caseID VARCHAR(6)
-     * guildID BIGINT NOT NULL
-     * targetID BIGINT NOT NULL
-     * moderatorID BIGINT NOT NULL
-     * caseType VARCHAR(20) NOT NULL
-     * reason VARCHAR(512) NOT NULL
-     * duration BIGINT NOT NULL
-     * creationDate BIGINT NOT NULL
-     */
     private final String caseID;
     private final CaseType type;
     private final long GuildID;
@@ -42,40 +33,31 @@ public class Case
 
     public void setActive(boolean value)
     {
-        Connection connection = Database.getConnectionFromPool();
-        if (connection == null) return;
+
         String qry = "UPDATE modcases SET active = ? WHERE caseID = ?";
-        try (PreparedStatement ps = connection.prepareStatement(qry))
+        var query = new SQLBuilder(qry)
+                .addParameters(value, this.caseID);
+        try
         {
-            ps.setBoolean(1, value);
-            ps.setString(2, this.caseID);
-            ps.execute();
-        } catch (SQLException throwables)
+            query.execute();
+        }catch (SQLException ex)
         {
-            throwables.printStackTrace();
-        } finally
-        {
-            Util.closeQuietly(connection);
+            logger.error("Could not set active to "+value+"!", ex);
         }
     }
 
 
     public void setReason(String reason)
     {
-        Connection connection = Database.getConnectionFromPool();
-        if (connection == null) return;
         String qry = "UPDATE modcases SET reason = ? WHERE caseID = ?";
-        try (PreparedStatement ps = connection.prepareStatement(qry))
+        var query = new SQLBuilder(qry)
+                .addParameters(reason, this.caseID);
+        try
         {
-            ps.setString(1, reason);
-            ps.setString(2, this.caseID);
-            ps.execute();
-        } catch (SQLException throwables)
+            query.execute();
+        }catch (SQLException ex)
         {
-            throwables.printStackTrace();
-        } finally
-        {
-            Util.closeQuietly(connection);
+            logger.error("Could not set reason of modcase!", ex);
         }
     }
 
@@ -143,21 +125,17 @@ public class Case
      */
     public boolean deleteCase()
     {
-        Connection connection = Database.getConnectionFromPool();
-        if (connection == null) return false;
         String qry = "DELETE FROM modcases WHERE caseID = ?";
-        try (PreparedStatement ps = connection.prepareStatement(qry))
+        var query = new SQLBuilder(qry)
+                .addParameters(caseID);
+        try
         {
-            ps.setString(1, caseID);
-            ps.execute();
+            query.execute();
             return true;
         } catch (SQLException throwables)
         {
             throwables.printStackTrace();
             return false;
-        } finally
-        {
-            Util.closeQuietly(connection);
         }
     }
 
@@ -183,28 +161,16 @@ public class Case
             String generatedID = generateCaseNumber();
             if (!idAlreadyExists(generatedID)) caseID = generatedID;
         }
-        Connection connection = Database.getConnectionFromPool();
-        if (connection == null) return null;
         String qry = "INSERT INTO modcases (caseID, guildID, targetID, moderatorID, caseType, reason, duration, creationDate, active) values (?,?,?,?,?,?,?,?,?)";
-        try (PreparedStatement ps = connection.prepareStatement(qry))
+        var query = new SQLBuilder(qry)
+                .addParameters(caseID, guildID, targetID, moderatorID, caseType, reason, duration, System.currentTimeMillis(), true);
+        try
         {
-            ps.setString(1, caseID);
-            ps.setLong(2, guildID);
-            ps.setLong(3, targetID);
-            ps.setLong(4, moderatorID);
-            ps.setString(5, caseType);
-            ps.setString(6, reason);
-            ps.setLong(7, duration);
-            ps.setLong(8, System.currentTimeMillis());
-            ps.setBoolean(9, true);
-            ps.execute();
+            query.execute();
         } catch (SQLException throwables)
         {
             logger.error("Could not create case!", throwables);
             return null;
-        } finally
-        {
-            Util.closeQuietly(connection);
         }
         return new Case(type, guildID, targetID, moderatorID, reason, duration, System.currentTimeMillis(), caseID, true);
     }
@@ -223,23 +189,18 @@ public class Case
         return code.toUpperCase();
     }
 
-    public static boolean idAlreadyExists(String ID)
+    public static boolean idAlreadyExists(String id)
     {
-        Connection connection = Database.getConnectionFromPool();
         String qry = "SELECT 1 FROM modcases WHERE caseID = ?";
-        if (connection == null) return false;
-        try (PreparedStatement ps = connection.prepareStatement(qry))
+        var query = new SQLBuilder(qry)
+                .addParameter(id);
+        try(ResultSet rs = query.executeQuery())
         {
-            ps.setString(1, ID);
-            ResultSet rs = ps.executeQuery();
             return rs.next();
         } catch (SQLException e)
         {
             e.printStackTrace();
             return true;
-        } finally
-        {
-            Util.closeQuietly(connection);
         }
     }
 

@@ -58,15 +58,6 @@ public class Mee6Transfer extends SlashCommand
                                             e.getComponentId().equals("mee6transfer:" + event.getIdLong()),
                                     e ->
                                     {
-                                        Connection connection = Database.getConnectionFromPool();
-                                        if (connection == null)
-                                        {
-                                            EmbedBuilder embedBuilder = new EmbedBuilder()
-                                                    .setDescription(ctx.getLocalized("general.db_error"))
-                                                    .setColor(0x452350);
-                                            e.editMessageEmbeds(embedBuilder.build()).queue();
-                                            return;
-                                        }
                                         EmbedBuilder embedBuilder = new EmbedBuilder()
                                                 .setDescription("<a:Loading2:800570529647296513> Loading...")
                                                 .setColor(0x452350);
@@ -74,8 +65,16 @@ public class Mee6Transfer extends SlashCommand
                                                 hook2 ->
                                                 {
                                                     long startTime = System.currentTimeMillis();
-                                                    try
+                                                    try(Connection connection = Database.getConnectionFromPool())
                                                     {
+                                                        if (connection == null)
+                                                        {
+                                                            EmbedBuilder embedBuilder1 = new EmbedBuilder()
+                                                                    .setDescription(ctx.getLocalized("general.db_error"))
+                                                                    .setColor(0x452350);
+                                                            e.editMessageEmbeds(embedBuilder1.build()).queue();
+                                                            return;
+                                                        }
                                                         int page = 0;
                                                         int transferredPlayers = 0;
                                                         long guildID = event.getGuild().getIdLong();
@@ -134,17 +133,12 @@ public class Mee6Transfer extends SlashCommand
                                                                     .setDescription(ctx.getLocalized("general.unknown_error_occured"));
                                                             hook2.editOriginalEmbeds(embedBuilder1.build()).queue();
                                                         }
-                                                    } finally
-                                                    {
-                                                        Util.closeQuietly(connection);
                                                     }
-                                                }
-                                        , (x) -> Util.closeQuietly(connection));
+                                                });
                                     },
                                     30, TimeUnit.SECONDS,
                                     () ->
                                     {
-                                        System.out.println("Timeout!");
                                         hook.editMessageEmbeds(new EmbedBuilder()
                                                 .setColor(Color.RED)
                                                 .setDescription("Timed out!")

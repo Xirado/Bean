@@ -1,6 +1,7 @@
 package at.xirado.bean.data;
 
 import at.xirado.bean.data.database.Database;
+import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.Util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import net.dv8tion.jda.api.entities.Guild;
@@ -40,44 +41,34 @@ public class GuildManager
         return GUILD_DATA.get(guildID).toPrettyString();
     }
 
-    // guildSettings (guildID BIGINT PRIMARY KEY, data JSON CHECK (JSON_VALID(data)))
     private static GuildData retrieveGuildData(long guildID)
     {
-        Connection connection = Database.getConnectionFromPool();
-        String query = "SELECT data FROM guildSettings WHERE guildID = ?";
-        try (var ps = connection.prepareStatement(query))
+        String sql = "SELECT data FROM guildSettings WHERE guildID = ?";
+        var query = new SQLBuilder(sql)
+                .addParameter(guildID);
+        try(var rs = query.executeQuery())
         {
-            ps.setLong(1, guildID);
-            ResultSet rs = ps.executeQuery();
             if (rs.next()) return new GuildData(guildID, DataObject.parse(rs.getString("data")));
             return null;
-        } catch (SQLException exception)
+        }catch (SQLException ex)
         {
-            LOGGER.error("Could not retrieve guild data!", exception);
+            LOGGER.error("Could not retrieve guild data!", ex);
             return null;
-        } finally
-        {
-            Util.closeQuietly(connection);
         }
     }
 
     private static void updateGuildData(long guildID, DataObject data)
     {
-        Connection connection = Database.getConnectionFromPool();
-        String query = "INSERT INTO guildSettings (guildID, data) values (?,?) ON DUPLICATE KEY UPDATE data = ?";
-        try (var ps = connection.prepareStatement(query))
+        String sql = "INSERT INTO guildSettings (guildID, data) values (?,?) ON DUPLICATE KEY UPDATE data = ?";
+        try
         {
             String jsonString = data.toJson();
-            ps.setLong(1, guildID);
-            ps.setString(2, jsonString);
-            ps.setString(3, jsonString);
-            ps.execute();
+            var query = new SQLBuilder(sql)
+                    .addParameters(guildID, jsonString, jsonString);
+            query.execute();
         } catch (SQLException | JsonProcessingException exception)
         {
             LOGGER.error("Could not update guild data!", exception);
-        } finally
-        {
-            Util.closeQuietly(connection);
         }
     }
 

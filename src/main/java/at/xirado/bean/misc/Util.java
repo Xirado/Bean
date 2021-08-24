@@ -7,8 +7,10 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.security.CodeSource;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -144,5 +146,20 @@ public class Util
     public static String replaceLast(final String text, final String regex, final String replacement)
     {
         return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
+    }
+
+    public static String format(String text, Object... arguments)
+    {
+        return MessageFormatter.arrayFormat(text, arguments).getMessage();
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public static <T> T[] addToArray(T[] source, T element)
+    {
+        T[] destination = (T[]) Array.newInstance(element.getClass(), source.length+1);
+        System.arraycopy(source, 0, destination, 0, source.length);
+        destination[source.length] = element;
+        return destination;
     }
 }

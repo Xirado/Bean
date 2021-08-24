@@ -1,5 +1,6 @@
 package at.xirado.bean.data;
 
+import at.xirado.bean.misc.Util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -170,7 +171,7 @@ public class DataObject
         }
         Object result = get(map, actualQuery.split("\\."));
         if (!(result instanceof String)) return null;
-        return String.format((String) result, objects);
+        return Util.format((String) result, objects);
     }
 
     public Integer getInt(String query)

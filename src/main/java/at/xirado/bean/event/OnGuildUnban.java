@@ -1,6 +1,7 @@
 package at.xirado.bean.event;
 
 import at.xirado.bean.data.database.Database;
+import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.moderation.CaseType;
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -22,14 +23,11 @@ public class OnGuildUnban extends ListenerAdapter
         long userId = event.getUser().getIdLong();
         long guildId = event.getGuild().getIdLong();
         String sql = "UPDATE modCases SET active = 0 WHERE (caseType = ? OR caseType = ?) AND user = ? AND guild = ? AND active = 1";
-        try(Connection connection = Database.getConnectionFromPool();
-            PreparedStatement ps = connection.prepareStatement(sql))
+        var query = new SQLBuilder(sql)
+                .addParameters(CaseType.BAN.getId(), CaseType.TEMPBAN.getId(), userId, guildId);
+        try
         {
-            ps.setByte(1, CaseType.BAN.getId());
-            ps.setByte(2, CaseType.TEMPBAN.getId());
-            ps.setLong(3, userId);
-            ps.setLong(4, guildId);
-            ps.execute();
+            query.execute();
         }
         catch (SQLException ex)
         {

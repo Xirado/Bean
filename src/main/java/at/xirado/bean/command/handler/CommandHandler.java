@@ -8,7 +8,7 @@ import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.commands.*;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
-import at.xirado.bean.translation.LanguageLoader;
+import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -119,7 +119,7 @@ public class CommandHandler
                 {
                     if (!guildData.isModerator(event.getMember()))
                     {
-                        event.getMessage().reply(LanguageLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)).mentionRepliedUser(false).queue(s ->
+                        event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)).mentionRepliedUser(false).queue(s ->
                         {
                         }, ex ->
                         {
@@ -129,7 +129,7 @@ public class CommandHandler
                 }
                 if (!event.getMember().hasPermission(command.getRequiredPermissions()))
                 {
-                    event.getMessage().reply(LanguageLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)).mentionRepliedUser(false).queue(s ->
+                    event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)).mentionRepliedUser(false).queue(s ->
                     {
                     }, ex ->
                     {
@@ -148,7 +148,7 @@ public class CommandHandler
                 {
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(Color.red)
-                            .setFooter(LanguageLoader.ofGuild(event.getGuild()).get("general.no_bot_perms", String.class));
+                            .setFooter(LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms", String.class));
                     StringBuilder sb = new StringBuilder();
                     for (Permission p : missingBotPermissions)
                     {
@@ -156,7 +156,7 @@ public class CommandHandler
                     }
                     String toString = sb.toString();
                     toString = toString.substring(0, toString.length() - 2);
-                    builder.setDescription(LanguageLoader.ofGuild(event.getGuild()).get("general.no_bot_perms1", String.class) + " \uD83D\uDE26\n" + LanguageLoader.ofGuild(event.getGuild()).get("general.no_bot_perms", String.class) + ": " + toString);
+                    builder.setDescription(LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms1", String.class) + " \uD83D\uDE26\n" + LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms", String.class) + ": " + toString);
                     event.getChannel().sendMessage(builder.build()).queue();
                     return;
                 }
@@ -165,7 +165,7 @@ public class CommandHandler
             } catch (Exception ex)
             {
                 LOGGER.error("An error occured whilst executing command", ex);
-                event.getChannel().sendMessage(CommandContext.ERROR_EMOTE + " " + LanguageLoader.ofGuild(event.getGuild()).get("general.unknown_error_occured", String.class)).queue(s ->
+                event.getChannel().sendMessage(CommandContext.ERROR_EMOTE + " " + LocaleLoader.ofGuild(event.getGuild()).get("general.unknown_error_occured", String.class)).queue(s ->
                 {
                 }, exception ->
                 {

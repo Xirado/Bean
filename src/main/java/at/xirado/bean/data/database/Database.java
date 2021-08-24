@@ -87,10 +87,10 @@ public class Database
                 "CREATE TABLE IF NOT EXISTS xpAlerts (guildID BIGINT PRIMARY KEY, mode VARCHAR(128))",
                 "CREATE TABLE IF NOT EXISTS wildcardSettings (userID BIGINT PRIMARY KEY, card VARCHAR(128) NOT NULL)"
         };
-        Connection connection = Database.getConnectionFromPool();
-        if (connection == null) return;
-        try
+
+        try(Connection connection = Database.getConnectionFromPool())
         {
+            if (connection == null) return;
             for (String command : commands)
             {
                 PreparedStatement ps = connection.prepareStatement(command);
@@ -100,9 +100,6 @@ public class Database
         } catch (Exception e)
         {
             LOGGER.error("Could not run command", e);
-        } finally
-        {
-            Util.closeQuietly(connection);
         }
     }
 }

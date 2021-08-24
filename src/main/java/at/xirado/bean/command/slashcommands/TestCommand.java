@@ -2,16 +2,19 @@ package at.xirado.bean.command.slashcommands;
 
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDAInfo;
+import at.xirado.bean.data.DataObject;
+import at.xirado.bean.data.database.SQLBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.OffsetDateTime;
+import AtomicInteger;
 
 public class TestCommand extends SlashCommand
 {
@@ -19,16 +22,27 @@ public class TestCommand extends SlashCommand
     {
         setCommandData(new CommandData("test", "this command is only for test purposes")
                 .addOption(OptionType.BOOLEAN, "ephemeral", "if this message is ephemeral", true)
-                .addOption(OptionType.INTEGER, "value", "the value", true)
-                .addOption(OptionType.STRING, "reason", "reason", true)
         );
-        Global(false);
+        setGlobal(false);
         setEnabledGuilds(815597207617142814L);
     }
 
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
-        throw new IllegalArgumentException("Invalid subcommand!");
+        Guild guild = event.getGuild();
+        TextChannel channel = null;
+
+
+        Role role = guild.getRoleById(878201479855493130L);
+        if (role == null)
+            return "Invalid role!";
+        guild.loadMembers().onSuccess(memberList -> {
+            java.util.concurrent.atomic.AtomicInteger integer = new java.util.concurrent.atomic.AtomicInteger(memberList.size());
+            for (Member member : memberList)
+            {
+                guild.addRoleToMember(member, role).queue(x -> System.out.println(integer.decrementAndGet()+" members remaining"));
+            }
+        });
     }
 }

@@ -61,7 +61,7 @@ public class Bean
         slashCommandHandler = new SlashCommandHandler();
         commandHandler = new CommandHandler();
         eventWaiter = new EventWaiter();
-        Class.forName("at.xirado.bean.translation.LanguageLoader");
+        Class.forName("at.xirado.bean.translation.LocaleLoader");
         shardManager = DefaultShardManagerBuilder.create(config.getString("token"), getIntents())
                 .setShardsTotal(-1)
                 .setMemberCachePolicy(MemberCachePolicy.ONLINE.and(MemberCachePolicy.VOICE))

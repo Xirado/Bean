@@ -1,5 +1,6 @@
 package at.xirado.bean.interactions;
 
+import at.xirado.bean.misc.EmbedUtil;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -7,9 +8,12 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -21,9 +25,11 @@ import java.util.concurrent.TimeUnit;
 
 public class ButtonPaginator
 {
+    private static final Button first = Button.secondary("first", Emoji.fromUnicode("⏪"));
     private static final Button previous = Button.secondary("previous", Emoji.fromUnicode("⬅"));
-    private static final Button stop = Button.danger("stop", Emoji.fromUnicode("⏹"));
     private static final Button next = Button.secondary("next", Emoji.fromUnicode("➡"));
+    private static final Button last = Button.secondary("last", Emoji.fromUnicode("⏩"));
+    private static final Button delete = Button.danger("stop", Emoji.fromUnicode("\uD83D\uDDD1"));
 
     private final EventWaiter waiter;
     private final int itemsPerPage;
@@ -35,12 +41,13 @@ public class ButtonPaginator
     private final boolean numbered;
     private final String title;
     private final Color color;
+    private final String footer;
 
     private int page = 1;
     private boolean interactionStopped = false;
 
     private ButtonPaginator(EventWaiter waiter, long timeout, String[] items, JDA jda,
-                            Set<Long> allowedUsers, int itemsPerPage, boolean numberedItems, String title, Color color)
+                            Set<Long> allowedUsers, int itemsPerPage, boolean numberedItems, String title, Color color, String footer)
     {
         this.waiter = waiter;
         this.timeout = timeout;
@@ -51,27 +58,61 @@ public class ButtonPaginator
         this.numbered = numberedItems;
         this.title = title;
         this.color = color;
+        this.footer = footer;
         this.pages = (int) Math.ceil((double) items.length / itemsPerPage);
     }
 
-    public void paginate(Message m, int page)
+    public void paginate(Message message, int page)
     {
         this.page = page;
         if (title == null)
-            m.editMessageEmbeds(getEmbed(page)).setActionRows(getButtonLayout(page)).queue(this::waitForEvent, e -> waitForEvent(m));
+            message.editMessageEmbeds(getEmbed(page)).setActionRows(getButtonLayout(page))
+                    .queue(m -> waitForEvent(m.getChannel().getIdLong(), m.getIdLong()));
         else
-            m.editMessage(title).setEmbeds(getEmbed(page)).setActionRows(getButtonLayout(page)).queue(this::waitForEvent, e -> waitForEvent(m));
+            message.editMessage(title).setEmbeds(getEmbed(page)).setActionRows(getButtonLayout(page))
+                    .queue(m -> waitForEvent(m.getChannel().getIdLong(), m.getIdLong()));
+    }
+
+    public void paginate(MessageAction messageAction, int page)
+    {
+        this.page = page;
+        if (title == null)
+            messageAction.setEmbeds(getEmbed(page)).setActionRows(getButtonLayout(page))
+                    .queue(m -> waitForEvent(m.getChannel().getIdLong(), m.getIdLong()));
+        else
+            messageAction.content(title).setEmbeds(getEmbed(page)).setActionRows(getButtonLayout(page))
+                    .queue(m -> waitForEvent(m.getChannel().getIdLong(), m.getIdLong()));
+    }
+
+    public void paginate(WebhookMessageAction<Message> action, int page)
+    {
+        this.page = page;
+        if (title == null)
+            action.addEmbeds(getEmbed(page)).addActionRows(getButtonLayout(page))
+                    .queue(m -> waitForEvent(m.getChannel().getIdLong(), m.getIdLong()));
+        else
+            action.setContent(title).addEmbeds(getEmbed(page)).addActionRows(getButtonLayout(page))
+                    .queue(m -> waitForEvent(m.getChannel().getIdLong(), m.getIdLong()));
     }
 
     private ActionRow getButtonLayout(int page)
     {
-        return ActionRow.of(page <= 1 ? previous.asDisabled() : previous, stop, page >= pages ? next.asDisabled() : next);
+        if (pages > 2)
+            return ActionRow.of(
+                    page <= 1 ? first.asDisabled() : first,
+                    page <= 1 ? previous.asDisabled() : previous,
+                    page >= pages ? next.asDisabled() : next,
+                    page >= pages ? last.asDisabled() : last,
+                    delete);
+        else
+            return ActionRow.of(
+                    page <= 1 ? previous.asDisabled() : previous,
+                    page >= pages ? next.asDisabled() : next,
+                    delete);
     }
 
-    private void waitForEvent(Message m)
+    private void waitForEvent(long channelId, long messageId)
     {
-        final long channelId = m.getChannel().getIdLong();
-        final long messageId = m.getIdLong();
         waiter.waitForEvent(
                 ButtonClickEvent.class,
                 event ->
@@ -86,7 +127,6 @@ public class ButtonPaginator
                             return false;
                         }
                     }
-
                     return true;
                 },
                 event ->
@@ -97,24 +137,30 @@ public class ButtonPaginator
                             page--;
                             if (page < 1) page = 1;
                             event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
-                            waitForEvent(event.getMessage());
+                            waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
                         }
                         case "next" -> {
                             page++;
                             if (page > pages) page = pages;
                             event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
-                            waitForEvent(event.getMessage());
+                            waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
                         }
                         case "stop" -> {
                             interactionStopped = true;
-                            jda.getTextChannelById(channelId).retrieveMessageById(messageId).queue(
-                                    (message) ->
-                                            message.editMessageComponents(Collections.emptyList()).queue()
-                                    ,
-                                    (error) ->
-                                    {
-                                    })
-                            ;
+                            if (event.getMessage() != null)
+                                event.getMessage().delete().queue(s -> {}, e -> {});
+                            else
+                                event.editMessageEmbeds(getEmbed(page)).setActionRows(Collections.emptyList()).queue();
+                        }
+                        case "first" -> {
+                            page = 1;
+                            event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
+                            waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
+                        }
+                        case "last" -> {
+                            page = pages;
+                            event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
+                            waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
                         }
                     }
                 },
@@ -123,11 +169,11 @@ public class ButtonPaginator
                 () ->
                 {
                     interactionStopped = true;
-                    jda.getTextChannelById(channelId).retrieveMessageById(messageId).queue(
-                            message ->
-                                    message.editMessageComponents(Collections.emptyList()).queue(s -> {}, e -> {}),
-                            error -> {}
-                    );
+                    TextChannel channel = jda.getTextChannelById(channelId);
+                    if (channel == null) return;
+                    channel.retrieveMessageById(messageId)
+                            .flatMap(m -> m.editMessageComponents(Collections.emptyList()))
+                            .queue(s -> {}, e -> {});
                 }
         );
     }
@@ -135,6 +181,7 @@ public class ButtonPaginator
     private MessageEmbed getEmbed(int page)
     {
         if (page > pages) page = pages;
+        if (page < 1) page = 1;
         int start = page == 1 ? 0 : ((page - 1) * itemsPerPage);
         int end = Math.min(items.length, page * itemsPerPage);
         StringBuilder sb = new StringBuilder();
@@ -142,11 +189,11 @@ public class ButtonPaginator
         {
             sb.append(numbered ? "`" + (i + 1) + ".` " : "").append(this.items[i]).append("\n");
         }
-        return new EmbedBuilder()
-                .setFooter("Page " + page + "/" + pages)
+        EmbedBuilder builder = new EmbedBuilder()
+                .setFooter("Page " + page + "/" + pages + (footer != null ? " • "+footer : ""))
                 .setColor(color)
-                .setDescription(sb.toString().trim())
-                .build();
+                .setDescription(sb.toString().trim());
+        return builder.build();
     }
 
     public static class Builder
@@ -160,6 +207,7 @@ public class ButtonPaginator
         private boolean numberItems = true;
         private String title = null;
         private Color color;
+        private String footer;
 
         public Builder(JDA jda)
         {
@@ -198,6 +246,12 @@ public class ButtonPaginator
             return this;
         }
 
+        public Builder setColor(int color)
+        {
+            this.color = EmbedUtil.intToColor(color);
+            return this;
+        }
+
         public Builder setItemsPerPage(int items)
         {
             Checks.check(items > 0, "Items per page must be at least 1");
@@ -217,13 +271,19 @@ public class ButtonPaginator
             return this;
         }
 
+        public Builder setFooter(String footer)
+        {
+            this.footer = footer;
+            return this;
+        }
+
         public ButtonPaginator build()
         {
             Checks.notNull(waiter, "Waiter");
             Checks.check(timeout != -1, "You must set a timeout using #setTimeout()!");
             Checks.noneNull(items, "Items");
             Checks.notEmpty(items, "Items");
-            return new ButtonPaginator(waiter, timeout, items, jda, allowedUsers, itemsPerPage, numberItems, title, color == null ? Color.black : color);
+            return new ButtonPaginator(waiter, timeout, items, jda, allowedUsers, itemsPerPage, numberItems, title, color == null ? Color.black : color, footer);
         }
     }
 }

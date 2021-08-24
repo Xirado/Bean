@@ -8,7 +8,7 @@ import at.xirado.bean.command.slashcommands.*;
 import at.xirado.bean.command.slashcommands.music.*;
 import at.xirado.bean.data.DataObject;
 import at.xirado.bean.misc.EmbedUtil;
-import at.xirado.bean.translation.LanguageLoader;
+import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -176,7 +176,7 @@ public class SlashCommandHandler
                                         if (!member.hasPermission(permission))
                                         {
                                             event.deferReply(true)
-                                                    .flatMap(v -> hook.sendMessage(LanguageLoader.ofGuild(guild).get("general.no_perms", String.class)))
+                                                    .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(guild).get("general.no_perms", String.class)))
                                                     .queue();
                                             return;
                                         }
@@ -190,7 +190,7 @@ public class SlashCommandHandler
                                         if (!event.getGuild().getSelfMember().hasPermission(permission))
                                         {
                                             event.deferReply(true)
-                                                    .flatMap(v -> hook.sendMessage(LanguageLoader.ofGuild(guild).get("general.no_bot_perms1", String.class)))
+                                                    .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(guild).get("general.no_bot_perms1", String.class)))
                                                     .queue();
                                             return;
                                         }
@@ -243,7 +243,7 @@ public class SlashCommandHandler
                         foundCommand = true;
                         if (member == null && !cmd.isRunnableInDM())
                         {
-                            event.reply(String.format(LanguageLoader.getForLanguage("en_US").get("commands.cannot_run_in_dm", String.class), SlashCommandContext.ERROR)).setEphemeral(true).queue();
+                            event.reply(String.format(LocaleLoader.getForLanguage("en_US").get("commands.cannot_run_in_dm", String.class), SlashCommandContext.ERROR)).setEphemeral(true).queue();
                             return;
                         }
                         InteractionHook hook = event.getHook();
@@ -258,7 +258,7 @@ public class SlashCommandHandler
                                     if (!member.hasPermission(permission))
                                     {
                                         event.deferReply(true)
-                                                .flatMap(v -> hook.sendMessage(LanguageLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)))
+                                                .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)))
                                                 .queue();
                                         return;
                                     }
@@ -272,7 +272,7 @@ public class SlashCommandHandler
                                     if (!event.getGuild().getSelfMember().hasPermission(permission))
                                     {
                                         event.deferReply(true)
-                                                .flatMap(v -> hook.sendMessage(LanguageLoader.ofGuild(event.getGuild()).get("general.no_bot_perms1", String.class)))
+                                                .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms1", String.class)))
                                                 .queue();
                                         return;
                                     }
@@ -315,7 +315,7 @@ public class SlashCommandHandler
                     }
                 }
                 if (!foundCommand && member != null)
-                    event.reply(LanguageLoader.ofGuild(event.getGuild()).get("commands.disabled_or_unknown", String.class)).setEphemeral(true).queue();
+                    event.reply(LocaleLoader.ofGuild(event.getGuild()).get("commands.disabled_or_unknown", String.class)).setEphemeral(true).queue();
 
             } catch (Exception e)
             {
@@ -335,7 +335,7 @@ public class SlashCommandHandler
                 event.getJDA().openPrivateChannelById(Bean.OWNER_ID)
                         .flatMap(c -> c.sendMessageEmbeds(builder.build()))
                         .queue();
-                DataObject translation = event.getGuild() == null ? LanguageLoader.getForLanguage("en_US") : LanguageLoader.ofGuild(event.getGuild());
+                DataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
                 event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {}, ex -> {});
             }
         };

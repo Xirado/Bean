@@ -48,16 +48,15 @@ public class TransferFromMee6 extends Command
         int page = 0;
         int transferredPlayers = 0;
         long guildID = event.getGuild().getIdLong();
-        Connection connection = Database.getConnectionFromPool();
-        if (connection == null)
-        {
-            context.replyError(context.getLocalized("general.db_error"));
-            return;
-        }
         Message message = event.getChannel().sendMessage("<a:loading:848251224330469419>  Transferring... Please wait.").complete();
         long startTime = System.currentTimeMillis();
-        try
+        try(var connection = Database.getConnectionFromPool())
         {
+            if (connection == null)
+            {
+                context.replyError(context.getLocalized("general.db_error"));
+                return;
+            }
             while (true)
             {
                 if (System.currentTimeMillis() > startTime + 30000)
@@ -93,9 +92,6 @@ public class TransferFromMee6 extends Command
                 message.editMessage(context.getLocalized("general.unknown_error_occured")).queue();
             }
             return;
-        } finally
-        {
-            Util.closeQuietly(connection);
         }
         if (transferredPlayers == 0)
         {

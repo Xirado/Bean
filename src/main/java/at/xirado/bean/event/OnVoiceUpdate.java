@@ -62,7 +62,7 @@ public class OnVoiceUpdate extends ListenerAdapter
             {
                 if (stageChannel.getStageInstance().getTopic().startsWith("Now playing: "))
                 {
-                    stageChannel.getStageInstance().delete().queue();
+                    stageChannel.getStageInstance().delete().queue(s -> {}, e -> {});
                 }
             }
         }

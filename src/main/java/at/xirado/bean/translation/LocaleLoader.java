@@ -11,10 +11,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class LanguageLoader
+public class LocaleLoader
 {
 
-    private static final Logger log = LoggerFactory.getLogger(LanguageLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(LocaleLoader.class);
 
     public static final List<String> LANGUAGES = new ArrayList<>();
     private static final Map<String, DataObject> LANGUAGE_MAP;
@@ -23,7 +23,7 @@ public class LanguageLoader
     {
         Map<String, DataObject> m = new HashMap<>();
 
-        try (var is = LanguageLoader.class.getResourceAsStream("/assets/languages/list.txt"))
+        try (var is = LocaleLoader.class.getResourceAsStream("/assets/languages/list.txt"))
         {
             if (is == null)
             {
@@ -36,23 +36,23 @@ public class LanguageLoader
             }
         } catch (IOException e)
         {
-            log.error("Could not initialize Language Loader!");
+            log.error("Could not initialize locale loader!");
             throw new ExceptionInInitializerError(e);
         }
 
         for (String lang : LANGUAGES)
         {
 
-            try (var is = LanguageLoader.class.getResourceAsStream("/assets/languages/" + lang))
+            try (var is = LocaleLoader.class.getResourceAsStream("/assets/languages/" + lang))
             {
                 var name = lang.replace(".json", "");
                 DataObject json = DataObject.parse(is);
                 if (json == null) continue;
                 m.put(name, json.setMetadata(new String[]{name}));
-                log.info("Initialized translation file {}", name);
+                log.info("Successfully loaded locale {}", lang);
             } catch (Exception e)
             {
-                log.error("Could not initialize Language!", e);
+                log.error("Could not load locale '"+lang+"'!", e);
             }
         }
 

@@ -1,6 +1,7 @@
 package at.xirado.bean.data;
 
 import at.xirado.bean.data.database.Database;
+import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
@@ -110,17 +111,15 @@ public class RankingSystem
 
     public static long getTotalXP(@Nonnull Connection connection, long guildID, long userID)
     {
-        try (var ps = connection.prepareStatement("SELECT * FROM levels WHERE guildID = ? AND userID = ?"))
+        var query = new SQLBuilder("SELECT totalXP FROM levels WHERE guildID = ? AND userID = ?")
+                .useConnection(connection)
+                .addParameters(guildID, userID);
+        try (var result = query.executeQuery())
         {
-            ps.setLong(1, guildID);
-            ps.setLong(2, userID);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next())
-            {
-                return rs.getLong("totalXP");
-            }
+            if (result.next())
+                return result.getLong("totalXP");
             return 0L;
-        } catch (SQLException ex)
+        }catch (Exception ex)
         {
             LOGGER.error("Could not get total xp! (guild " + guildID + ", user " + userID + ")", ex);
             return -1L;
@@ -129,48 +128,36 @@ public class RankingSystem
 
     public static long getTotalXP(long guildID, long userID)
     {
-        Connection connection = Database.getConnectionFromPool();
-        if (connection == null) return -1L;
-        try (var ps = connection.prepareStatement("SELECT * FROM levels WHERE guildID = ? AND userID = ?"))
+        var query = new SQLBuilder("SELECT totalXP FROM levels WHERE guildID = ? AND userID = ?")
+                .addParameters(guildID, userID);
+        try (var result = query.executeQuery())
         {
-            ps.setLong(1, guildID);
-            ps.setLong(2, userID);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next())
-            {
-                return rs.getLong("totalXP");
-            }
+            if (result.next())
+                return result.getLong("totalXP");
             return 0L;
-        } catch (SQLException ex)
+        }catch (Exception ex)
         {
             LOGGER.error("Could not get total xp! (guild " + guildID + ", user " + userID + ")", ex);
             return -1L;
-        } finally
-        {
-            Util.closeQuietly(connection);
         }
     }
 
     public static void addXP(long guildID, long userID, long addedAmount, String name, String discriminator)
     {
-        Connection connection = Database.getConnectionFromPool();
+        var connection = Database.getConnectionFromPool();
         if (connection == null)
         {
             LOGGER.error("Could not get connection from db pool!", new SQLException("Connection == null!"));
             return;
         }
-        try (var ps = connection.prepareStatement("INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?"))
+        var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?";
+        var totalXP = getTotalXP(connection, guildID, userID) + addedAmount;
+        var query = new SQLBuilder(sql)
+                .useConnection(connection)
+                .addParameters(guildID, userID, totalXP, name, discriminator, totalXP, name, discriminator);
+        try
         {
-            long totalXP = getTotalXP(connection, guildID, userID) + addedAmount;
-            ps.setLong(1, guildID);
-            ps.setLong(2, userID);
-            ps.setLong(3, totalXP);
-            ps.setString(4, name);
-            ps.setString(5, discriminator);
-            ps.setLong(6, totalXP);
-            ps.setString(7, name);
-            ps.setString(8, discriminator);
-            ps.execute();
+           query.execute();
         } catch (SQLException e)
         {
             LOGGER.error("Could not add XP!", e);
@@ -182,18 +169,14 @@ public class RankingSystem
 
     public static void addXP(@Nonnull Connection connection, long guildID, long userID, long addedAmount, String name, String discriminator)
     {
-        try (var ps = connection.prepareStatement("INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?"))
+        var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?";
+        var totalXP = getTotalXP(connection, guildID, userID) + addedAmount;
+        var query = new SQLBuilder(sql)
+                .useConnection(connection)
+                .addParameters(guildID, userID, totalXP, name, discriminator, totalXP, name, discriminator);
+        try
         {
-            long totalXP = getTotalXP(connection, guildID, userID) + addedAmount;
-            ps.setLong(1, guildID);
-            ps.setLong(2, userID);
-            ps.setLong(3, totalXP);
-            ps.setString(4, name);
-            ps.setString(5, discriminator);
-            ps.setLong(6, totalXP);
-            ps.setString(7, name);
-            ps.setString(8, discriminator);
-            ps.execute();
+            query.execute();
         } catch (SQLException e)
         {
             LOGGER.error("Could not add XP!", e);
@@ -202,45 +185,27 @@ public class RankingSystem
 
     public static void setXP(long guildID, long userID, long setAmount, String name, String discriminator)
     {
-        Connection connection = Database.getConnectionFromPool();
-        if (connection == null)
+        var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?";
+        var query = new SQLBuilder(sql)
+                .addParameters(guildID, userID, setAmount, name, discriminator, setAmount, name, discriminator);
+        try
         {
-            LOGGER.error("Could not get connection from db pool!", new SQLException("Connection == null!"));
-            return;
-        }
-        try (var ps = connection.prepareStatement("INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?"))
-        {
-            ps.setLong(1, guildID);
-            ps.setLong(2, userID);
-            ps.setLong(3, setAmount);
-            ps.setString(4, name);
-            ps.setString(5, discriminator);
-            ps.setLong(6, setAmount);
-            ps.setString(7, name);
-            ps.setString(8, discriminator);
-            ps.execute();
+            query.execute();
         } catch (SQLException e)
         {
             LOGGER.error("Could not add XP!", e);
-        } finally
-        {
-            Util.closeQuietly(connection);
         }
     }
 
     public static void setXP(@Nonnull Connection connection, long guildID, long userID, long setAmount, String name, String discriminator)
     {
-        try (var ps = connection.prepareStatement("INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?"))
+        var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?";
+        var query = new SQLBuilder(sql)
+                .useConnection(connection)
+                .addParameters(guildID, userID, setAmount, name, discriminator, setAmount, name, discriminator);
+        try
         {
-            ps.setLong(1, guildID);
-            ps.setLong(2, userID);
-            ps.setLong(3, setAmount);
-            ps.setString(4, name);
-            ps.setString(5, discriminator);
-            ps.setLong(6, setAmount);
-            ps.setString(7, name);
-            ps.setString(8, discriminator);
-            ps.execute();
+            query.execute();
         } catch (SQLException e)
         {
             LOGGER.error("Could not add XP!", e);
@@ -249,50 +214,41 @@ public class RankingSystem
 
     public static String getPreferredCard(@Nonnull User user)
     {
-        Connection connection = Database.getConnectionFromPool();
-        if (connection == null) return "card1";
-        try (var ps = connection.prepareStatement("SELECT * FROM wildcardSettings WHERE userID = ?"))
+        var query = new SQLBuilder("SELECT * FROM wildcardSettings WHERE userID = ?")
+                .addParameter(user.getIdLong());
+        try(var rs = query.executeQuery())
         {
-            ps.setLong(1, user.getIdLong());
-            ResultSet rs = ps.executeQuery();
             return rs.next() ? rs.getString("card") : "card1";
-        } catch (SQLException ex)
+        }catch (SQLException ex)
         {
             LOGGER.error("Could not get user preferred wildcard background (user " + user.getIdLong() + ")", ex);
             return "card1";
-        } finally
-        {
-            Util.closeQuietly(connection);
         }
     }
 
     public static void setPreferredCard(@Nonnull User user, @Nonnull String card)
     {
-        Connection connection = Database.getConnectionFromPool();
-        if (connection == null) return;
-        try (var ps = connection.prepareStatement("INSERT INTO wildcardSettings (userID, card) VALUES (?,?) ON DUPLICATE KEY UPDATE card = ?"))
+        String qry = "INSERT INTO wildcardSettings (userID, card) VALUES (?,?) ON DUPLICATE KEY UPDATE card = ?";
+        var query = new SQLBuilder(qry)
+                .addParameters(user.getIdLong(), card, card);
+        try
         {
-            ps.setLong(1, user.getIdLong());
-            ps.setString(2, card);
-            ps.setString(3, card);
-            ps.execute();
-        } catch (SQLException ex)
+            query.execute();
+        }catch (SQLException ex)
         {
-            LOGGER.error("Could not get user preferred wildcard background (user " + user.getIdLong() + ")", ex);
-        } finally
-        {
-            Util.closeQuietly(connection);
+            LOGGER.error("Could not set user preferred wildcard background (user " + user.getIdLong() + ")", ex);
         }
     }
 
     public static String getPreferredCard(@Nonnull Connection connection, @Nonnull User user)
     {
-        try (var ps = connection.prepareStatement("SELECT * FROM wildcardSettings WHERE userID = ?"))
+        var query = new SQLBuilder("SELECT * FROM wildcardSettings WHERE userID = ?")
+                .useConnection(connection)
+                .addParameter(user.getIdLong());
+        try(var rs = query.executeQuery())
         {
-            ps.setLong(1, user.getIdLong());
-            ResultSet rs = ps.executeQuery();
             return rs.next() ? rs.getString("card") : "card1";
-        } catch (SQLException ex)
+        }catch (SQLException ex)
         {
             LOGGER.error("Could not get user preferred wildcard background (user " + user.getIdLong() + ")", ex);
             return "card1";
@@ -301,14 +257,16 @@ public class RankingSystem
 
     public static void setPreferredCard(@Nonnull Connection connection, @Nonnull User user, @Nonnull String card)
     {
-        try (var ps = connection.prepareStatement("INSERT INTO wildcardSettings (userID, card) VALUES (?,?) ON DUPLICATE KEY UPDATE card = ?"))
+        String qry = "INSERT INTO wildcardSettings (userID, card) VALUES (?,?) ON DUPLICATE KEY UPDATE card = ?";
+        var query = new SQLBuilder(qry)
+                .useConnection(connection)
+                .addParameters(user.getIdLong(), card, card);
+        try
         {
-            ps.setLong(1, user.getIdLong());
-            ps.setString(2, card);
-            ps.execute();
-        } catch (SQLException ex)
+            query.execute();
+        }catch (SQLException ex)
         {
-            LOGGER.error("Could not get user preferred wildcard background (user " + user.getIdLong() + ")", ex);
+            LOGGER.error("Could not set user preferred wildcard background (user " + user.getIdLong() + ")", ex);
         }
     }
 
@@ -481,11 +439,10 @@ public class RankingSystem
     public static ArrayList<RankedUser> getTopTen(long guildID)
     {
         String sql = "SELECT * FROM levels WHERE guildID = ? ORDER by totalXP DESC LIMIT 10";
-        Connection connection = Database.getConnectionFromPool();
-        try (var ps = connection.prepareStatement(sql))
+        var query = new SQLBuilder(sql)
+                .addParameter(guildID);
+        try (var rs = query.executeQuery())
         {
-            ps.setLong(1, guildID);
-            ResultSet rs = ps.executeQuery();
             ArrayList<RankedUser> rankedUsers = new ArrayList<>();
             while (rs.next())
             {
@@ -496,13 +453,10 @@ public class RankingSystem
                 rankedUsers.add(new RankedUser(guildID, userID, totalXP, name, discriminator));
             }
             return rankedUsers;
-        } catch (SQLException ex)
+        }catch (SQLException ex)
         {
             LOGGER.error("Could not get leaderboard for guild " + guildID + "!", ex);
             return new ArrayList<>();
-        } finally
-        {
-            Util.closeQuietly(connection);
         }
     }
 
@@ -511,23 +465,17 @@ public class RankingSystem
     {
         String qry = "SELECT 0, FIND_IN_SET(totalXP, (SELECT GROUP_CONCAT(DISTINCT totalXP ORDER BY totalXP DESC) FROM levels ))" +
                 " AS rank FROM levels WHERE guildID = ? AND userID = ?";
-        Connection connection = Database.getConnectionFromPool();
-        if (connection == null) return -1;
-        try (var ps = connection.prepareStatement(qry))
+        var query = new SQLBuilder(qry)
+                .addParameters(guildID, userID);
+        try (var rs = query.executeQuery())
         {
-            ps.setLong(1, guildID);
-            ps.setLong(2, userID);
-            ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt("rank");
             return -1;
-        } catch (SQLException exception)
+        }catch (SQLException ex)
         {
+            LOGGER.error("Could not get rank of member! Guild: {} User: {}", guildID, userID);
             return -1;
-        } finally
-        {
-            Util.closeQuietly(connection);
         }
-
     }
 
     public static Color getRankColor(int rank)
@@ -544,6 +492,4 @@ public class RankingSystem
                 return null;
         }
     }
-
-
 }

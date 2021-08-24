@@ -3,7 +3,8 @@ package at.xirado.bean.command;
 import at.xirado.bean.data.DataObject;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
-import at.xirado.bean.translation.LanguageLoader;
+import at.xirado.bean.misc.Util;
+import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -32,7 +33,7 @@ public class SlashCommandContext
         if (event.getGuild() != null)
         {
             Locale serverLocale = event.getGuild().getLocale();
-            if (LanguageLoader.getForLanguage(serverLocale.toLanguageTag()) == null)
+            if (LocaleLoader.getForLanguage(serverLocale.toLanguageTag()) == null)
             {
                 this.language = "en_US";
             } else
@@ -55,8 +56,13 @@ public class SlashCommandContext
     public String getLocalized(String query, Object... objects)
     {
         Guild g = event.getGuild();
-        if (g != null) return String.format(LanguageLoader.ofGuild(g).get(query, String.class), objects);
-        return String.format(LanguageLoader.getForLanguage("en_US").get(query, String.class), objects);
+        if (g != null)
+        {
+            String result =  Util.format(LocaleLoader.ofGuild(g).get(query, String.class), objects);
+            if (result != null)
+                return result;
+        }
+        return Util.format(LocaleLoader.getForLanguage("en_US").get(query, String.class), objects);
     }
 
     public void sendSimpleEmbed(CharSequence content)
@@ -79,8 +85,8 @@ public class SlashCommandContext
     {
         Guild g = event.getGuild();
         DataObject language;
-        if (g != null) language = LanguageLoader.ofGuild(g);
-        else language = LanguageLoader.getForLanguage("en_US");
+        if (g != null) language = LocaleLoader.ofGuild(g);
+        else language = LocaleLoader.getForLanguage("en_US");
         return language;
     }
 
@@ -126,7 +132,7 @@ public class SlashCommandContext
 
     public String parseDuration(long seconds, String delimiter)
     {
-        return LanguageLoader.parseDuration(seconds, getLanguage(), delimiter);
+        return LocaleLoader.parseDuration(seconds, getLanguage(), delimiter);
     }
 
 }

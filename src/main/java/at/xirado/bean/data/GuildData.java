@@ -3,6 +3,7 @@ package at.xirado.bean.data;
 
 import at.xirado.bean.Bean;
 import at.xirado.bean.data.database.Database;
+import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.RoleReward;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -131,21 +132,16 @@ public class GuildData
 
     public GuildData update()
     {
-        Connection connection = Database.getConnectionFromPool();
-        String query = "INSERT INTO guildSettings (guildID, data) values (?,?) ON DUPLICATE KEY UPDATE data = ?";
-        try (var ps = connection.prepareStatement(query))
+        String sql = "INSERT INTO guildSettings (guildID, data) values (?,?) ON DUPLICATE KEY UPDATE data = ?";
+        try
         {
             String jsonString = dataObject.toJson();
-            ps.setLong(1, guildID);
-            ps.setString(2, jsonString);
-            ps.setString(3, jsonString);
-            ps.execute();
-        } catch (SQLException | JsonProcessingException exception)
+            new SQLBuilder(sql)
+                    .addParameters(guildID, jsonString, jsonString)
+                    .execute();
+        }catch (SQLException | JsonProcessingException exception)
         {
             LOGGER.error("Could not update guild data!", exception);
-        } finally
-        {
-            Util.closeQuietly(connection);
         }
         return this;
     }
