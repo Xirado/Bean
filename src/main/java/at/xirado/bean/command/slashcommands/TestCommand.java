@@ -14,8 +14,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import AtomicInteger;
-
 public class TestCommand extends SlashCommand
 {
     public TestCommand()
@@ -30,19 +28,5 @@ public class TestCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
-        Guild guild = event.getGuild();
-        TextChannel channel = null;
-
-
-        Role role = guild.getRoleById(878201479855493130L);
-        if (role == null)
-            return "Invalid role!";
-        guild.loadMembers().onSuccess(memberList -> {
-            java.util.concurrent.atomic.AtomicInteger integer = new java.util.concurrent.atomic.AtomicInteger(memberList.size());
-            for (Member member : memberList)
-            {
-                guild.addRoleToMember(member, role).queue(x -> System.out.println(integer.decrementAndGet()+" members remaining"));
-            }
-        });
     }
 }
