@@ -2,6 +2,7 @@ package at.xirado.bean.command.slashcommands;
 
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
+import at.xirado.bean.data.DataObject;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.urbandictionary.UDParser;
 import at.xirado.bean.misc.urbandictionary.UrbanDefinition;
@@ -11,10 +12,14 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.net.URL;
 import java.time.Instant;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,9 +43,18 @@ public class UrbanDictionaryCommand extends SlashCommand
         int index = event.getOption("definition") != null ? (int) event.getOption("definition").getAsLong() : 1;
         if (index < 1) index = 1;
         event.deferReply().queue();
-        UDParser udparser = new UDParser("http://api.urbandictionary.com/v0/");
-        String JSONData = udparser.getJSONData(phrase.replaceAll(" +", "+"));
-        UrbanDefinition[] results = udparser.getDefinitionsWithJSONData(JSONData);
+        DataObject dataObject;
+        try
+        {
+            String url = "http://api.urbandictionary.com/v0/define?term="+phrase.replaceAll("\\s+", "+");
+            Response response = new OkHttpClient.Builder().build().newCall(new Request.Builder().url(url).build()).execute();
+            dataObject = DataObject.parse(response.body().byteStream());
+        } catch (Exception ex)
+        {
+            throw new Error(ex);
+        }
+
+        UrbanDefinition[] results = dataObject.convertValueAt("list", UrbanDefinition[].class);
         if (results.length == 0)
         {
             EmbedBuilder builder = new EmbedBuilder()
