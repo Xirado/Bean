@@ -31,15 +31,11 @@ public class Layout extends LayoutBase<ILoggingEvent>
         AttributedStyle priColour;
         Level level = event.getLevel();
         if (Level.ERROR.equals(level))
-        {
             priColour = RED;
-        } else if (Level.WARN.equals(level))
-        {
+        else if (Level.WARN.equals(level))
             priColour = YELLOW;
-        } else
-        {
+        else
             priColour = AttributedStyle.DEFAULT;
-        }
         asb.style(DARK_GRAY).append("[").style(priColour).append(formattedDate).style(DARK_GRAY).append("] [")
                 .style(priColour).append(event.getThreadName()).style(DARK_GRAY).append("] [").style(priColour)
                 .append(event.getLevel().levelStr.toUpperCase()).style(DARK_GRAY).append("]: ").style(priColour)
