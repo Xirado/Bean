@@ -86,6 +86,7 @@ public class SlashCommandHandler
         registerCommand(new InfoCommand());
         registerCommand(new XPRoleRewardCommand());
         registerCommand(new Settings());
+        registerCommand(new RandomMeme());
     }
 
     public void updateCommands(Consumer<List<Command>> success, Consumer<Throwable> failure)
