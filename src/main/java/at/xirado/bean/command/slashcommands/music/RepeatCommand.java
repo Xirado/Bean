@@ -16,7 +16,7 @@ public class RepeatCommand extends SlashCommand
     public RepeatCommand()
     {
         setCommandData(new CommandData("repeat", "repeats the currently playing song"));
-        addCommandFlags(CommandFlag.FAIL_IF_IN_DIFFERENT_VC, CommandFlag.DJ_ONLY, CommandFlag.MUST_BE_IN_VC);
+        addCommandFlags(CommandFlag.MUST_BE_IN_SAME_VC, CommandFlag.DJ_ONLY, CommandFlag.MUST_BE_IN_VC);
     }
 
     @Override

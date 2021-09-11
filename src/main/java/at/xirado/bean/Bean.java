@@ -1,5 +1,6 @@
 package at.xirado.bean;
 
+import at.xirado.bean.backend.WebServer;
 import at.xirado.bean.command.ConsoleCommandManager;
 import at.xirado.bean.command.handler.CommandHandler;
 import at.xirado.bean.command.handler.SlashCommandHandler;
@@ -13,11 +14,15 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +54,8 @@ public class Bean
     private final CommandHandler commandHandler;
     private final AudioManager audioManager;
     private final EventWaiter eventWaiter;
+    private final OkHttpClient okHttpClient;
+    private final WebServer webServer;
 
     public Bean() throws Exception
     {
@@ -62,7 +69,9 @@ public class Bean
         commandHandler = new CommandHandler();
         eventWaiter = new EventWaiter();
         Class.forName("at.xirado.bean.translation.LocaleLoader");
-        shardManager = DefaultShardManagerBuilder.create(config.getString("token"), getIntents())
+        okHttpClient = new OkHttpClient.Builder()
+                .build();
+        shardManager = DefaultShardManagerBuilder.create(config.getString("token"), GatewayIntent.getIntents(6030))
                 .setShardsTotal(-1)
                 .setMemberCachePolicy(MemberCachePolicy.ONLINE.and(MemberCachePolicy.VOICE))
                 .setActivity(Activity.watching("Invite: bean.bz"))
@@ -73,6 +82,8 @@ public class Bean
                         eventWaiter, new OnGuildMemberJoin(), new OnGuildUnban())
                 .build();
         audioManager = new AudioManager(shardManager);
+        webServer = new WebServer(8887);
+
     }
 
     public static Bean getInstance()
@@ -95,7 +106,7 @@ public class Bean
                 LOGGER.error("Could not login to Discord!", ex);
                 return;
             }
-            LOGGER.error("An error occurred starting the Bot!", e);
+            LOGGER.error("An error occurred starting bot!", e);
         }
     }
 
@@ -111,13 +122,6 @@ public class Bean
             LOGGER.error("Could not get version!", e);
             return "0.0.0";
         }
-    }
-
-    private static Set<GatewayIntent> getIntents()
-    {
-        return Set.of(GatewayIntent.GUILD_BANS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.DIRECT_MESSAGES,
-                GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS,
-                GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_EMOJIS);
     }
 
     public static void info(String msg)
@@ -190,6 +194,11 @@ public class Bean
         return eventWaiter;
     }
 
+    public OkHttpClient getOkHttpClient()
+    {
+        return okHttpClient;
+    }
+
     private DataObject loadConfig()
     {
         File configFile = new File("config.json");
@@ -212,5 +221,10 @@ public class Bean
             }
         }
         return DataObject.parse(configFile);
+    }
+
+    public WebServer getWebServer()
+    {
+        return webServer;
     }
 }

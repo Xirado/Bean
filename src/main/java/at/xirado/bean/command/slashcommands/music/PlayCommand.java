@@ -29,7 +29,7 @@ public class PlayCommand extends SlashCommand
         setCommandData(new CommandData("play", "plays a song")
                 .addOption(OptionType.STRING, "query", "either a term to search for or an url that is supported", true)
         );
-        addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.FAIL_IF_IN_DIFFERENT_VC);
+        addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
 
     }
 

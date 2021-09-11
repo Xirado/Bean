@@ -1,5 +1,6 @@
 package at.xirado.bean.command.slashcommands;
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.DataObject;
@@ -47,7 +48,8 @@ public class UrbanDictionaryCommand extends SlashCommand
         try
         {
             String url = "http://api.urbandictionary.com/v0/define?term="+phrase.replaceAll("\\s+", "+");
-            Response response = new OkHttpClient.Builder().build().newCall(new Request.Builder().url(url).build()).execute();
+            Response response = Bean.getInstance().getOkHttpClient()
+                    .newCall(new Request.Builder().url(url).build()).execute();
             dataObject = DataObject.parse(response.body().byteStream());
         } catch (Exception ex)
         {

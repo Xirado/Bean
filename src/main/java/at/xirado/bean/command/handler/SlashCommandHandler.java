@@ -85,6 +85,7 @@ public class SlashCommandHandler
         registerCommand(new ModeratorCommand());
         registerCommand(new InfoCommand());
         registerCommand(new XPRoleRewardCommand());
+        registerCommand(new Settings());
     }
 
     public void updateCommands(Consumer<List<Command>> success, Consumer<Throwable> failure)
@@ -169,32 +170,19 @@ public class SlashCommandHandler
                                 InteractionHook hook = event.getHook();
                                 List<Permission> neededPermissions = cmd.getRequiredUserPermissions();
                                 List<Permission> neededBotPermissions = cmd.getRequiredBotPermissions();
-                                if (neededPermissions != null)
+                                if (neededPermissions != null && !member.hasPermission(neededPermissions))
                                 {
-                                    for (Permission permission : neededPermissions)
-                                    {
-                                        if (!member.hasPermission(permission))
-                                        {
-                                            event.deferReply(true)
-                                                    .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(guild).get("general.no_perms", String.class)))
-                                                    .queue();
-                                            return;
-                                        }
-                                    }
+                                    event.deferReply(true)
+                                            .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(guild).get("general.no_perms", String.class)))
+                                            .queue();
+                                    return;
                                 }
-
-                                if (neededBotPermissions != null)
+                                if (neededBotPermissions != null && !event.getGuild().getSelfMember().hasPermission(neededBotPermissions))
                                 {
-                                    for (Permission permission : neededBotPermissions)
-                                    {
-                                        if (!event.getGuild().getSelfMember().hasPermission(permission))
-                                        {
-                                            event.deferReply(true)
-                                                    .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(guild).get("general.no_bot_perms1", String.class)))
-                                                    .queue();
-                                            return;
-                                        }
-                                    }
+                                    event.deferReply(true)
+                                            .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(guild).get("general.no_bot_perms1", String.class)))
+                                            .queue();
+                                    return;
                                 }
                                 SlashCommandContext ctx = new SlashCommandContext(event);
                                 if (cmd.getCommandFlags().contains(CommandFlag.DJ_ONLY))
@@ -215,7 +203,7 @@ public class SlashCommandHandler
                                     }
                                 }
 
-                                if (cmd.getCommandFlags().contains(CommandFlag.FAIL_IF_IN_DIFFERENT_VC))
+                                if (cmd.getCommandFlags().contains(CommandFlag.MUST_BE_IN_SAME_VC))
                                 {
                                     GuildVoiceState voiceState = member.getVoiceState();
                                     AudioManager manager = event.getGuild().getAudioManager();
@@ -251,32 +239,19 @@ public class SlashCommandHandler
                         List<Permission> neededBotPermissions = cmd.getRequiredBotPermissions();
                         if (member != null)
                         {
-                            if (neededPermissions != null)
+                            if (neededPermissions != null && !member.hasPermission(neededPermissions))
                             {
-                                for (Permission permission : neededPermissions)
-                                {
-                                    if (!member.hasPermission(permission))
-                                    {
-                                        event.deferReply(true)
-                                                .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)))
-                                                .queue();
-                                        return;
-                                    }
-                                }
+                                event.deferReply(true)
+                                        .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)))
+                                        .queue();
+                                return;
                             }
-
-                            if (neededBotPermissions != null)
+                            if (neededBotPermissions != null && !event.getGuild().getSelfMember().hasPermission(neededBotPermissions))
                             {
-                                for (Permission permission : neededBotPermissions)
-                                {
-                                    if (!event.getGuild().getSelfMember().hasPermission(permission))
-                                    {
-                                        event.deferReply(true)
-                                                .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms1", String.class)))
-                                                .queue();
-                                        return;
-                                    }
-                                }
+                                event.deferReply(true)
+                                        .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms1", String.class)))
+                                        .queue();
+                                return;
                             }
                         }
                         SlashCommandContext ctx = new SlashCommandContext(event);
@@ -298,7 +273,7 @@ public class SlashCommandHandler
                             }
                         }
 
-                        if (cmd.getCommandFlags().contains(CommandFlag.FAIL_IF_IN_DIFFERENT_VC))
+                        if (cmd.getCommandFlags().contains(CommandFlag.MUST_BE_IN_SAME_VC))
                         {
                             GuildVoiceState voiceState = member.getVoiceState();
                             AudioManager manager = event.getGuild().getAudioManager();
@@ -323,17 +298,17 @@ public class SlashCommandHandler
                 StringBuilder path = new StringBuilder("/"+event.getCommandPath().replace("/", " "));
                 for(OptionMapping option : event.getOptions())
                 {
-                    path.append(" ").append(option.getName()).append(":").append("`").append(option.getAsString()).append("`");
+                    path.append(" *").append(option.getName()).append("* : ").append("`").append(option.getAsString()).append("`");
                 }
                 EmbedBuilder builder = new EmbedBuilder()
                         .setTitle("An error occurred while executing a slash-command!")
-                        .addField("Guild", (event.getGuild() == null ? "None (Direct message)" : event.getGuild().getIdLong()+" ("+event.getGuild().getName()+")"),true)
+                        .addField("Guild", event.getGuild() == null ? "None (Direct message)" : event.getGuild().getIdLong()+" ("+event.getGuild().getName()+")",true)
+                        .addField("Channel", event.getGuild() == null ? "None (Direct message)" : event.getChannel().getName() , true)
                         .addField("User", event.getUser().getAsMention()+" ("+event.getUser().getAsTag()+")", true)
                         .addField("Command", path.toString(), false)
-                        .setDescription("```\n"+ExceptionUtils.getStackTrace(e)+"\n```")
                         .setColor(EmbedUtil.ERROR_COLOR);
                 event.getJDA().openPrivateChannelById(Bean.OWNER_ID)
-                        .flatMap(c -> c.sendMessageEmbeds(builder.build()))
+                        .flatMap(c -> c.sendMessageEmbeds(builder.build()).content("```fix\n"+ExceptionUtils.getStackTrace(e)+"\n```"))
                         .queue();
                 DataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
                 event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {}, ex -> {});

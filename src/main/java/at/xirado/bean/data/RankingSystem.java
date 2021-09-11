@@ -3,7 +3,10 @@ package at.xirado.bean.data;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.misc.objects.RoleReward;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Set;
 
 public class RankingSystem
 {

@@ -76,11 +76,10 @@ public class BanCommand extends SlashCommand
                 {
                     ModCase modCase = ModCase.createModCase(CaseType.BAN, g.getIdLong(), targetUser.getIdLong(), sender.getIdLong(), reason);
                     MessageEmbed confirmationEmbed = new EmbedBuilder()
-                            .setColor(CaseType.BAN.getEmbedColor())
+                            .setColor(EmbedUtil.SUCCESS_COLOR)
                             .setAuthor(ctx.getLocalized("commands.ban.has_been_banned", targetUser.getAsTag()), null, targetUser.getEffectiveAvatarUrl())
                             .addField(ctx.getLocalized("commands.reason"), reasonString, true)
-                            .setFooter("Case-ID: `"+modCase.getUuid().toString()+"`")
-                            .setDescription(ctx.getLocalized("commands.user_id", targetUser.getIdLong()))
+                            .addField(ctx.getLocalized("commands.duration"), "∞", true)
                             .build();
                     event.getHook().sendMessageEmbeds(confirmationEmbed).queue();
                     if (ctx.getGuildData().getLogChannel() != null)
@@ -91,7 +90,7 @@ public class BanCommand extends SlashCommand
                                 .setAuthor("Ban | "+targetUser.getAsTag(), null, targetUser.getEffectiveAvatarUrl())
                                 .addField(ctx.getLocalized("commands.reason"), reasonString, true)
                                 .addField("Moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true)
-                                .setFooter("Case-ID: `"+modCase.getUuid().toString()+"`")
+                                .setFooter("Case-ID: "+modCase.getUuid().toString()+"")
                                 .setDescription(ctx.getLocalized("commands.user_id", targetUser.getIdLong()))
                                 .build();
                         logChannel.sendMessageEmbeds(logEmbed).queue(s -> {}, e -> {});

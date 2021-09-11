@@ -28,5 +28,6 @@ public class TestCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
+        throw new IllegalArgumentException("Manually initiated crash!");
     }
 }

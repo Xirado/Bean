@@ -3,15 +3,14 @@ package at.xirado.bean.command.commands;
 import at.xirado.bean.command.Command;
 import at.xirado.bean.command.CommandContext;
 import at.xirado.bean.command.CommandFlag;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import java.awt.*;
 import java.util.*;
 
 public class Eval extends Command
@@ -70,14 +69,21 @@ public class Eval extends Command
             var evaluated = SCRIPT_ENGINE.eval(toEval.toString());
             if (evaluated instanceof RestAction<?> action)
             {
-                action.queue();
+                action.queue(s -> event.getMessage().reply("RestAction executed without errors! Received object of type `"+s.getClass().getSimpleName()+"`").mentionRepliedUser(false).allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE)).queue(), e -> event.getMessage().reply("RestAction returned failure!\n```fix\n"+ ExceptionUtils.getStackTrace(e)+"\n```").allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE)).mentionRepliedUser(false).queue());
                 return;
             }
-            if (evaluated == null) {
+            if (evaluated == null)
+            {
                 event.getMessage().addReaction("✅").queue();
                 return;
             }
-            event.getMessage().reply(evaluated.toString()).mentionRepliedUser(false).allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE)).queue();
+            if (evaluated instanceof CharSequence || evaluated instanceof Number)
+            {
+                event.getMessage().reply("Return value: `"+evaluated +"`").mentionRepliedUser(false).allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE)).queue();
+                return;
+            }
+            event.getMessage().reply("Got return value of type `"+evaluated.getClass().getSimpleName()+"`").mentionRepliedUser(false).allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE)).queue();
+
         }
         catch (ScriptException ex) {
             event.getMessage().reply(ex.getMessage()).mentionRepliedUser(false).allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE)).queue();
