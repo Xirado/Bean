@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+mainClassName = 'at.xirado.bean.Bean'
+group 'at.xirado'
+version '1.0.0_gradle'
+compileJava.options.encoding = 'UTF-8'
+repositories {
+    maven {
+        name 'm2-dv8tion'
+        url 'https://m2.dv8tion.net/releases'
+    }
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://m2.chew.pro/releases'}
+}
+
+dependencies {
+    implementation 'net.dv8tion:JDA:4.3.0_330'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+    implementation 'com.sparkjava:spark-core:2.9.3'
+    implementation 'org.codehaus.groovy:groovy-jsr223:3.0.8'
+    implementation 'com.sedmelluq:lavaplayer:1.3.78'
+    implementation 'com.github.sedmelluq:jda-nas:c3adb66'
+    implementation 'org.jline:jline:3.19.0'
+    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
+    implementation 'ch.qos.logback:logback-classic:1.3.0-alpha5'
+    implementation 'com.zaxxer:HikariCP:4.0.3'
+    implementation 'org.fusesource.jansi:jansi:2.2.0'
+    implementation 'com.google.guava:guava:30.1-jre'
+    implementation 'pw.chew:jda-chewtils:1.20.2'
+}
