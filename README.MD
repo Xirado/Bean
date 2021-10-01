@@ -1,7 +1,7 @@
 <h1> <img src="https://bean.bz/img/icons/android-chrome-512x512.png"
-  width="30"
-  height="30"
-  style="float:left;">
+  width="25"
+  height="25"
+  >
   Bean
 </h1>
 
