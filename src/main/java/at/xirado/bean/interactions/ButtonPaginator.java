@@ -186,7 +186,7 @@ public class ButtonPaginator
         StringBuilder sb = new StringBuilder();
         for (int i = start; i < end; i++)
         {
-            sb.append(numbered ? "`" + (i + 1) + ".` " : "").append(this.items[i]).append("\n");
+            sb.append(numbered ? "**" + (i + 1) + ".** " : "").append(this.items[i]).append("\n");
         }
         EmbedBuilder builder = new EmbedBuilder()
                 .setFooter("Page " + page + "/" + pages + (footer != null ? " • "+footer : ""))

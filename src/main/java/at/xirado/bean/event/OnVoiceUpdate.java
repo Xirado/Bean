@@ -59,7 +59,7 @@ public class OnVoiceUpdate extends ListenerAdapter
         {
             if (stageChannel.getStageInstance() != null)
             {
-                if (stageChannel.getStageInstance().getTopic().startsWith("Now playing: "))
+                if (stageChannel.getStageInstance().getTopic().startsWith("Playing "))
                 {
                     stageChannel.getStageInstance().delete().queue(s -> {}, e -> {});
                 }
@@ -84,7 +84,7 @@ public class OnVoiceUpdate extends ListenerAdapter
         {
             if (stageChannel.getStageInstance() != null)
             {
-                if (stageChannel.getStageInstance().getTopic().startsWith("Now playing: "))
+                if (stageChannel.getStageInstance().getTopic().startsWith("Playing "))
                 {
                     stageChannel.getStageInstance().delete().queue();
                 }

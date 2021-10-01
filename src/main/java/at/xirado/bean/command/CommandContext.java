@@ -1,6 +1,6 @@
 package at.xirado.bean.command;
 
-import at.xirado.bean.data.DataObject;
+import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.translation.LocaleLoader;
@@ -285,7 +285,7 @@ public class CommandContext
         );
     }
 
-    public DataObject getLanguage()
+    public LinkedDataObject getLanguage()
     {
         Guild g = event.getGuild();
         return LocaleLoader.ofGuild(g);

@@ -3,7 +3,7 @@ package at.xirado.bean.command.slashcommands;
 import at.xirado.bean.Bean;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
-import at.xirado.bean.data.DataObject;
+import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.urbandictionary.UrbanDefinition;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -41,13 +41,13 @@ public class UrbanDictionaryCommand extends SlashCommand
         int index = event.getOption("definition") != null ? (int) event.getOption("definition").getAsLong() : 1;
         if (index < 1) index = 1;
         event.deferReply().queue();
-        DataObject dataObject;
+        LinkedDataObject dataObject;
         try
         {
             String url = "http://api.urbandictionary.com/v0/define?term="+phrase.replaceAll("\\s+", "+");
             Response response = Bean.getInstance().getOkHttpClient()
                     .newCall(new Request.Builder().url(url).build()).execute();
-            dataObject = DataObject.parse(response.body().byteStream());
+            dataObject = LinkedDataObject.parse(response.body().byteStream());
         } catch (Exception ex)
         {
             throw new Error(ex);

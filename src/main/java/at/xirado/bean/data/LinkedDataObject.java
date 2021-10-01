@@ -11,7 +11,7 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class DataObject
+public class LinkedDataObject
 {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -25,7 +25,7 @@ public class DataObject
         MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    protected DataObject(Map<String, Object> map)
+    protected LinkedDataObject(Map<String, Object> map)
     {
         this.map = map;
 
@@ -33,12 +33,12 @@ public class DataObject
 
 
     @SuppressWarnings("unchecked")
-    public static DataObject parse(String jsonString)
+    public static LinkedDataObject parse(String jsonString)
     {
         try
         {
             Map<String, Object> map = (Map<String, Object>) MAPPER.readValue(jsonString, LinkedHashMap.class);
-            return new DataObject(map);
+            return new LinkedDataObject(map);
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -46,19 +46,19 @@ public class DataObject
         }
     }
 
-    public DataObject configureMapper(DeserializationFeature feature, boolean value)
+    public LinkedDataObject configureMapper(DeserializationFeature feature, boolean value)
     {
         MAPPER.configure(feature, value);
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    public static DataObject parse(URL url)
+    public static LinkedDataObject parse(URL url)
     {
         try
         {
             Map<String, Object> map = (Map<String, Object>) MAPPER.readValue(url, LinkedHashMap.class);
-            return new DataObject(map);
+            return new LinkedDataObject(map);
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -67,13 +67,13 @@ public class DataObject
     }
 
     @SuppressWarnings("unchecked")
-    public static DataObject parse(File file)
+    public static LinkedDataObject parse(File file)
     {
         try
         {
             if (!file.exists()) return null;
             Map<String, Object> map = (Map<String, Object>) MAPPER.readValue(file, LinkedHashMap.class);
-            return new DataObject(map);
+            return new LinkedDataObject(map);
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -82,13 +82,13 @@ public class DataObject
     }
 
     @SuppressWarnings("unchecked")
-    public static DataObject parse(InputStream is)
+    public static LinkedDataObject parse(InputStream is)
     {
         if (is == null) throw new IllegalArgumentException("InputStream is null!");
         try
         {
             Map<String, Object> map = (Map<String, Object>) MAPPER.readValue(is, LinkedHashMap.class);
-            return new DataObject(map);
+            return new LinkedDataObject(map);
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -96,9 +96,9 @@ public class DataObject
         }
     }
 
-    public static DataObject empty()
+    public static LinkedDataObject empty()
     {
-        return new DataObject(new LinkedHashMap<>());
+        return new LinkedDataObject(new LinkedHashMap<>());
     }
 
     public <T> T convertValueAt(String path, Class<T> type)
@@ -107,7 +107,7 @@ public class DataObject
         return MAPPER.convertValue(value, type);
     }
 
-    public DataObject put(String key, Object object)
+    public LinkedDataObject put(String key, Object object)
     {
         map.put(key, object);
         return this;
@@ -123,7 +123,7 @@ public class DataObject
         return MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(map);
     }
 
-    public DataObject putNull(String key)
+    public LinkedDataObject putNull(String key)
     {
         map.put(key, null);
         return this;
@@ -285,7 +285,7 @@ public class DataObject
         return this.metadata;
     }
 
-    public DataObject setMetadata(String[] metadata)
+    public LinkedDataObject setMetadata(String[] metadata)
     {
         this.metadata = metadata;
         return this;

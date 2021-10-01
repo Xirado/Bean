@@ -43,4 +43,11 @@ public class ReactionRole implements Serializable
     {
         this.roleId = roleId;
     }
+
+    public ReactionRole(String emote, long messageId, long roleId)
+    {
+        this.emote = emote;
+        this.messageId = messageId;
+        this.roleId = roleId;
+    }
 }

@@ -1,6 +1,6 @@
 package at.xirado.bean.misc.urbandictionary;
 
-import at.xirado.bean.data.DataObject;
+import at.xirado.bean.data.LinkedDataObject;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 
 import java.io.BufferedReader;
@@ -26,7 +26,7 @@ public class UDParser
 
     public UrbanDefinition[] getDefinitionsWithJSONData(String jsonData)
     {
-        return DataObject.parse(jsonData).configureMapper(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).convertValueAt("list", UrbanDefinition[].class);
+        return LinkedDataObject.parse(jsonData).configureMapper(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).convertValueAt("list", UrbanDefinition[].class);
     }
 
 

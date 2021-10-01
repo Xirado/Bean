@@ -128,10 +128,7 @@ public class ReactionRoleCommand extends SlashCommand
                         message.addReaction(emoticon).queue(
                                 (success) ->
                                 {
-                                    ReactionRole reactionRole = new at.xirado.bean.data.ReactionRole();
-                                    reactionRole.setEmote(finalEmote);
-                                    reactionRole.setMessageId(message.getIdLong());
-                                    reactionRole.setRoleId(role.getIdLong());
+                                    ReactionRole reactionRole = new at.xirado.bean.data.ReactionRole(finalEmote, message.getIdLong(), role.getIdLong());
                                     ctx.getGuildData().addReactionRoles(reactionRole).update();
                                     ctx.reply(SlashCommandContext.SUCCESS + " " + ctx.getLocalized("commands.reactionroles.added_success")).setEphemeral(true).queue();
                                 },
@@ -140,7 +137,7 @@ public class ReactionRoleCommand extends SlashCommand
                                         .handle(EnumSet.allOf(ErrorResponse.class), (e) ->
                                         {
                                             ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
-                                            LOGGER.error("An error occured whilst adding reaction-role!", e);
+                                            LOGGER.error("An error occurred whilst adding reaction-role!", e);
                                         })
                         );
                     },

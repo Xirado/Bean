@@ -16,6 +16,14 @@ public class RoleReward implements Serializable
     @JsonProperty("remove_on_next_reward")
     private boolean removeOnNextReward;
 
+    public RoleReward(int level, long roleId, boolean persist, boolean removeOnNextReward)
+    {
+        this.level = level;
+        this.roleId = roleId;
+        this.persist = persist;
+        this.removeOnNextReward = removeOnNextReward;
+    }
+
     @Override
     public int hashCode()
     {
@@ -42,7 +50,7 @@ public class RoleReward implements Serializable
         this.roleId = roleId;
     }
 
-    public boolean isPersist()
+    public boolean isPersistant()
     {
         return persist;
     }

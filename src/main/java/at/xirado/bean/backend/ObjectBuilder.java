@@ -21,7 +21,7 @@ public class ObjectBuilder
         for (Role role : guild.getRoles())
         {
             DataObject roleObject = DataObject.empty()
-                    .put("id", role.getId())
+                    .put("id", role.getIdLong())
                     .put("name", role.getName())
                     .put("color", role.getColorRaw())
                     .put("hoist", role.isHoisted())
@@ -36,7 +36,7 @@ public class ObjectBuilder
         for (GuildChannel channel : guild.getChannels())
         {
             DataObject channelObject = DataObject.empty()
-                    .put("id", channel.getId())
+                    .put("id", channel.getIdLong())
                     .put("type", channel.getType().getId())
                     .put("position", channel.getPosition())
                     .put("name", channel.getName());

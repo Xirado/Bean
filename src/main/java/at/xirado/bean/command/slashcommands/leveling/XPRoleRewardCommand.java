@@ -95,7 +95,7 @@ public class XPRoleRewardCommand extends SlashCommand
                 for (RoleReward reward : rewards)
                 {
                     String properties = "";
-                    if (reward.isPersist())
+                    if (reward.isPersistant())
                     {
                         properties = " - P";
                     }

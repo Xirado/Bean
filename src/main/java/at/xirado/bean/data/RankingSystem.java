@@ -26,7 +26,7 @@ public class RankingSystem
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RankingSystem.class);
-    private static DataObject colorData = null;
+    private static LinkedDataObject colorData = null;
     private static Font FONT;
 
     private static final int CARD_WIDTH = 1200;
@@ -51,7 +51,7 @@ public class RankingSystem
         try
         {
             FONT = Font.createFont(Font.TRUETYPE_FONT, RankingSystem.class.getResourceAsStream("/assets/fonts/NotoSans.ttf"));
-            colorData = DataObject.parse(RankingSystem.class.getResourceAsStream("/assets/wildcards/ColorInfo.json"));
+            colorData = LinkedDataObject.parse(RankingSystem.class.getResourceAsStream("/assets/wildcards/ColorInfo.json"));
         } catch (FontFormatException | IOException e)
         {
             LOGGER.error("Couldn't load font from resources", e);

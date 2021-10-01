@@ -7,6 +7,8 @@ import at.xirado.bean.misc.objects.RoleReward;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -31,14 +33,12 @@ public class GuildData
     {
         this.guildID = guildID;
         this.dataObject = json;
-        ReactionRole[] reactions = json.convertValueAt("reaction_roles", ReactionRole[].class);
-        if (reactions != null && reactions.length > 0)
+        ReactionRole[] reactions = json.isNull("reaction_roles") ? new ReactionRole[0] : json.getArray("reaction_roles")
+                .stream(DataArray::getObject)
+                .map(object -> new ReactionRole(object.getString("emote"), object.getLong("message_id"), object.getLong("role_id")))
+                .toArray(ReactionRole[]::new);
+        if (reactions.length > 0)
             reactionRoles.addAll(Arrays.asList(reactions));
-    }
-
-    public <T> T convertValueAt(String path, Class<T> type)
-    {
-        return dataObject.convertValueAt(path, type);
     }
 
     public GuildData put(String key, Object object)
@@ -47,12 +47,12 @@ public class GuildData
         return this;
     }
 
-    public String toJson() throws JsonProcessingException
+    public String toJson()
     {
-        return dataObject.toJson();
+        return dataObject.toString();
     }
 
-    public String toPrettyString() throws JsonProcessingException
+    public String toPrettyString()
     {
         return dataObject.toPrettyString();
     }
@@ -63,20 +63,9 @@ public class GuildData
         return this;
     }
 
-    public GuildData setRoot(String root)
-    {
-        dataObject.setRoot(root);
-        return this;
-    }
-
-    public String getRoot(String root)
-    {
-        return dataObject.getRoot();
-    }
-
     public String getString(String query, Object... objects)
     {
-        return dataObject.getString(query, objects);
+        return String.format(dataObject.getString(query), objects);
     }
 
     public Integer getInt(String query)
@@ -94,11 +83,6 @@ public class GuildData
         return dataObject.getDouble(query);
     }
 
-    public Float getFloat(String query)
-    {
-        return dataObject.getFloat(query);
-    }
-
     public Long getLong(String query)
     {
         return dataObject.getLong(query);
@@ -111,18 +95,7 @@ public class GuildData
 
     public <T> T get(String query, Class<T> type)
     {
-        return dataObject.get(query, type);
-    }
-
-    public String[] getMetaData()
-    {
-        return dataObject.getMetadata();
-    }
-
-    public GuildData setMetaData(String[] metaData)
-    {
-        dataObject.setMetadata(metaData);
-        return this;
+        return type.cast(dataObject.get(query));
     }
 
     // guild specific getters and setters
@@ -132,11 +105,11 @@ public class GuildData
         String sql = "INSERT INTO guildSettings (guildID, data) values (?,?) ON DUPLICATE KEY UPDATE data = ?";
         try
         {
-            String jsonString = dataObject.toJson();
+            String jsonString = dataObject.toString();
             new SQLBuilder(sql)
                     .addParameters(guildID, jsonString, jsonString)
                     .execute();
-        }catch (SQLException | JsonProcessingException exception)
+        }catch (SQLException exception)
         {
             LOGGER.error("Could not update guild data!", exception);
         }
@@ -150,8 +123,8 @@ public class GuildData
 
     public TextChannel getLogChannel()
     {
+        if (dataObject.isNull("log_channel")) return null;
         Long id = dataObject.getLong("log_channel");
-        if (id == null) return null;
         return Bean.getInstance().getShardManager().getTextChannelById(id);
     }
 
@@ -191,8 +164,8 @@ public class GuildData
     public Set<Role> getModeratorRoles()
     {
         Set<Role> roles = new HashSet<>();
-        if (dataObject.getObject("moderator_roles") == null) return roles;
-        long[] roleIds = dataObject.convertValueAt("moderator_roles", long[].class);
+        if (dataObject.isNull("moderator_roles")) return roles;
+        Long[] roleIds = dataObject.getArray("moderator_roles").stream(DataArray::getLong).toArray(Long[]::new);
         Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
         if (guild == null) return roles;
         for (long roleId : roleIds)
@@ -234,9 +207,9 @@ public class GuildData
     {
         Set<Role> roles = new HashSet<>();
         if (includeMods) roles.addAll(getModeratorRoles());
-        if (dataObject.getObject("dj_roles") == null)
+        if (dataObject.isNull("dj_roles"))
             return roles;
-        long[] roleIds = dataObject.convertValueAt("dj_roles", long[].class);
+        Long[] roleIds = dataObject.getArray("dj_roles").stream(DataArray::getLong).toArray(Long[]::new);
         Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
         if (guild == null) return roles;
         for (long roleId : roleIds)
@@ -287,9 +260,9 @@ public class GuildData
     public Set<Long> getDJMembers()
     {
         Set<Long> members = new HashSet<>();
-        if (dataObject.getObject("dj_members") == null)
+        if (dataObject.isNull("dj_members"))
             return members;
-        Long[] memberIds = dataObject.convertValueAt("dj_members", Long[].class);
+        Long[] memberIds = dataObject.getArray("dj_members").stream(DataArray::getLong).toArray(Long[]::new);
         Arrays.stream(memberIds).filter(Objects::nonNull).forEach(members::add);
         return members;
     }
@@ -316,19 +289,18 @@ public class GuildData
 
     public Set<RoleReward> getRoleRewards()
     {
-        if (dataObject.getObject("role_rewards") == null)
+        if (dataObject.isNull("role_rewards"))
             return Collections.emptySet();
-        return Set.of(dataObject.convertValueAt("role_rewards", RoleReward[].class));
+        return dataObject.getArray("role_rewards")
+                .stream(DataArray::getObject)
+                .map(object -> new RoleReward(object.getInt("level"), object.getLong("role_id"), object.getBoolean("persists"), object.getBoolean("remove_on_next_reward")))
+                .collect(Collectors.toSet());
     }
 
     @CheckReturnValue
     public GuildData addRoleReward(int level, long roleId, boolean persist, boolean removeOnNextReward)
     {
-        RoleReward roleReward = new RoleReward();
-        roleReward.setLevel(level);
-        roleReward.setRoleId(roleId);
-        roleReward.setPersist(persist);
-        roleReward.setRemoveOnNextReward(removeOnNextReward);
+        RoleReward roleReward = new RoleReward(level, roleId, persist, removeOnNextReward);
         Set<RoleReward> currentRewards = new HashSet<>(getRoleRewards());
         if (hasRoleReward(level))
             currentRewards.remove(getRoleReward(level));
@@ -405,4 +377,8 @@ public class GuildData
         return result;
     }
 
+    public DataObject toData()
+    {
+        return dataObject;
+    }
 }

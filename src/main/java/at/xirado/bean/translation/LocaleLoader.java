@@ -1,6 +1,6 @@
 package at.xirado.bean.translation;
 
-import at.xirado.bean.data.DataObject;
+import at.xirado.bean.data.LinkedDataObject;
 import net.dv8tion.jda.api.entities.Guild;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -17,11 +17,11 @@ public class LocaleLoader
     private static final Logger log = LoggerFactory.getLogger(LocaleLoader.class);
 
     public static final List<String> LANGUAGES = new ArrayList<>();
-    private static final Map<String, DataObject> LANGUAGE_MAP;
+    private static final Map<String, LinkedDataObject> LANGUAGE_MAP;
 
     static
     {
-        Map<String, DataObject> m = new HashMap<>();
+        Map<String, LinkedDataObject> m = new HashMap<>();
 
         try (var is = LocaleLoader.class.getResourceAsStream("/assets/languages/list.txt"))
         {
@@ -46,7 +46,7 @@ public class LocaleLoader
             try (var is = LocaleLoader.class.getResourceAsStream("/assets/languages/" + lang))
             {
                 var name = lang.replace(".json", "");
-                DataObject json = DataObject.parse(is);
+                LinkedDataObject json = LinkedDataObject.parse(is);
                 if (json == null) continue;
                 m.put(name, json.setMetadata(new String[]{name}));
                 log.info("Successfully loaded locale {}", lang);
@@ -64,7 +64,7 @@ public class LocaleLoader
         return (String[]) LANGUAGES.toArray();
     }
 
-    public static DataObject getForLanguage(String language)
+    public static LinkedDataObject getForLanguage(String language)
     {
         var lang = LANGUAGE_MAP.get(language);
         if (lang == null)
@@ -75,7 +75,7 @@ public class LocaleLoader
         return lang;
     }
 
-    public static DataObject ofGuild(Guild guild)
+    public static LinkedDataObject ofGuild(Guild guild)
     {
         Locale locale = guild.getLocale();
         String tag = locale.toLanguageTag();
@@ -94,7 +94,7 @@ public class LocaleLoader
     }
 
 
-    public static String parseDuration(long seconds, DataObject languageJSON, String delimiter)
+    public static String parseDuration(long seconds, LinkedDataObject languageJSON, String delimiter)
     {
         if (seconds == -1)
         {

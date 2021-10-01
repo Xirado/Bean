@@ -46,14 +46,14 @@ public class QueueCommand extends SlashCommand
             if (guildAudioPlayer.getPlayer().getPlayingTrack() != null)
             {
                 if (guildAudioPlayer.getScheduler().isRepeat())
-                    ctx.sendSimpleEmbed("\uD83D\uDD01 **Currently playing**: " + Util.titleMarkdown(guildAudioPlayer.getPlayer().getPlayingTrack()));
+                    ctx.sendSimpleEmbed("\uD83D\uDD01 **Currently playing** " + Util.titleMarkdown(guildAudioPlayer.getPlayer().getPlayingTrack()));
                 else
-                    ctx.sendSimpleEmbed("**Currently playing**: " + Util.titleMarkdown(guildAudioPlayer.getPlayer().getPlayingTrack()));
+                    ctx.sendSimpleEmbed("**Currently playing** " + Util.titleMarkdown(guildAudioPlayer.getPlayer().getPlayingTrack()));
             } else
                 ctx.replyError("There is no music playing!").queue();
             return;
         }
-        String[] tracks = queue.stream().map(x -> "`[" + FormatUtil.formatTime(x.getDuration()) + "]` " + Util.titleMarkdown(x) + " (<@" + x.getUserData(TrackInfo.class).getRequesterIdLong() + ">)").toArray(String[]::new);
+        String[] tracks = queue.stream().map(x -> Util.titleMarkdown(x, false) + " (<@" + x.getUserData(TrackInfo.class).getRequesterIdLong() + ">)").toArray(String[]::new);
         builder.setTitle(getQueueTitle(guildAudioPlayer))
                 .setItems(tracks)
                 .addAllowedUsers(event.getUser().getIdLong())
@@ -70,11 +70,11 @@ public class QueueCommand extends SlashCommand
             sb.append(player.getPlayer().isPaused() ? "\u23f8" : "\u25b6").append(player.getScheduler().isRepeat() ? "\uD83D\uDD01" : "").append(" ").append(Util.titleMarkdown(player.getPlayer().getPlayingTrack())).append("\n");
         }
         int entries = player.getScheduler().getQueue().size();
-        long length = 0;
+        long duration = 0;
         for (AudioTrack track : player.getScheduler().getQueue())
         {
-            length += track.getDuration();
+            duration += track.getDuration();
         }
-        return FormatUtil.filter(sb.append(entries).append(entries == 1 ? " entry | `" : " entries | `").append(FormatUtil.formatTime(length)).append("`").toString());
+        return FormatUtil.filter(sb.append(entries).append(entries == 1 ? " entry | `" : " entries | `").append(FormatUtil.formatTime(duration)).append("`").toString());
     }
 }

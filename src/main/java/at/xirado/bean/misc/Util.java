@@ -44,7 +44,12 @@ public class Util
 
     public static String titleMarkdown(AudioTrack track)
     {
-        return "[" + track.getInfo().title + "](<" + track.getInfo().uri + ">)";
+        return "[" + track.getInfo().title +"](<" + track.getInfo().uri + ">)"+(track.getInfo().author == null ? "" : " **by "+track.getInfo().author+"**");
+    }
+
+    public static String titleMarkdown(AudioTrack track, boolean withAuthor)
+    {
+        return "[" + track.getInfo().title +"](<" + track.getInfo().uri + ">)"+(withAuthor ? (track.getInfo().author == null ? "" : " **by "+track.getInfo().author+"**") : "");
     }
 
     public static String timeFormat(long seconds)

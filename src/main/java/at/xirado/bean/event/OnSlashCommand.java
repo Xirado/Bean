@@ -13,7 +13,7 @@ public class OnSlashCommand extends ListenerAdapter
     {
         if (Bean.getInstance().isDebug() && event.getUser().getIdLong() != Bean.OWNER_ID)
         {
-            event.reply(CommandContext.ERROR_EMOTE + " Bot is in maintenance mode!").setEphemeral(true).queue();
+            event.reply(CommandContext.ERROR_EMOTE + " Bot is in debug mode! Only <@"+Bean.OWNER_ID+"> can execute commands!").setEphemeral(true).queue();
             return;
         }
         Bean.getInstance().getSlashCommandHandler().handleSlashCommand(event, event.getMember());

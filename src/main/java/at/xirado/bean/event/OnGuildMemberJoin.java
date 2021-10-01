@@ -23,10 +23,10 @@ public class OnGuildMemberJoin extends ListenerAdapter
         if (level > 0)
         {
             Set<RoleReward> roleRewards = guildData.getEffectiveRoleRewards(level);
-            Set<Role> rolesToAdd = new HashSet<>();
+            Set<Role> rolesToAdd = new HashSet<>(event.getMember().getRoles());
             for (RoleReward reward : roleRewards)
             {
-                if (reward.isPersist())
+                if (reward.isPersistant())
                 {
                     Role role = event.getGuild().getRoleById(reward.getRoleId());
                     if (role != null && event.getGuild().getSelfMember().canInteract(role))

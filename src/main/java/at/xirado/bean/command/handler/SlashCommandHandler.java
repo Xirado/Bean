@@ -8,7 +8,7 @@ import at.xirado.bean.command.slashcommands.*;
 import at.xirado.bean.command.slashcommands.leveling.*;
 import at.xirado.bean.command.slashcommands.moderation.*;
 import at.xirado.bean.command.slashcommands.music.*;
-import at.xirado.bean.data.DataObject;
+import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -312,7 +312,7 @@ public class SlashCommandHandler
                 event.getJDA().openPrivateChannelById(Bean.OWNER_ID)
                         .flatMap(c -> c.sendMessageEmbeds(builder.build()).content("```fix\n"+ExceptionUtils.getStackTrace(e)+"\n```"))
                         .queue();
-                DataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
+                LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
                 event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {}, ex -> {});
             }
         };

@@ -1,6 +1,6 @@
 package at.xirado.bean.translation;
 
-import at.xirado.bean.data.DataObject;
+import at.xirado.bean.data.LinkedDataObject;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -124,7 +124,7 @@ public class FormattedDuration
 
     }
 
-    public static String getDuration(long seconds, boolean calcDifference, DataObject language)
+    public static String getDuration(long seconds, boolean calcDifference, LinkedDataObject language)
     {
         if (calcDifference) seconds = (System.currentTimeMillis() / 1000) - seconds;
         if (seconds < 0) throw new IllegalArgumentException("Negative Duration Value!");

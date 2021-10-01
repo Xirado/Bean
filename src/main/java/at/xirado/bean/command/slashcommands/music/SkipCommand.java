@@ -40,6 +40,6 @@ public class SkipCommand extends SlashCommand
             ctx.sendSimpleEmbed("**Skipped!**");
             return;
         }
-        ctx.sendSimpleEmbed("**Skipped!** Now playing: `" + nextTrack.getInfo().title + "`");
+        ctx.sendSimpleEmbed("**Skipped!**\n Now playing **" + nextTrack.getInfo().title + "**");
     }
 }

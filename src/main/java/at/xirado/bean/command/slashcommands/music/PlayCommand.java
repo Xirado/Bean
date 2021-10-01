@@ -27,8 +27,8 @@ public class PlayCommand extends SlashCommand
 {
     public PlayCommand()
     {
-        setCommandData(new CommandData("play", "plays a song")
-                .addOption(OptionType.STRING, "query", "either a term to search for or an url that is supported", true)
+        setCommandData(new CommandData("play", "plays a video")
+                .addOption(OptionType.STRING, "query", "youtube search term or an url that is supported", true)
         );
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
 
@@ -53,7 +53,7 @@ public class PlayCommand extends SlashCommand
         if (manager.getSendingHandler() == null)
             manager.setSendingHandler(guildAudioPlayer.getSendHandler());
         String query = event.getOption("query").getAsString();
-        query = query.startsWith("http://") || query.startsWith("https://") ? query : "ytsearch:" + query;
+        query = (query.startsWith("http://") || query.startsWith("https://")) ? query : "ytsearch:" + query;
         Bean.getInstance().getAudioManager().getPlayerManager().loadItemOrdered(guildAudioPlayer, query, new AudioLoadResultHandler()
         {
             @Override
@@ -75,10 +75,10 @@ public class PlayCommand extends SlashCommand
                     guildAudioPlayer.getScheduler().queue(single);
                     return;
                 }
-                String amount = "Added `" + playlist.getTracks().size() + "` tracks! (`" + FormatUtil.formatTime(playlist.getTracks().stream().map(AudioTrack::getDuration).reduce(0L, Long::sum)) + "`)";
+                String amount = "Added **" + playlist.getTracks().size() + "** tracks to the queue! (**" + FormatUtil.formatTime(playlist.getTracks().stream().map(AudioTrack::getDuration).reduce(0L, Long::sum)) + "**)";
                 if (guildAudioPlayer.getPlayer().getPlayingTrack() == null)
                 {
-                    amount += "\n**Now playing**: " + Util.titleMarkdown(playlist.getTracks().get(0));
+                    amount += "\n**Now playing** " + Util.titleMarkdown(playlist.getTracks().get(0));
                 }
                 event.getHook().sendMessageEmbeds(ctx.getSimpleEmbed(amount)).queue();
                 playlist.getTracks().forEach(track ->
@@ -97,7 +97,7 @@ public class PlayCommand extends SlashCommand
             @Override
             public void loadFailed(FriendlyException exception)
             {
-                event.getHook().sendMessageEmbeds(ctx.getSimpleEmbed("An error occurred while loading a track!\n`" + exception.getMessage() + "`")).queue();
+                event.getHook().sendMessageEmbeds(ctx.getSimpleEmbed("An error occurred while loading track!\n`" + exception.getMessage() + "`")).queue();
             }
 
 

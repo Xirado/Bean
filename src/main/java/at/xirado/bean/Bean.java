@@ -4,7 +4,7 @@ import at.xirado.bean.backend.WebServer;
 import at.xirado.bean.command.ConsoleCommandManager;
 import at.xirado.bean.command.handler.CommandHandler;
 import at.xirado.bean.command.handler.SlashCommandHandler;
-import at.xirado.bean.data.DataObject;
+import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.event.*;
 import at.xirado.bean.log.Shell;
@@ -38,11 +38,13 @@ public class Bean
 {
     public static final long OWNER_ID = 184654964122058752L;
     public static final long START_TIME = System.currentTimeMillis() / 1000;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
-    private static final String VERSION = loadVersion();
+    private static String VERSION;
+    private static long BUILD_TIME;
     private static Bean instance;
     private final ShardManager shardManager;
-    private final DataObject config = loadConfig();
+    private final LinkedDataObject config = loadConfig();
     private final boolean debug;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setNameFormat("Bean Thread %d").build());
     private final ConsoleCommandManager consoleCommandManager;
@@ -92,6 +94,7 @@ public class Bean
         Thread.currentThread().setName("Main-Thread");
         try
         {
+            loadPropertiesFile();
             Shell.startShell();
             Shell.awaitReady();
             new Bean();
@@ -106,17 +109,20 @@ public class Bean
         }
     }
 
-    private static String loadVersion()
+    private static void loadPropertiesFile()
     {
         try
         {
             Properties properties = new Properties();
-            properties.load(Bean.class.getClassLoader().getResourceAsStream("settings.properties"));
-            return properties.getProperty("app-version");
-        } catch (IOException e)
+            properties.load(Bean.class.getClassLoader().getResourceAsStream("app.properties"));
+            VERSION = properties.getProperty("app-version");
+            BUILD_TIME = Long.parseLong(properties.getProperty("build-time"));
+        } catch (Exception e)
         {
-            LOGGER.error("Could not get version!", e);
-            return "0.0.0";
+            e.printStackTrace();
+            LOGGER.error("An error occurred while reading app.properties file!", e);
+            VERSION = "0.0.0";
+            BUILD_TIME = 0L;
         }
     }
 
@@ -145,7 +151,7 @@ public class Bean
         return VERSION;
     }
 
-    public DataObject getConfig()
+    public LinkedDataObject getConfig()
     {
         return config;
     }
@@ -195,7 +201,7 @@ public class Bean
         return okHttpClient;
     }
 
-    private DataObject loadConfig()
+    private LinkedDataObject loadConfig()
     {
         File configFile = new File("config.json");
         if (!configFile.exists())
@@ -204,7 +210,7 @@ public class Bean
             if (inputStream == null)
             {
                 LOGGER.error("Could not copy config from resources folder!");
-                return DataObject.empty();
+                return LinkedDataObject.empty();
             }
             Path path = Paths.get(Util.getJarPath() + "/config.json");
             System.out.println(path.toAbsolutePath());
@@ -216,7 +222,7 @@ public class Bean
                 LOGGER.error("Could not copy config file!", e);
             }
         }
-        return DataObject.parse(configFile);
+        return LinkedDataObject.parse(configFile);
     }
 
     public WebServer getWebServer()

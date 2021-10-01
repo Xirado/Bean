@@ -47,10 +47,7 @@ public class ConvertReactionRoles extends ConsoleCommand
                 if (role == null) continue;
                 Guild guild = role.getGuild();
                 GuildData guildData = GuildManager.getGuildData(guild);
-                ReactionRole reactionRole = new ReactionRole();
-                reactionRole.setMessageId(messageId);
-                reactionRole.setRoleId(roleId);
-                reactionRole.setEmote(emote);
+                ReactionRole reactionRole = new ReactionRole(emote, messageId, roleId);
                 guildData.addReactionRoles(reactionRole).update();
                 done++;
             }

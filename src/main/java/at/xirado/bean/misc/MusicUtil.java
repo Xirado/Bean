@@ -14,7 +14,7 @@ public class MusicUtil
     {
         if (track == null)
             return "Queue is empty!";
-        return "Now playing: " + track.getInfo().title + " by " + track.getInfo().author;
+        return "Playing " + track.getInfo().title + (track.getInfo().author == null ? "" : " by " + track.getInfo().author);
     }
 
     public static MessageEmbed getAddedToQueueMessage(GuildAudioPlayer player, AudioTrack track)
@@ -24,18 +24,15 @@ public class MusicUtil
                 .setColor(0x452350);
         if (audioPlayer.getPlayingTrack() == null)
         {
-            builder.setDescription("**Now playing**: " + Util.titleMarkdown(track) + " (`" + FormatUtil.formatTime(track.getDuration()) + "`)");
+            builder.setDescription("**Now playing** " + Util.titleMarkdown(track) + " (**" + FormatUtil.formatTime(track.getDuration()) + "**)");
         } else
         {
-            builder.setDescription("**Added to queue**: " + Util.titleMarkdown(track) + " (`" + FormatUtil.formatTime(track.getDuration()) + "`)");
+            builder.setDescription("**Added** " + Util.titleMarkdown(track) + " **to the queue!** (**" + FormatUtil.formatTime(track.getDuration()) + "**)");
         }
         if (track instanceof YoutubeAudioTrack)
         {
             builder.setThumbnail("https://img.youtube.com/vi/" + track.getIdentifier() + "/mqdefault.jpg");
         }
-        String author = track.getInfo().author;
-        if (author != null)
-            builder.setFooter("Source: " + author);
         return builder.build();
     }
 }

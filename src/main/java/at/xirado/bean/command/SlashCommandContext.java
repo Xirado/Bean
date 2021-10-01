@@ -1,6 +1,6 @@
 package at.xirado.bean.command;
 
-import at.xirado.bean.data.DataObject;
+import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.misc.Util;
@@ -81,10 +81,10 @@ public class SlashCommandContext
                 .build();
     }
 
-    public DataObject getLanguage()
+    public LinkedDataObject getLanguage()
     {
         Guild g = event.getGuild();
-        DataObject language;
+        LinkedDataObject language;
         if (g != null) language = LocaleLoader.ofGuild(g);
         else language = LocaleLoader.getForLanguage("en_US");
         return language;

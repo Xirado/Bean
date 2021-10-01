@@ -127,13 +127,13 @@ public class WebServer
         return DataObject.fromJson(response.body().byteStream());
     }
 
-    public static DataArray retrieveGuilds(String accessToken) throws IOException
+    public static DataObject retrieveGuilds(String accessToken) throws IOException
     {
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
 
         Request request = new Request.Builder()
                 .header("Authorization", "Bearer "+accessToken)
-                .header("User-Agent", "Bean (https://bean.bz, 1.0.0)")
+                .header("User-Agent", "Bean (https://bean.bz, "+Bean.getBeanVersion()+")")
                 .get()
                 .url(BASE_URL+"/users/@me/guilds")
                 .build();
@@ -141,7 +141,19 @@ public class WebServer
         Call call = client.newCall(request);
         Response response = call.execute();
         String body = response.body().string();
-        return DataArray.fromJson(body);
+        DataObject object = DataObject.empty();
+        if (response.isSuccessful()) // Below 400 => Returned an array of guilds
+        {
+            return object.put("guilds", DataArray.fromJson(body))
+                    .put("http_code", response.code());
+        }
+        DataObject responseBody = DataObject.fromJson(body);
+        if (!responseBody.isNull("message"))
+            object.put("message", responseBody.getString("message"));
+        if (!responseBody.isNull("code"))
+            object.put("code", responseBody.getInt("code"));
+        object.put("http_code", response.code());
+        return object;
     }
 
     private static void enableCORS(final String origin, final String methods, final String headers)

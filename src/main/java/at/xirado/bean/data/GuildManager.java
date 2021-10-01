@@ -3,6 +3,7 @@ package at.xirado.bean.data;
 import at.xirado.bean.data.database.SQLBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,7 @@ public class GuildManager
                 .addParameter(guildID);
         try(var rs = query.executeQuery())
         {
-            if (rs.next()) return new GuildData(guildID, DataObject.parse(rs.getString("data")));
+            if (rs.next()) return new GuildData(guildID, DataObject.fromJson(rs.getString("data")));
             return null;
         }catch (SQLException ex)
         {
@@ -58,11 +59,11 @@ public class GuildManager
         String sql = "INSERT INTO guildSettings (guildID, data) values (?,?) ON DUPLICATE KEY UPDATE data = ?";
         try
         {
-            String jsonString = data.toJson();
+            String jsonString = data.toString();
             var query = new SQLBuilder(sql)
                     .addParameters(guildID, jsonString, jsonString);
             query.execute();
-        } catch (SQLException | JsonProcessingException exception)
+        } catch (SQLException exception)
         {
             LOGGER.error("Could not update guild data!", exception);
         }
