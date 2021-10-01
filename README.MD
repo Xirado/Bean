@@ -1,4 +1,4 @@
-<h1> <img src="https://bean.bz/images/logo.png"
+<h1> <img src="https://bean.bz/img/icons/android-chrome-512x512.png"
   width="30"
   height="30"
   style="float:left;">
