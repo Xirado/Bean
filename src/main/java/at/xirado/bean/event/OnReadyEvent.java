@@ -21,5 +21,6 @@ public class OnReadyEvent extends ListenerAdapter
         {
             LOGGER.warn("Debug mode enabled! Commands will not be executed for users.");
         }
+        Bean.getInstance().initCommandCheck();
     }
 }

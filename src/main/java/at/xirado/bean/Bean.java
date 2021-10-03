@@ -2,6 +2,7 @@ package at.xirado.bean;
 
 import at.xirado.bean.backend.WebServer;
 import at.xirado.bean.command.ConsoleCommandManager;
+import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.handler.CommandHandler;
 import at.xirado.bean.command.handler.SlashCommandHandler;
 import at.xirado.bean.data.LinkedDataObject;
@@ -14,6 +15,8 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -30,6 +33,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -229,4 +234,67 @@ public class Bean
     {
         return webServer;
     }
+
+
+    public void initCommandCheck()
+    {
+        LOGGER.info("Checking for outdated command cache...");
+        getExecutor().submit(() -> {
+            Bean.getInstance().getShardManager().getShards().get(0).retrieveCommands().queue((list) -> {
+                List<SlashCommand> commandList = Bean.getInstance().getSlashCommandHandler().registeredCommands
+                        .stream()
+                        .filter(SlashCommand::isGlobal)
+                        .toList();
+                boolean commandRemovedOrAdded = commandList.size() != list.size();
+                if (commandRemovedOrAdded)
+                {
+                    if (commandList.size() > list.size())
+                        LOGGER.warn("New command(s) has/have been added! Updating Discords cache...");
+                    else
+                        LOGGER.warn("Command(s) has/have been removed! Updating Discords cache...");
+                    Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {});
+                    return;
+                }
+                boolean outdated = false;
+                for (SlashCommand slashCommand : commandList)
+                {
+                    Command discordCommand = list.stream()
+                            .filter(x -> x.getName().equalsIgnoreCase(slashCommand.getCommandData().getName()))
+                            .findFirst().orElse(null);
+                    // Discord doesn't have this command yet!
+                    if (discordCommand == null)
+                    {
+                        outdated = true;
+                        break;
+                    }
+                    // Option size doesn't match!
+                    if (discordCommand.getOptions().size() != slashCommand.getCommandData().getOptions().size())
+                    {
+                        outdated = true;
+                        break;
+                    }
+                    String[] optionNames = slashCommand.getCommandData().getOptions().stream().map(OptionData::getName).toArray(String[]::new);
+                    String[] discordOptionNames = discordCommand.getOptions().stream().map(Command.Option::getName).toArray(String[]::new);
+                    // Option names don't match!
+                    if (!Arrays.equals(optionNames, discordOptionNames))
+                    {
+                        outdated = true;
+                        break;
+                    }
+                    String[] optionDescriptions = slashCommand.getCommandData().getOptions().stream().map(OptionData::getDescription).toArray(String[]::new);
+                    String[] discordOptionDescriptions = discordCommand.getOptions().stream().map(Command.Option::getDescription).toArray(String[]::new);
+                    // Option descriptions don't match!
+                    if (!Arrays.equals(optionDescriptions, discordOptionDescriptions))
+                    {
+                        outdated = true;
+                        break;
+                    }
+                }
+                LOGGER.info("Outdated: {}", outdated);
+                if (outdated)
+                    Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {});
+            });
+        });
+    }
+
 }
