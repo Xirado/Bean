@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jetbrains.annotations.NotNull;
@@ -26,16 +27,16 @@ public class ReactionRoleCommand extends SlashCommand
 
     public ReactionRoleCommand()
     {
-        setCommandData(new CommandData("reactionrole", "Sets up Reaction-Roles")
-                .addSubcommands(new SubcommandData("create", "create Reaction-Roles")
-                        .addOption(OptionType.CHANNEL, "channel", "the channel where the message is in", true)
-                        .addOption(OptionType.STRING, "message_id", "the id of the message you want to have the Reaction-Role on", true)
+        setCommandData(new CommandData("reactionrole", "setup reaction roles")
+                .addSubcommands(new SubcommandData("create", "create reaction roles")
+                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "the channel which contains the message", true).setChannelTypes(ChannelType.TEXT))
+                        .addOption(OptionType.STRING, "message_id", "the id of the message you want to have the reaction role on", true)
                         .addOption(OptionType.ROLE, "role", "the role that gets added upon reacting to the message", true)
-                        .addOption(OptionType.STRING, "emote", "the emote/emoji used for the Reaction-Role", true)
+                        .addOption(OptionType.STRING, "emote", "the emote/emoji used for reacting", true)
                 )
-                .addSubcommands(new SubcommandData("remove", "remove Reaction-Roles")
-                        .addOption(OptionType.CHANNEL, "channel", "the channel where the message is in", true)
-                        .addOption(OptionType.STRING, "message_id", "the id of the message you want to have Reaction-Roles removed on", true)
+                .addSubcommands(new SubcommandData("remove", "remove reaction roles")
+                        .addOption(OptionType.CHANNEL, "channel", "the channel which contains the message", true)
+                        .addOption(OptionType.STRING, "message_id", "the id of the message you want to have reaction roles removed on", true)
                 )
         );
         setRequiredUserPermissions(Permission.ADMINISTRATOR);
@@ -86,7 +87,7 @@ public class ReactionRoleCommand extends SlashCommand
                             .handle(EnumSet.allOf(ErrorResponse.class), (err) ->
                             {
                                 ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
-                                LOGGER.error("An error occured whilst trying to remove reaction-roles!", err);
+                                LOGGER.error("An error occurred while trying to remove reaction roles!", err);
                             })
             );
         } else if (subcommand.equalsIgnoreCase("create"))
@@ -137,7 +138,7 @@ public class ReactionRoleCommand extends SlashCommand
                                         .handle(EnumSet.allOf(ErrorResponse.class), (e) ->
                                         {
                                             ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("general.unknown_error_occured")).setEphemeral(true).queue();
-                                            LOGGER.error("An error occurred whilst adding reaction-role!", e);
+                                            LOGGER.error("An error occurred while adding reaction-role!", e);
                                         })
                         );
                     },

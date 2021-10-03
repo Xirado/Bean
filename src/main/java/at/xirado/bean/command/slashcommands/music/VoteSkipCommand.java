@@ -4,6 +4,7 @@ import at.xirado.bean.Bean;
 import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
+import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -47,7 +48,7 @@ public class VoteSkipCommand extends SlashCommand
                 ctx.sendSimpleEmbed("**Skipped!**");
                 return;
             }
-            ctx.sendSimpleEmbed("**Skipped!** Now playing: `" + nextTrack.getInfo().title + "`");
+            ctx.sendSimpleEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
             return;
         }
         int listeners = (int)event.getMember().getVoiceState().getChannel().getMembers().stream()
@@ -57,6 +58,7 @@ public class VoteSkipCommand extends SlashCommand
             ctx.sendSimpleEmbed("You already voted to skip this song!");
             return;
         }
+        trackInfo.addVoteSkip(event.getMember().getIdLong());
         int skippers = (int)event.getMember().getVoiceState().getChannel().getMembers().stream()
                 .filter(m -> trackInfo.getVoteSkips().contains(m.getIdLong())).count();
         int required = (int)Math.ceil(listeners * .55);
@@ -69,11 +71,10 @@ public class VoteSkipCommand extends SlashCommand
                 ctx.sendSimpleEmbed("**Skipped!**");
                 return;
             }
-            ctx.sendSimpleEmbed("**Skipped!** Now playing: `" + nextTrack.getInfo().title + "`");
-            return;
+            ctx.sendSimpleEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
         } else {
-            ctx.sendSimpleEmbed("**Voted to skip**: **"+(required-1)+"** more votes needed");
-            trackInfo.addVoteSkip(event.getMember().getIdLong());
+            ctx.sendSimpleEmbed("Voted to skip: **"+(required-skippers)+"** more votes needed");
+
         }
 
     }
