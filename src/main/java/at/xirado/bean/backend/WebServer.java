@@ -26,10 +26,7 @@ public class WebServer
     {
         port(port);
         if (!Bean.getInstance().isDebug())
-        {
             secure("cert.jks", Bean.getInstance().getConfig().getString("cert_pw"), null, null);
-
-        }
         enableCORS("*", "*", "*");
         get("/guilds", GetGuilds::handle);
         get("/token", GetTokens::handle);
