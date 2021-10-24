@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 
 public class ObjectBuilder
 {
-    public static DataObject serializeGuild(Guild guild)
+    public static DataObject serializeJDAGuild(Guild guild)
     {
         DataObject object = DataObject.empty()
                 .put("name", guild.getName())

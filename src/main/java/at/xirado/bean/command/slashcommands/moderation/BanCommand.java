@@ -107,6 +107,6 @@ public class BanCommand extends SlashCommand
                                 .build();
                         logChannel.sendMessageEmbeds(logEmbed).queue(s -> {}, e -> {});
                     }
-                }, e -> ctx.reply(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).setEphemeral(true).queue());
+                }, e -> event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).setEphemeral(true).queue());
     }
 }

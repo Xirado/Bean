@@ -9,7 +9,7 @@ public enum CaseType
     KICK("Kick", Color.decode("#800080"), (byte) 1),
     BAN("Ban", Color.decode("#990000"), (byte) 0),
     TEMPBAN("Tempban", Color.decode("#990000"), (byte) 4),
-    SOFTBAN("Softban", Color.decode("#FFFFFF"), (byte) 5);
+    SOFTBAN("Softban", Color.decode("#800080"), (byte) 5);
 
     private final String friendlyName;
     private final Color embedColor;

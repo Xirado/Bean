@@ -462,10 +462,9 @@ public class RankingSystem
 
     public static int getRank(long guildID, long userID)
     {
-        String qry = "SELECT 0, FIND_IN_SET(totalXP, (SELECT GROUP_CONCAT(DISTINCT totalXP ORDER BY totalXP DESC) FROM levels ))" +
-                " AS rank FROM levels WHERE guildID = ? AND userID = ?";
+        String qry = "SELECT totalXP, FIND_IN_SET( totalXP, ( SELECT GROUP_CONCAT( totalXP ORDER BY totalXP DESC ) FROM levels WHERE guildID = ? )) AS rank FROM levels WHERE guildID = ? and userID = ?";
         var query = new SQLBuilder(qry)
-                .addParameters(guildID, userID);
+                .addParameters(guildID, guildID, userID);
         try (var rs = query.executeQuery())
         {
             if (rs.next()) return rs.getInt("rank");

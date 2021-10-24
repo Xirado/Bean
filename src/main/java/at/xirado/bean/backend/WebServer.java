@@ -111,7 +111,6 @@ public class WebServer
     public static DataObject retrieveUser(String accessToken) throws IOException
     {
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
-
         Request request = new Request.Builder()
                 .header("authorization", "Bearer "+accessToken)
                 .get()
@@ -167,13 +166,14 @@ public class WebServer
             if (accessControlRequestMethod != null) {
                 response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
             }
-
             return "OK";
         });
 
         before((request, response) -> {
             response.header("Access-Control-Allow-Origin", origin);
             response.header("Access-Control-Request-Method", methods);
+            response.header("Access-Control-Allow-Headers", "authorization, *, Authorization");
+            response.header("Access-Control-Expose-Headers", "authorization, *, Authorization");
             response.header("Access-Control-Allow-Headers", headers);
             response.type("application/json");
         });
@@ -197,9 +197,8 @@ public class WebServer
                 .build();
 
         Call call = client.newCall(request);
-
         Response response = call.execute();
-        return DataObject.fromJson(response.body().byteStream());
+        return DataObject.fromJson(response.body().byteStream()).put("status", response.code());
     }
 
 }

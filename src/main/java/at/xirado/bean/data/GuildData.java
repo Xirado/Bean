@@ -4,7 +4,6 @@ package at.xirado.bean.data;
 import at.xirado.bean.Bean;
 import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.objects.RoleReward;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -61,6 +60,11 @@ public class GuildData
     {
         dataObject.putNull(key);
         return this;
+    }
+
+    public boolean isNull(String key)
+    {
+        return dataObject.isNull(key);
     }
 
     public String getString(String query, Object... objects)
@@ -138,7 +142,7 @@ public class GuildData
     {
         Checks.noneNull(reactionRoles, "Reaction roles");
         this.reactionRoles.addAll(Arrays.asList(reactionRoles));
-        dataObject.put("reaction_roles", this.reactionRoles);
+        dataObject.put("reaction_roles", this.reactionRoles.stream().toList());
         return this;
     }
 
@@ -147,7 +151,7 @@ public class GuildData
     {
         Checks.noneNull(reactionRoles, "Reaction roles");
         Arrays.asList(reactionRoles).forEach(this.reactionRoles::remove);
-        dataObject.put("reaction_roles", this.reactionRoles);
+        dataObject.put("reaction_roles", this.reactionRoles.stream().toList());
         return this;
     }
 
@@ -157,7 +161,7 @@ public class GuildData
         reactionRoles = reactionRoles.stream()
                 .filter(x -> x.getMessageId() != messageID)
                 .collect(Collectors.toSet());
-        dataObject.put("reaction_roles", reactionRoles);
+        dataObject.put("reaction_roles", reactionRoles.stream().toList());
         return this;
     }
 
@@ -182,7 +186,7 @@ public class GuildData
         Checks.notEmpty(roles, "Roles");
         Set<Role> modRoles = getModeratorRoles();
         modRoles.addAll(Arrays.asList(roles));
-        dataObject.put("moderator_roles", modRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toSet()));
+        dataObject.put("moderator_roles", modRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toList()));
         return this;
     }
 
@@ -192,7 +196,7 @@ public class GuildData
         Checks.notEmpty(roles, "Roles");
         Set<Role> modRoles = getModeratorRoles();
         Arrays.asList(roles).forEach(modRoles::remove);
-        dataObject.put("moderator_roles", modRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toSet()));
+        dataObject.put("moderator_roles", modRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toList()));
         return this;
     }
 
@@ -226,7 +230,7 @@ public class GuildData
         Checks.notEmpty(roles, "Roles");
         Set<Role> djRoles = getDJRoles(false);
         djRoles.addAll(Arrays.asList(roles));
-        dataObject.put("dj_roles", djRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toSet()));
+        dataObject.put("dj_roles", djRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toList()));
         return this;
     }
 
@@ -236,7 +240,7 @@ public class GuildData
         Checks.notEmpty(roles, "Roles");
         Set<Role> djRoles = getDJRoles(false);
         Arrays.asList(roles).forEach(djRoles::remove);
-        dataObject.put("dj_roles", djRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toSet()));
+        dataObject.put("dj_roles", djRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toList()));
         return this;
     }
 
@@ -259,21 +263,21 @@ public class GuildData
 
     public Set<Long> getDJMembers()
     {
-        Set<Long> members = new HashSet<>();
         if (dataObject.isNull("dj_members"))
-            return members;
-        Long[] memberIds = dataObject.getArray("dj_members").stream(DataArray::getLong).toArray(Long[]::new);
-        Arrays.stream(memberIds).filter(Objects::nonNull).forEach(members::add);
-        return members;
+            return new HashSet<>();
+        return dataObject.getArray("dj_members")
+                        .stream(DataArray::getLong)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toCollection(HashSet::new));
     }
 
     @CheckReturnValue
     public GuildData addDJMembers(Member... members)
     {
-        Checks.notEmpty(members, "Members");
+        Checks.noneNull(members, "Members");
         Set<Long> djMembers = getDJMembers();
         djMembers.addAll(Arrays.stream(members).map(Member::getIdLong).collect(Collectors.toSet()));
-        dataObject.put("dj_members", djMembers);
+        dataObject.put("dj_members", djMembers.stream().toList());
         return this;
     }
 
@@ -283,14 +287,14 @@ public class GuildData
         Checks.notEmpty(members, "Members");
         Set<Long> djMembers = getDJMembers();
         Arrays.asList(members).stream().map(ISnowflake::getIdLong).forEach(djMembers::remove);
-        dataObject.put("dj_members", djMembers);
+        dataObject.put("dj_members", djMembers.stream().toList());
         return this;
     }
 
     public Set<RoleReward> getRoleRewards()
     {
         if (dataObject.isNull("role_rewards"))
-            return Collections.emptySet();
+            return new HashSet<>();
         return dataObject.getArray("role_rewards")
                 .stream(DataArray::getObject)
                 .map(object -> new RoleReward(object.getInt("level"), object.getLong("role_id"), object.getBoolean("persists"), object.getBoolean("remove_on_next_reward")))
@@ -305,7 +309,7 @@ public class GuildData
         if (hasRoleReward(level))
             currentRewards.remove(getRoleReward(level));
         currentRewards.add(roleReward);
-        dataObject.put("role_rewards", currentRewards);
+        dataObject.put("role_rewards", currentRewards.stream().toList());
         return this;
     }
 
@@ -315,7 +319,7 @@ public class GuildData
         if (!hasRoleReward(level)) return this;
         Set<RoleReward> currentRewards = new HashSet<>(getRoleRewards());
         currentRewards.removeIf(reward -> reward.getLevel() == level);
-        dataObject.put("role_rewards", currentRewards);
+        dataObject.put("role_rewards", currentRewards.stream().toList());
         return this;
     }
 

@@ -92,6 +92,6 @@ public class KickCommand extends SlashCommand
                                 .build();
                         logChannel.sendMessageEmbeds(logEmbed).queue(s -> {}, e -> {});
                     }
-                });
+                }, e -> event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).setEphemeral(true).queue());
     }
 }

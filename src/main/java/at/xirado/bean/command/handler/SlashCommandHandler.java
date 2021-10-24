@@ -83,36 +83,53 @@ public class SlashCommandHandler
         registerCommand(new ModeratorCommand());
         registerCommand(new InfoCommand());
         registerCommand(new XPRoleRewardCommand());
-        registerCommand(new SettingsCommand());
+//        registerCommand(new SettingsCommand()); Broken at the moment
         registerCommand(new VoteSkipCommand());
         registerCommand(new SkipToCommand());
         registerCommand(new VoiceGameCommand());
         registerCommand(new KickCommand());
+        registerCommand(new SoftbanCommand());
     }
 
     public void updateCommands(Consumer<List<Command>> success, Consumer<Throwable> failure)
     {
-        commandUpdateAction.queue(success, failure);
-        for (Map.Entry<Long, List<SlashCommand>> entrySet : registeredGuildCommands.entrySet())
+        if (!Bean.getInstance().isDebug())
         {
-            Long guildID = entrySet.getKey();
-            List<SlashCommand> slashCommands = entrySet.getValue();
-            if (guildID == null || slashCommands == null) continue;
-            if (slashCommands.isEmpty()) continue;
-            Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
-            if (guild == null) continue;
-            CommandListUpdateAction guildCommandUpdateAction = guild.updateCommands();
-            for (SlashCommand cmd : slashCommands)
+            commandUpdateAction.queue(success, failure);
+            for (Map.Entry<Long, List<SlashCommand>> entrySet : registeredGuildCommands.entrySet())
             {
-                guildCommandUpdateAction = guildCommandUpdateAction.addCommands(cmd.getCommandData());
+                Long guildID = entrySet.getKey();
+                List<SlashCommand> slashCommands = entrySet.getValue();
+                if (guildID == null || slashCommands == null) continue;
+                if (slashCommands.isEmpty()) continue;
+                Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
+                if (guild == null) continue;
+                CommandListUpdateAction guildCommandUpdateAction = guild.updateCommands();
+                for (SlashCommand cmd : slashCommands)
+                {
+                    guildCommandUpdateAction = guildCommandUpdateAction.addCommands(cmd.getCommandData());
+                }
+                if (slashCommands.size() > 0) guildCommandUpdateAction.queue();
             }
-            if (slashCommands.size() > 0) guildCommandUpdateAction.queue();
+        } else {
+            List<SlashCommand> commands = registeredGuildCommands.get(815597207617142814L);
+            if (commands != null && !commands.isEmpty())
+            {
+                Guild guild = Bean.getInstance().getShardManager().getGuildById(815597207617142814L);
+                if (guild == null)
+                    return;
+                CommandListUpdateAction commandListUpdateAction = guild.updateCommands();
+                for (SlashCommand cmd : commands)
+                    commandListUpdateAction.addCommands(cmd.getCommandData());
+                commandListUpdateAction.queue(success, failure);
+            }
         }
+
     }
 
     private void registerCommand(SlashCommand command)
     {
-        if (!command.isGlobal())
+        if (!command.isGlobal() && !Bean.getInstance().isDebug())
         {
             if (command.getEnabledGuilds() == null) return;
             if (command.getEnabledGuilds().isEmpty()) return;

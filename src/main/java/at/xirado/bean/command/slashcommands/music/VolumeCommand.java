@@ -4,6 +4,7 @@ import at.xirado.bean.Bean;
 import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
+import at.xirado.bean.data.GuildData;
 import at.xirado.bean.music.GuildAudioPlayer;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -18,7 +19,7 @@ public class VolumeCommand extends SlashCommand
     public VolumeCommand()
     {
         setCommandData(new CommandData("volume", "change the volume of the bot")
-                .addOption(OptionType.INTEGER, "volume", "the volume (1-100)", true)
+                .addOption(OptionType.INTEGER, "volume", "the volume between 1 and 100 (300 if you enabled it in the dashboard)", true)
         );
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.DJ_ONLY);
     }
@@ -28,7 +29,12 @@ public class VolumeCommand extends SlashCommand
     {
         Member member = event.getMember();
         OptionMapping option = event.getOption("volume");
-        int volume = (int) Math.max(1, Math.min(100, option.getAsLong()));
+        GuildData guildData = ctx.getGuildData();
+
+        // check if earrape is allowed (can be changed in the dashboard)
+        boolean allowEarRape = !guildData.isNull("allow_earrape") && guildData.getBoolean("allow_earrape");
+        int volume = (int) Math.max(1, Math.min(allowEarRape ? 300 : 100, option.getAsLong()));
+
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         guildAudioPlayer.getPlayer().setVolume(volume);
         ctx.sendSimpleEmbed("The volume has been adjusted to `" + volume + "%`!");

@@ -5,6 +5,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.internal.utils.Checks;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
@@ -13,6 +15,7 @@ import java.io.File;
 import java.lang.reflect.Array;
 import java.security.CodeSource;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.ThreadFactory;
 
@@ -166,5 +169,58 @@ public class Util
         System.arraycopy(source, 0, destination, 0, source.length);
         destination[source.length] = element;
         return destination;
+    }
+
+    public class StringUtil {
+
+        /**
+         * Copies all elements from the iterable collection of originals to the
+         * collection provided.
+         *
+         * @param token String to search for
+         * @param originals An iterable collection of strings to filter.
+         * @param collection The collection to add matches to
+         * @return the collection provided that would have the elements copied
+         *     into
+         * @throws UnsupportedOperationException if the collection is immutable
+         *     and originals contains a string which starts with the specified
+         *     search string.
+         * @throws IllegalArgumentException if any parameter is is null
+         * @throws IllegalArgumentException if originals contains a null element.
+         *     <b>Note: the collection may be modified before this is thrown</b>
+         */
+        public static <T extends Collection<? super String>> T copyPartialMatches(final String token, final Iterable<String> originals, final T collection) throws UnsupportedOperationException, IllegalArgumentException {
+            Checks.notNull(token, "Search token");
+            Checks.notNull(collection, "Collection");
+            Checks.notNull(originals, "Originals");
+
+            for (String string : originals) {
+                if (startsWithIgnoreCase(string, token)) {
+                    collection.add(string);
+                }
+            }
+
+            return collection;
+        }
+
+        /**
+         * This method uses a region to check case-insensitive equality. This
+         * means the internal array does not need to be copied like a
+         * toLowerCase() call would.
+         *
+         * @param string String to check
+         * @param prefix Prefix of string to compare
+         * @return true if provided string starts with, ignoring case, the prefix
+         *     provided
+         * @throws NullPointerException if prefix is null
+         * @throws IllegalArgumentException if string is null
+         */
+        public static boolean startsWithIgnoreCase(final String string, final String prefix) throws IllegalArgumentException, NullPointerException {
+            Checks.notNull(string, "String");
+            if (string.length() < prefix.length()) {
+                return false;
+            }
+            return string.regionMatches(true, 0, prefix, 0, prefix.length());
+        }
     }
 }

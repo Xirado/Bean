@@ -1,16 +1,21 @@
 package at.xirado.bean.backend.routes;
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.backend.Authenticator;
+import at.xirado.bean.backend.DiscordCredentials;
 import at.xirado.bean.backend.WebServer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import org.apache.commons.codec.binary.Hex;
 import spark.Request;
 import spark.Response;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +24,8 @@ public class GetGuilds
 
     public static Object handle(Request request, Response response) throws IOException
     {
-        if (request.headers("access_token") == null)
+        String authHeader = request.headers("authorization");
+        if (authHeader == null || !authHeader.startsWith("Token "))
         {
             response.status(401);
             return DataObject.empty()
@@ -27,49 +33,53 @@ public class GetGuilds
                     .put("message", "Unauthorized")
                     .toString();
         }
-        DataObject user;
-        try
+        String token = authHeader.substring(7);
+        byte[] tokenBytes = token.getBytes(StandardCharsets.UTF_8);
+        Authenticator authenticator = Bean.getInstance().getAuthenticator();
+        if (!authenticator.isAuthenticated(tokenBytes))
         {
-            user = WebServer.handleCache(Long.parseLong(request.headers("expires_on")), request.headers("access_token"), request.headers("refresh_token"));
-        }catch (IOException ex)
-        {
+            response.status(401);
             return DataObject.empty()
-                    .put("code", 400)
-                    .put("message", "Bad request")
+                    .put("code", 401)
+                    .put("message", "Invalid token (Try logging out and in again)")
                     .toString();
-
         }
-        String accessToken = user.getString("access_token");
+        if (authenticator.isAccessTokenExpired(tokenBytes))
+            authenticator.refreshAccessToken(tokenBytes);
+        DataObject object = authenticator.getData(tokenBytes);
+        DiscordCredentials credentials = authenticator.getCredentials(tokenBytes);
+
+        String accessToken = credentials.getAccessToken();
         DataObject guilds = WebServer.retrieveGuilds(accessToken);
         if (guilds.isNull("guilds"))
         {
-            DataObject object = DataObject.empty();
-            object.put("http_code", guilds.getInt("http_code"));
+            DataObject o = DataObject.empty();
+            o.put("http_code", guilds.getInt("http_code"));
             if (!guilds.isNull("code"))
-                object.put("code", guilds.getInt("code"));
+                o.put("code", guilds.getInt("code"));
             if (!guilds.isNull("message"))
-                object.put("message", guilds.getString("message"));
-            return object.toString();
+                o.put("message", guilds.getString("message"));
+            return o.toString();
         }
-        JDA jda = Bean.getInstance().getShardManager().getShards().get(0);
+        ShardManager shardManager = Bean.getInstance().getShardManager();
         List<Guild> mutualGuilds = guilds.getArray("guilds").stream(DataArray::getObject)
-                .filter(obj -> jda.getGuildById(obj.getLong("id")) != null)
+                .filter(obj -> shardManager.getGuildById(obj.getLong("id")) != null)
                 .filter(obj -> Permission.getPermissions(obj.getLong("permissions")).contains(Permission.ADMINISTRATOR) || obj.getBoolean("owner"))
-                .map(obj -> jda.getGuildById(obj.getLong("id")))
+                .map(obj -> shardManager.getGuildById(obj.getLong("id")))
                 .collect(Collectors.toList());
         DataArray mutualGuildsArray = DataArray.empty();
         for(Guild guild : mutualGuilds)
         {
-            DataObject object = DataObject.empty();
-            object.put("name", guild.getName());
-            object.put("id", guild.getId());
-            object.put("icon", guild.getIconUrl());
+            DataObject o = DataObject.empty();
+            o.put("name", guild.getName());
+            o.put("id", guild.getId());
+            o.put("icon", guild.getIconUrl());
             StringBuilder initials = new StringBuilder();
             for (String s : guild.getName().split("\\s+")) {
                 initials.append(s.charAt(0));
             }
-            object.put("initials", initials.toString());
-            mutualGuildsArray.add(object);
+            o.put("initials", initials.toString());
+            mutualGuildsArray.add(o);
         }
         return DataObject.empty()
                 .put("guilds", mutualGuildsArray)
