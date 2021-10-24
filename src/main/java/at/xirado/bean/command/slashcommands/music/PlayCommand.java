@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +29,7 @@ public class PlayCommand extends SlashCommand
     public PlayCommand()
     {
         setCommandData(new CommandData("play", "plays a video")
-                .addOption(OptionType.STRING, "query", "youtube search term or an url that is supported", true)
+                .addOptions(new OptionData(OptionType.STRING, "query", "youtube search term or an url that is supported", true).setAutoComplete(true))
         );
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
 

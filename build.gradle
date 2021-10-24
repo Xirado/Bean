@@ -19,7 +19,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'net.dv8tion:JDA:4.3.0_331'
+//    implementation 'net.dv8tion:JDA:4.3.0_331'
+    implementation 'com.github.Xirado:JDA:5cc3119'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
     implementation 'com.sparkjava:spark-core:2.9.3'
     implementation 'org.codehaus.groovy:groovy-jsr223:3.0.8'
