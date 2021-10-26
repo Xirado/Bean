@@ -2,6 +2,7 @@ package at.xirado.bean.command;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.interaction.ApplicationCommandAutocompleteEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -127,5 +128,7 @@ public abstract class SlashCommand
      * @param ctx    Helpful methods in context of the event
      */
     public abstract void executeCommand(@Nonnull SlashCommandEvent event, @Nullable Member sender, @Nonnull SlashCommandContext ctx);
+
+    public void handleAutocomplete(@Nonnull ApplicationCommandAutocompleteEvent event) throws Exception {};
 
 }

@@ -2,6 +2,7 @@ package at.xirado.bean.event;
 
 import at.xirado.bean.Bean;
 import at.xirado.bean.command.CommandContext;
+import net.dv8tion.jda.api.events.interaction.ApplicationCommandAutocompleteEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -17,5 +18,11 @@ public class OnSlashCommand extends ListenerAdapter
             return;
         }
         Bean.getInstance().getSlashCommandHandler().handleSlashCommand(event, event.getMember());
+    }
+
+    @Override
+    public void onApplicationCommandAutocomplete(@NotNull ApplicationCommandAutocompleteEvent event)
+    {
+        Bean.getInstance().getSlashCommandHandler().handleAutocomplete(event);
     }
 }

@@ -35,6 +35,13 @@ public class WebServer
         get("/invite", GetInviteURL::handle);
         get("/user", GetUser::handle);
         post("/modifyguild", SetGuildData::handle);
+        get("/*", (req, res) -> {
+            res.status(404);
+            return DataObject.empty()
+                    .put("code", 404)
+                    .put("message", "Site not found")
+                    .toString();
+        });
     }
 
     public static DataObject refreshToken(String refreshToken) throws IOException

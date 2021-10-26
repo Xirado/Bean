@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.interaction.ApplicationCommandAutocompleteEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -165,6 +166,46 @@ public class SlashCommandHandler
         registeredCommands.add(command);
     }
 
+
+    public void handleAutocomplete(@NotNull ApplicationCommandAutocompleteEvent event)
+    {
+        if (event.getGuild() == null)
+            return;
+        Runnable r = () ->
+        {
+            try
+            {
+                boolean foundCommand = false;
+                for (SlashCommand command : registeredGuildCommands.get(event.getGuild().getIdLong()))
+                {
+                    if (command.getCommandData().getName().equalsIgnoreCase(event.getName()))
+                    {
+                        if (!command.getRequiredUserPermissions().isEmpty() && !event.getMember().hasPermission(command.getRequiredUserPermissions()))
+                            return;
+                        foundCommand = true;
+                        command.handleAutocomplete(event);
+                        break;
+                    }
+                }
+                if (foundCommand) return;
+                for (SlashCommand command : registeredCommands)
+                {
+                    if (command.getCommandData().getName().equalsIgnoreCase(event.getName()))
+                    {
+                        if (!command.getRequiredUserPermissions().isEmpty() && !event.getMember().hasPermission(command.getRequiredUserPermissions()))
+                            return;
+                        command.handleAutocomplete(event);
+                        break;
+                    }
+                }
+            } catch (Exception ex)
+            {
+                LOGGER.warn("An error occurred while handling autocomplete!", ex);
+                event.deferChoices(Collections.emptyList()).queue();
+            }
+        };
+        Bean.getInstance().getExecutor().submit(r);
+    }
 
     public void handleSlashCommand(@NotNull SlashCommandEvent event, @Nullable Member member)
     {
