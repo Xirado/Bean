@@ -16,13 +16,24 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.StageChannel;
+import net.dv8tion.jda.api.events.interaction.ApplicationCommandAutocompleteEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import okhttp3.Call;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class PlayCommand extends SlashCommand
 {
@@ -100,9 +111,39 @@ public class PlayCommand extends SlashCommand
             {
                 event.getHook().sendMessageEmbeds(ctx.getSimpleEmbed("An error occurred while loading track!\n`" + exception.getMessage() + "`")).queue();
             }
-
-
-
         });
+    }
+
+    @Override
+    public void handleAutocomplete(@NotNull ApplicationCommandAutocompleteEvent event) throws Exception
+    {
+        OptionMapping query = event.getOption("query");
+        if (query != null && query.isFocused())
+        {
+            if (query.getAsString().length() == 0)
+            {
+                event.deferChoices(Collections.emptyList()).queue();
+                return;
+            }
+            String url = "https://clients1.google.com/complete/search?client=youtube&gs_ri=youtube&hl=en&ds=yt&q="+query.getAsString().replace("\\s+", "%20");
+            Request request = new Request.Builder().url(url).build();
+            Call call = Bean.getInstance().getOkHttpClient().newCall(request);
+            Response response = call.execute();
+            if (!response.isSuccessful())
+            {
+                event.deferChoices(Collections.singletonList(new Command.Choice(query.getAsString(), query.getAsString()))).queue();
+                return;
+            }
+            Set<Command.Choice> choices = new LinkedHashSet<>();
+            String string = response.body().string();
+            string = string.substring(19, string.length()-1);
+            DataArray array = DataArray.fromJson(string).getArray(1);
+            array.stream(DataArray::getArray)
+                    .limit(10)
+                    .forEach(x -> choices.add(new Command.Choice(x.getString(0), x.getString(0))));
+            if (choices.size() == 0)
+                choices.add(new Command.Choice(query.getAsString(), query.getAsString()));
+            event.deferChoices(choices).queue();
+        }
     }
 }
