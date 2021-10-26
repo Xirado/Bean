@@ -36,6 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -77,11 +78,12 @@ public class Bean
         Class.forName("at.xirado.bean.translation.LocaleLoader");
         okHttpClient = new OkHttpClient.Builder()
                 .build();
-        shardManager = DefaultShardManagerBuilder.create(config.getString("token"), GatewayIntent.getIntents(6030))
+        shardManager = DefaultShardManagerBuilder.create(config.getString("token"), getIntents())
                 .setShardsTotal(-1)
-                .setMemberCachePolicy(MemberCachePolicy.ONLINE.and(MemberCachePolicy.VOICE))
-                .setActivity(Activity.watching("Invite: bean.bz"))
+                .setMemberCachePolicy(MemberCachePolicy.VOICE)
+                .setActivity(Activity.watching("bean.bz"))
                 .enableCache(CacheFlag.VOICE_STATE)
+                .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS)
                 .setAudioSendFactory(new NativeAudioSendFactory())
                 .addEventListeners(new OnReadyEvent(), new OnSlashCommand(), new OnGuildMessageReceived(),
                         new OnGainXP(), new OnGuildMessageReactionAdd(), new OnGuildMessageReactionRemove(), new OnVoiceUpdate(),
@@ -96,6 +98,16 @@ public class Bean
     public static Bean getInstance()
     {
         return instance;
+    }
+
+    public static EnumSet<GatewayIntent> getIntents()
+    {
+        return EnumSet.of(
+                GatewayIntent.GUILD_VOICE_STATES,
+                GatewayIntent.GUILD_MEMBERS,
+                GatewayIntent.GUILD_MESSAGES,
+                GatewayIntent.GUILD_MESSAGE_REACTIONS
+        );
     }
 
     public static void main(String[] args)
