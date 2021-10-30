@@ -30,7 +30,7 @@ public class OnVoiceUpdate extends ListenerAdapter
         if (event.getMember().equals(event.getGuild().getSelfMember()))
         {
             if (!event.getGuild().getSelfMember().getVoiceState().isGuildDeafened())
-                event.getGuild().deafen(event.getGuild().getSelfMember(), true).queue();
+                event.getGuild().deafen(event.getGuild().getSelfMember(), true).queue(s -> {}, e -> {});
             if (event.getChannelJoined() instanceof StageChannel stageChannel)
             {
                 GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());

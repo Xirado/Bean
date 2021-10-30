@@ -15,15 +15,15 @@ import java.time.format.DateTimeFormatter;
 public class Layout extends LayoutBase<ILoggingEvent>
 {
 
-
-    private static final AttributedStyle DARK_GRAY = AttributedStyle.DEFAULT.foreground(85, 85, 85);
-    private static final AttributedStyle RED = AttributedStyle.DEFAULT.foreground(222, 23, 56);
-    private static final AttributedStyle YELLOW = AttributedStyle.DEFAULT.foreground(255, 255, 0);
+    private static final AttributedStyle PRIMARY =   AttributedStyle.DEFAULT.foreground(25, 140, 255);
+    private static final AttributedStyle SECONDARY = AttributedStyle.DEFAULT.foreground(85, 85, 85);
+    private static final AttributedStyle FATAL =     AttributedStyle.DEFAULT.foreground(222, 23, 56);
+    private static final AttributedStyle WARN =      AttributedStyle.DEFAULT.foreground(255, 255, 0);
 
     @Override
     public String doLayout(ILoggingEvent event)
     {
-        StringBuilder sbuf = new StringBuilder();
+        StringBuilder sBuilder = new StringBuilder();
         LocalDateTime myDateObj = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd.MM HH:mm:ss");
         String formattedDate = myDateObj.format(myFormatObj);
@@ -31,14 +31,14 @@ public class Layout extends LayoutBase<ILoggingEvent>
         AttributedStyle priColour;
         Level level = event.getLevel();
         if (Level.ERROR.equals(level))
-            priColour = RED;
+            priColour = FATAL;
         else if (Level.WARN.equals(level))
-            priColour = YELLOW;
+            priColour = WARN;
         else
-            priColour = AttributedStyle.DEFAULT;
-        asb.style(DARK_GRAY).append("[").style(priColour).append(formattedDate).style(DARK_GRAY).append("] [")
-                .style(priColour).append(event.getThreadName()).style(DARK_GRAY).append("] [").style(priColour)
-                .append(event.getLevel().levelStr.toUpperCase()).style(DARK_GRAY).append("]: ").style(priColour)
+            priColour = PRIMARY;
+        asb.style(SECONDARY).append("[").style(priColour).append(formattedDate).style(SECONDARY).append("] [")
+                .style(priColour).append(event.getThreadName()).style(SECONDARY).append("] [").style(priColour)
+                .append(event.getLevel().levelStr.toUpperCase()).style(SECONDARY).append("]: ").style(priColour)
                 .append(event.getFormattedMessage());
         if (event.getThrowableProxy() != null)
         {
@@ -46,7 +46,7 @@ public class Layout extends LayoutBase<ILoggingEvent>
             asb.append("\n").style(priColour).append(ThrowableProxyUtil.asString(iThrowableProxy));
         }
         asb.style(AttributedStyle.DEFAULT).append(CoreConstants.LINE_SEPARATOR);
-        sbuf.append(asb.toAnsi());
-        return sbuf.toString();
+        sBuilder.append(asb.toAnsi());
+        return sBuilder.toString();
     }
 }

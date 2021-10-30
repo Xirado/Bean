@@ -176,15 +176,18 @@ public class SlashCommandHandler
             try
             {
                 boolean foundCommand = false;
-                for (SlashCommand command : registeredGuildCommands.get(event.getGuild().getIdLong()))
+                if (registeredGuildCommands.get(event.getGuild().getIdLong()) != null)
                 {
-                    if (command.getCommandData().getName().equalsIgnoreCase(event.getName()))
+                    for (SlashCommand command : registeredGuildCommands.get(event.getGuild().getIdLong()))
                     {
-                        if (!command.getRequiredUserPermissions().isEmpty() && !event.getMember().hasPermission(command.getRequiredUserPermissions()))
-                            return;
-                        foundCommand = true;
-                        command.handleAutocomplete(event);
-                        break;
+                        if (command.getCommandData().getName().equalsIgnoreCase(event.getName()))
+                        {
+                            if (!command.getRequiredUserPermissions().isEmpty() && !event.getMember().hasPermission(command.getRequiredUserPermissions()))
+                                return;
+                            foundCommand = true;
+                            command.handleAutocomplete(event);
+                            break;
+                        }
                     }
                 }
                 if (foundCommand) return;
