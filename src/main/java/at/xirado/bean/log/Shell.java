@@ -23,7 +23,7 @@ public class Shell
     public static volatile boolean started = false;
 
     public static final AttributedStyle BLUE = AttributedStyle.DEFAULT.foreground(0x00, 0xDB, 0xFF);
-    public static final AttributedStyle PINK = AttributedStyle.DEFAULT.foreground(0xFF, 0x00, 0xFF);
+    public static final AttributedStyle PRIMARY = AttributedStyle.DEFAULT.foreground(255, 111, 97);
 
 
     public static final int LOGO_LENGTH = 44;
@@ -107,13 +107,17 @@ public class Shell
     public static String getLogo()
     {
         String logo =
-                "______  _______ _______ __   _\n" +
-                        "|_____] |______ |_____| | \\  |\n" +
-                        "|_____] |______ |     | |  \\_|\n";
+                """
+                        ▄▄▄▄· ▄▄▄ . ▄▄▄·  ▐ ▄\s
+                        ▐█ ▀█▪▀▄.▀·▐█ ▀█ •█▌▐█
+                        ▐█▀▀█▄▐▀▀▪▄▄█▀▀█ ▐█▐▐▌
+                        ██▄▪▐█▐█▄▄▌▐█ ▪▐▌██▐█▌
+                        ·▀▀▀▀  ▀▀▀  ▀  ▀ ▀▀ █▪
+                        """;
         int width = terminal.getWidth();
         String[] split = logo.split("\n");
         AttributedStringBuilder builder = new AttributedStringBuilder();
-        builder.style(PINK);
+        builder.style(PRIMARY);
         for (String s : split)
         {
             int repeat = (width / 2) - (s.length() / 2);
