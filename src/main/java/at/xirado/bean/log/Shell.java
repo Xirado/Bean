@@ -125,7 +125,7 @@ public class Shell
             builder.append(" ".repeat(repeat)).append(s).append("\n");
         }
         String version = "Bean " + Bean.getBeanVersion() + " by Xirado";
-        builder.append("\n").append(" ".repeat((width / 2) - (version.length() / 2))).append(version + "\n");
+        builder.append(" ".repeat((width / 2) - (version.length() / 2))).append(version + "\n");
         return builder.toAnsi();
     }
 }

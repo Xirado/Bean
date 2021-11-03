@@ -8,7 +8,7 @@ plugins {
 
 mainClassName = 'at.xirado.bean.Bean'
 group 'at.xirado'
-version '2.0.0'
+version '3.0.0'
 compileJava.options.encoding = 'UTF-8'
 repositories {
     mavenCentral()
