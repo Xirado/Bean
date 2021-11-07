@@ -295,6 +295,8 @@ public class GuildData
     {
         if (dataObject.isNull("role_rewards"))
             return new HashSet<>();
+        if (dataObject.getArray("role_rewards").isEmpty())
+            return new HashSet<>();
         return dataObject.getArray("role_rewards")
                 .stream(DataArray::getObject)
                 .map(object -> new RoleReward(object.getInt("level"), object.getLong("role_id"), object.getBoolean("persists"), object.getBoolean("remove_on_next_reward")))
@@ -309,7 +311,18 @@ public class GuildData
         if (hasRoleReward(level))
             currentRewards.remove(getRoleReward(level));
         currentRewards.add(roleReward);
-        dataObject.put("role_rewards", currentRewards.stream().toList());
+        DataArray dataArray = DataArray.empty();
+        for (RoleReward reward : currentRewards)
+        {
+            dataArray.add(
+                    DataObject.empty()
+                            .put("level", reward.getLevel())
+                            .put("role_id", reward.getRoleId())
+                            .put("persists", reward.isPersistant())
+                            .put("remove_on_next_reward", reward.doesRemoveOnNextReward())
+            );
+        }
+        dataObject.put("role_rewards", dataArray);
         return this;
     }
 
@@ -319,7 +332,18 @@ public class GuildData
         if (!hasRoleReward(level)) return this;
         Set<RoleReward> currentRewards = new HashSet<>(getRoleRewards());
         currentRewards.removeIf(reward -> reward.getLevel() == level);
-        dataObject.put("role_rewards", currentRewards.stream().toList());
+        DataArray dataArray = DataArray.empty();
+        for (RoleReward reward : currentRewards)
+        {
+            dataArray.add(
+                    DataObject.empty()
+                            .put("level", reward.getLevel())
+                            .put("role_id", reward.getRoleId())
+                            .put("persists", reward.isPersistant())
+                            .put("remove_on_next_reward", reward.doesRemoveOnNextReward())
+            );
+        }
+        dataObject.put("role_rewards", dataArray);
         return this;
     }
 
