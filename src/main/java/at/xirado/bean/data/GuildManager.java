@@ -1,5 +1,6 @@
 package at.xirado.bean.data;
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.data.database.SQLBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import net.dv8tion.jda.api.entities.Guild;
@@ -32,10 +33,15 @@ public class GuildManager
         return createdData;
     }
 
-    public static String getGuildDataJSON(long guildID) throws JsonProcessingException
+    public static String getGuildDataJSON(long guildId) throws JsonProcessingException
     {
-        if (!GUILD_DATA.containsKey(guildID)) return null;
-        return GUILD_DATA.get(guildID).toPrettyString();
+        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
+        if (guild != null)
+            return getGuildData(guild).toPrettyString();
+        GuildData retrievedData = retrieveGuildData(guildId);
+        if (retrievedData != null)
+            return retrievedData.toPrettyString();
+        return DataObject.empty().toPrettyString();
     }
 
     private static GuildData retrieveGuildData(long guildID)
