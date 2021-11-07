@@ -128,4 +128,18 @@ public class Shell
         builder.append(" ".repeat((width / 2) - (version.length() / 2))).append(version + "\n");
         return builder.toAnsi();
     }
+
+    public static void println(String text)
+    {
+        System.out.println(text);
+    }
+
+    public static void printErr(String text)
+    {
+        String ansiString = new AttributedStringBuilder().style(AttributedStyle.DEFAULT.foreground(255, 45, 0))
+                .append("Error: ")
+                .append(text)
+                .toAnsi();
+        System.out.println(ansiString);
+    }
 }
