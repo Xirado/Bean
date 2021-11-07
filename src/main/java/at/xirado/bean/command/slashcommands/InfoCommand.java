@@ -14,6 +14,10 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+
 public class InfoCommand extends SlashCommand
 {
     public InfoCommand()
@@ -25,19 +29,13 @@ public class InfoCommand extends SlashCommand
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         long currentTime = System.currentTimeMillis() / 1000;
-        String jdaVersion = JDAInfo.VERSION;
-        String javaVersion = System.getProperty("java.version");
-        String lavaPlayerVersion = PlayerLibrary.VERSION;
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(EmbedUtil.DEFAULT_COLOR)
-                .addField("Uptime", ctx.parseDuration(currentTime - Bean.START_TIME, " "), false)
-                .addField("Memory", "max memory: `"+ Info.convertBytes(Runtime.getRuntime().maxMemory())+"`\n" +
-                        "allocated memory: `"+Info.convertBytes(Runtime.getRuntime().totalMemory())+"`\n" +
-                        "free memory: `"+Info.convertBytes(Runtime.getRuntime().freeMemory())+"`\n" +
-                        "used memory: `"+Info.convertBytes(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())+"`", false)
-                .addField("Java", "OpenJDK "+javaVersion, true)
-                .addField("JDA", "JDA "+jdaVersion, true)
-                .addField("Lavaplayer", "Lavaplayer "+lavaPlayerVersion, true)
+                .addField("Uptime", ctx.parseDuration(currentTime - Bean.START_TIME, " "), true)
+                .addField("Memory", "**"+Info.convertBytes(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())+"** / " +
+                        "**"+Info.convertBytes(Runtime.getRuntime().maxMemory())+"**", true)
+                .addField("Ping", "Gateway Ping: "+event.getJDA().getGatewayPing()+"ms", true)
+                .addField("Compilation Date", "<t:"+(Bean.getBuildTime()/1000)+">", true)
                 .setFooter("Bean "+Bean.getBeanVersion());
         event.replyEmbeds(builder.build()).queue();
     }

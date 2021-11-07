@@ -1,4 +1,7 @@
+import org.apache.commons.io.FileUtils
 import org.apache.tools.ant.filters.ReplaceTokens
+
+import java.time.Instant
 
 plugins {
     id 'java'
@@ -8,7 +11,7 @@ plugins {
 
 mainClassName = 'at.xirado.bean.Bean'
 group 'at.xirado'
-version '3.0.0'
+version '3.0.0-rc1'
 compileJava.options.encoding = 'UTF-8'
 repositories {
     mavenCentral()
@@ -17,7 +20,17 @@ repositories {
     maven { url 'https://m2.chew.pro/releases' }
     jcenter()
 }
+/**
+ * Clears resources folder for processResources task
+ */
+tasks.create("clearResources") {
+    FileUtils.deleteDirectory(new File(project.rootDir, 'build/resources/main'))
+}
 
+tasks.build {
+    dependsOn(tasks.clearResources)
+    dependsOn(tasks.shadowJar)
+}
 dependencies {
 //    implementation 'net.dv8tion:JDA:4.3.0_331'
     implementation 'com.github.Xirado:JDA:5cc3119'
@@ -40,7 +53,7 @@ processResources {
     filesMatching("**/app.properties") {
         filter ReplaceTokens, tokens: [
                 "app-version" : version,
-                "build-time" : System.currentTimeMillis() + ''
+                "build-time" : Instant.now().toEpochMilli() + ''
         ]
     }
 }

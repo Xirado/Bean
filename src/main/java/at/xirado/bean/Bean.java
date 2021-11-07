@@ -172,6 +172,11 @@ public class Bean
         return VERSION;
     }
 
+    public static long getBuildTime()
+    {
+        return BUILD_TIME;
+    }
+
     public LinkedDataObject getConfig()
     {
         return config;

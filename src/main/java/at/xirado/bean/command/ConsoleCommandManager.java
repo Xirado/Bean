@@ -52,13 +52,9 @@ public class ConsoleCommandManager
         registerCommand(new SendMessage());
         registerCommand(new Clearscreen());
         registerCommand(new Shutdown());
-        registerCommand(new Debug());
         registerCommand(new Info());
-        registerCommand(new Echo());
         registerCommand(new Help());
         registerCommand(new PrintGuildData());
-        registerCommand(new ConvertReactionRoles());
         registerCommand(new UpdateSlashCommands());
-        registerCommand(new PrintCommandJSON());
     }
 }
