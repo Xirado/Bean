@@ -28,6 +28,7 @@ public class PauseCommand extends SlashCommand
         if (player.getPlayingTrack() == null)
         {
             ctx.replyError("I'm currently not playing any music!").queue();
+            return;
         }
         if (player.isPaused())
         {
