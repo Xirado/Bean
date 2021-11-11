@@ -58,20 +58,19 @@ public class SlashCommandHandler
 
     public void registerAllCommands()
     {
-        registerCommand(new AvatarCommand());
         registerCommand(new BanCommand());
         registerCommand(new UnbanCommand());
-        registerCommand(new ChooseCommand());
-        registerCommand(new JokeCommand());
-        registerCommand(new LeaderboardCommand());
-        registerCommand(new MockCommand());
-        registerCommand(new RandomFactCommand());
-        registerCommand(new RankCommand());
+        registerCommand(new KickCommand());
+        registerCommand(new SoftbanCommand());
+        registerCommand(new ModeratorCommand());
         registerCommand(new ReactionRoleCommand());
+        registerCommand(new RankCommand());
+        registerCommand(new Mee6TransferCommand());
+        registerCommand(new LeaderboardCommand());
         registerCommand(new SetXPBackgroundCommand());
-        registerCommand(new TestCommand());
-        registerCommand(new UrbanDictionaryCommand());
         registerCommand(new XPAlertCommand());
+        registerCommand(new XPRoleRewardCommand());
+        registerCommand(new VoiceGameCommand());
         registerCommand(new PlayCommand());
         registerCommand(new VolumeCommand());
         registerCommand(new SkipCommand());
@@ -80,16 +79,17 @@ public class SlashCommandHandler
         registerCommand(new PauseCommand());
         registerCommand(new ResumeCommand());
         registerCommand(new RepeatCommand());
-        registerCommand(new Mee6TransferCommand());
-        registerCommand(new ModeratorCommand());
-        registerCommand(new InfoCommand());
-        registerCommand(new XPRoleRewardCommand());
-//        registerCommand(new SettingsCommand()); Broken at the moment
         registerCommand(new VoteSkipCommand());
         registerCommand(new SkipToCommand());
-        registerCommand(new VoiceGameCommand());
-        registerCommand(new KickCommand());
-        registerCommand(new SoftbanCommand());
+        registerCommand(new UrbanDictionaryCommand());
+        registerCommand(new AvatarCommand());
+        registerCommand(new ChooseCommand());
+        registerCommand(new JokeCommand());
+        registerCommand(new RandomFactCommand());
+        registerCommand(new MockCommand());
+        registerCommand(new InfoCommand());
+        registerCommand(new TestCommand());
+
     }
 
     public void updateCommands(Consumer<List<Command>> success, Consumer<Throwable> failure)

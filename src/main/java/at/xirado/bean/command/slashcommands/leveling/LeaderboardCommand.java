@@ -20,7 +20,7 @@ public class LeaderboardCommand extends SlashCommand
 
     public LeaderboardCommand()
     {
-        setCommandData(new CommandData("leaderboard", "gets the top 10 members of this guild"));
+        setCommandData(new CommandData("leaderboard", "Gets the top 10 members of a server."));
     }
 
     @Override

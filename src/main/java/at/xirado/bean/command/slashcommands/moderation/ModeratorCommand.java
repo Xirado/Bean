@@ -25,14 +25,14 @@ public class ModeratorCommand extends SlashCommand
 {
     public ModeratorCommand()
     {
-        setCommandData(new CommandData("moderator", "add/remove/list moderator roles")
-                .addSubcommands(new SubcommandData("add", "add a moderator role")
-                        .addOption(OptionType.ROLE, "role", "the role to add", true)
+        setCommandData(new CommandData("moderator", "Sets up moderator roles.")
+                .addSubcommands(new SubcommandData("add", "Adds a moderator role.")
+                        .addOption(OptionType.ROLE, "role", "Role to add.", true)
                 )
-                .addSubcommands(new SubcommandData("remove", "remove a moderator role")
-                        .addOption(OptionType.ROLE, "role", "the role to remove", true)
+                .addSubcommands(new SubcommandData("remove", "Removes a moderator role.")
+                        .addOption(OptionType.ROLE, "role", "Role to remove.", true)
                 )
-                .addSubcommands(new SubcommandData("list", "list all moderator roles"))
+                .addSubcommands(new SubcommandData("list", "Lists all moderator roles."))
         );
         setRequiredUserPermissions(Permission.ADMINISTRATOR);
     }

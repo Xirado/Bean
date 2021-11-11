@@ -15,8 +15,8 @@ public class SetXPBackgroundCommand extends SlashCommand
 {
     public SetXPBackgroundCommand()
     {
-        setCommandData(new CommandData("setxpcard", "updates the background shown in /rank")
-                .addOptions(new OptionData(OptionType.STRING, "background", "The background")
+        setCommandData(new CommandData("setxpcard", "Updates /rank background.")
+                .addOptions(new OptionData(OptionType.STRING, "background", "The Background.")
                         .addChoice("Blue (Default)", "card1")
                         .addChoice("Green", "card2")
                         .addChoice("Red", "card3")

@@ -25,12 +25,12 @@ public class BanCommand extends SlashCommand
 
     public BanCommand()
     {
-        setCommandData(new CommandData("ban", "permanently bans a user from this guild")
-                .addOptions(new OptionData(OptionType.USER, "user", "the user to ban")
+        setCommandData(new CommandData("ban", "Permanently bans a user from a server.")
+                .addOptions(new OptionData(OptionType.USER, "user", "User to ban.")
                         .setRequired(true)
                 )
-                .addOptions(new OptionData(OptionType.STRING, "reason", "the reason for the ban"))
-                .addOptions(new OptionData(OptionType.INTEGER, "del_days", "how many days of messages to delete"))
+                .addOptions(new OptionData(OptionType.STRING, "reason", "Reason for the ban."))
+                .addOptions(new OptionData(OptionType.INTEGER, "del_days", "How many days of messages to delete."))
         );
         setRequiredUserPermissions(Permission.BAN_MEMBERS);
         setRequiredBotPermissions(Permission.BAN_MEMBERS);

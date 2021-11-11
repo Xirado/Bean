@@ -19,8 +19,8 @@ public class SkipToCommand extends SlashCommand
 {
     public SkipToCommand()
     {
-        setCommandData(new CommandData("skipto", "Skips to a specific song in the queue")
-                .addOption(OptionType.INTEGER, "index", "the index to skip to", true)
+        setCommandData(new CommandData("skipto", "Skips to a specified track in the queue.")
+                .addOption(OptionType.INTEGER, "index", "Index to skip to.", true)
         );
         addCommandFlags(CommandFlag.DJ_ONLY, CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
     }

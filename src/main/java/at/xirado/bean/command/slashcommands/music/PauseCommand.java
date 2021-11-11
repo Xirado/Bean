@@ -16,7 +16,7 @@ public class PauseCommand extends SlashCommand
 {
     public PauseCommand()
     {
-        setCommandData(new CommandData("pause", "pause the currently playing song"));
+        setCommandData(new CommandData("pause", "Pauses the currently playing track."));
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.DJ_ONLY, CommandFlag.MUST_BE_IN_SAME_VC);
     }
 

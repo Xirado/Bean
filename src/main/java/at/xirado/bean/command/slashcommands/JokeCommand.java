@@ -18,7 +18,7 @@ public class JokeCommand extends SlashCommand
 
     public JokeCommand()
     {
-        setCommandData(new CommandData("joke", "tells you a random joke"));
+        setCommandData(new CommandData("joke", "Tells you a random joke."));
     }
 
     @Override

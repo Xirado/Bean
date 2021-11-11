@@ -19,7 +19,7 @@ public class VoteSkipCommand extends SlashCommand
 {
     public VoteSkipCommand()
     {
-        setCommandData(new CommandData("voteskip", "Votes to skip the currently playing song"));
+        setCommandData(new CommandData("voteskip", "Votes to skip the currently playing track."));
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
     }
     @Override

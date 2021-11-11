@@ -25,16 +25,16 @@ public class XPRoleRewardCommand extends SlashCommand
 {
     public XPRoleRewardCommand()
     {
-        setCommandData(new CommandData("xprolereward", "reward a member with a role when they reach a certain level")
-                .addSubcommands(new SubcommandData("create", "Create a role reward")
-                        .addOption(OptionType.INTEGER, "level", "the level a member needs to reach to get the role", true)
-                        .addOption(OptionType.ROLE, "role", "the role to receive upon reaching the specified level", true)
+        setCommandData(new CommandData("xprolereward", "Rewards a member with a role when they reach a certain level.")
+                .addSubcommands(new SubcommandData("create", "Creates a role reward.")
+                        .addOption(OptionType.INTEGER, "level", "Level a member needs to reach to get the role.", true)
+                        .addOption(OptionType.ROLE, "role", "Role to receive upon reaching specified level.", true)
                         .addOption(OptionType.BOOLEAN, "persist", "Whether this role should be added back after a member leaves and rejoins. Default: true", false)
                         .addOption(OptionType.BOOLEAN, "remove_on_next_reward", "Whether this role should be removed after a member reached the next reward. Default: False", false)
                 )
-                .addSubcommands(new SubcommandData("remove", "Remove a role reward")
-                        .addOption(OptionType.INTEGER, "level", "the level to remove a role reward from", true))
-                .addSubcommands(new SubcommandData("list", "List all role rewards"))
+                .addSubcommands(new SubcommandData("remove", "Removes a role reward.")
+                        .addOption(OptionType.INTEGER, "level", "Level to remove a role reward from.", true))
+                .addSubcommands(new SubcommandData("list", "Lists all role rewards."))
         );
         setRequiredUserPermissions(Permission.ADMINISTRATOR);
         setRequiredBotPermissions(Permission.MANAGE_PERMISSIONS, Permission.MANAGE_ROLES);

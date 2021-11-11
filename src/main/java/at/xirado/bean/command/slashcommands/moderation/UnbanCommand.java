@@ -19,8 +19,8 @@ public class UnbanCommand extends SlashCommand
 {
     public UnbanCommand()
     {
-        setCommandData(new CommandData("unban", "unbans a user from this guild")
-                .addOption(OptionType.USER, "user", "the user to unban", true)
+        setCommandData(new CommandData("unban", "Unbans a user from a server.")
+                .addOption(OptionType.USER, "user", "User to unban.", true)
         );
         setRequiredBotPermissions(Permission.BAN_MEMBERS);
         setRequiredUserPermissions(Permission.BAN_MEMBERS);

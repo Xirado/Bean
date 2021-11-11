@@ -22,21 +22,23 @@ public class InfoCommand extends SlashCommand
 {
     public InfoCommand()
     {
-        setCommandData(new CommandData("info", "shows info about the bot"));
+        setCommandData(new CommandData("info", "Shows info about the bot."));
     }
 
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         long currentTime = System.currentTimeMillis() / 1000;
-        EmbedBuilder builder = new EmbedBuilder()
-                .setColor(EmbedUtil.DEFAULT_COLOR)
-                .addField("Uptime", ctx.parseDuration(currentTime - Bean.START_TIME, " "), true)
-                .addField("Memory", "**"+Info.convertBytes(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())+"** / " +
-                        "**"+Info.convertBytes(Runtime.getRuntime().maxMemory())+"**", true)
-                .addField("Ping", "Gateway Ping: "+event.getJDA().getGatewayPing()+"ms", true)
-                .addField("Compilation Date", "<t:"+(Bean.getBuildTime()/1000)+">", true)
-                .setFooter("Bean "+Bean.getBeanVersion());
-        event.replyEmbeds(builder.build()).queue();
+        event.getJDA().getRestPing().queue(restPing -> {
+            EmbedBuilder builder = new EmbedBuilder()
+                    .setColor(EmbedUtil.DEFAULT_COLOR)
+                    .addField("Uptime", ctx.parseDuration(currentTime - Bean.START_TIME, " "), true)
+                    .addField("Memory", "**"+Info.convertBytes(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())+"** / " +
+                            "**"+Info.convertBytes(Runtime.getRuntime().maxMemory())+"**", true)
+                    .addField("Ping", "Gateway Ping: "+event.getJDA().getGatewayPing()+"ms\nREST Ping: "+restPing+"ms", true)
+                    .addField("Compilation Date", "<t:"+(Bean.getBuildTime()/1000)+">", true)
+                    .setFooter("Bean "+Bean.getBeanVersion());
+            event.replyEmbeds(builder.build()).queue();
+        });
     }
 }

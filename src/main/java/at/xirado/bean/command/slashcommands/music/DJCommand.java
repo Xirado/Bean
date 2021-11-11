@@ -21,14 +21,14 @@ public class DJCommand extends SlashCommand
 {
     public DJCommand()
     {
-        setCommandData(new CommandData("dj", "set who can touch the almighty music commands")
-                .addSubcommands(new SubcommandData("add", "add a dj (role or member)")
-                        .addOption(OptionType.MENTIONABLE, "role_or_member", "The role or member", true)
+        setCommandData(new CommandData("dj", "Set up users/roles who can use DJ-commands.")
+                .addSubcommands(new SubcommandData("add", "Adds a DJ. (role or member)")
+                        .addOption(OptionType.MENTIONABLE, "role_or_member", "Role or member", true)
                 )
-                .addSubcommands(new SubcommandData("remove", "remove a dj (role or member)")
-                        .addOption(OptionType.MENTIONABLE, "role_or_member", "The role or member", true)
+                .addSubcommands(new SubcommandData("remove", "Removes a DJ. (role or member)")
+                        .addOption(OptionType.MENTIONABLE, "role_or_member", "Role or member", true)
                 )
-                .addSubcommands(new SubcommandData("list", "lists all djs"))
+                .addSubcommands(new SubcommandData("list", "Lists all DJs."))
         );
         setRequiredUserPermissions(Permission.ADMINISTRATOR);
     }

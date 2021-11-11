@@ -25,4 +25,22 @@ public class GetInviteURL
                 .put("url", builder.build().toString())
                 .toString();
     }
+
+    public static String getInviteURL()
+    {
+        try
+        {
+            URIBuilder builder = new URIBuilder()
+                    .setScheme("https")
+                    .setHost(HOST)
+                    .setPath("/oauth2/authorize")
+                    .addParameter("client_id", WebServer.CLIENT_ID)
+                    .addParameter("scope", "bot applications.commands")
+                    .addParameter("permissions", "2080899263");
+            return builder.build().toString();
+        } catch (Exception ex)
+        {
+            return null;
+        }
+    }
 }

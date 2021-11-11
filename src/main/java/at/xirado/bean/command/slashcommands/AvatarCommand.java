@@ -19,8 +19,8 @@ public class AvatarCommand extends SlashCommand
 {
     public AvatarCommand()
     {
-        setCommandData(new CommandData("avatar", "gets the avatar of a user")
-                .addOption(OptionType.USER, "user", "the user to get the avatar from", false)
+        setCommandData(new CommandData("avatar", "Gets the avatar of a user.")
+                .addOption(OptionType.USER, "user", "User to get the avatar from.", false)
         );
     }
 

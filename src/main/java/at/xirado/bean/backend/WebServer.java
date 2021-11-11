@@ -25,7 +25,7 @@ public class WebServer
     public WebServer(int port)
     {
         port(port);
-        if (!Bean.getInstance().isDebug())
+        if (!Bean.getInstance().getConfig().getBoolean("force_http"))
             secure("cert.jks", Bean.getInstance().getConfig().getString("cert_pw"), null, null);
         enableCORS("*", "*", "*");
         get("/guilds", GetGuilds::handle);
@@ -35,6 +35,7 @@ public class WebServer
         get("/invite", GetInviteURL::handle);
         get("/user", GetUser::handle);
         post("/modifyguild", SetGuildData::handle);
+        get("/commands", GetCommands::handle);
         get("/*", (req, res) -> {
             res.status(404);
             return DataObject.empty()

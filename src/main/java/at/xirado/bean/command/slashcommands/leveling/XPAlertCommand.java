@@ -23,12 +23,12 @@ public class XPAlertCommand extends SlashCommand
 {
     public XPAlertCommand()
     {
-        setCommandData(new CommandData("setxpalerts", "Changes XP levelup behaviour")
-                .addSubcommands(new SubcommandData("none", "disables xp alerts entirely"))
-                .addSubcommands(new SubcommandData("dm", "notifies the user via dm when they level up"))
-                .addSubcommands(new SubcommandData("current", "notifies the user in the current chat when they level up"))
-                .addSubcommands(new SubcommandData("channel", "notifies the user in a specified channel when they level up")
-                        .addOption(OptionType.CHANNEL, "targetchannel", "the channel where level-ups get logged", true)
+        setCommandData(new CommandData("setxpalerts", "Changes XP levelup alert behaviour.")
+                .addSubcommands(new SubcommandData("none", "Disables xp alerts entirely."))
+                .addSubcommands(new SubcommandData("dm", "Notifies the user via DM when they level up."))
+                .addSubcommands(new SubcommandData("current", "Notifies the user in the current channel when they level up."))
+                .addSubcommands(new SubcommandData("channel", "Notifies the user in a specified channel when they level up.")
+                        .addOption(OptionType.CHANNEL, "targetchannel", "Channel where level-ups should get logged.", true)
                 )
         );
         setRequiredUserPermissions(Permission.ADMINISTRATOR);

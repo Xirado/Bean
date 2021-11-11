@@ -27,9 +27,9 @@ public class SoftbanCommand extends SlashCommand
 
     public SoftbanCommand()
     {
-        setCommandData(new CommandData("softban", "kicks a member and deletes previously written messages")
-                .addOption(OptionType.USER, "member", "the member to kick", true)
-                .addOption(OptionType.STRING, "reason", "the reason for the kick", false)
+        setCommandData(new CommandData("softban", "Kicks a member and deletes previously written messages.")
+                .addOption(OptionType.USER, "member", "Member to kick.", true)
+                .addOption(OptionType.STRING, "reason", "Reason for the kick.", false)
         );
 
         setRequiredUserPermissions(Permission.BAN_MEMBERS);

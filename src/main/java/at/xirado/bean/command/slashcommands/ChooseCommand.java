@@ -15,9 +15,9 @@ public class ChooseCommand extends SlashCommand
 {
     public ChooseCommand()
     {
-        setCommandData(new CommandData("choose", "Chooses between 2 things")
-                .addOption(OptionType.STRING, "1st", "the first argument", true)
-                .addOption(OptionType.STRING, "2nd", "the second argument", true)
+        setCommandData(new CommandData("choose", "Chooses between 2 things.")
+                .addOption(OptionType.STRING, "1st", "First argument.", true)
+                .addOption(OptionType.STRING, "2nd", "Second argument.", true)
         );
         setRunnableInDM(true);
     }

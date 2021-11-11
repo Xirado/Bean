@@ -1,6 +1,7 @@
 package at.xirado.bean.misc.objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -27,7 +28,7 @@ public class RoleReward implements Serializable
     @Override
     public int hashCode()
     {
-        return Objects.hash(level);
+        return Objects.hash(this);
     }
 
     public int getLevel()
@@ -68,5 +69,10 @@ public class RoleReward implements Serializable
     public void setRemoveOnNextReward(boolean removeOnNextReward)
     {
         this.removeOnNextReward = removeOnNextReward;
+    }
+
+    public static RoleReward fromData(DataObject object)
+    {
+        return new RoleReward(object.getInt("level"), object.getLong("role_id"), object.getBoolean("persists"), object.getBoolean("remove_on_next_reward"));
     }
 }

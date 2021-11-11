@@ -30,7 +30,7 @@ public class Mee6TransferCommand extends SlashCommand
 {
     public Mee6TransferCommand()
     {
-        setCommandData(new CommandData("mee6transfer", "transfers the mee6 xp leaderboard to Bean"));
+        setCommandData(new CommandData("mee6transfer", "Transfers MEE6 XP to Bean for all members."));
         setRequiredUserPermissions(Permission.ADMINISTRATOR);
     }
 

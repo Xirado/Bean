@@ -24,8 +24,8 @@ public class QueueCommand extends SlashCommand
 {
     public QueueCommand()
     {
-        setCommandData(new CommandData("queue", "shows the current queue")
-                .addOption(OptionType.INTEGER, "page", "page of the queue", false)
+        setCommandData(new CommandData("queue", "Shows the current queue.")
+                .addOption(OptionType.INTEGER, "page", "Page of the queue.", false)
         );
     }
 

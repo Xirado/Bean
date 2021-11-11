@@ -14,8 +14,8 @@ public class MockCommand extends SlashCommand
 
     public MockCommand()
     {
-        setCommandData(new CommandData("mock", "vAcCiNeS cAuSe AuTiSm")
-                .addOption(OptionType.STRING, "text", "the text to mock", true)
+        setCommandData(new CommandData("mock", "Mock something.")
+                .addOption(OptionType.STRING, "text", "Text to mock.", true)
         );
     }
 

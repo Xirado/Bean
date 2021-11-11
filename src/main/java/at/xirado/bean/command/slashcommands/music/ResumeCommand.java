@@ -16,7 +16,7 @@ public class ResumeCommand extends SlashCommand
 {
     public ResumeCommand()
     {
-        setCommandData(new CommandData("resume", "resume the player"));
+        setCommandData(new CommandData("resume", "Resumes the player if paused."));
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.DJ_ONLY);
     }
 

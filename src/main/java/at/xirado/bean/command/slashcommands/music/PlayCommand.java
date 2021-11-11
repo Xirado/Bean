@@ -49,8 +49,8 @@ public class PlayCommand extends SlashCommand
 
     public PlayCommand()
     {
-        setCommandData(new CommandData("play", "plays a video")
-                .addOptions(new OptionData(OptionType.STRING, "query", "youtube search term or a url that is supported", true).setAutoComplete(true))
+        setCommandData(new CommandData("play", "Plays a track from YouTube or SoundCloud.")
+                .addOptions(new OptionData(OptionType.STRING, "query", "Youtube search term or a URL that is supported.", true).setAutoComplete(true))
         );
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
 

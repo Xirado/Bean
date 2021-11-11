@@ -26,10 +26,10 @@ public class UrbanDictionaryCommand extends SlashCommand
 {
     public UrbanDictionaryCommand()
     {
-        setCommandData(new CommandData("urban", "search for urbandictionary.com definitions")
-                .addOptions(new OptionData(OptionType.STRING, "phrase", "the phrase to search for")
+        setCommandData(new CommandData("urban", "Searches for urbandictionary.com definitions.")
+                .addOptions(new OptionData(OptionType.STRING, "phrase", "Phrase to search for.")
                         .setRequired(true))
-                .addOptions(new OptionData(OptionType.INTEGER, "definition", "gets a specific definition rather than the first one")
+                .addOptions(new OptionData(OptionType.INTEGER, "definition", "Index.")
                         .setRequired(false))
         );
     }

@@ -18,8 +18,8 @@ public class VolumeCommand extends SlashCommand
 {
     public VolumeCommand()
     {
-        setCommandData(new CommandData("volume", "change the volume of the bot")
-                .addOption(OptionType.INTEGER, "volume", "the volume between 1 and 100 (300 if you enabled it in the dashboard)", true)
+        setCommandData(new CommandData("volume", "Changes the volume of the player.")
+                .addOption(OptionType.INTEGER, "volume", "Volume in percent.", true)
         );
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.DJ_ONLY);
     }

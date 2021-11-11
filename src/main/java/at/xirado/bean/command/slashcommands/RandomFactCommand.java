@@ -17,7 +17,7 @@ public class RandomFactCommand extends SlashCommand
 
     public RandomFactCommand()
     {
-        setCommandData(new CommandData("fact", "gets a random useless fact"));
+        setCommandData(new CommandData("fact", "Gets a random useless fact."));
     }
 
     @Override

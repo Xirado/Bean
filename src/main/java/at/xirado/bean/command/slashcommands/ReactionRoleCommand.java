@@ -27,16 +27,16 @@ public class ReactionRoleCommand extends SlashCommand
 
     public ReactionRoleCommand()
     {
-        setCommandData(new CommandData("reactionrole", "setup reaction roles")
-                .addSubcommands(new SubcommandData("create", "create reaction roles")
-                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "the channel which contains the message", true).setChannelTypes(ChannelType.TEXT))
-                        .addOption(OptionType.STRING, "message_id", "the id of the message you want to have the reaction role on", true)
-                        .addOption(OptionType.ROLE, "role", "the role that gets added upon reacting to the message", true)
-                        .addOption(OptionType.STRING, "emote", "the emote/emoji used for reacting", true)
+        setCommandData(new CommandData("reactionrole", "Sets up reaction roles.")
+                .addSubcommands(new SubcommandData("create", "Creates reaction roles.")
+                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "Channel which contains the message.", true).setChannelTypes(ChannelType.TEXT))
+                        .addOption(OptionType.STRING, "message_id", "ID of the message you want to have the reaction role on.", true)
+                        .addOption(OptionType.ROLE, "role", "Role that gets added upon reacting to the message.", true)
+                        .addOption(OptionType.STRING, "emote", "Emote/Emoji used for reacting.", true)
                 )
-                .addSubcommands(new SubcommandData("remove", "remove reaction roles")
-                        .addOption(OptionType.CHANNEL, "channel", "the channel which contains the message", true)
-                        .addOption(OptionType.STRING, "message_id", "the id of the message you want to have reaction roles removed on", true)
+                .addSubcommands(new SubcommandData("remove", "Removes reaction roles.")
+                        .addOption(OptionType.CHANNEL, "channel", "Channel which contains the message.", true)
+                        .addOption(OptionType.STRING, "message_id", "ID of the message you want to have reaction roles removed on.", true)
                 )
         );
         setRequiredUserPermissions(Permission.ADMINISTRATOR);

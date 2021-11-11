@@ -25,8 +25,8 @@ public class VoiceGameCommand extends SlashCommand
 
     public VoiceGameCommand()
     {
-        setCommandData(new CommandData("voicegame", "Create voice games")
-                .addOptions(new OptionData(OptionType.STRING, "application", "the application to create")
+        setCommandData(new CommandData("voicegame", "Creates voice games.")
+                .addOptions(new OptionData(OptionType.STRING, "application", "Application to create.")
                         .addChoice("Youtube Together", "755600276941176913")
                         .addChoice("Poker", "755827207812677713")
                         .addChoice("Betrayal.io", "773336526917861400")
@@ -39,7 +39,7 @@ public class VoiceGameCommand extends SlashCommand
                         .addChoice("Lettertile", "879863686565621790")
                         .setRequired(true)
                 )
-                .addOptions(new OptionData(OptionType.BOOLEAN, "hide", "Whether the response should be ephemeral (Only you can see this)")
+                .addOptions(new OptionData(OptionType.BOOLEAN, "hide", "Whether the response should be ephemeral. (Only you can see this)")
                         .setRequired(false)
                 )
         );

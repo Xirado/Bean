@@ -21,9 +21,9 @@ public class KickCommand extends SlashCommand
 {
     public KickCommand()
     {
-        setCommandData(new CommandData("kick", "kicks a member from this guild")
-                .addOption(OptionType.USER, "user", "the user to kick", true)
-                .addOption(OptionType.STRING, "reason", "the reason for this kick")
+        setCommandData(new CommandData("kick", "Kicks a member from a server.")
+                .addOption(OptionType.USER, "user", "User to kick.", true)
+                .addOption(OptionType.STRING, "reason", "Reason for this kick.")
         );
         setRequiredBotPermissions(Permission.KICK_MEMBERS);
         setRequiredUserPermissions(Permission.KICK_MEMBERS);
