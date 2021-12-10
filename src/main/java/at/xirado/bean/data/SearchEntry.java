@@ -14,7 +14,7 @@ public class SearchEntry
     public SearchEntry(String name, String value, boolean playlist)
     {
         this.name = name;
-        this.value = value;
+        this.value = value.length() > 100 ? value.substring(0, 100) : value;
         this.playlist = playlist;
     }
 
@@ -35,7 +35,14 @@ public class SearchEntry
 
     public String getFormattedString()
     {
-        return MAGNIFYING_GLASS+(playlist ? SCROLL : "")+" "+name;
+        String x = MAGNIFYING_GLASS+(playlist ? SCROLL : "")+" "+name;
+        if (x.length() > 100)
+        {
+            String replaceString = "...";
+            String substr = x.substring(0, 100 - replaceString.length());
+            x = substr + replaceString;
+        }
+        return x;
     }
 
     public Command.Choice toCommandAutocompleteChoice()
