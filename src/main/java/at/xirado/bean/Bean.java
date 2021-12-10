@@ -83,6 +83,7 @@ public class Bean
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
                 .setActivity(Activity.watching("bean.bz"))
                 .enableCache(CacheFlag.VOICE_STATE)
+                .setBulkDeleteSplittingEnabled(false)
                 .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS)
                 .setAudioSendFactory(new NativeAudioSendFactory())
                 .addEventListeners(new OnReadyEvent(), new OnSlashCommand(), new OnGuildMessageReceived(),
