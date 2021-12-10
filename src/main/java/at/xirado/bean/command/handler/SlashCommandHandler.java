@@ -5,6 +5,7 @@ import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.command.slashcommands.*;
+import at.xirado.bean.command.slashcommands.games.BlackJackCommand;
 import at.xirado.bean.command.slashcommands.leveling.*;
 import at.xirado.bean.command.slashcommands.moderation.*;
 import at.xirado.bean.command.slashcommands.music.*;
@@ -18,7 +19,6 @@ import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.ApplicationCommandAutocompleteEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -29,10 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -75,12 +72,14 @@ public class SlashCommandHandler
         registerCommand(new VolumeCommand());
         registerCommand(new SkipCommand());
         registerCommand(new QueueCommand());
+        registerCommand(new StopCommand());
         registerCommand(new DJCommand());
         registerCommand(new PauseCommand());
         registerCommand(new ResumeCommand());
         registerCommand(new RepeatCommand());
         registerCommand(new VoteSkipCommand());
         registerCommand(new SkipToCommand());
+        registerCommand(new LaTeXCommand());
         registerCommand(new UrbanDictionaryCommand());
         registerCommand(new AvatarCommand());
         registerCommand(new ChooseCommand());
@@ -88,6 +87,7 @@ public class SlashCommandHandler
         registerCommand(new RandomFactCommand());
         registerCommand(new MockCommand());
         registerCommand(new InfoCommand());
+        //registerCommand(new BlackJackCommand());
         registerCommand(new TestCommand());
 
     }
@@ -175,32 +175,30 @@ public class SlashCommandHandler
         {
             try
             {
-                boolean foundCommand = false;
-                if (registeredGuildCommands.get(event.getGuild().getIdLong()) != null)
+                Guild guild = event.getGuild();
+                long startTime = System.currentTimeMillis();
+                SlashCommand command = null;
+                long guildId = event.getGuild().getIdLong();
+                if (registeredGuildCommands.containsKey(guildId))
                 {
-                    for (SlashCommand command : registeredGuildCommands.get(event.getGuild().getIdLong()))
-                    {
-                        if (command.getCommandData().getName().equalsIgnoreCase(event.getName()))
-                        {
-                            if (!command.getRequiredUserPermissions().isEmpty() && !event.getMember().hasPermission(command.getRequiredUserPermissions()))
-                                return;
-                            foundCommand = true;
-                            command.handleAutocomplete(event);
-                            break;
-                        }
-                    }
+                    List<SlashCommand> guildCommands = registeredGuildCommands.get(guildId);
+                    SlashCommand guildCommand = guildCommands.stream().filter(cmd -> cmd.getCommandName().equalsIgnoreCase(event.getName()))
+                            .findFirst()
+                            .orElse(null);
+                    if (guildCommand != null)
+                        command = guildCommand;
                 }
-                if (foundCommand) return;
-                for (SlashCommand command : registeredCommands)
+                if (command == null)
                 {
-                    if (command.getCommandData().getName().equalsIgnoreCase(event.getName()))
-                    {
-                        if (!command.getRequiredUserPermissions().isEmpty() && !event.getMember().hasPermission(command.getRequiredUserPermissions()))
-                            return;
-                        command.handleAutocomplete(event);
-                        break;
-                    }
+                    SlashCommand globalCommand = registeredCommands.stream()
+                            .filter(cmd -> cmd.getCommandName().equalsIgnoreCase(event.getName()))
+                            .findFirst()
+                            .orElse(null);
+                    if (globalCommand != null)
+                        command = globalCommand;
                 }
+                if (command != null)
+                    command.handleAutocomplete(event);
             } catch (Exception ex)
             {
                 LOGGER.warn("An error occurred while handling autocomplete!", ex);
@@ -214,146 +212,81 @@ public class SlashCommandHandler
     {
         Runnable r = () ->
         {
-            boolean foundCommand = false;
             try
             {
-                if (event.getGuild() != null)
+                if (!event.isFromGuild())
+                    return;
+                Guild guild = event.getGuild();
+                SlashCommand command = null;
+                long guildId = event.getGuild().getIdLong();
+                if (registeredGuildCommands.containsKey(guildId))
                 {
-                    Guild guild = event.getGuild();
-                    long guildID = guild.getIdLong();
-                    if (registeredGuildCommands.containsKey(guildID))
-                    {
-                        List<SlashCommand> guildOnlySlashcommands = registeredGuildCommands.get(guildID);
-                        for (SlashCommand cmd : guildOnlySlashcommands)
-                        {
-                            if (cmd == null) continue;
-                            if (cmd.getCommandName() == null) continue;
-                            if (cmd.getCommandName().equalsIgnoreCase(event.getName()))
-                            {
-                                InteractionHook hook = event.getHook();
-                                List<Permission> neededPermissions = cmd.getRequiredUserPermissions();
-                                List<Permission> neededBotPermissions = cmd.getRequiredBotPermissions();
-                                if (neededPermissions != null && !member.hasPermission(neededPermissions))
-                                {
-                                    event.deferReply(true)
-                                            .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(guild).get("general.no_perms", String.class)))
-                                            .queue();
-                                    return;
-                                }
-                                if (neededBotPermissions != null && !event.getGuild().getSelfMember().hasPermission(neededBotPermissions))
-                                {
-                                    event.deferReply(true)
-                                            .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(guild).get("general.no_bot_perms1", String.class)))
-                                            .queue();
-                                    return;
-                                }
-                                SlashCommandContext ctx = new SlashCommandContext(event);
-                                if (cmd.getCommandFlags().contains(CommandFlag.DJ_ONLY))
-                                {
-                                    if (!ctx.getGuildData().isDJ(member))
-                                    {
-                                        ctx.replyError("You need to be a DJ to do this!").queue();
-                                        return;
-                                    }
-                                }
-                                if (cmd.getCommandFlags().contains(CommandFlag.MUST_BE_IN_VC))
-                                {
-                                    GuildVoiceState guildVoiceState = member.getVoiceState();
-                                    if (guildVoiceState == null || !guildVoiceState.inVoiceChannel())
-                                    {
-                                        ctx.replyError("You are not connected to a VoiceChannel!").queue();
-                                        return;
-                                    }
-                                }
-
-                                if (cmd.getCommandFlags().contains(CommandFlag.MUST_BE_IN_SAME_VC))
-                                {
-                                    GuildVoiceState voiceState = member.getVoiceState();
-                                    AudioManager manager = event.getGuild().getAudioManager();
-                                    if (manager.isConnected())
-                                    {
-                                        if (!manager.getConnectedChannel().equals(voiceState.getChannel()))
-                                        {
-                                            ctx.replyError("I am already playing music in " + manager.getConnectedChannel().getAsMention() + "!").setEphemeral(true).queue();
-                                            return;
-                                        }
-                                    }
-                                }
-                                cmd.executeCommand(event, member, ctx);
-                                return;
-                            }
-                        }
-                    }
+                    List<SlashCommand> guildCommands = registeredGuildCommands.get(guildId);
+                    SlashCommand guildCommand = guildCommands.stream().filter(cmd -> cmd.getCommandName().equalsIgnoreCase(event.getName()))
+                            .findFirst()
+                            .orElse(null);
+                    if (guildCommand != null)
+                        command = guildCommand;
                 }
-                for (SlashCommand cmd : registeredCommands)
+                if (command == null)
                 {
-                    if (cmd == null) continue;
-                    if (cmd.getCommandName() == null) continue;
-                    if (cmd.getCommandName().equalsIgnoreCase(event.getName()))
+                    SlashCommand globalCommand = registeredCommands.stream()
+                            .filter(cmd -> cmd.getCommandName().equalsIgnoreCase(event.getName()))
+                            .findFirst()
+                            .orElse(null);
+                    if (globalCommand != null)
+                        command = globalCommand;
+                }
+                if (command != null)
+                {
+                    SlashCommandContext ctx = new SlashCommandContext(event);
+                    List<Permission> neededPermissions = command.getRequiredUserPermissions();
+                    List<Permission> neededBotPermissions = command.getRequiredBotPermissions();
+                    if (neededPermissions != null && !member.hasPermission(neededPermissions))
                     {
-                        foundCommand = true;
-                        if (member == null && !cmd.isRunnableInDM())
+                        event.reply(LocaleLoader.ofGuild(guild).get("general.no_perms", String.class))
+                                .queue();
+                        return;
+                    }
+                    if (neededBotPermissions != null && !event.getGuild().getSelfMember().hasPermission(neededBotPermissions))
+                    {
+                        event.reply(LocaleLoader.ofGuild(guild).get("general.no_bot_perms1", String.class))
+                                .queue();
+                        return;
+                    }
+                    if (command.getCommandFlags().contains(CommandFlag.DJ_ONLY))
+                    {
+                        if (!ctx.getGuildData().isDJ(member))
                         {
-                            event.reply(String.format(LocaleLoader.getForLanguage("en_US").get("commands.cannot_run_in_dm", String.class), SlashCommandContext.ERROR)).setEphemeral(true).queue();
+                            event.replyEmbeds(EmbedUtil.errorEmbed("You need to be a DJ to do this!")).queue();
                             return;
                         }
-                        InteractionHook hook = event.getHook();
-                        List<Permission> neededPermissions = cmd.getRequiredUserPermissions();
-                        List<Permission> neededBotPermissions = cmd.getRequiredBotPermissions();
-                        if (member != null)
-                        {
-                            if (neededPermissions != null && !member.hasPermission(neededPermissions))
-                            {
-                                event.deferReply(true)
-                                        .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)))
-                                        .queue();
-                                return;
-                            }
-                            if (neededBotPermissions != null && !event.getGuild().getSelfMember().hasPermission(neededBotPermissions))
-                            {
-                                event.deferReply(true)
-                                        .flatMap(v -> hook.sendMessage(LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms1", String.class)))
-                                        .queue();
-                                return;
-                            }
-                        }
-                        SlashCommandContext ctx = new SlashCommandContext(event);
-                        if (cmd.getCommandFlags().contains(CommandFlag.DJ_ONLY))
-                        {
-                            if (!ctx.getGuildData().isDJ(member))
-                            {
-                                ctx.replyError("You need to be a DJ to do this!").queue();
-                                return;
-                            }
-                        }
-                        if (cmd.getCommandFlags().contains(CommandFlag.MUST_BE_IN_VC))
-                        {
-                            GuildVoiceState guildVoiceState = member.getVoiceState();
-                            if (guildVoiceState == null || !guildVoiceState.inVoiceChannel())
-                            {
-                                ctx.replyError("You are not connected to a VoiceChannel!").queue();
-                                return;
-                            }
-                        }
-
-                        if (cmd.getCommandFlags().contains(CommandFlag.MUST_BE_IN_SAME_VC))
-                        {
-                            GuildVoiceState voiceState = member.getVoiceState();
-                            AudioManager manager = event.getGuild().getAudioManager();
-                            if (manager.isConnected())
-                            {
-                                if (!manager.getConnectedChannel().equals(voiceState.getChannel()))
-                                {
-                                    ctx.replyError("I am already playing music in " + manager.getConnectedChannel().getAsMention() + "!").setEphemeral(true).queue();
-                                    return;
-                                }
-                            }
-                        }
-                        cmd.executeCommand(event, member, ctx);
                     }
+                    if (command.getCommandFlags().contains(CommandFlag.MUST_BE_IN_VC))
+                    {
+                        GuildVoiceState guildVoiceState = member.getVoiceState();
+                        if (guildVoiceState == null || !guildVoiceState.inVoiceChannel())
+                        {
+                            event.replyEmbeds(EmbedUtil.errorEmbed("You are not connected to a VoiceChannel!")).queue();
+                            return;
+                        }
+                    }
+
+                    if (command.getCommandFlags().contains(CommandFlag.MUST_BE_IN_SAME_VC))
+                    {
+                        GuildVoiceState voiceState = member.getVoiceState();
+                        AudioManager manager = event.getGuild().getAudioManager();
+                        if (manager.isConnected())
+                        {
+                            if (!manager.getConnectedChannel().equals(voiceState.getChannel()))
+                            {
+                                event.replyEmbeds(EmbedUtil.errorEmbed("I am already playing music in " + manager.getConnectedChannel().getAsMention() + "!")).setEphemeral(true).queue();
+                                return;
+                            }
+                        }
+                    }
+                    command.executeCommand(event, member, ctx);
                 }
-                if (!foundCommand && member != null)
-                    event.reply(LocaleLoader.ofGuild(event.getGuild()).get("commands.disabled_or_unknown", String.class)).setEphemeral(true).queue();
 
             } catch (Exception e)
             {
