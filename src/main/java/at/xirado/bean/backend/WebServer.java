@@ -6,6 +6,8 @@ import at.xirado.bean.backend.routes.*;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -25,7 +27,7 @@ public class WebServer
     public WebServer(int port)
     {
         port(port);
-        if (!Bean.getInstance().getConfig().getBoolean("force_http"))
+        if (Bean.getInstance().getConfig().getBoolean("force_http") != null && !Bean.getInstance().getConfig().getBoolean("force_http"))
             secure("cert.jks", Bean.getInstance().getConfig().getString("cert_pw"), null, null);
         enableCORS("*", "*", "*");
         get("/guilds", GetGuilds::handle);
