@@ -5,10 +5,13 @@ import at.xirado.bean.misc.MusicUtil;
 import at.xirado.bean.music.AudioScheduler;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.events.guild.voice.*;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.internal.JDAImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
@@ -30,7 +33,10 @@ public class OnVoiceUpdate extends ListenerAdapter
         if (event.getMember().equals(event.getGuild().getSelfMember()))
         {
             if (!event.getGuild().getSelfMember().getVoiceState().isGuildDeafened())
-                event.getGuild().deafen(event.getGuild().getSelfMember(), true).queue(s -> {}, e -> {});
+                try
+                {
+                    event.getGuild().deafen(event.getGuild().getSelfMember(), true).queue(s -> {}, e -> {});
+                } catch (InsufficientPermissionException ignored) {}
             if (event.getChannelJoined() instanceof StageChannel stageChannel)
             {
                 GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
@@ -69,12 +75,12 @@ public class OnVoiceUpdate extends ListenerAdapter
         if (player.getPlayingTrack() != null)
             player.stopTrack();
         player.setPaused(false);
+        audioPlayer.destroy();
     }
 
     @Override
     public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event)
     {
-
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
