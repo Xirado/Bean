@@ -36,4 +36,9 @@ public class GuildAudioPlayer
     {
         return guildId;
     }
+
+    public void destroy()
+    {
+        player.destroy();
+    }
 }

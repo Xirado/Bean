@@ -5,7 +5,6 @@ import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.command.slashcommands.*;
-import at.xirado.bean.command.slashcommands.games.BlackJackCommand;
 import at.xirado.bean.command.slashcommands.leveling.*;
 import at.xirado.bean.command.slashcommands.moderation.*;
 import at.xirado.bean.command.slashcommands.music.*;
