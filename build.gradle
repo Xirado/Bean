@@ -11,7 +11,7 @@ plugins {
 
 mainClassName = 'at.xirado.bean.Bean'
 group 'at.xirado'
-version '3.0.1'
+version '3.0.1-WEBHOOK-INTERACTIONS-DEV'
 compileJava.options.encoding = 'UTF-8'
 repositories {
     mavenCentral()
