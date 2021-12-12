@@ -4,8 +4,8 @@ import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveAllEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -17,10 +17,12 @@ public class OnGuildMessageReactionRemove extends ListenerAdapter
     private static final Logger LOGGER = LoggerFactory.getLogger(OnGuildMessageReactionRemove.class);
 
     @Override
-    public void onGuildMessageReactionRemoveAll(GuildMessageReactionRemoveAllEvent e)
+    public void onMessageReactionRemoveAll(MessageReactionRemoveAllEvent e)
     {
         try
         {
+            if (!e.isFromGuild())
+                return;
             long messageId = e.getMessageIdLong();
             GuildData data = GuildManager.getGuildData(e.getGuild());
             data.removeReactionRoles(messageId).update();
@@ -31,8 +33,10 @@ public class OnGuildMessageReactionRemove extends ListenerAdapter
     }
 
     @Override
-    public void onGuildMessageReactionRemove(@NotNull GuildMessageReactionRemoveEvent e)
+    public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent e)
     {
+        if (!e.isFromGuild())
+            return;
         ReactionEmote reactionemote = e.getReactionEmote();
         String reacted = reactionemote.isEmoji() ? reactionemote.getAsReactionCode() : reactionemote.getEmote().getId();
         GuildData data = GuildManager.getGuildData(e.getGuild());

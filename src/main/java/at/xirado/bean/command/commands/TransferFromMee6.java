@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;
 import java.io.FileNotFoundException;
@@ -28,7 +28,7 @@ public class TransferFromMee6 extends Command
     }
 
     @Override
-    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
+    public void executeCommand(MessageReceivedEvent event, CommandContext context)
     {
         String[] args = context.getArguments().toStringArray();
         if (args.length != 1 || !args[0].equals("confirm"))
@@ -100,6 +100,6 @@ public class TransferFromMee6 extends Command
                 .setColor(Color.green)
                 .setDescription("✅ XP has been transferred for **" + transferredPlayers + "** users!")
                 .setTimestamp(Instant.now());
-        message.editMessage("Success!").embed(builder.build()).queue();
+        message.editMessage("Success!").setEmbeds(builder.build()).queue();
     }
 }

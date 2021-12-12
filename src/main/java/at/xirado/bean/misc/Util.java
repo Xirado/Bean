@@ -85,7 +85,7 @@ public class Util
     public static void sendPM(User user, MessageEmbed embed)
     {
         user.openPrivateChannel()
-                .flatMap(x -> x.sendMessage(embed))
+                .flatMap(x -> x.sendMessageEmbeds(embed))
                 .queue(s ->
                 {
                 }, e ->

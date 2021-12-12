@@ -5,7 +5,7 @@ import at.xirado.bean.command.CommandCategory;
 import at.xirado.bean.command.CommandContext;
 import at.xirado.bean.data.RankingSystem;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 
 public class Rank extends Command
@@ -18,7 +18,7 @@ public class Rank extends Command
     }
 
     @Override
-    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
+    public void executeCommand(MessageReceivedEvent event, CommandContext context)
     {
         String[] args = context.getArguments().toStringArray();
         if (args.length == 0)

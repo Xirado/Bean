@@ -11,7 +11,7 @@ import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,8 +85,10 @@ public class CommandHandler
     }
 
     @SuppressWarnings("ConstantConditions")
-    public void handleCommandFromGuild(@Nonnull GuildMessageReceivedEvent event)
+    public void handleCommandFromGuild(@Nonnull MessageReceivedEvent event)
     {
+        if (!event.isFromGuild())
+            return;
         Runnable r = () ->
         {
             try
@@ -157,7 +159,7 @@ public class CommandHandler
                     String toString = sb.toString();
                     toString = toString.substring(0, toString.length() - 2);
                     builder.setDescription(LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms1", String.class) + " \uD83D\uDE26\n" + LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms", String.class) + ": " + toString);
-                    event.getChannel().sendMessage(builder.build()).queue();
+                    event.getChannel().sendMessageEmbeds(builder.build()).queue();
                     return;
                 }
                 CommandContext context = new CommandContext(event, arguments, command, event.getMember());

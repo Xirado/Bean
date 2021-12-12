@@ -6,7 +6,7 @@ import at.xirado.bean.data.ReactionRole;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -17,10 +17,12 @@ public class OnGuildMessageReactionAdd extends ListenerAdapter
     private static final Logger LOGGER = LoggerFactory.getLogger(OnGuildMessageReactionAdd.class);
 
     @Override
-    public void onGuildMessageReactionAdd(@NotNull GuildMessageReactionAddEvent e)
+    public void onMessageReactionAdd(@NotNull MessageReactionAddEvent e)
     {
         try
         {
+            if (!e.isFromGuild())
+                return;
             if (e.getMember().getUser().isBot()) return;
             Guild g = e.getGuild();
             long id = e.getMessageIdLong();

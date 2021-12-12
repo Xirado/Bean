@@ -264,7 +264,7 @@ public class SlashCommandHandler
                     if (command.getCommandFlags().contains(CommandFlag.MUST_BE_IN_VC))
                     {
                         GuildVoiceState guildVoiceState = member.getVoiceState();
-                        if (guildVoiceState == null || !guildVoiceState.inVoiceChannel())
+                        if (guildVoiceState == null || !guildVoiceState.inAudioChannel())
                         {
                             event.replyEmbeds(EmbedUtil.errorEmbed("You are not connected to a VoiceChannel!")).queue();
                             return;

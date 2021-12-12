@@ -6,7 +6,7 @@ import at.xirado.bean.command.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.Checks;
 
 public class Settings extends Command
@@ -19,7 +19,7 @@ public class Settings extends Command
     }
 
     @Override
-    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
+    public void executeCommand(MessageReceivedEvent event, CommandContext context)
     {
         String[] args = context.getArguments().toStringArray();
         String prefix = context.getGuildData().getPrefix();

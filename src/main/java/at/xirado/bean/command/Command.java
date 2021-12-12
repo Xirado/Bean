@@ -1,7 +1,7 @@
 package at.xirado.bean.command;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.ArrayList;
@@ -131,5 +131,5 @@ public abstract class Command
         return getAllowedGuilds().contains(GuildID);
     }
 
-    public abstract void executeCommand(GuildMessageReceivedEvent event, CommandContext context);
+    public abstract void executeCommand(MessageReceivedEvent event, CommandContext context);
 }

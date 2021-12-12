@@ -252,7 +252,7 @@ public class GuildData
         if (getDJMembers().contains(member.getIdLong())) return true;
         GuildVoiceState guildVoiceState = member.getVoiceState();
         if (guildVoiceState == null || guildVoiceState.getChannel() == null) return false;
-        VoiceChannel channel = guildVoiceState.getChannel();
+        AudioChannel channel = guildVoiceState.getChannel();
         return channel.getMembers().size() == 2 && channel.getMembers().contains(member.getGuild().getSelfMember());
     }
 

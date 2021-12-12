@@ -9,7 +9,8 @@ import at.xirado.bean.data.database.Database;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.RoleReward;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -23,15 +24,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OnGainXP extends ListenerAdapter
 {
 
-
     public static final long TIMEOUT = Bean.getInstance().isDebug() ? 0L : 60000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OnGainXP.class);
     private static final ConcurrentHashMap<Long, Long> timeout = new ConcurrentHashMap<>();
 
     @Override
-    public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
+    public void onMessageReceived(@NotNull MessageReceivedEvent event)
     {
+        if (!event.isFromGuild() || event.isFromThread())
+            return;
         if (event.getAuthor().isBot() || event.isWebhookMessage() || event.getMessage().getType().isSystem()) return;
         if (event.getMessage().getContentRaw().startsWith(GuildManager.getGuildData(event.getGuild()).getPrefix()))
             return;
@@ -56,7 +58,7 @@ public class OnGainXP extends ListenerAdapter
                         Util.closeQuietly(connection);
                         if (xpAmount + currentXP >= xpLeft)
                         {
-                            XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
+                            XPAlertCommand.sendXPAlert(event.getMember(), level + 1, (TextChannel) event.getChannel());
                             GuildData data = GuildManager.getGuildData(event.getGuild());
                             if (data.hasRoleReward(level + 1))
                             {
@@ -108,7 +110,7 @@ public class OnGainXP extends ListenerAdapter
                     Util.closeQuietly(connection);
                     if (xpAmount + currentXP >= xpLeft)
                     {
-                        XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
+                        XPAlertCommand.sendXPAlert(event.getMember(), level + 1, (TextChannel) event.getChannel());
                         GuildData data = GuildManager.getGuildData(event.getGuild());
                         if (data.hasRoleReward(level + 1))
                         {
