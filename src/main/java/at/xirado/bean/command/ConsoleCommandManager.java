@@ -56,5 +56,6 @@ public class ConsoleCommandManager
         registerCommand(new Help());
         registerCommand(new PrintGuildData());
         registerCommand(new UpdateSlashCommands());
+        registerCommand(new BalanceCommand());
     }
 }

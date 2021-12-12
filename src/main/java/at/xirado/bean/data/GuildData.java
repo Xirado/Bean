@@ -23,14 +23,14 @@ public class GuildData
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(GuildData.class);
 
-    private final long guildID;
+    private final long guildId;
     private final DataObject dataObject;
 
     private Set<ReactionRole> reactionRoles = new HashSet<>();
 
     public GuildData(long guildID, DataObject json)
     {
-        this.guildID = guildID;
+        this.guildId = guildID;
         this.dataObject = json;
         ReactionRole[] reactions = json.isNull("reaction_roles") ? new ReactionRole[0] : json.getArray("reaction_roles")
                 .stream(DataArray::getObject)
@@ -111,7 +111,7 @@ public class GuildData
         {
             String jsonString = dataObject.toString();
             new SQLBuilder(sql)
-                    .addParameters(guildID, jsonString, jsonString)
+                    .addParameters(guildId, jsonString, jsonString)
                     .execute();
         }catch (SQLException exception)
         {
@@ -170,7 +170,7 @@ public class GuildData
         Set<Role> roles = new HashSet<>();
         if (dataObject.isNull("moderator_roles")) return roles;
         Long[] roleIds = dataObject.getArray("moderator_roles").stream(DataArray::getLong).toArray(Long[]::new);
-        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
+        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
         if (guild == null) return roles;
         for (long roleId : roleIds)
         {
@@ -214,7 +214,7 @@ public class GuildData
         if (dataObject.isNull("dj_roles"))
             return roles;
         Long[] roleIds = dataObject.getArray("dj_roles").stream(DataArray::getLong).toArray(Long[]::new);
-        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
+        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
         if (guild == null) return roles;
         for (long roleId : roleIds)
         {
@@ -380,6 +380,52 @@ public class GuildData
         }
         return result;
     }
+
+    public long getBalance(long userId)
+    {
+        try(var rs = new SQLBuilder("SELECT balance from userbalance WHERE guild_id = ? AND user_id = ?").addParameters(guildId, userId).executeQuery())
+        {
+            if (rs.next())
+                return rs.getLong("balance");
+            return 0;
+        } catch (SQLException throwables)
+        {
+            LOGGER.error("Could not get balance for user {} on guild {}!", userId, guildId);
+            return 0;
+        }
+    }
+
+    public void addBalance(long userId, long amount)
+    {
+        long oldBalance = getBalance(userId);
+
+        try
+        {
+            new SQLBuilder("INSERT INTO userbalance (guild_id, user_id, balance) values (?,?,?) ON DUPLICATE KEY UPDATE balance = ?").addParameters(guildId, userId, oldBalance+amount, oldBalance+amount).execute();
+
+        } catch (SQLException throwables)
+        {
+            LOGGER.error("Could not add balance amount {} to user {} on guild {}", amount, userId, guildId);
+        }
+    }
+
+    public void setBalance(long userId, long amount)
+    {
+        try
+        {
+            new SQLBuilder("INSERT INTO userbalance (guild_id, user_id, balance) values (?,?,?) ON DUPLICATE KEY UPDATE balance = ?").addParameters(guildId, userId, amount, amount).execute();
+
+        } catch (SQLException throwables)
+        {
+            LOGGER.error("Could not set balance amount {} to user {} on guild {}", amount, userId, guildId);
+        }
+    }
+
+    public void resetBalance(long userId)
+    {
+        setBalance(userId, 0);
+    }
+
 
     public DataObject toData()
     {

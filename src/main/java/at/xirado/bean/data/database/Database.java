@@ -85,7 +85,8 @@ public class Database
                 "CREATE TABLE IF NOT EXISTS usersettings (userID BIGINT PRIMARY KEY, data JSON CHECK (JSON_VALID(data)))",
                 "CREATE TABLE IF NOT EXISTS xpalerts (guildID BIGINT PRIMARY KEY, mode VARCHAR(128))",
                 "CREATE TABLE IF NOT EXISTS wildcardsettings (userID BIGINT PRIMARY KEY, card VARCHAR(128) NOT NULL)",
-                "CREATE TABLE IF NOT EXISTS searchqueries (user_id BIGINT, searched_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+                "CREATE TABLE IF NOT EXISTS searchqueries (user_id BIGINT, searched_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
+                "CREATE TABLE IF NOT EXISTS userBalance (guild_id BIGINT, user_id BIGINT, balance BIGINT, PRIMARY KEY(guild_id, user_id))"
         };
 
         try(Connection connection = Database.getConnectionFromPool())
