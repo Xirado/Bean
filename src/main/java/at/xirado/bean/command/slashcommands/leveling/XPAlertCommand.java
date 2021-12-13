@@ -63,6 +63,11 @@ public class XPAlertCommand extends SlashCommand
                 return;
             case "channel":
                 GuildChannel channel = event.getOption("targetchannel").getAsGuildChannel();
+                if (channel.getType() == ChannelType.GUILD_PUBLIC_THREAD || channel.getType() == ChannelType.GUILD_PRIVATE_THREAD)
+                {
+                    ctx.replyError("Cannot use threads as XP alert target!").setEphemeral(true).queue();
+                    return;
+                }
                 if (channel.getType() != ChannelType.TEXT)
                 {
                     ctx.replyError("Can only use text-channels as XP alert target!").setEphemeral(true).queue();
@@ -99,7 +104,7 @@ public class XPAlertCommand extends SlashCommand
         }
     }
 
-    public static void sendXPAlert(@Nonnull Member member, int level, TextChannel current)
+    public static void sendXPAlert(@Nonnull Member member, int level, GuildMessageChannel current)
     {
         LinkedDataObject json = LocaleLoader.ofGuild(member.getGuild());
         String mode = getXPAlert(member.getGuild());

@@ -8,8 +8,8 @@ import at.xirado.bean.data.RankingSystem;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.RoleReward;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +32,7 @@ public class OnGainXP extends ListenerAdapter
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event)
     {
-        if (!event.isFromGuild() || event.isFromThread())
+        if (!event.isFromGuild())
             return;
         if (event.getAuthor().isBot() || event.isWebhookMessage() || event.getMessage().getType().isSystem()) return;
         if (event.getMessage().getContentRaw().startsWith(GuildManager.getGuildData(event.getGuild()).getPrefix()))
@@ -58,7 +58,7 @@ public class OnGainXP extends ListenerAdapter
                         Util.closeQuietly(connection);
                         if (xpAmount + currentXP >= xpLeft)
                         {
-                            XPAlertCommand.sendXPAlert(event.getMember(), level + 1, (TextChannel) event.getChannel());
+                            XPAlertCommand.sendXPAlert(event.getMember(), level + 1, (GuildMessageChannel) event.getChannel());
                             GuildData data = GuildManager.getGuildData(event.getGuild());
                             if (data.hasRoleReward(level + 1))
                             {
@@ -110,7 +110,7 @@ public class OnGainXP extends ListenerAdapter
                     Util.closeQuietly(connection);
                     if (xpAmount + currentXP >= xpLeft)
                     {
-                        XPAlertCommand.sendXPAlert(event.getMember(), level + 1, (TextChannel) event.getChannel());
+                        XPAlertCommand.sendXPAlert(event.getMember(), level + 1, (GuildMessageChannel) event.getChannel());
                         GuildData data = GuildManager.getGuildData(event.getGuild());
                         if (data.hasRoleReward(level + 1))
                         {
