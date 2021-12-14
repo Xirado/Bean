@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class OnGuildMemberJoin extends ListenerAdapter
@@ -22,7 +23,7 @@ public class OnGuildMemberJoin extends ListenerAdapter
         int level = RankingSystem.getLevel(totalXP);
         if (level > 0)
         {
-            Set<RoleReward> roleRewards = guildData.getEffectiveRoleRewards(level);
+            List<RoleReward> roleRewards = guildData.getEffectiveRoleRewards(level);
             Set<Role> rolesToAdd = new HashSet<>(event.getMember().getRoles());
             for (RoleReward reward : roleRewards)
             {
@@ -37,11 +38,7 @@ public class OnGuildMemberJoin extends ListenerAdapter
             }
             if (!rolesToAdd.isEmpty())
             {
-                event.getGuild().modifyMemberRoles(event.getMember(), rolesToAdd).queue(s ->
-                {
-                }, e ->
-                {
-                });
+                event.getGuild().modifyMemberRoles(event.getMember(), rolesToAdd).queue(s -> {}, e -> {});
             }
         }
     }

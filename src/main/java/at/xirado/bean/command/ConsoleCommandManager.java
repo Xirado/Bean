@@ -14,7 +14,7 @@ public class ConsoleCommandManager
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleCommandManager.class);
 
-    public final ArrayList<ConsoleCommand> consoleCommands = new ArrayList<>();
+    private final ArrayList<ConsoleCommand> consoleCommands = new ArrayList<>();
 
     public void handleConsoleCommand(final String invoke, final String[] args)
     {
@@ -50,12 +50,17 @@ public class ConsoleCommandManager
     public void registerAllCommands()
     {
         registerCommand(new SendMessage());
-        registerCommand(new Clearscreen());
+        registerCommand(new ClearScreen());
         registerCommand(new Shutdown());
         registerCommand(new Info());
         registerCommand(new Help());
         registerCommand(new PrintGuildData());
         registerCommand(new UpdateSlashCommands());
         registerCommand(new BalanceCommand());
+    }
+
+    public ArrayList<ConsoleCommand> getCommands()
+    {
+        return consoleCommands;
     }
 }

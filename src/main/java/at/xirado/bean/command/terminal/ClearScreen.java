@@ -6,9 +6,9 @@ import org.jline.utils.InfoCmp;
 
 import java.util.Arrays;
 
-public class Clearscreen extends ConsoleCommand
+public class ClearScreen extends ConsoleCommand
 {
-    public Clearscreen()
+    public ClearScreen()
     {
         this.invoke = "cls";
         this.description = "Clears the screen";
@@ -24,6 +24,7 @@ public class Clearscreen extends ConsoleCommand
             Shell.terminal.flush();
             return;
         }
+
         if (args.length == 1 && args[0].equalsIgnoreCase("-f"))
         {
             Shell.terminal.flush();

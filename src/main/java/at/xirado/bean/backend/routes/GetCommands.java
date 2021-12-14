@@ -17,7 +17,7 @@ public class GetCommands
 {
     public static Object handle(Request request, Response response) throws IOException
     {
-        List<SlashCommand> commands = Bean.getInstance().getSlashCommandHandler().registeredCommands;
+        List<SlashCommand> commands = Bean.getInstance().getSlashCommandHandler().getRegisteredCommands();
         DataArray commandArray = DataArray.empty();
         for (SlashCommand command : commands)
         {

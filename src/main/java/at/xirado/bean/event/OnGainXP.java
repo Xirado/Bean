@@ -89,7 +89,7 @@ public class OnGainXP extends ListenerAdapter
                             }
                         }
                         timeout.put(userID, System.currentTimeMillis());
-                    } catch (SQLException ex)
+                    } catch (Exception ex)
                     {
                         LOGGER.error("Could not update XP!", ex);
                     }
@@ -141,7 +141,7 @@ public class OnGainXP extends ListenerAdapter
                         }
                     }
                     timeout.put(userID, System.currentTimeMillis());
-                }catch (SQLException ex)
+                }catch (Exception ex)
                 {
                     LOGGER.error("Could not update XP!", ex);
                 }

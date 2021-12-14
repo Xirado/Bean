@@ -18,6 +18,7 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,7 +46,7 @@ public class ModeratorCommand extends SlashCommand
         {
             case "add" -> {
                 Role role = event.getOption("role").getAsRole();
-                Set<Role> moderatorRoles = ctx.getGuildData().getModeratorRoles();
+                List<Role> moderatorRoles = ctx.getGuildData().getModeratorRoles();
                 if (moderatorRoles.contains(role))
                 {
                     ctx.sendSimpleEmbed(ctx.getLocalized("commands.moderator.already_added"));
@@ -59,7 +60,7 @@ public class ModeratorCommand extends SlashCommand
             }
             case "remove" -> {
                 Role role = event.getOption("role").getAsRole();
-                Set<Role> allowedRoles = ctx.getGuildData().getModeratorRoles();
+                List<Role> allowedRoles = ctx.getGuildData().getModeratorRoles();
                 if (!allowedRoles.contains(role))
                 {
                     ctx.sendSimpleEmbed(ctx.getLocalized("commands.moderator.not_added"));
@@ -73,7 +74,7 @@ public class ModeratorCommand extends SlashCommand
             }
             case "list" -> {
                 GuildData guildData = ctx.getGuildData();
-                Set<Role> allowedRoles = guildData.getModeratorRoles();
+                List<Role> allowedRoles = guildData.getModeratorRoles();
                 if (allowedRoles == null || allowedRoles.isEmpty())
                 {
                     ctx.sendSimpleEmbed(ctx.getLocalized("commands.listmods.no_roles_found"));
@@ -83,8 +84,8 @@ public class ModeratorCommand extends SlashCommand
                 Color firstColor = null;
                 if (allowedRoles.size() > 1)
                 {
-                    allowedRoles = allowedRoles.stream().sorted(Comparator.comparingInt(Role::getPosition)).collect(Collectors.toCollection(LinkedHashSet::new));
-                    allowedRoles = allowedRoles.stream().sorted(Collections.reverseOrder()).collect(Collectors.toCollection(LinkedHashSet::new));
+                    allowedRoles = allowedRoles.stream().sorted(Comparator.comparingInt(Role::getPosition)).collect(Collectors.toList());
+                    allowedRoles = allowedRoles.stream().sorted(Collections.reverseOrder()).collect(Collectors.toList());
                 }
                 for (Role r : allowedRoles)
                 {

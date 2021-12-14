@@ -88,7 +88,7 @@ public class Bean
                 .setAudioSendFactory(new NativeAudioSendFactory())
                 .addEventListeners(new OnReadyEvent(), new OnSlashCommand(), new OnGuildMessageReceived(),
                         new OnGainXP(), new OnGuildMessageReactionAdd(), new OnGuildMessageReactionRemove(), new OnVoiceUpdate(),
-                        eventWaiter, new OnGuildMemberJoin(), new OnGuildUnban())
+                        eventWaiter, new OnGuildMemberJoin())
                 .build();
         audioManager = new AudioManager(shardManager);
         authenticator = new Authenticator();
@@ -276,7 +276,7 @@ public class Bean
                     return;
                 }
                 guild.retrieveCommands().queue(list -> {
-                    List<SlashCommand> commandList = Bean.getInstance().getSlashCommandHandler().registeredGuildCommands.get(guild.getIdLong());
+                    List<SlashCommand> commandList = Bean.getInstance().getSlashCommandHandler().getRegisteredGuildCommands().get(guild.getIdLong());
                     boolean commandRemovedOrAdded = commandList.size() != list.size();
                     if (commandRemovedOrAdded)
                     {
@@ -327,7 +327,7 @@ public class Bean
                 });
             }
             Bean.getInstance().getShardManager().getShards().get(0).retrieveCommands().queue((list) -> {
-                List<SlashCommand> commandList = Bean.getInstance().getSlashCommandHandler().registeredCommands
+                List<SlashCommand> commandList = Bean.getInstance().getSlashCommandHandler().getRegisteredCommands()
                         .stream()
                         .filter(SlashCommand::isGlobal)
                         .toList();

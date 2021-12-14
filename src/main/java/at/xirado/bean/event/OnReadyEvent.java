@@ -18,9 +18,7 @@ public class OnReadyEvent extends ListenerAdapter
         LOGGER.info("Successfully started "+Bean.getInstance().getShardManager().getShards().size()+" shards!");
         Bean.getInstance().getSlashCommandHandler().initialize();
         if (Bean.getInstance().isDebug())
-        {
             LOGGER.warn("Debug mode enabled! Commands will not be executed for users.");
-        }
         Bean.getInstance().initCommandCheck();
     }
 }

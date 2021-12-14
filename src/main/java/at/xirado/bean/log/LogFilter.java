@@ -29,10 +29,6 @@ public class LogFilter extends Filter<ILoggingEvent>
     {
         if (!event.getLevel().isGreaterOrEqual(Level.INFO))
             return FilterReply.DENY;
-        if (event.getLoggerName().startsWith("com.sedmelluq.discord.lavaplayer"))
-        {
-            return FilterReply.DENY;
-        }
         final IThrowableProxy throwableProxy = event.getThrowableProxy();
         if (throwableProxy == null)
         {

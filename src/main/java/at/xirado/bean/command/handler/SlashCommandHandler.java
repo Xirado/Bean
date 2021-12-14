@@ -14,6 +14,7 @@ import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.ApplicationCommandAutocompleteEvent;
@@ -36,8 +37,8 @@ public class SlashCommandHandler
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(SlashCommandHandler.class);
 
-    public final List<SlashCommand> registeredCommands;
-    public final ConcurrentHashMap<Long, List<SlashCommand>> registeredGuildCommands;
+    private final List<SlashCommand> registeredCommands;
+    private final ConcurrentHashMap<Long, List<SlashCommand>> registeredGuildCommands;
     private CommandListUpdateAction commandUpdateAction;
 
     public SlashCommandHandler()
@@ -88,6 +89,7 @@ public class SlashCommandHandler
         registerCommand(new InfoCommand());
         //registerCommand(new BlackJackCommand());
         registerCommand(new TestCommand());
+        registerCommand(new SlapCommand());
 
     }
 
@@ -174,8 +176,6 @@ public class SlashCommandHandler
         {
             try
             {
-                Guild guild = event.getGuild();
-                long startTime = System.currentTimeMillis();
                 SlashCommand command = null;
                 long guildId = event.getGuild().getIdLong();
                 if (registeredGuildCommands.containsKey(guildId))
@@ -204,6 +204,7 @@ public class SlashCommandHandler
                 event.deferChoices(Collections.emptyList()).queue();
             }
         };
+
         Bean.getInstance().getExecutor().submit(r);
     }
 
@@ -218,6 +219,7 @@ public class SlashCommandHandler
                 Guild guild = event.getGuild();
                 SlashCommand command = null;
                 long guildId = event.getGuild().getIdLong();
+
                 if (registeredGuildCommands.containsKey(guildId))
                 {
                     List<SlashCommand> guildCommands = registeredGuildCommands.get(guildId);
@@ -227,6 +229,7 @@ public class SlashCommandHandler
                     if (guildCommand != null)
                         command = guildCommand;
                 }
+
                 if (command == null)
                 {
                     SlashCommand globalCommand = registeredCommands.stream()
@@ -236,23 +239,26 @@ public class SlashCommandHandler
                     if (globalCommand != null)
                         command = globalCommand;
                 }
+
                 if (command != null)
                 {
                     SlashCommandContext ctx = new SlashCommandContext(event);
                     List<Permission> neededPermissions = command.getRequiredUserPermissions();
                     List<Permission> neededBotPermissions = command.getRequiredBotPermissions();
-                    if (neededPermissions != null && !member.hasPermission(neededPermissions))
+                    if (neededPermissions != null && !member.hasPermission((GuildChannel) event.getChannel(), neededPermissions))
                     {
                         event.reply(LocaleLoader.ofGuild(guild).get("general.no_perms", String.class))
                                 .queue();
                         return;
                     }
-                    if (neededBotPermissions != null && !event.getGuild().getSelfMember().hasPermission(neededBotPermissions))
+
+                    if (neededBotPermissions != null && !event.getGuild().getSelfMember().hasPermission((GuildChannel) event.getChannel(), neededBotPermissions))
                     {
                         event.reply(LocaleLoader.ofGuild(guild).get("general.no_bot_perms1", String.class))
                                 .queue();
                         return;
                     }
+
                     if (command.getCommandFlags().contains(CommandFlag.DJ_ONLY))
                     {
                         if (!ctx.getGuildData().isDJ(member))
@@ -261,6 +267,7 @@ public class SlashCommandHandler
                             return;
                         }
                     }
+
                     if (command.getCommandFlags().contains(CommandFlag.MUST_BE_IN_VC))
                     {
                         GuildVoiceState guildVoiceState = member.getVoiceState();
@@ -310,5 +317,15 @@ public class SlashCommandHandler
             }
         };
         Bean.getInstance().getExecutor().submit(r);
+    }
+
+    public List<SlashCommand> getRegisteredCommands()
+    {
+        return registeredCommands;
+    }
+
+    public ConcurrentHashMap<Long, List<SlashCommand>> getRegisteredGuildCommands()
+    {
+        return registeredGuildCommands;
     }
 }

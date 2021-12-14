@@ -30,7 +30,6 @@ public class CommandHandler
 
     public CommandHandler()
     {
-        registerCommand(new Settings());
         registerCommand(new Eval());
     }
 
@@ -94,8 +93,10 @@ public class CommandHandler
                 GuildData guildData = GuildManager.getGuildData(event.getGuild());
                 CommandArgument arguments = new CommandArgument(event.getMessage().getContentRaw(), guildData.getPrefix());
                 String name = arguments.getCommandName();
-                if (!registeredCommands.containsKey(name)) return;
+                if (!registeredCommands.containsKey(name))
+                    return;
                 Command command = registeredCommands.get(name);
+
                 if (command.hasCommandFlag(CommandFlag.PRIVATE_COMMAND))
                 {
                     if (!command.getAllowedGuilds().contains(event.getGuild().getIdLong())) return;
@@ -119,24 +120,21 @@ public class CommandHandler
                 {
                     if (!guildData.isModerator(event.getMember()))
                     {
-                        event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)).mentionRepliedUser(false).queue(s ->
-                        {
-                        }, ex ->
-                        {
-                        });
+                        event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class))
+                                .mentionRepliedUser(false).queue(s -> {}, ex -> {});
                         return;
                     }
                 }
+
                 if (!event.getMember().hasPermission(command.getRequiredPermissions()))
                 {
-                    event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class)).mentionRepliedUser(false).queue(s ->
-                    {
-                    }, ex ->
-                    {
-                    });
+                    event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class))
+                            .mentionRepliedUser(false).queue(s -> {}, ex -> {});
                     return;
                 }
+
                 List<Permission> missingBotPermissions = new ArrayList<>();
+
                 for (Permission p : command.getRequiredBotPermissions())
                 {
                     if (!event.getGuild().getSelfMember().hasPermission(p))
@@ -144,6 +142,7 @@ public class CommandHandler
                         missingBotPermissions.add(p);
                     }
                 }
+
                 if (missingBotPermissions.size() > 0)
                 {
                     EmbedBuilder builder = new EmbedBuilder()
@@ -164,14 +163,12 @@ public class CommandHandler
                 command.executeCommand(event, context);
             } catch (Exception ex)
             {
-                LOGGER.error("An error occured whilst executing command", ex);
-                event.getChannel().sendMessage(CommandContext.ERROR_EMOTE + " " + LocaleLoader.ofGuild(event.getGuild()).get("general.unknown_error_occured", String.class)).queue(s ->
-                {
-                }, exception ->
-                {
-                });
+                LOGGER.error("An error occurred whilst executing command", ex);
+                event.getChannel().sendMessage(CommandContext.ERROR_EMOTE + " " + LocaleLoader.ofGuild(event.getGuild()).get("general.unknown_error_occured", String.class))
+                        .queue(s -> {}, exception -> {});
             }
         };
+
         Bean.getInstance().getExecutor().submit(r);
     }
 }
