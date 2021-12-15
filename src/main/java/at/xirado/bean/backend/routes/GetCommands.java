@@ -15,9 +15,13 @@ import java.util.List;
 
 public class GetCommands
 {
+    public static final long DEV_GUILD_ID = 815597207617142814L;
+
     public static Object handle(Request request, Response response) throws IOException
     {
-        List<SlashCommand> commands = Bean.getInstance().getSlashCommandHandler().getRegisteredCommands();
+        List<SlashCommand> commands = Bean.getInstance().isDebug()
+                ? Bean.getInstance().getSlashCommandHandler().getRegisteredGuildCommands().get(DEV_GUILD_ID)
+                : Bean.getInstance().getSlashCommandHandler().getRegisteredCommands();
         DataArray commandArray = DataArray.empty();
         for (SlashCommand command : commands)
         {
