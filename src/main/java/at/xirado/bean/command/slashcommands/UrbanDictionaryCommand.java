@@ -56,6 +56,7 @@ public class UrbanDictionaryCommand extends SlashCommand
             Response response = Bean.getInstance().getOkHttpClient()
                     .newCall(new Request.Builder().url(url).build()).execute();
             dataObject = LinkedDataObject.parse(response.body().byteStream());
+            response.close();
         } catch (Exception ex)
         {
             LOGGER.error("Could not get data from API!", ex);
