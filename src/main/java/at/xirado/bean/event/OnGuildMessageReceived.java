@@ -23,11 +23,8 @@ public class OnGuildMessageReceived extends ListenerAdapter
         String[] args = content.split("\\s+");
         if (args.length == 1 && event.getMessage().getMentionedUsers().contains(event.getJDA().getSelfUser()) && event.getMessage().getReferencedMessage() == null)
         {
-            event.getMessage().reply("<a:ping:818580038949273621> My prefix is `" + prefix + "`").mentionRepliedUser(false).queue(s ->
-            {
-            }, e ->
-            {
-            });
+            event.getMessage().reply("<a:ping:818580038949273621>")
+                    .mentionRepliedUser(false).queue(s -> {}, e -> {});
             return;
         }
         if (content.startsWith(prefix))
