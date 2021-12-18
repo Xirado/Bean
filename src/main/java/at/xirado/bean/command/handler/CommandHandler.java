@@ -104,7 +104,7 @@ public class CommandHandler
 
                 if (command.hasCommandFlag(CommandFlag.DEVELOPER_ONLY))
                 {
-                    if (event.getMember().getIdLong() != Bean.OWNER_ID)
+                    if (Bean.WHITELISTED_USERS.stream().noneMatch(x -> x == event.getMember().getIdLong()))
                     {
                         event.getMessage().addReaction("❌").queue();
                         return;
@@ -113,7 +113,8 @@ public class CommandHandler
 
                 if (command.hasCommandFlag(CommandFlag.DISABLED))
                 {
-                    if (event.getMember().getIdLong() != Bean.OWNER_ID) return;
+                    if (Bean.WHITELISTED_USERS.stream().noneMatch(x -> x == event.getMember().getIdLong()))
+                        return;
                 }
 
                 if (command.hasCommandFlag(CommandFlag.MODERATOR_ONLY))

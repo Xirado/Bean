@@ -12,9 +12,9 @@ public class OnSlashCommand extends ListenerAdapter
     @Override
     public void onSlashCommand(@NotNull SlashCommandEvent event)
     {
-        if (Bean.getInstance().isDebug() && event.getUser().getIdLong() != Bean.OWNER_ID)
+        if (Bean.getInstance().isDebug() && Bean.WHITELISTED_USERS.stream().noneMatch(x -> x == event.getUser().getIdLong()))
         {
-            event.reply(CommandContext.ERROR_EMOTE + " Bot is in debug mode! Only <@"+Bean.OWNER_ID+"> can execute commands!").setEphemeral(true).queue();
+            event.reply(CommandContext.ERROR_EMOTE + " Bot is in debug mode! Only whitelisted users can execute commands!").setEphemeral(true).queue();
             return;
         }
         Bean.getInstance().getSlashCommandHandler().handleSlashCommand(event, event.getMember());

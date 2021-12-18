@@ -35,16 +35,14 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class Bean
 {
     public static final long OWNER_ID = 184654964122058752L;
+    public static final Set<Long> WHITELISTED_USERS = Set.of(184654964122058752L, 398610798315962408L);
     public static final long START_TIME = System.currentTimeMillis() / 1000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
