@@ -83,7 +83,7 @@ public class UrbanDictionaryCommand extends SlashCommand
                 match -> "[" + match.group().replaceAll("\\[|\\]", "") + "]" + "(https://urbandictionary.com/define.php?term=" + match.group().replaceAll("\\s+", "+").replaceAll("\\[|\\]", "") + ")");
         if (description.length() > 4096)
         {
-            String replaceString = "... [" + ctx.getLocalized("general.read_more") + "](" + result.getPermalink() + ")";
+            String replaceString = "... [**" + ctx.getLocalized("general.read_more") + "**](" + result.getPermalink() + ")";
             String split = description.substring(0, 4096 - replaceString.length());
             description = split + replaceString;
         }
