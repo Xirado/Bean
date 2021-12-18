@@ -10,8 +10,14 @@ plugins {
 }
 
 mainClassName = 'at.xirado.bean.Bean'
+
 group 'at.xirado'
 version '3.0.1'
+
+shadowJar {
+    archiveFileName = "Bean.jar"
+}
+
 compileJava.options.encoding = 'UTF-8'
 repositories {
     mavenCentral()
