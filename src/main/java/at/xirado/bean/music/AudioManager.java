@@ -9,8 +9,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.sharding.ShardManager;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -68,5 +67,10 @@ public class AudioManager
     public void setLastNPMessage(long guildId, Message message)
     {
         nowPlayingMessages.put(guildId, new CachedMessage(message));
+    }
+
+    public Set<GuildAudioPlayer> getAudioPlayers()
+    {
+        return Set.copyOf(audioPlayers.values());
     }
 }
