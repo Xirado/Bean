@@ -2,15 +2,13 @@ package at.xirado.bean.misc;
 
 import at.xirado.bean.Bean;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.security.CodeSource;
@@ -222,5 +220,16 @@ public class Util
             }
             return string.regionMatches(true, 0, prefix, 0, prefix.length());
         }
+    }
+
+    public static int getListeningUsers(@Nonnull VoiceChannel channel)
+    {
+        int nonBots = 0;
+        for (Member member : channel.getMembers())
+        {
+            if (!member.getUser().isBot() && !member.getVoiceState().isDeafened())
+                nonBots++;
+        }
+        return nonBots;
     }
 }

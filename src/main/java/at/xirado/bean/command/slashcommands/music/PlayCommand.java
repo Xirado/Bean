@@ -6,6 +6,7 @@ import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.SearchEntry;
 import at.xirado.bean.data.database.SQLBuilder;
+import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.FormatUtil;
 import at.xirado.bean.misc.MusicUtil;
 import at.xirado.bean.misc.Util;
@@ -20,6 +21,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.events.interaction.ApplicationCommandAutocompleteEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -65,7 +67,14 @@ public class PlayCommand extends SlashCommand
         AudioManager manager = event.getGuild().getAudioManager();
         if (manager.getConnectedChannel() == null)
         {
-            manager.openAudioConnection(voiceState.getChannel());
+            try
+            {
+                manager.openAudioConnection(voiceState.getChannel());
+            } catch (PermissionException exception)
+            {
+                event.replyEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
+                return;
+            }
             if (voiceState.getChannel() instanceof StageChannel)
             {
                 event.getGuild().requestToSpeak();

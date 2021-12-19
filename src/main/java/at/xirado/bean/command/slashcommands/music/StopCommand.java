@@ -5,13 +5,12 @@ import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.misc.EmbedUtil;
+import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +38,7 @@ public class StopCommand extends SlashCommand
             return;
         }
         GuildAudioPlayer player = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        if (player.getPlayer().getPlayingTrack() == null || connectedUsers(audioManager.getConnectedChannel()) == 1)
+        if (player.getPlayer().getPlayingTrack() == null || Util.getListeningUsers(audioManager.getConnectedChannel()) == 1)
         {
             String name = audioManager.getConnectedChannel().getName();
             event.getGuild().getAudioManager().closeAudioConnection();
@@ -71,16 +70,5 @@ public class StopCommand extends SlashCommand
         String name = audioManager.getConnectedChannel().getName();
         event.getGuild().getAudioManager().closeAudioConnection();
         event.replyEmbeds(EmbedUtil.defaultEmbed("Disconnected from **"+name+"**!")).queue();
-    }
-
-    private int connectedUsers(@Nonnull VoiceChannel channel)
-    {
-        int nonBots = 0;
-        for (Member member : channel.getMembers())
-        {
-            if (!member.getUser().isBot())
-                nonBots++;
-        }
-        return nonBots;
     }
 }

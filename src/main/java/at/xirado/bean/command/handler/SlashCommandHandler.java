@@ -73,6 +73,7 @@ public class SlashCommandHandler
         registerCommand(new SkipCommand());
         registerCommand(new QueueCommand());
         registerCommand(new StopCommand());
+        registerCommand(new JoinCommand());
         registerCommand(new DJCommand());
         registerCommand(new PauseCommand());
         registerCommand(new ResumeCommand());
