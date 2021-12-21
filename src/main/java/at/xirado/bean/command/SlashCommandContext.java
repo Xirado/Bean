@@ -59,6 +59,16 @@ public class SlashCommandContext
         return false;
     }
 
+    public LavalinkSocket getAvailableNode()
+    {
+        for (LavalinkSocket sock : Bean.getInstance().getLavalink().getNodes())
+        {
+            if (sock.isAvailable())
+                return sock;
+        }
+        return null;
+    }
+
     public GuildData getGuildData()
     {
         return this.event.getGuild() == null ? null : GuildManager.getGuildData(this.event.getGuild());

@@ -29,6 +29,11 @@ public class Util
         return Button.link(Bean.SUPPORT_GUILD_INVITE, "Support").withEmoji(Emoji.fromEmote("Bean", 922866602628743188L, false));
     }
 
+    public static Button getDontShowThisAgainButton(String hint)
+    {
+        return Button.primary("ackHint:"+hint, "Don't show this again");
+    }
+
     public static int getAvailableLavalinkNodes()
     {
         return Bean.getInstance().getLavalink().getNodes().stream()

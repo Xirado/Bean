@@ -93,7 +93,7 @@ public class Bean
                 .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS)
                 .addEventListeners(new OnReadyEvent(), new OnSlashCommand(), new OnGuildMessageReceived(),
                         new OnGainXP(), new OnGuildMessageReactionAdd(), new OnGuildMessageReactionRemove(), new OnVoiceUpdate(),
-                        eventWaiter, new OnGuildMemberJoin(), lavalink)
+                        eventWaiter, new OnGuildMemberJoin(), lavalink, new OnAcknowledgeHint())
                 .build();
         audioManager = new AudioManager();
         authenticator = new Authenticator();
