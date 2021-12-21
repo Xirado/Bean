@@ -37,7 +37,7 @@ public class VolumeCommand extends SlashCommand
         int volume = (int) Math.max(1, Math.min(allowEarRape ? 300 : 100, option.getAsLong()));
 
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        guildAudioPlayer.getPlayer().getFilters().setVolume((float) volume / 100).commit();
+        guildAudioPlayer.getPlayer().setVolume(volume);
         ctx.sendSimpleEmbed("The volume has been adjusted to `" + volume + "%`!");
     }
 
