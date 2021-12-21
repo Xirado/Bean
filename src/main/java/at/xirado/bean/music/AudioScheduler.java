@@ -115,4 +115,10 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     {
         return guildId;
     }
+
+    public void destroy()
+    {
+        queue.clear();
+        lastTrack = null;
+    }
 }

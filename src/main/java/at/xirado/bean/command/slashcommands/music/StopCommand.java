@@ -34,7 +34,6 @@ public class StopCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
-        JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
         GuildVoiceState state = event.getGuild().getSelfMember().getVoiceState();
         if (state.getChannel() == null)
         {
@@ -45,7 +44,7 @@ public class StopCommand extends SlashCommand
         if (player.getPlayer().getPlayingTrack() == null || Util.getListeningUsers(state.getChannel()) == 1)
         {
             String name = state.getChannel().getName();
-            link.destroy();
+            player.destroy();
             event.replyEmbeds(EmbedUtil.defaultEmbed("Disconnected from **"+name+"**!")).queue();
             return;
         }
@@ -72,7 +71,7 @@ public class StopCommand extends SlashCommand
         }
 
         String name = state.getChannel().getName();
-        link.destroy();
+        player.destroy();
         event.replyEmbeds(EmbedUtil.defaultEmbed("Disconnected from **"+name+"**!")).queue();
     }
 }

@@ -1,21 +1,21 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.Bean;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import lavalink.client.io.jda.JdaLink;
 import lavalink.client.player.LavalinkPlayer;
-import net.dv8tion.jda.api.utils.MiscUtil;
 
 public class GuildAudioPlayer
 {
     private final LavalinkPlayer player;
     private final AudioScheduler scheduler;
     private final long guildId;
+    private final JdaLink link;
 
     public GuildAudioPlayer(long guildId)
     {
         this.guildId = guildId;
-        player = Bean.getInstance().getLavalink().getLink(String.valueOf(guildId)).getPlayer();
+        link = Bean.getInstance().getLavalink().getLink(String.valueOf(guildId));
+        player = link.getPlayer();
         scheduler = new AudioScheduler(player, guildId);
         player.addListener(scheduler);
     }
@@ -33,5 +33,17 @@ public class GuildAudioPlayer
     public long getGuildId()
     {
         return guildId;
+    }
+
+    public JdaLink getLink()
+    {
+        return link;
+    }
+
+    public void destroy()
+    {
+        Bean.getInstance().getAudioManager().removePlayer(this);
+        link.destroy();
+        scheduler.destroy();
     }
 }

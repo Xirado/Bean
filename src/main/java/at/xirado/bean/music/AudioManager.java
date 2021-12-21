@@ -32,4 +32,9 @@ public class AudioManager
     {
         return Set.copyOf(audioPlayers.values());
     }
+
+    public void removePlayer(GuildAudioPlayer player)
+    {
+        audioPlayers.remove(player.getGuildId());
+    }
 }

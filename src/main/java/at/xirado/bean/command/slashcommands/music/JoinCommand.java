@@ -6,6 +6,7 @@ import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.music.GuildAudioPlayer;
 import lavalink.client.io.Link;
 import lavalink.client.io.jda.JdaLavalink;
 import lavalink.client.io.jda.JdaLink;
@@ -31,7 +32,6 @@ public class JoinCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
-        JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
         Member member = event.getMember();
         GuildVoiceState voiceState = member.getVoiceState();
         if (voiceState.getChannel() == null)
@@ -54,17 +54,14 @@ public class JoinCommand extends SlashCommand
                 return;
             }
         }
+        GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         try
         {
-            link.connect(voiceState.getChannel());
+            audioPlayer.getLink().connect(voiceState.getChannel());
         } catch (PermissionException exception)
         {
             event.replyEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
             return;
-        }
-        if (voiceState.getChannel() instanceof StageChannel)
-        {
-            event.getGuild().requestToSpeak();
         }
         event.replyEmbeds(EmbedUtil.successEmbed("Joined <#"+voiceState.getChannel().getIdLong()+">!")).queue();
     }

@@ -7,6 +7,7 @@ import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -28,6 +29,10 @@ public class OnVoiceUpdate extends ListenerAdapter
     public static final long TIME_UNTIL_AUTO_DISCONNECT = TimeUnit.MINUTES.toSeconds(1);
 
 
+    /**
+     * For when the bot joins a channel
+     * @param event
+     */
     @Override
     public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event)
     {
@@ -54,14 +59,16 @@ public class OnVoiceUpdate extends ListenerAdapter
         }
     }
 
+    /**
+     * For when the bot leaves a channel
+     * @param event
+     */
     @Override
     public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event)
     {
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        LavalinkPlayer player = audioPlayer.getPlayer();
-        AudioScheduler scheduler = audioPlayer.getScheduler();
         if (event.getChannelLeft() instanceof StageChannel stageChannel)
         {
             if (stageChannel.getStageInstance() != null)
@@ -72,12 +79,13 @@ public class OnVoiceUpdate extends ListenerAdapter
                 }
             }
         }
-        scheduler.getQueue().clear();
-        if (player.getPlayingTrack() != null)
-            player.stopTrack();
-        player.setPaused(false);
+        audioPlayer.destroy();
     }
 
+    /**
+     * For when the bot gets moved to another channel
+     * @param event
+     */
     @Override
     public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event)
     {
@@ -87,15 +95,9 @@ public class OnVoiceUpdate extends ListenerAdapter
         LavalinkPlayer player = audioPlayer.getPlayer();
         player.setPaused(false);
         if (event.getChannelLeft() instanceof StageChannel stageChannel)
-        {
             if (stageChannel.getStageInstance() != null)
-            {
                 if (stageChannel.getStageInstance().getTopic().startsWith("Playing "))
-                {
                     stageChannel.getStageInstance().delete().queue();
-                }
-            }
-        }
         if (event.getChannelJoined() instanceof StageChannel channel)
         {
             event.getGuild().requestToSpeak();
@@ -104,7 +106,7 @@ public class OnVoiceUpdate extends ListenerAdapter
         }
         if (event.getChannelJoined().getMembers().size() == 1)
         {
-            AudioManager manager = event.getGuild().getAudioManager();
+            GuildVoiceState voiceState = event.getGuild().getSelfMember().getVoiceState();
             final long channelId = event.getChannelJoined().getIdLong();
             if (player.getPlayingTrack() != null)
                 player.setPaused(true);
@@ -118,27 +120,24 @@ public class OnVoiceUpdate extends ListenerAdapter
                             return false;
                         return !e.getMember().equals(e.getGuild().getSelfMember());
                     },
-                    e ->
-                    {
-                        player.setPaused(false);
-                    },
+                    e -> player.setPaused(false),
                     TIME_UNTIL_AUTO_DISCONNECT,
                     TimeUnit.SECONDS,
                     () ->
                     {
-                        if (manager.isConnected() && manager.getConnectedChannel().getMembers().size() > 1)
-                        {
+                        if (voiceState.getChannel() != null && voiceState.getChannel().getMembers().size() > 1)
                             return;
-                        }
-                        if (manager.isConnected() && manager.getConnectedChannel().getIdLong() == channelId)
-                        {
-                            manager.closeAudioConnection();
-                        }
+                        if (voiceState.getChannel() != null && voiceState.getChannel().getIdLong() == channelId)
+                            audioPlayer.destroy();
                     }
             );
         }
     }
 
+    /**
+     * For when a member gets moved or leaves a channel
+     * @param event
+     */
     @Override
     public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event)
     {
@@ -146,17 +145,21 @@ public class OnVoiceUpdate extends ListenerAdapter
             return;
         if (event.getMember().equals(event.getGuild().getSelfMember()))
             return;
-        if (event.getGuild().getAudioManager().isConnected())
+        GuildVoiceState state = event.getGuild().getSelfMember().getVoiceState();
+        if (state.getChannel() != null)
         {
-            AudioManager manager = event.getGuild().getAudioManager();
-            if (manager.getConnectedChannel().equals(event.getChannelLeft()))
+            if (state.getChannel().equals(event.getChannelLeft()))
             {
-                if (event.getChannelLeft().getMembers().size() == 1 && event.getChannelLeft().getMembers().get(0).equals(event.getGuild().getSelfMember()))
+                if (event.getChannelLeft().getMembers().size() == 1)
                 {
                     GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
                     LavalinkPlayer player = audioPlayer.getPlayer();
-                    if (player.getPlayingTrack() != null)
+                    if (player.getPlayingTrack() != null) {
                         player.setPaused(true);
+                    } else {
+                        audioPlayer.destroy();
+                        return;
+                    }
                     final long channelId = event.getChannelLeft().getIdLong();
                     Bean.getInstance().getEventWaiter().waitForEvent(
                             GenericGuildVoiceUpdateEvent.class,
@@ -176,13 +179,11 @@ public class OnVoiceUpdate extends ListenerAdapter
                             TimeUnit.SECONDS,
                             () ->
                             {
-                                if (manager.isConnected() && manager.getConnectedChannel().getMembers().size() > 1)
-                                {
+                                if (state.getChannel() != null && state.getChannel().getMembers().size() > 1)
                                     return;
-                                }
-                                if (manager.isConnected() && manager.getConnectedChannel().getIdLong() == channelId)
+                                if (state.getChannel() != null && state.getChannel().getIdLong() == channelId)
                                 {
-                                    manager.closeAudioConnection();
+                                    audioPlayer.destroy();
                                 }
                             }
                     );
