@@ -57,6 +57,10 @@ public class PlayCommand extends SlashCommand
     {
         setCommandData(new CommandData("play", "Plays a track from YouTube or SoundCloud.")
                 .addOptions(new OptionData(OptionType.STRING, "query", "Youtube search term or a URL that is supported.", true).setAutoComplete(true))
+                .addOptions(new OptionData(OptionType.STRING, "provider", "Provider to search in. (Ignore if you put a direct link)", false)
+                        .addChoice("Youtube (Default)", "ytsearch:")
+                        .addChoice("Soundcloud", "scsearch:")
+                )
         );
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
     }
@@ -87,7 +91,16 @@ public class PlayCommand extends SlashCommand
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         String query = event.getOption("query").getAsString();
         boolean isDirectUrl = query.startsWith("http://") || query.startsWith("https://");
-        query = isDirectUrl ? query : "ytsearch:" + query;
+        if (!isDirectUrl)
+        {
+            String provider;
+            OptionMapping providerOption = event.getOption("provider");
+            if (providerOption == null)
+                provider = "ytsearch:";
+            else
+                provider = providerOption.getAsString();
+            query = provider+query;
+        }
         link.getRestClient().loadItem(query, new AudioLoadResultHandler()
         {
             @Override
