@@ -117,7 +117,8 @@ public class PlayCommand extends SlashCommand
             {
                 track.setUserData(new TrackInfo(userId));
                 event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, track)).queue();
-                if (!Hints.hasAcknowledged(userId, "bookmark"))
+                boolean isBookmarked = BookmarkCommand.getBookmark(event.getUser().getIdLong(), rawQuery) != null;
+                if (!Hints.hasAcknowledged(userId, "bookmark") && !isBookmarked)
                 {
                     event.getHook().sendMessageEmbeds(BOOKMARK_HINT_EMBED)
                             .setEphemeral(true)
@@ -127,7 +128,7 @@ public class PlayCommand extends SlashCommand
                 }
                 guildAudioPlayer.getScheduler().queue(track);
                 SearchEntry entry = new SearchEntry(track.getInfo().title, rawQuery, false);
-                if (!isDuplicate(member.getIdLong(), entry.getName()) && BookmarkCommand.getBookmark(event.getUser().getIdLong(), rawQuery) == null)
+                if (!isDuplicate(member.getIdLong(), entry.getName()) && !isBookmarked)
                         addSearchEntry(member.getIdLong(), entry);
             }
 
@@ -145,13 +146,14 @@ public class PlayCommand extends SlashCommand
                         addSearchEntry(member.getIdLong(), entry);
                     return;
                 }
+                boolean isBookmarked = BookmarkCommand.getBookmark(event.getUser().getIdLong(), rawQuery) != null;
                 String amount = "Added **" + playlist.getTracks().size() + "** tracks to the queue! (**" + FormatUtil.formatTime(playlist.getTracks().stream().map(AudioTrack::getDuration).reduce(0L, Long::sum)) + "**)";
                 if (guildAudioPlayer.getPlayer().getPlayingTrack() == null)
                 {
                     amount += "\n**Now playing** " + Util.titleMarkdown(playlist.getTracks().get(0));
                 }
                 event.getHook().sendMessageEmbeds(ctx.getSimpleEmbed(amount)).queue();
-                if (!Hints.hasAcknowledged(userId, "bookmark"))
+                if (!Hints.hasAcknowledged(userId, "bookmark") && !isBookmarked)
                 {
                     event.getHook().sendMessageEmbeds(BOOKMARK_HINT_EMBED)
                             .setEphemeral(true)
@@ -165,7 +167,7 @@ public class PlayCommand extends SlashCommand
                     guildAudioPlayer.getScheduler().queue(track);
                 });
                 SearchEntry entry = new SearchEntry(playlist.getName(), event.getOption("query").getAsString(), true);
-                if (!isDuplicate(member.getIdLong(), entry.getName()) && BookmarkCommand.getBookmark(event.getUser().getIdLong(), rawQuery) == null)
+                if (!isDuplicate(member.getIdLong(), entry.getName()) && !isBookmarked)
                     addSearchEntry(member.getIdLong(), entry);
             }
 
