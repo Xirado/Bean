@@ -91,7 +91,6 @@ public class SlashCommandHandler
         //registerCommand(new BlackJackCommand());
         registerCommand(new TestCommand());
         registerCommand(new SlapCommand());
-
     }
 
     public void updateCommands(Consumer<List<Command>> success, Consumer<Throwable> failure)
@@ -274,7 +273,7 @@ public class SlashCommandHandler
                         GuildVoiceState guildVoiceState = member.getVoiceState();
                         if (guildVoiceState == null || !guildVoiceState.inVoiceChannel())
                         {
-                            event.replyEmbeds(EmbedUtil.errorEmbed("You are not connected to a VoiceChannel!")).queue();
+                            event.replyEmbeds(EmbedUtil.errorEmbed("You are not connected to a voice-channel!")).queue();
                             return;
                         }
                     }
@@ -287,7 +286,7 @@ public class SlashCommandHandler
                         {
                             if (!manager.getConnectedChannel().equals(voiceState.getChannel()))
                             {
-                                event.replyEmbeds(EmbedUtil.errorEmbed("I am already playing music in " + manager.getConnectedChannel().getAsMention() + "!")).setEphemeral(true).queue();
+                                event.replyEmbeds(EmbedUtil.errorEmbed("You must be listening in " + manager.getConnectedChannel().getAsMention() + "to do this!")).setEphemeral(true).queue();
                                 return;
                             }
                         }

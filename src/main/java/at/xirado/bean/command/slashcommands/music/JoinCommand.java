@@ -1,10 +1,14 @@
 package at.xirado.bean.command.slashcommands.music;
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
+import lavalink.client.io.Link;
+import lavalink.client.io.jda.JdaLavalink;
+import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.StageChannel;
@@ -27,6 +31,7 @@ public class JoinCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
+        JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
         Member member = event.getMember();
         GuildVoiceState voiceState = member.getVoiceState();
         if (voiceState.getChannel() == null)
@@ -34,10 +39,10 @@ public class JoinCommand extends SlashCommand
             event.replyEmbeds(EmbedUtil.errorEmbed("You must be listening in a voice channel to run this command!")).queue();
             return;
         }
-        AudioManager manager = event.getGuild().getAudioManager();
-        if (manager.getConnectedChannel() != null)
+        GuildVoiceState state = event.getGuild().getSelfMember().getVoiceState();
+        if (state.getChannel() != null)
         {
-            VoiceChannel channel = manager.getConnectedChannel();
+            VoiceChannel channel = state.getChannel();
             if (voiceState.getChannel().getIdLong() == channel.getIdLong())
             {
                 event.replyEmbeds(EmbedUtil.errorEmbed("I already joined this channel!")).queue();
@@ -51,7 +56,7 @@ public class JoinCommand extends SlashCommand
         }
         try
         {
-            manager.openAudioConnection(voiceState.getChannel());
+            link.connect(voiceState.getChannel());
         } catch (PermissionException exception)
         {
             event.replyEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();

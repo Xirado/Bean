@@ -16,6 +16,10 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import lavalink.client.io.jda.JdaLink;
+import lavalink.client.player.LavalinkPlayer;
+import lavalink.client.player.event.IPlayerEventListener;
+import lavalink.client.player.event.PlayerEvent;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.StageChannel;
@@ -55,12 +59,12 @@ public class PlayCommand extends SlashCommand
                 .addOptions(new OptionData(OptionType.STRING, "query", "Youtube search term or a URL that is supported.", true).setAutoComplete(true))
         );
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
-
     }
 
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
+        JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
         event.deferReply().queue();
         Member member = event.getMember();
         GuildVoiceState voiceState = member.getVoiceState();
@@ -69,7 +73,7 @@ public class PlayCommand extends SlashCommand
         {
             try
             {
-                manager.openAudioConnection(voiceState.getChannel());
+                link.connect(voiceState.getChannel());
             } catch (PermissionException exception)
             {
                 event.replyEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
@@ -81,19 +85,17 @@ public class PlayCommand extends SlashCommand
             }
         }
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        if (manager.getSendingHandler() == null)
-            manager.setSendingHandler(guildAudioPlayer.getSendHandler());
         String query = event.getOption("query").getAsString();
         boolean isDirectUrl = query.startsWith("http://") || query.startsWith("https://");
         query = isDirectUrl ? query : "ytsearch:" + query;
-        Bean.getInstance().getAudioManager().getPlayerManager().loadItemOrdered(guildAudioPlayer, query, new AudioLoadResultHandler()
+        link.getRestClient().loadItem(query, new AudioLoadResultHandler()
         {
             @Override
             public void trackLoaded(AudioTrack track)
             {
                 track.setUserData(new TrackInfo(event.getUser().getIdLong()));
                 event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, track)).queue();
-                Bean.getInstance().getExecutor().schedule(() -> guildAudioPlayer.getScheduler().queue(track), 1, TimeUnit.SECONDS);
+                guildAudioPlayer.getScheduler().queue(track);
                 SearchEntry entry = new SearchEntry(track.getInfo().title, event.getOption("query").getAsString(), false);
                 if (!isDuplicate(member.getIdLong(), entry.getName()))
                     addSearchEntry(member.getIdLong(), entry);
@@ -107,7 +109,7 @@ public class PlayCommand extends SlashCommand
                     AudioTrack single = (playlist.getSelectedTrack() == null) ? playlist.getTracks().get(0) : playlist.getSelectedTrack();
                     single.setUserData(new TrackInfo(event.getUser().getIdLong()));
                     event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, single)).queue();
-                    Bean.getInstance().getExecutor().schedule(() -> guildAudioPlayer.getScheduler().queue(single), 1, TimeUnit.SECONDS);
+                    guildAudioPlayer.getScheduler().queue(single);
                     SearchEntry entry = new SearchEntry(event.getOption("query").getAsString(), event.getOption("query").getAsString(), false);
                     if (!isDuplicate(member.getIdLong(), entry.getName()))
                         addSearchEntry(member.getIdLong(), entry);
@@ -119,13 +121,11 @@ public class PlayCommand extends SlashCommand
                     amount += "\n**Now playing** " + Util.titleMarkdown(playlist.getTracks().get(0));
                 }
                 event.getHook().sendMessageEmbeds(ctx.getSimpleEmbed(amount)).queue();
-                Bean.getInstance().getExecutor().schedule(() -> {
-                    playlist.getTracks().forEach(track ->
-                    {
-                        track.setUserData(new TrackInfo(event.getUser().getIdLong()));
-                        guildAudioPlayer.getScheduler().queue(track);
-                    });
-                }, 1, TimeUnit.SECONDS);
+                playlist.getTracks().forEach(track ->
+                {
+                    track.setUserData(new TrackInfo(event.getUser().getIdLong()));
+                    guildAudioPlayer.getScheduler().queue(track);
+                });
                 SearchEntry entry = new SearchEntry(playlist.getName(), event.getOption("query").getAsString(), true);
                 if (!isDuplicate(member.getIdLong(), entry.getName()))
                     addSearchEntry(member.getIdLong(), entry);
@@ -134,13 +134,13 @@ public class PlayCommand extends SlashCommand
             @Override
             public void noMatches()
             {
-                event.getHook().sendMessageEmbeds(ctx.getSimpleEmbed("Sorry, i couldn't find anything!")).queue();
+                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Sorry, i couldn't find anything matching your search!")).queue();
             }
 
             @Override
             public void loadFailed(FriendlyException exception)
             {
-                event.getHook().sendMessageEmbeds(ctx.getSimpleEmbed("An error occurred while loading track!\n`" + exception.getMessage() + "`")).queue();
+                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred while loading track!\n`" + exception.getMessage() + "`")).queue();
             }
         });
     }
@@ -173,6 +173,7 @@ public class PlayCommand extends SlashCommand
                 if (!hasSearchEntries(event.getMember().getIdLong()))
                 {
                     event.deferChoices(Collections.singletonList(new Command.Choice(query.getAsString(), query.getAsString()))).queue();
+                    response.close();
                     return;
                 }
                 List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), true);
@@ -183,6 +184,7 @@ public class PlayCommand extends SlashCommand
                         .limit(25)
                         .forEachOrdered(entry -> choices.add(entry.toCommandAutocompleteChoice()));
                 event.deferChoices(choices).queue();
+                response.close();
                 return;
             }
             Set<Command.Choice> choices = new LinkedHashSet<>();
@@ -209,6 +211,7 @@ public class PlayCommand extends SlashCommand
             if (choices.size() == 0)
                 choices.add(new Command.Choice(query.getAsString(), query.getAsString()));
             event.deferChoices(choices).queue();
+            response.close();
         }
     }
 

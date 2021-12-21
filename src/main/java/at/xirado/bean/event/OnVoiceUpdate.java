@@ -5,6 +5,7 @@ import at.xirado.bean.misc.MusicUtil;
 import at.xirado.bean.music.AudioScheduler;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.events.guild.voice.*;
@@ -59,7 +60,7 @@ public class OnVoiceUpdate extends ListenerAdapter
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        AudioPlayer player = audioPlayer.getPlayer();
+        LavalinkPlayer player = audioPlayer.getPlayer();
         AudioScheduler scheduler = audioPlayer.getScheduler();
         if (event.getChannelLeft() instanceof StageChannel stageChannel)
         {
@@ -75,7 +76,6 @@ public class OnVoiceUpdate extends ListenerAdapter
         if (player.getPlayingTrack() != null)
             player.stopTrack();
         player.setPaused(false);
-        audioPlayer.destroy();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class OnVoiceUpdate extends ListenerAdapter
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        AudioPlayer player = audioPlayer.getPlayer();
+        LavalinkPlayer player = audioPlayer.getPlayer();
         player.setPaused(false);
         if (event.getChannelLeft() instanceof StageChannel stageChannel)
         {
@@ -154,7 +154,7 @@ public class OnVoiceUpdate extends ListenerAdapter
                 if (event.getChannelLeft().getMembers().size() == 1 && event.getChannelLeft().getMembers().get(0).equals(event.getGuild().getSelfMember()))
                 {
                     GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-                    AudioPlayer player = audioPlayer.getPlayer();
+                    LavalinkPlayer player = audioPlayer.getPlayer();
                     if (player.getPlayingTrack() != null)
                         player.setPaused(true);
                     final long channelId = event.getChannelLeft().getIdLong();

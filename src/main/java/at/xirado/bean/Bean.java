@@ -15,6 +15,9 @@ import at.xirado.bean.music.AudioManager;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
+import lavalink.client.io.Lavalink;
+import lavalink.client.io.jda.JdaLavalink;
+import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -24,6 +27,7 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.internal.requests.restaction.InviteActionImpl;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +65,7 @@ public class Bean
     private final OkHttpClient okHttpClient;
     private final WebServer webServer;
     private final Authenticator authenticator;
+    private final JdaLavalink lavalink;
 
     public Bean() throws Exception
     {
@@ -76,22 +81,26 @@ public class Bean
         Class.forName("at.xirado.bean.translation.LocaleLoader");
         okHttpClient = new OkHttpClient.Builder()
                 .build();
+        lavalink = new JdaLavalink(
+                null,
+                1,
+                null
+        );
         shardManager = DefaultShardManagerBuilder.create(config.getString("token"), getIntents())
                 .setShardsTotal(-1)
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
                 .setActivity(Activity.watching("bean.bz"))
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setBulkDeleteSplittingEnabled(false)
+                .setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor())
                 .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS)
-                .setAudioSendFactory(new NativeAudioSendFactory())
                 .addEventListeners(new OnReadyEvent(), new OnSlashCommand(), new OnGuildMessageReceived(),
                         new OnGainXP(), new OnGuildMessageReactionAdd(), new OnGuildMessageReactionRemove(), new OnVoiceUpdate(),
-                        eventWaiter, new OnGuildMemberJoin())
+                        eventWaiter, new OnGuildMemberJoin(), lavalink)
                 .build();
-        audioManager = new AudioManager(shardManager);
+        audioManager = new AudioManager();
         authenticator = new Authenticator();
         webServer = new WebServer(8887);
-
     }
 
     public static Bean getInstance()
@@ -260,6 +269,10 @@ public class Bean
         return webServer;
     }
 
+    public JdaLavalink getLavalink()
+    {
+        return lavalink;
+    }
 
     public void initCommandCheck()
     {

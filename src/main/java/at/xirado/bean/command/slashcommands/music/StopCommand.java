@@ -9,6 +9,9 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import lavalink.client.io.Link;
+import lavalink.client.io.jda.JdaLink;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -31,17 +34,18 @@ public class StopCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
-        AudioManager audioManager = event.getGuild().getAudioManager();
-        if (!audioManager.isConnected())
+        JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
+        GuildVoiceState state = event.getGuild().getSelfMember().getVoiceState();
+        if (state.getChannel() == null)
         {
             event.replyEmbeds(EmbedUtil.warningEmbed("I am not connected to a voice channel!")).queue();
             return;
         }
         GuildAudioPlayer player = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        if (player.getPlayer().getPlayingTrack() == null || Util.getListeningUsers(audioManager.getConnectedChannel()) == 1)
+        if (player.getPlayer().getPlayingTrack() == null || Util.getListeningUsers(state.getChannel()) == 1)
         {
-            String name = audioManager.getConnectedChannel().getName();
-            event.getGuild().getAudioManager().closeAudioConnection();
+            String name = state.getChannel().getName();
+            link.destroy();
             event.replyEmbeds(EmbedUtil.defaultEmbed("Disconnected from **"+name+"**!")).queue();
             return;
         }
@@ -67,8 +71,8 @@ public class StopCommand extends SlashCommand
             }
         }
 
-        String name = audioManager.getConnectedChannel().getName();
-        event.getGuild().getAudioManager().closeAudioConnection();
+        String name = state.getChannel().getName();
+        link.destroy();
         event.replyEmbeds(EmbedUtil.defaultEmbed("Disconnected from **"+name+"**!")).queue();
     }
 }

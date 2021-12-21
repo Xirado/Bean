@@ -29,11 +29,6 @@ public class SkipToCommand extends SlashCommand
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         long index = event.getOption("index").getAsLong();
-        if (index > Integer.MAX_VALUE)
-        {
-            ctx.sendSimpleEmbed("This is not a valid integer!");
-            return;
-        }
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         if (guildAudioPlayer.getPlayer().getPlayingTrack() == null)
         {
