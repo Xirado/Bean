@@ -22,7 +22,7 @@ public class VolumeCommand extends SlashCommand
         setCommandData(new CommandData("volume", "Changes the volume of the player.")
                 .addOption(OptionType.INTEGER, "volume", "Volume in percent.", true)
         );
-        addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.DJ_ONLY);
+        addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.DJ_ONLY, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
 
     @Override

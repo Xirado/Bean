@@ -26,7 +26,7 @@ public class JoinCommand extends SlashCommand
     public JoinCommand()
     {
         setCommandData(new CommandData("join", "Makes the bot join your current channel."));
-        addCommandFlags(CommandFlag.MUST_BE_IN_VC);
+        addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
 
     @Override

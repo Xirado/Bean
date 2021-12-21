@@ -10,6 +10,6 @@ public enum CommandFlag
     MODERATOR_ONLY(),
     MUST_BE_IN_VC(),
     DJ_ONLY(),
-    MUST_BE_IN_SAME_VC()
-
+    MUST_BE_IN_SAME_VC(),
+    REQUIRES_LAVALINK_NODE()
 }

@@ -43,6 +43,7 @@ public class Bean
 {
     public static final long OWNER_ID = 184654964122058752L;
     public static final Set<Long> WHITELISTED_USERS = Set.of(184654964122058752L, 398610798315962408L);
+    public static final String SUPPORT_GUILD_INVITE = "https://discord.com/invite/7WEjttJtKa";
     public static final long START_TIME = System.currentTimeMillis() / 1000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);

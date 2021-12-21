@@ -22,7 +22,7 @@ public class SkipToCommand extends SlashCommand
         setCommandData(new CommandData("skipto", "Skips to a specified track in the queue.")
                 .addOption(OptionType.INTEGER, "index", "Index to skip to.", true)
         );
-        addCommandFlags(CommandFlag.DJ_ONLY, CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
+        addCommandFlags(CommandFlag.DJ_ONLY, CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
 
     @Override

@@ -28,7 +28,7 @@ public class StopCommand extends SlashCommand
     public StopCommand()
     {
         setCommandData(new CommandData("stop", "Disconnects the bot and clears the queue."));
-        addCommandFlags(CommandFlag.MUST_BE_IN_SAME_VC, CommandFlag.MUST_BE_IN_VC);
+        addCommandFlags(CommandFlag.MUST_BE_IN_SAME_VC, CommandFlag.MUST_BE_IN_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
 
     @Override

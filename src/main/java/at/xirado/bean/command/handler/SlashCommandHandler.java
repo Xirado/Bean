@@ -10,6 +10,7 @@ import at.xirado.bean.command.slashcommands.moderation.*;
 import at.xirado.bean.command.slashcommands.music.*;
 import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.misc.EmbedUtil;
+import at.xirado.bean.misc.Util;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -289,6 +290,17 @@ public class SlashCommandHandler
                                 event.replyEmbeds(EmbedUtil.errorEmbed("You must be listening in " + manager.getConnectedChannel().getAsMention() + "to do this!")).setEphemeral(true).queue();
                                 return;
                             }
+                        }
+                    }
+
+                    if (command.getCommandFlags().contains(CommandFlag.REQUIRES_LAVALINK_NODE))
+                    {
+                        if (!ctx.isLavalinkNodeAvailable())
+                        {
+                            event.replyEmbeds(EmbedUtil.errorEmbed("There are currently no voice nodes available!\nIf the issue persists, please leave a message on our support server!"))
+                                    .addActionRow(Util.getSupportButton())
+                                    .queue();
+                            return;
                         }
                     }
                     command.executeCommand(event, member, ctx);

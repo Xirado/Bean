@@ -3,6 +3,8 @@ package at.xirado.bean.misc;
 import at.xirado.bean.Bean;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,18 @@ public class Util
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
+
+    public static Button getSupportButton()
+    {
+        return Button.link(Bean.SUPPORT_GUILD_INVITE, "Support").withEmoji(Emoji.fromEmote("Bean", 922866602628743188L, false));
+    }
+
+    public static int getAvailableLavalinkNodes()
+    {
+        return Bean.getInstance().getLavalink().getNodes().stream()
+                .mapToInt(x -> x.isAvailable() ? 1 : 0)
+                .sum();
+    }
 
     /**
      * Auto closes AutoClosables

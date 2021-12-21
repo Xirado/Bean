@@ -1,10 +1,12 @@
 package at.xirado.bean.command;
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.translation.LocaleLoader;
+import lavalink.client.io.LavalinkSocket;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -44,8 +46,17 @@ public class SlashCommandContext
         {
             language = "en_US";
         }
+    }
 
-
+    public boolean isLavalinkNodeAvailable()
+    {
+        boolean available = false;
+        for (LavalinkSocket sock : Bean.getInstance().getLavalink().getNodes())
+        {
+            if (sock.isAvailable())
+                return true;
+        }
+        return false;
     }
 
     public GuildData getGuildData()

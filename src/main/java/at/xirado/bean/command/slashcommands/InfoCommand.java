@@ -5,6 +5,7 @@ import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.command.terminal.Info;
 import at.xirado.bean.misc.EmbedUtil;
+import at.xirado.bean.misc.Util;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDAInfo;
@@ -35,7 +36,7 @@ public class InfoCommand extends SlashCommand
                     .addField("Uptime", ctx.parseDuration(currentTime - Bean.START_TIME, " "), true)
                     .addField("Memory", "**"+Info.convertBytes(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())+"** / " +
                             "**"+Info.convertBytes(Runtime.getRuntime().maxMemory())+"**", true)
-                    .addField("Connected Lavalink Nodes", "**"+Bean.getInstance().getLavalink().getNodes().size()+"**", true)
+                    .addField("Available Lavalink Nodes", "**"+ Util.getAvailableLavalinkNodes()+"**", true)
                     .addField("Ping", "Gateway Ping: "+event.getJDA().getGatewayPing()+"ms\nREST Ping: "+restPing+"ms", true)
                     .addField("Compilation Date", "<t:"+(Bean.getBuildTime()/1000)+">", true)
                     .setFooter("Bean "+Bean.getBeanVersion());
