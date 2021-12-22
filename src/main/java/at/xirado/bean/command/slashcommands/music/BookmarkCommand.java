@@ -1,23 +1,29 @@
 package at.xirado.bean.command.slashcommands.music;
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.Bookmark;
 import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.EmbedUtil;
+import at.xirado.bean.misc.objects.TrackInfo;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.io.LavalinkSocket;
+import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.ApplicationCommandAutocompleteEvent;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.components.Button;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -29,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class BookmarkCommand extends SlashCommand
@@ -38,14 +45,21 @@ public class BookmarkCommand extends SlashCommand
     public BookmarkCommand()
     {
         setCommandData(new CommandData("bookmark", "Bookmark a song or playlist from Youtube or Soundcloud")
-                .addSubcommands(new SubcommandData("create", "Creates a bookmark")
+                .addSubcommands(new SubcommandData("add", "Adds a bookmark")
                         .addOptions(new OptionData(OptionType.STRING, "url", "URL to bookmark (must be a valid url that can be played)", true))
                 )
                 .addSubcommands(new SubcommandData("remove", "Removes a bookmark")
                         .addOptions(new OptionData(OptionType.STRING, "bookmark", "Bookmark to remove").setRequired(true).setAutoComplete(true))
                 )
+                .addSubcommands(new SubcommandData("add_current", "Bookmarks the currently playing track (or playlist)"))
         );
     }
+
+
+    private static final MessageEmbed SINGLE_OR_PLAYLIST_EMBED =
+            EmbedUtil.defaultEmbedBuilder("Do you want to bookmark the whole playlist, or just this single track?")
+                    .setFooter("(You have 30 seconds to decide)")
+                    .build();
 
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
@@ -109,6 +123,83 @@ public class BookmarkCommand extends SlashCommand
                 }
                 deleteBookmark(userId, bookmark);
                 event.replyEmbeds(EmbedUtil.defaultEmbed("Removed bookmark **"+bookmark.getName()+"**!")).queue();
+            }
+
+            case "add_current" -> {
+                JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
+                AudioTrack currentTrack = link.getPlayer().getPlayingTrack();
+                if (currentTrack == null)
+                {
+                    event.replyEmbeds(EmbedUtil.errorEmbed("There is nothing playing!")).queue();
+                    return;
+                }
+                TrackInfo currentTrackInfo = currentTrack.getUserData(TrackInfo.class);
+                if (!currentTrackInfo.isFromPlaylist())
+                {
+                    if (getBookmark(userId, currentTrackInfo.getTrackUrl()) != null)
+                    {
+                        event.replyEmbeds(EmbedUtil.errorEmbed("You already have this track bookmarked!")).queue();
+                        return;
+                    }
+                    Bookmark entry = new Bookmark(currentTrack.getInfo().title, currentTrackInfo.getTrackUrl(), false);
+                    addBookmark(userId, entry);
+                    event.replyEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **"+currentTrack.getInfo().title+"**")).queue();
+                    return;
+                }
+                String trackUrl = currentTrackInfo.getTrackUrl();
+                String playlistUrl = currentTrackInfo.getPlaylistUrl();
+                String name = currentTrack.getInfo().title;
+                String playlistName = currentTrackInfo.getPlaylistName();
+                String interactionId = event.getInteraction().getId();
+                Button singleTrack = Button.primary(interactionId+":single", "Single Track");
+                Button wholePlaylist = Button.primary(interactionId+":playlist", "Playlist");
+                event.replyEmbeds(SINGLE_OR_PLAYLIST_EMBED)
+                        .addActionRow(singleTrack, wholePlaylist)
+                        .setEphemeral(true)
+                        .queue((hook) -> Bean.getInstance().getEventWaiter().waitForEvent(
+                                ButtonClickEvent.class,
+                                (e) -> {
+                                    if (!e.getComponentId().startsWith(interactionId))
+                                        return false;
+                                    return e.getComponentId().contains(":");
+                                },
+                                (e) -> {
+                                    int colonIndex = e.getComponentId().indexOf(":");
+                                    String mode = e.getComponentId().substring(colonIndex+1);
+                                    switch(mode)
+                                    {
+                                        case "single" -> {
+                                            if (getBookmark(userId, trackUrl) != null)
+                                            {
+                                                e.editMessageEmbeds(EmbedUtil.errorEmbed("You already have this track bookmarked!"))
+                                                        .setActionRows(Collections.emptyList())
+                                                        .queue();
+                                                return;
+                                            }
+                                            Bookmark entry = new Bookmark(name, trackUrl, false);
+                                            addBookmark(userId, entry);
+                                            e.editMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **"+name+"**"))
+                                                    .setActionRows(Collections.emptyList())
+                                                    .queue();
+                                        }
+                                        case "playlist" -> {
+                                            if (getBookmark(userId, playlistUrl) != null)
+                                            {
+                                                e.editMessageEmbeds(EmbedUtil.errorEmbed("You already have this playlist bookmarked!"))
+                                                        .setActionRows(Collections.emptyList())
+                                                        .queue();
+                                                return;
+                                            }
+                                            Bookmark entry = new Bookmark(playlistName, playlistUrl, true);
+                                            addBookmark(userId, entry);
+                                            e.editMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **"+playlistName+"**"))
+                                                    .setActionRows(Collections.emptyList())
+                                                    .queue();
+                                        }
+                                    }
+                                },
+                                30, TimeUnit.SECONDS, () -> {}
+                        ));
             }
         }
     }

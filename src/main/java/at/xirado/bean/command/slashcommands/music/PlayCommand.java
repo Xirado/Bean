@@ -115,9 +115,11 @@ public class PlayCommand extends SlashCommand
             @Override
             public void trackLoaded(AudioTrack track)
             {
-                track.setUserData(new TrackInfo(userId));
+                TrackInfo trackInfo = new TrackInfo(userId)
+                        .setTrackUrl(track.getInfo().uri);
+                track.setUserData(trackInfo);
                 event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, track)).queue();
-                boolean isBookmarked = BookmarkCommand.getBookmark(event.getUser().getIdLong(), rawQuery) != null;
+                boolean isBookmarked = BookmarkCommand.getBookmark(event.getUser().getIdLong(), track.getInfo().uri) != null;
                 if (!Hints.hasAcknowledged(userId, "bookmark") && !isBookmarked)
                 {
                     event.getHook().sendMessageEmbeds(BOOKMARK_HINT_EMBED)
@@ -135,10 +137,12 @@ public class PlayCommand extends SlashCommand
             @Override
             public void playlistLoaded(AudioPlaylist playlist)
             {
-                if (playlist.getTracks().size() == 1 || playlist.isSearchResult())
+                if (playlist.isSearchResult())
                 {
                     AudioTrack single = (playlist.getSelectedTrack() == null) ? playlist.getTracks().get(0) : playlist.getSelectedTrack();
-                    single.setUserData(new TrackInfo(event.getUser().getIdLong()));
+                    TrackInfo trackInfo = new TrackInfo(userId)
+                            .setTrackUrl(single.getInfo().uri);
+                    single.setUserData(trackInfo);
                     event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, single)).queue();
                     guildAudioPlayer.getScheduler().queue(single);
                     SearchEntry entry = new SearchEntry(event.getOption("query").getAsString(), event.getOption("query").getAsString(), false);
@@ -163,7 +167,11 @@ public class PlayCommand extends SlashCommand
                 }
                 playlist.getTracks().forEach(track ->
                 {
-                    track.setUserData(new TrackInfo(event.getUser().getIdLong()));
+                    TrackInfo trackInfo = new TrackInfo(userId)
+                            .setTrackUrl(track.getInfo().uri)
+                            .setPlaylistName(playlist.getName())
+                            .setPlaylistUrl(rawQuery);
+                    track.setUserData(trackInfo);
                     guildAudioPlayer.getScheduler().queue(track);
                 });
                 SearchEntry entry = new SearchEntry(playlist.getName(), event.getOption("query").getAsString(), true);
@@ -205,7 +213,9 @@ public class PlayCommand extends SlashCommand
                     return;
                 }
                 List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), false);
+                List<String> valueList = result.stream().map(IAutocompleteChoice::getValue).collect(Collectors.toList());
                 searchEntries.stream()
+                        .filter(x -> !valueList.contains(x.getValue()))
                         .limit(25-result.size())
                         .forEachOrdered(result::add);
                 event.deferChoices(
@@ -218,6 +228,7 @@ public class PlayCommand extends SlashCommand
                     .filter(choice -> StringUtils.startsWithIgnoreCase(choice.getName(), query.getAsString()))
                     .limit(25)
                     .forEach(result::add);
+            List<String> valueList = result.stream().map(IAutocompleteChoice::getValue).collect(Collectors.toList());
             String url = "https://clients1.google.com/complete/search?client=youtube&gs_ri=youtube&hl=en&ds=yt&q="+ URLEncoder.encode(query.getAsString(), StandardCharsets.UTF_8);
             Request request = new Request.Builder().url(url).build();
             Call call = Bean.getInstance().getOkHttpClient().newCall(request);
@@ -235,6 +246,7 @@ public class PlayCommand extends SlashCommand
                 List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), true);
                 searchEntries
                         .stream()
+                        .filter(x -> !valueList.contains(x.getValue()))
                         .filter(choice -> StringUtils.startsWithIgnoreCase(choice.getName(), query.getAsString()))
                         .limit(25-result.size())
                         .forEachOrdered(result::add);
@@ -250,6 +262,7 @@ public class PlayCommand extends SlashCommand
                 List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), true);
                 searchEntries
                         .stream()
+                        .filter(x -> !valueList.contains(x.getValue()))
                         .filter(choice -> StringUtils.startsWithIgnoreCase(choice.getName(), query.getAsString()))
                         .limit(25-result.size())
                         .forEachOrdered(entry -> {
