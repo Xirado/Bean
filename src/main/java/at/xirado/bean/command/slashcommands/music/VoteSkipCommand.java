@@ -41,6 +41,8 @@ public class VoteSkipCommand extends SlashCommand
         long requester = trackInfo.getRequesterIdLong();
         if (event.getUser().getIdLong() == requester)
         {
+            if (guildAudioPlayer.getScheduler().isRepeat())
+                guildAudioPlayer.getScheduler().setRepeat(false);
             guildAudioPlayer.getScheduler().nextTrack();
             AudioTrack nextTrack = guildAudioPlayer.getPlayer().getPlayingTrack();
             if (nextTrack == null)
@@ -64,6 +66,8 @@ public class VoteSkipCommand extends SlashCommand
         int required = (int)Math.ceil(listeners * .55);
         if (skippers >= required)
         {
+            if (guildAudioPlayer.getScheduler().isRepeat())
+                guildAudioPlayer.getScheduler().setRepeat(false);
             guildAudioPlayer.getScheduler().nextTrack();
             AudioTrack nextTrack = guildAudioPlayer.getPlayer().getPlayingTrack();
             if (nextTrack == null)
