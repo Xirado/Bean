@@ -15,13 +15,13 @@ import at.xirado.bean.music.AudioManager;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import lavalink.client.io.jda.JdaLavalink;
-import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import okhttp3.OkHttpClient;
@@ -88,6 +88,7 @@ public class Bean
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setBulkDeleteSplittingEnabled(false)
+                .setChunkingFilter(ChunkingFilter.NONE)
                 .setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor())
                 .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS)
                 .addEventListeners(new OnReadyEvent(), new OnSlashCommand(), new OnGuildMessageReceived(),
