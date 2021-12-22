@@ -2,6 +2,9 @@ package at.xirado.bean.event;
 
 import at.xirado.bean.Bean;
 import lavalink.client.io.jda.JdaLavalink;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -12,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.TimeUnit;
 
 public class OnReadyEvent extends ListenerAdapter
 {
@@ -42,5 +46,16 @@ public class OnReadyEvent extends ListenerAdapter
                 LOGGER.error("Could not add Lavaink node!", e);
             }
         });
+
+        Bean.getInstance().getExecutor().scheduleAtFixedRate(() -> {
+            int memberCount = Bean.getInstance().getShardManager()
+                    .getGuildCache()
+                    .stream()
+                    .mapToInt(Guild::getMemberCount)
+                    .sum();
+            Bean.getInstance().getShardManager()
+                    .getShardCache()
+                    .forEach(shard -> shard.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching("bean.bz | "+memberCount+" users")));
+        }, 0, 5, TimeUnit.MINUTES);
     }
 }

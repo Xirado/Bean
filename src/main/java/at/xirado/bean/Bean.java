@@ -86,7 +86,6 @@ public class Bean
         shardManager = DefaultShardManagerBuilder.create(config.getString("token"), getIntents())
                 .setShardsTotal(-1)
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
-                .setActivity(Activity.watching("bean.bz"))
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setBulkDeleteSplittingEnabled(false)
                 .setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor())
