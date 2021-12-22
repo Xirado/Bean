@@ -25,28 +25,29 @@ public class OnReadyEvent extends ListenerAdapter
     @Override
     public void onReady(@NotNull ReadyEvent event)
     {
-        LOGGER.info("Successfully started "+Bean.getInstance().getShardManager().getShards().size()+" shards!");
-        Bean.getInstance().getSlashCommandHandler().initialize();
-        if (Bean.getInstance().isDebug())
-            LOGGER.warn("Debug mode enabled! Commands will not be executed for users.");
-        Bean.getInstance().initCommandCheck();
-        JdaLavalink lavalink = Bean.getInstance().getLavalink();
-        lavalink.setJdaProvider((shard) -> Bean.getInstance().getShardManager().getShardById(shard));
-        lavalink.setUserId(event.getJDA().getSelfUser().getId());
-        DataObject config = DataObject.fromJson(Bean.getInstance().getConfig().toJson()); // TODO: Use DataObject instead of LinkedDataObject. This is shitty...
-        DataArray nodes = config.optArray("lavalink_nodes").orElse(DataArray.empty());
-        nodes.stream(DataArray::getObject).forEach(node -> {
-            String url = node.getString("url");
-            String password = node.getString("password");
-            try
-            {
-                lavalink.addNode(new URI(url), password);
-            } catch (URISyntaxException e)
-            {
-                LOGGER.error("Could not add Lavaink node!", e);
-            }
+        Bean.getInstance().getExecutor().submit(() -> {
+            LOGGER.info("Successfully started "+Bean.getInstance().getShardManager().getShards().size()+" shards!");
+            Bean.getInstance().getSlashCommandHandler().initialize();
+            if (Bean.getInstance().isDebug())
+                LOGGER.warn("Debug mode enabled! Commands will not be executed for users.");
+            Bean.getInstance().initCommandCheck();
+            JdaLavalink lavalink = Bean.getInstance().getLavalink();
+            lavalink.setJdaProvider((shard) -> Bean.getInstance().getShardManager().getShardById(shard));
+            lavalink.setUserId(event.getJDA().getSelfUser().getId());
+            DataObject config = DataObject.fromJson(Bean.getInstance().getConfig().toJson()); // TODO: Use DataObject instead of LinkedDataObject. This is shitty...
+            DataArray nodes = config.optArray("lavalink_nodes").orElse(DataArray.empty());
+            nodes.stream(DataArray::getObject).forEach(node -> {
+                String url = node.getString("url");
+                String password = node.getString("password");
+                try
+                {
+                    lavalink.addNode(new URI(url), password);
+                } catch (URISyntaxException e)
+                {
+                    LOGGER.error("Could not add Lavaink node!", e);
+                }
+            });
         });
-
         Bean.getInstance().getExecutor().scheduleAtFixedRate(() -> {
             int memberCount = Bean.getInstance().getShardManager()
                     .getGuildCache()
