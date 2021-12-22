@@ -1,10 +1,15 @@
 package at.xirado.bean.command.slashcommands.music;
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.music.GuildAudioPlayer;
+import lavalink.client.io.Link;
+import lavalink.client.io.jda.JdaLavalink;
+import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.StageChannel;
@@ -21,7 +26,7 @@ public class JoinCommand extends SlashCommand
     public JoinCommand()
     {
         setCommandData(new CommandData("join", "Makes the bot join your current channel."));
-        addCommandFlags(CommandFlag.MUST_BE_IN_VC);
+        addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
 
     @Override
@@ -34,10 +39,10 @@ public class JoinCommand extends SlashCommand
             event.replyEmbeds(EmbedUtil.errorEmbed("You must be listening in a voice channel to run this command!")).queue();
             return;
         }
-        AudioManager manager = event.getGuild().getAudioManager();
-        if (manager.getConnectedChannel() != null)
+        GuildVoiceState state = event.getGuild().getSelfMember().getVoiceState();
+        if (state.getChannel() != null)
         {
-            VoiceChannel channel = manager.getConnectedChannel();
+            VoiceChannel channel = state.getChannel();
             if (voiceState.getChannel().getIdLong() == channel.getIdLong())
             {
                 event.replyEmbeds(EmbedUtil.errorEmbed("I already joined this channel!")).queue();
@@ -49,17 +54,14 @@ public class JoinCommand extends SlashCommand
                 return;
             }
         }
+        GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         try
         {
-            manager.openAudioConnection(voiceState.getChannel());
+            audioPlayer.getLink().connect(voiceState.getChannel());
         } catch (PermissionException exception)
         {
             event.replyEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
             return;
-        }
-        if (voiceState.getChannel() instanceof StageChannel)
-        {
-            event.getGuild().requestToSpeak();
         }
         event.replyEmbeds(EmbedUtil.successEmbed("Joined <#"+voiceState.getChannel().getIdLong()+">!")).queue();
     }

@@ -22,18 +22,13 @@ public class SkipToCommand extends SlashCommand
         setCommandData(new CommandData("skipto", "Skips to a specified track in the queue.")
                 .addOption(OptionType.INTEGER, "index", "Index to skip to.", true)
         );
-        addCommandFlags(CommandFlag.DJ_ONLY, CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
+        addCommandFlags(CommandFlag.DJ_ONLY, CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
 
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         long index = event.getOption("index").getAsLong();
-        if (index > Integer.MAX_VALUE)
-        {
-            ctx.sendSimpleEmbed("This is not a valid integer!");
-            return;
-        }
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         if (guildAudioPlayer.getPlayer().getPlayingTrack() == null)
         {

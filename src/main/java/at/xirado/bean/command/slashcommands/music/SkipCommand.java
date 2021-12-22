@@ -20,7 +20,7 @@ public class SkipCommand extends SlashCommand
     public SkipCommand()
     {
         setCommandData(new CommandData("skip", "Skips the currently playing track."));
-        addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
+        addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
 
     @Override

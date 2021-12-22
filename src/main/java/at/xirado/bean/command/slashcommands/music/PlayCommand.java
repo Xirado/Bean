@@ -4,6 +4,9 @@ import at.xirado.bean.Bean;
 import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
+import at.xirado.bean.data.BasicAutocompletionChoice;
+import at.xirado.bean.data.Hints;
+import at.xirado.bean.data.IAutocompleteChoice;
 import at.xirado.bean.data.SearchEntry;
 import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.EmbedUtil;
@@ -16,13 +19,14 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.events.interaction.ApplicationCommandAutocompleteEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -43,7 +47,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class PlayCommand extends SlashCommand
 {
@@ -53,14 +57,25 @@ public class PlayCommand extends SlashCommand
     {
         setCommandData(new CommandData("play", "Plays a track from YouTube or SoundCloud.")
                 .addOptions(new OptionData(OptionType.STRING, "query", "Youtube search term or a URL that is supported.", true).setAutoComplete(true))
+                .addOptions(new OptionData(OptionType.STRING, "provider", "Provider to search in. (Ignore if you put a direct link)", false)
+                        .addChoice("Youtube (Default)", "ytsearch:")
+                        .addChoice("Soundcloud", "scsearch:")
+                )
         );
-        addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
-
+        addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
+
+    private static final MessageEmbed BOOKMARK_HINT_EMBED =
+            EmbedUtil.defaultEmbedBuilder("Bookmark songs and playlists using the `/bookmark` command!\nHaving to always type the link to your favourite youtube playlist is annoying, isn't it?")
+                .setAuthor(Bean.getInstance().getShardManager().getShards().get(0).getSelfUser().getAsTag(), null, Bean.getInstance().getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
+                .setImage("https://bean.bz/assets/hints/bookmark.png")
+                .setTitle("Hint")
+                .build();
 
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
+        JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
         event.deferReply().queue();
         Member member = event.getMember();
         GuildVoiceState voiceState = member.getVoiceState();
@@ -69,7 +84,7 @@ public class PlayCommand extends SlashCommand
         {
             try
             {
-                manager.openAudioConnection(voiceState.getChannel());
+                link.connect(voiceState.getChannel());
             } catch (PermissionException exception)
             {
                 event.replyEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
@@ -81,22 +96,40 @@ public class PlayCommand extends SlashCommand
             }
         }
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        if (manager.getSendingHandler() == null)
-            manager.setSendingHandler(guildAudioPlayer.getSendHandler());
         String query = event.getOption("query").getAsString();
         boolean isDirectUrl = query.startsWith("http://") || query.startsWith("https://");
-        query = isDirectUrl ? query : "ytsearch:" + query;
-        Bean.getInstance().getAudioManager().getPlayerManager().loadItemOrdered(guildAudioPlayer, query, new AudioLoadResultHandler()
+        if (!isDirectUrl)
+        {
+            String provider;
+            OptionMapping providerOption = event.getOption("provider");
+            if (providerOption == null)
+                provider = "ytsearch:";
+            else
+                provider = providerOption.getAsString();
+            query = provider+query;
+        }
+        long userId = event.getUser().getIdLong();
+        final String rawQuery = event.getOption("query").getAsString();
+        link.getRestClient().loadItem(query, new AudioLoadResultHandler()
         {
             @Override
             public void trackLoaded(AudioTrack track)
             {
-                track.setUserData(new TrackInfo(event.getUser().getIdLong()));
+                track.setUserData(new TrackInfo(userId));
                 event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, track)).queue();
-                Bean.getInstance().getExecutor().schedule(() -> guildAudioPlayer.getScheduler().queue(track), 1, TimeUnit.SECONDS);
-                SearchEntry entry = new SearchEntry(track.getInfo().title, event.getOption("query").getAsString(), false);
-                if (!isDuplicate(member.getIdLong(), entry.getName()))
-                    addSearchEntry(member.getIdLong(), entry);
+                boolean isBookmarked = BookmarkCommand.getBookmark(event.getUser().getIdLong(), rawQuery) != null;
+                if (!Hints.hasAcknowledged(userId, "bookmark") && !isBookmarked)
+                {
+                    event.getHook().sendMessageEmbeds(BOOKMARK_HINT_EMBED)
+                            .setEphemeral(true)
+                            .addActionRow(Util.getDontShowThisAgainButton("bookmark"))
+                            .queue();
+                    Hints.sentUserHint(userId, "bookmark");
+                }
+                guildAudioPlayer.getScheduler().queue(track);
+                SearchEntry entry = new SearchEntry(track.getInfo().title, rawQuery, false);
+                if (!isDuplicate(member.getIdLong(), entry.getName()) && !isBookmarked)
+                        addSearchEntry(member.getIdLong(), entry);
             }
 
             @Override
@@ -107,40 +140,47 @@ public class PlayCommand extends SlashCommand
                     AudioTrack single = (playlist.getSelectedTrack() == null) ? playlist.getTracks().get(0) : playlist.getSelectedTrack();
                     single.setUserData(new TrackInfo(event.getUser().getIdLong()));
                     event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, single)).queue();
-                    Bean.getInstance().getExecutor().schedule(() -> guildAudioPlayer.getScheduler().queue(single), 1, TimeUnit.SECONDS);
+                    guildAudioPlayer.getScheduler().queue(single);
                     SearchEntry entry = new SearchEntry(event.getOption("query").getAsString(), event.getOption("query").getAsString(), false);
                     if (!isDuplicate(member.getIdLong(), entry.getName()))
                         addSearchEntry(member.getIdLong(), entry);
                     return;
                 }
+                boolean isBookmarked = BookmarkCommand.getBookmark(event.getUser().getIdLong(), rawQuery) != null;
                 String amount = "Added **" + playlist.getTracks().size() + "** tracks to the queue! (**" + FormatUtil.formatTime(playlist.getTracks().stream().map(AudioTrack::getDuration).reduce(0L, Long::sum)) + "**)";
                 if (guildAudioPlayer.getPlayer().getPlayingTrack() == null)
                 {
                     amount += "\n**Now playing** " + Util.titleMarkdown(playlist.getTracks().get(0));
                 }
                 event.getHook().sendMessageEmbeds(ctx.getSimpleEmbed(amount)).queue();
-                Bean.getInstance().getExecutor().schedule(() -> {
-                    playlist.getTracks().forEach(track ->
-                    {
-                        track.setUserData(new TrackInfo(event.getUser().getIdLong()));
-                        guildAudioPlayer.getScheduler().queue(track);
-                    });
-                }, 1, TimeUnit.SECONDS);
+                if (!Hints.hasAcknowledged(userId, "bookmark") && !isBookmarked)
+                {
+                    event.getHook().sendMessageEmbeds(BOOKMARK_HINT_EMBED)
+                            .setEphemeral(true)
+                            .addActionRow(Util.getDontShowThisAgainButton("bookmark"))
+                            .queue();
+                    Hints.sentUserHint(userId, "bookmark");
+                }
+                playlist.getTracks().forEach(track ->
+                {
+                    track.setUserData(new TrackInfo(event.getUser().getIdLong()));
+                    guildAudioPlayer.getScheduler().queue(track);
+                });
                 SearchEntry entry = new SearchEntry(playlist.getName(), event.getOption("query").getAsString(), true);
-                if (!isDuplicate(member.getIdLong(), entry.getName()))
+                if (!isDuplicate(member.getIdLong(), entry.getName()) && !isBookmarked)
                     addSearchEntry(member.getIdLong(), entry);
             }
 
             @Override
             public void noMatches()
             {
-                event.getHook().sendMessageEmbeds(ctx.getSimpleEmbed("Sorry, i couldn't find anything!")).queue();
+                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Sorry, i couldn't find anything matching your search!")).queue();
             }
 
             @Override
             public void loadFailed(FriendlyException exception)
             {
-                event.getHook().sendMessageEmbeds(ctx.getSimpleEmbed("An error occurred while loading track!\n`" + exception.getMessage() + "`")).queue();
+                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred while loading track!\n`" + exception.getMessage() + "`")).queue();
             }
         });
     }
@@ -148,54 +188,72 @@ public class PlayCommand extends SlashCommand
     @Override
     public void handleAutocomplete(@NotNull ApplicationCommandAutocompleteEvent event) throws Exception
     {
+        long userId = event.getUser().getIdLong();
         OptionMapping query = event.getOption("query");
         if (query != null && query.isFocused())
         {
-            if (query.getAsString().length() == 0)
+            List<IAutocompleteChoice> result = new ArrayList<>();
+            boolean hasSearchEntries = hasSearchEntries(userId);
+            if (query.getAsString().isEmpty())
             {
-                if (!hasSearchEntries(event.getMember().getIdLong()))
+                result.addAll(BookmarkCommand.getBookmarks(userId, false));
+                if (!hasSearchEntries)
                 {
-                    event.deferChoices(Collections.emptyList()).queue();
+                    event.deferChoices(
+                            result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
+                    ).queue();
                     return;
                 }
-                List<SearchEntry> entries = getSearchHistory(event.getMember().getIdLong(), false);
-                List<Command.Choice> choices = new ArrayList<>();
-                entries.forEach(x -> choices.add(x.toCommandAutocompleteChoice()));
-                event.deferChoices(choices).queue();
+                List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), false);
+                searchEntries.stream()
+                        .limit(25-result.size())
+                        .forEachOrdered(result::add);
+                event.deferChoices(
+                        result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
+                ).queue();
                 return;
             }
+            BookmarkCommand.getBookmarks(userId, true)
+                    .stream()
+                    .filter(choice -> StringUtils.startsWithIgnoreCase(choice.getName(), query.getAsString()))
+                    .limit(25)
+                    .forEach(result::add);
             String url = "https://clients1.google.com/complete/search?client=youtube&gs_ri=youtube&hl=en&ds=yt&q="+ URLEncoder.encode(query.getAsString(), StandardCharsets.UTF_8);
             Request request = new Request.Builder().url(url).build();
             Call call = Bean.getInstance().getOkHttpClient().newCall(request);
             Response response = call.execute();
             if (!response.isSuccessful())
             {
-                if (!hasSearchEntries(event.getMember().getIdLong()))
+                if (!hasSearchEntries)
                 {
-                    event.deferChoices(Collections.singletonList(new Command.Choice(query.getAsString(), query.getAsString()))).queue();
+                    event.deferChoices(
+                            result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
+                    ).queue();
+                    response.close();
                     return;
                 }
                 List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), true);
-                List<Command.Choice> choices = new ArrayList<>();
                 searchEntries
                         .stream()
                         .filter(choice -> StringUtils.startsWithIgnoreCase(choice.getName(), query.getAsString()))
-                        .limit(25)
-                        .forEachOrdered(entry -> choices.add(entry.toCommandAutocompleteChoice()));
-                event.deferChoices(choices).queue();
+                        .limit(25-result.size())
+                        .forEachOrdered(result::add);
+                event.deferChoices(
+                        result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
+                ).queue();
+                response.close();
                 return;
             }
-            Set<Command.Choice> choices = new LinkedHashSet<>();
             List<String> alreadyAdded = new ArrayList<>();
-            if (hasSearchEntries(event.getMember().getIdLong()))
+            if (hasSearchEntries)
             {
                 List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), true);
                 searchEntries
                         .stream()
                         .filter(choice -> StringUtils.startsWithIgnoreCase(choice.getName(), query.getAsString()))
-                        .limit(15)
+                        .limit(25-result.size())
                         .forEachOrdered(entry -> {
-                            choices.add(entry.toCommandAutocompleteChoice());
+                            result.add(entry);
                             alreadyAdded.add(entry.getName().toLowerCase(Locale.ROOT));
                         });
             }
@@ -204,11 +262,14 @@ public class PlayCommand extends SlashCommand
             DataArray array = DataArray.fromJson(string).getArray(1);
             array.stream(DataArray::getArray)
                     .filter(x -> !alreadyAdded.contains(x.getString(0).toLowerCase(Locale.ROOT)))
-                    .limit(10)
-                    .forEach(x -> choices.add(new Command.Choice(x.getString(0), x.getString(0))));
-            if (choices.size() == 0)
-                choices.add(new Command.Choice(query.getAsString(), query.getAsString()));
-            event.deferChoices(choices).queue();
+                    .limit(25-result.size()-alreadyAdded.size())
+                    .forEach(x -> result.add(new BasicAutocompletionChoice(x.getString(0), x.getString(0))));
+            if (result.size() == 0)
+                result.add(new BasicAutocompletionChoice(query.getAsString(), query.getAsString()));
+            event.deferChoices(
+                    result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
+            ).queue();
+            response.close();
         }
     }
 

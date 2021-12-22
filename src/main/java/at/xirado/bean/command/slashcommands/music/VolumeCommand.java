@@ -6,6 +6,7 @@ import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.music.GuildAudioPlayer;
+import lavalink.client.io.filters.Filters;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -21,7 +22,7 @@ public class VolumeCommand extends SlashCommand
         setCommandData(new CommandData("volume", "Changes the volume of the player.")
                 .addOption(OptionType.INTEGER, "volume", "Volume in percent.", true)
         );
-        addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.DJ_ONLY);
+        addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.DJ_ONLY, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
 
     @Override

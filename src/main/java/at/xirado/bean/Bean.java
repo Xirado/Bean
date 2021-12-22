@@ -14,7 +14,7 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.AudioManager;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
+import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -43,6 +43,7 @@ public class Bean
 {
     public static final long OWNER_ID = 184654964122058752L;
     public static final Set<Long> WHITELISTED_USERS = Set.of(184654964122058752L, 398610798315962408L);
+    public static final String SUPPORT_GUILD_INVITE = "https://discord.com/invite/7WEjttJtKa";
     public static final long START_TIME = System.currentTimeMillis() / 1000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
@@ -61,6 +62,7 @@ public class Bean
     private final OkHttpClient okHttpClient;
     private final WebServer webServer;
     private final Authenticator authenticator;
+    private final JdaLavalink lavalink;
 
     public Bean() throws Exception
     {
@@ -76,22 +78,26 @@ public class Bean
         Class.forName("at.xirado.bean.translation.LocaleLoader");
         okHttpClient = new OkHttpClient.Builder()
                 .build();
+        lavalink = new JdaLavalink(
+                null,
+                1,
+                null
+        );
         shardManager = DefaultShardManagerBuilder.create(config.getString("token"), getIntents())
                 .setShardsTotal(-1)
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
                 .setActivity(Activity.watching("bean.bz"))
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setBulkDeleteSplittingEnabled(false)
+                .setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor())
                 .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS)
-                .setAudioSendFactory(new NativeAudioSendFactory())
                 .addEventListeners(new OnReadyEvent(), new OnSlashCommand(), new OnGuildMessageReceived(),
                         new OnGainXP(), new OnGuildMessageReactionAdd(), new OnGuildMessageReactionRemove(), new OnVoiceUpdate(),
-                        eventWaiter, new OnGuildMemberJoin())
+                        eventWaiter, new OnGuildMemberJoin(), lavalink, new OnAcknowledgeHint())
                 .build();
-        audioManager = new AudioManager(shardManager);
+        audioManager = new AudioManager();
         authenticator = new Authenticator();
         webServer = new WebServer(8887);
-
     }
 
     public static Bean getInstance()
@@ -260,6 +266,10 @@ public class Bean
         return webServer;
     }
 
+    public JdaLavalink getLavalink()
+    {
+        return lavalink;
+    }
 
     public void initCommandCheck()
     {

@@ -39,6 +39,7 @@ public class Shutdown extends ConsoleCommand
             }
         }
         logger.info("Shutting down...");
+        audioPlayers.forEach(GuildAudioPlayer::destroy);
         Bean.getInstance().getShardManager().shutdown();
         for (JDA jda : Bean.getInstance().getShardManager().getShards())
         {
