@@ -257,14 +257,15 @@ public class PlayCommand extends SlashCommand
                 return;
             }
             List<String> alreadyAdded = new ArrayList<>();
-            if (hasSearchEntries)
+            int limit = 25-result.size();
+            if (hasSearchEntries && limit > 0)
             {
                 List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), true);
                 searchEntries
                         .stream()
                         .filter(x -> !valueList.contains(x.getValue()))
                         .filter(choice -> StringUtils.startsWithIgnoreCase(choice.getName(), query.getAsString()))
-                        .limit(25-result.size())
+                        .limit(limit)
                         .forEachOrdered(entry -> {
                             result.add(entry);
                             alreadyAdded.add(entry.getName().toLowerCase(Locale.ROOT));
@@ -272,11 +273,15 @@ public class PlayCommand extends SlashCommand
             }
             String string = response.body().string();
             string = string.substring(19, string.length()-1);
-            DataArray array = DataArray.fromJson(string).getArray(1);
-            array.stream(DataArray::getArray)
-                    .filter(x -> !alreadyAdded.contains(x.getString(0).toLowerCase(Locale.ROOT)))
-                    .limit(25-result.size()-alreadyAdded.size())
-                    .forEach(x -> result.add(new BasicAutocompletionChoice(x.getString(0), x.getString(0))));
+            int limit1 = 25-result.size()-alreadyAdded.size();
+            if (limit1 > 0)
+            {
+                DataArray array = DataArray.fromJson(string).getArray(1);
+                array.stream(DataArray::getArray)
+                        .filter(x -> !alreadyAdded.contains(x.getString(0).toLowerCase(Locale.ROOT)))
+                        .limit(limit1)
+                        .forEach(x -> result.add(new BasicAutocompletionChoice(x.getString(0), x.getString(0))));
+            }
             if (result.size() == 0)
                 result.add(new BasicAutocompletionChoice(query.getAsString(), query.getAsString()));
             event.deferChoices(
