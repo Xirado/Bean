@@ -110,6 +110,11 @@ public class Util
                 });
     }
 
+    public static int zeroIfNegative(int x)
+    {
+        return Math.max(x, 0);
+    }
+
     /**
      * Makes any number ordinal
      * e.g. 2 -> 2nd
