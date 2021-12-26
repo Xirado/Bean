@@ -69,26 +69,21 @@ public class BookmarkCommand extends SlashCommand
         {
             case "create" -> {
                 String url = event.getOption("url").getAsString();
-                if (!url.startsWith("https://"))
-                {
-                    event.replyEmbeds(EmbedUtil.errorEmbed("This is not a valid URL!")).queue();
-                    return;
-                }
                 LavalinkSocket socket = ctx.getAvailableNode();
                 if (isDuplicate(userId, url))
                 {
                     event.replyEmbeds(EmbedUtil.errorEmbed("You already have a bookmark for that URL!")).queue();
                     return;
                 }
+                event.deferReply().setEphemeral(true).queue();
                 socket.getRestClient().loadItem(url, new AudioLoadResultHandler()
                 {
                     @Override
                     public void trackLoaded(AudioTrack track)
                     {
-
                         Bookmark entry = new Bookmark(track.getInfo().title, url, false);
                         addBookmark(userId, entry);
-                        event.replyEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **"+track.getInfo().title+"**")).queue();
+                        event.getHook().sendMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **"+track.getInfo().title+"**")).queue();
                     }
 
                     @Override
@@ -96,7 +91,7 @@ public class BookmarkCommand extends SlashCommand
                     {
                         Bookmark entry = new Bookmark(playlist.getName(), url, true);
                         addBookmark(userId, entry);
-                        event.replyEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **"+playlist.getName()+"**")).queue();
+                        event.getHook().sendMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **"+playlist.getName()+"**")).queue();
                     }
 
                     @Override
@@ -221,7 +216,7 @@ public class BookmarkCommand extends SlashCommand
             {
                 List<Bookmark> bookmarks = getBookmarks(userId, false);
                 event.deferChoices(
-                  bookmarks.stream().map(Bookmark::toCommandAutocompleteChoice).collect(Collectors.toList())
+                        bookmarks.stream().map(Bookmark::toCommandAutocompleteChoice).collect(Collectors.toList())
                 ).queue();
                 return;
             }
