@@ -55,7 +55,7 @@ public class PlayCommand extends SlashCommand
 
     public PlayCommand()
     {
-        setCommandData(new CommandData("play", "Plays a track from YouTube or SoundCloud.")
+        setCommandData(new CommandData("play", "Plays a track from YouTube, Soundcloud, Spotify, and more.")
                 .addOptions(new OptionData(OptionType.STRING, "query", "Youtube search term or a URL that is supported.", true).setAutoComplete(true))
                 .addOptions(new OptionData(OptionType.STRING, "provider", "Provider to search in. (Ignore if you put a direct link)", false)
                         .addChoice("Youtube (Default)", "ytsearch:")
