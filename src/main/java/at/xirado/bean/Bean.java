@@ -14,7 +14,9 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.AudioManager;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import lavalink.client.LavalinkUtil;
 import lavalink.client.io.jda.JdaLavalink;
+import lavaplayer.SpotifyAudioSource;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -66,6 +68,7 @@ public class Bean
 
     public Bean() throws Exception
     {
+        LavalinkUtil.getPlayerManager().registerSourceManager(new SpotifyAudioSource());
         instance = this;
         Database.connect();
         Database.awaitReady();

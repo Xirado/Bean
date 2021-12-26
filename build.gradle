@@ -53,6 +53,7 @@ dependencies {
     implementation 'pw.chew:jda-chewtils:1.20.2'
     implementation 'org.scilab.forge:jlatexmath:1.0.7'
     implementation 'com.github.freyacodes:Lavalink-Client:8d9b660'
+    implementation 'com.github.thelinmichael:spotify-web-api-java:master-SNAPSHOT'
 }
 
 processResources {
