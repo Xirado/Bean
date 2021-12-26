@@ -67,7 +67,7 @@ public class BookmarkCommand extends SlashCommand
         long userId = event.getUser().getIdLong();
         switch (event.getSubcommandName().toLowerCase(Locale.ROOT))
         {
-            case "create" -> {
+            case "add" -> {
                 String url = event.getOption("url").getAsString();
                 LavalinkSocket socket = ctx.getAvailableNode();
                 if (isDuplicate(userId, url))
