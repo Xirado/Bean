@@ -69,7 +69,6 @@ public class Bean
     public Bean() throws Exception
     {
         LavalinkUtil.getPlayerManager().registerSourceManager(new SpotifyAudioSource());
-        System.out.println(LavalinkUtil.getPlayerManager().source(SpotifyAudioSource.class).getSourceName());
         instance = this;
         Database.connect();
         Database.awaitReady();
