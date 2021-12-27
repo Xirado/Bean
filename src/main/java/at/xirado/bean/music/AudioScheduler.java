@@ -126,8 +126,8 @@ public class AudioScheduler extends PlayerEventListenerAdapter
         TextChannel channel = guild.getTextChannelById(info.getChannelId());
         if (channel == null)
             return;
-        channel.sendMessageEmbeds(EmbedUtil.errorEmbed("Failed to load **"+track.getInfo().title+"**!\n`"+exception.getCause().getMessage()+"`")).queue();
-        log.warn("(Guild: "+guildId+") Failed to load track \""+track.getInfo().title+"\" by \""+track.getInfo().author+"\": "+exception.getCause().getMessage());
+        channel.sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred while playing track **"+track.getInfo().title+"**!\n`"+exception.getCause().getMessage()+"`")).queue();
+        log.warn("(Guild: "+guildId+") An error occurred while playing track \""+track.getInfo().title+"\" by \""+track.getInfo().author+"\"", exception);
     }
 
     public long getGuildId()
