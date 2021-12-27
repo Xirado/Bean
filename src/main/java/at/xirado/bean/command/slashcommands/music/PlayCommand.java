@@ -66,10 +66,10 @@ public class PlayCommand extends SlashCommand
     }
 
     private static final MessageEmbed BOOKMARK_HINT_EMBED =
-            EmbedUtil.defaultEmbedBuilder("Bookmark songs and playlists using the `/bookmark` command!\nHaving to always type the link to your favourite youtube playlist is annoying, isn't it?")
+            EmbedUtil.defaultEmbedBuilder("Bookmark songs and playlists using the **/bookmark** command!\nHaving to always type the link to your favourite youtube or spotify playlist is annoying, isn't it?")
                 .setAuthor(Bean.getInstance().getShardManager().getShards().get(0).getSelfUser().getAsTag(), null, Bean.getInstance().getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
                 .setImage("https://bean.bz/assets/hints/bookmark.png")
-                .setTitle("Hint")
+                .setTitle("Tip")
                 .build();
 
     @Override

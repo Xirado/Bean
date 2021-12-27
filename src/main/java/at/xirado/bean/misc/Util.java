@@ -31,7 +31,7 @@ public class Util
 
     public static Button getDontShowThisAgainButton(String hint)
     {
-        return Button.primary("ackHint:"+hint, "Don't show this again");
+        return Button.secondary("ackHint:"+hint, "Don't show this again");
     }
 
     public static int getAvailableLavalinkNodes()
