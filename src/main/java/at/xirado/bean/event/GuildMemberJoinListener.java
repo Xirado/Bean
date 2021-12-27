@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class OnGuildMemberJoin extends ListenerAdapter
+public class GuildMemberJoinListener extends ListenerAdapter
 {
     @Override
     public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event)

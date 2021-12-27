@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OnGuildMessageReactionAdd extends ListenerAdapter
+public class MessageReactionAddListener extends ListenerAdapter
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(OnGuildMessageReactionAdd.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageReactionAddListener.class);
 
     @Override
     public void onGuildMessageReactionAdd(@NotNull GuildMessageReactionAddEvent e)

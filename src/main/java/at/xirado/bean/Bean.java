@@ -94,9 +94,9 @@ public class Bean
                 .setChunkingFilter(ChunkingFilter.NONE)
                 .setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor())
                 .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS)
-                .addEventListeners(new OnReadyEvent(), new OnSlashCommand(), new OnGuildMessageReceived(),
-                        new OnGainXP(), new OnGuildMessageReactionAdd(), new OnGuildMessageReactionRemove(), new OnVoiceUpdate(),
-                        eventWaiter, new OnGuildMemberJoin(), lavalink, new OnAcknowledgeHint())
+                .addEventListeners(new JDAReadyListener(), new SlashCommandListener(), new MessageCreateListener(),
+                        new XPMessageListener(), new MessageReactionAddListener(), new MessageReactionRemoveListener(), new VoiceUpdateListener(),
+                        eventWaiter, new GuildMemberJoinListener(), lavalink, new HintAcknowledgeListener())
                 .build();
         audioManager = new AudioManager();
         authenticator = new Authenticator();

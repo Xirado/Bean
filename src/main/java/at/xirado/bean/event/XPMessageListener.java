@@ -16,17 +16,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class OnGainXP extends ListenerAdapter
+public class XPMessageListener extends ListenerAdapter
 {
 
 
     public static final long TIMEOUT = Bean.getInstance().isDebug() ? 0L : 60000;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OnGainXP.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XPMessageListener.class);
     private static final ConcurrentHashMap<Long, Long> timeout = new ConcurrentHashMap<>();
 
     @Override

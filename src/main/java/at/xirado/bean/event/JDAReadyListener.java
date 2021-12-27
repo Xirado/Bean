@@ -17,7 +17,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 
-public class OnReadyEvent extends ListenerAdapter
+public class JDAReadyListener extends ListenerAdapter
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);

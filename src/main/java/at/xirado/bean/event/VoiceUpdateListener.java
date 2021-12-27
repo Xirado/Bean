@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-public class OnVoiceUpdate extends ListenerAdapter
+public class VoiceUpdateListener extends ListenerAdapter
 {
 
     /**

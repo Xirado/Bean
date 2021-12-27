@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 
-public class OnGuildMessageReceived extends ListenerAdapter
+public class MessageCreateListener extends ListenerAdapter
 {
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
