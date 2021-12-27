@@ -6,16 +6,23 @@ import java.util.Set;
 
 public class TrackInfo
 {
-    private long requester;
+    private final long requester;
+    private final long channelId;
     private Set<Long> voteSkips;
     private boolean fromPlaylist = false;
     private String trackUrl = null;
     private String playlistUrl = null;
     private String playlistName = null;
 
-    public TrackInfo(long requester)
+    public TrackInfo(long requester, long channelId)
     {
         this.requester = requester;
+        this.channelId = channelId;
+    }
+
+    public long getChannelId()
+    {
+        return channelId;
     }
 
     public long getRequesterIdLong()

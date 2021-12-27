@@ -109,13 +109,14 @@ public class PlayCommand extends SlashCommand
             query = provider+query;
         }
         long userId = event.getUser().getIdLong();
+        long channelId = event.getChannel().getIdLong();
         final String rawQuery = event.getOption("query").getAsString();
         link.getRestClient().loadItem(query, new AudioLoadResultHandler()
         {
             @Override
             public void trackLoaded(AudioTrack track)
             {
-                TrackInfo trackInfo = new TrackInfo(userId)
+                TrackInfo trackInfo = new TrackInfo(userId, channelId)
                         .setTrackUrl(track.getInfo().uri);
                 track.setUserData(trackInfo);
                 event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, track)).queue();
@@ -140,7 +141,7 @@ public class PlayCommand extends SlashCommand
                 if (playlist.isSearchResult())
                 {
                     AudioTrack single = (playlist.getSelectedTrack() == null) ? playlist.getTracks().get(0) : playlist.getSelectedTrack();
-                    TrackInfo trackInfo = new TrackInfo(userId)
+                    TrackInfo trackInfo = new TrackInfo(userId, channelId)
                             .setTrackUrl(single.getInfo().uri);
                     single.setUserData(trackInfo);
                     event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, single)).queue();
@@ -167,7 +168,7 @@ public class PlayCommand extends SlashCommand
                 }
                 playlist.getTracks().forEach(track ->
                 {
-                    TrackInfo trackInfo = new TrackInfo(userId)
+                    TrackInfo trackInfo = new TrackInfo(userId, channelId)
                             .setTrackUrl(track.getInfo().uri)
                             .setPlaylistName(playlist.getName())
                             .setPlaylistUrl(rawQuery);

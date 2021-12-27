@@ -1,14 +1,19 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.MusicUtil;
+import at.xirado.bean.misc.objects.TrackInfo;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavalinkPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.StageChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
@@ -16,6 +21,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class AudioScheduler extends PlayerEventListenerAdapter
 {
+
+    private static final Logger log = LoggerFactory.getLogger(AudioScheduler.class);
+
     private final LavalinkPlayer player;
     private final BlockingQueue<AudioTrack> queue;
     private final long guildId;
@@ -47,7 +55,7 @@ public class AudioScheduler extends PlayerEventListenerAdapter
         AudioTrack track = queue.poll();
         if (track == null)
         {
-            VoiceChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getAudioManager().getConnectedChannel();
+            VoiceChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getSelfMember().getVoiceState().getChannel();
             if (current instanceof StageChannel stageChannel)
             {
                 if (stageChannel.getStageInstance() != null)
@@ -108,7 +116,18 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     @Override
     public void onTrackException(IPlayer player, AudioTrack track, Exception exception)
     {
-        LoggerFactory.getLogger(Bean.class).error("Error occurred while playing track!", exception);
+        if (repeat)
+            repeat = false;
+        nextTrack();
+        TrackInfo info = track.getUserData(TrackInfo.class);
+        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
+        if (guild == null)
+            return;
+        TextChannel channel = guild.getTextChannelById(info.getChannelId());
+        if (channel == null)
+            return;
+        channel.sendMessageEmbeds(EmbedUtil.errorEmbed("Failed to load **"+track.getInfo().title+"**!\n`"+exception.getCause().getMessage()+"`")).queue();
+        log.warn("(Guild: "+guildId+") Failed to load track \""+track.getInfo().title+"\" by \""+track.getInfo().author+"\": "+exception.getCause().getMessage());
     }
 
     public long getGuildId()
