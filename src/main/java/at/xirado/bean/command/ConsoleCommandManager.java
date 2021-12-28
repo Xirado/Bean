@@ -57,6 +57,7 @@ public class ConsoleCommandManager
         registerCommand(new PrintGuildData());
         registerCommand(new UpdateSlashCommands());
         registerCommand(new BalanceCommand());
+        registerCommand(new BanGuildCommand());
     }
 
     public ArrayList<ConsoleCommand> getCommands()

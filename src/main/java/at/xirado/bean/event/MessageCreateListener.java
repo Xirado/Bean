@@ -14,6 +14,8 @@ public class MessageCreateListener extends ListenerAdapter
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
     {
+        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
+            return;
         if (event.isWebhookMessage() || event.getAuthor().isBot()) return;
         Member member = event.getMember();
         if (member == null) return;

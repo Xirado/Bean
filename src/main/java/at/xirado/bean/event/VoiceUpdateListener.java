@@ -36,6 +36,8 @@ public class VoiceUpdateListener extends ListenerAdapter
     @Override
     public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event)
     {
+        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
+            return;
         if (event.getMember().equals(event.getGuild().getSelfMember()))
         {
             if (!event.getGuild().getSelfMember().getVoiceState().isGuildDeafened())
@@ -66,6 +68,8 @@ public class VoiceUpdateListener extends ListenerAdapter
     @Override
     public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event)
     {
+        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
+            return;
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
@@ -89,6 +93,8 @@ public class VoiceUpdateListener extends ListenerAdapter
     @Override
     public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event)
     {
+        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
+            return;
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
@@ -141,6 +147,8 @@ public class VoiceUpdateListener extends ListenerAdapter
     @Override
     public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event)
     {
+        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
+            return;
         if (event.getChannelLeft() == null)
             return;
         if (event.getMember().equals(event.getGuild().getSelfMember()))

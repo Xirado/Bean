@@ -19,6 +19,8 @@ public class MessageReactionAddListener extends ListenerAdapter
     @Override
     public void onGuildMessageReactionAdd(@NotNull GuildMessageReactionAddEvent e)
     {
+        if (GuildJoinListener.isGuildBanned(e.getGuild().getIdLong()))
+            return;
         try
         {
             if (e.getMember().getUser().isBot()) return;

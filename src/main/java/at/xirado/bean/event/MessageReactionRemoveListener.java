@@ -19,6 +19,8 @@ public class MessageReactionRemoveListener extends ListenerAdapter
     @Override
     public void onGuildMessageReactionRemoveAll(GuildMessageReactionRemoveAllEvent e)
     {
+        if (GuildJoinListener.isGuildBanned(e.getGuild().getIdLong()))
+            return;
         try
         {
             long messageId = e.getMessageIdLong();
@@ -33,6 +35,8 @@ public class MessageReactionRemoveListener extends ListenerAdapter
     @Override
     public void onGuildMessageReactionRemove(@NotNull GuildMessageReactionRemoveEvent e)
     {
+        if (GuildJoinListener.isGuildBanned(e.getGuild().getIdLong()))
+            return;
         ReactionEmote reactionemote = e.getReactionEmote();
         String reacted = reactionemote.isEmoji() ? reactionemote.getAsReactionCode() : reactionemote.getEmote().getId();
         GuildData data = GuildManager.getGuildData(e.getGuild());

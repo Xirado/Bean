@@ -31,6 +31,8 @@ public class XPMessageListener extends ListenerAdapter
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
     {
+        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
+            return;
         if (event.getAuthor().isBot() || event.isWebhookMessage() || event.getMessage().getType().isSystem()) return;
         if (event.getMessage().getContentRaw().startsWith(GuildManager.getGuildData(event.getGuild()).getPrefix()))
             return;

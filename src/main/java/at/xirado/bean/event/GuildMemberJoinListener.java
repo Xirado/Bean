@@ -18,6 +18,8 @@ public class GuildMemberJoinListener extends ListenerAdapter
     @Override
     public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event)
     {
+        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
+            return;
         GuildData guildData = GuildManager.getGuildData(event.getGuild());
         long totalXP = RankingSystem.getTotalXP(event.getGuild().getIdLong(), event.getUser().getIdLong());
         int level = RankingSystem.getLevel(totalXP);

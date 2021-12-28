@@ -17,6 +17,8 @@ public class HintAcknowledgeListener extends ListenerAdapter
     @Override
     public void onButtonClick(@NotNull ButtonClickEvent event)
     {
+        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
+            return;
         String componentId = event.getComponentId();
         if (!componentId.startsWith("ackHint:"))
             return;
