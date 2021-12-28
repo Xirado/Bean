@@ -3,6 +3,7 @@ package at.xirado.bean.event;
 import at.xirado.bean.Bean;
 import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.EmbedUtil;
+import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -25,15 +26,11 @@ public class GuildJoinListener extends ListenerAdapter
         if (isGuildBanned(guild.getIdLong()))
         {
             log.info("Joined banned guild " + name + " with " + memberCount + " members");
-            Bean.getInstance().getShardManager().getShards().get(0).openPrivateChannelById(Bean.OWNER_ID)
-                    .flatMap(chan -> chan.sendMessageEmbeds(EmbedUtil.defaultEmbed("Joined banned guild " + name + "with " + memberCount + "members")))
-                    .queue();
+            Util.sendOwnerDM(EmbedUtil.defaultEmbed("Joined banned guild **" + name + "** with **" + memberCount + "** members"));
             return;
         }
         log.info("Joined guild " + name + " with " + memberCount + " members");
-        Bean.getInstance().getShardManager().getShards().get(0).openPrivateChannelById(Bean.OWNER_ID)
-                .flatMap(chan -> chan.sendMessageEmbeds(EmbedUtil.defaultEmbed("Joined guild " + name + "with " + memberCount + "members")))
-                .queue();
+        Util.sendOwnerDM(EmbedUtil.defaultEmbed("Joined guild **" + name + "** with **" + memberCount + "** members"));
     }
 
     public static boolean isGuildBanned(long guildId)

@@ -109,7 +109,7 @@ public class XPAlertCommand extends SlashCommand
                 return;
             case "dm":
                 String message = json.getString("commands.xp.ranked", member.getAsMention(), String.valueOf(level));
-                Util.sendPM(member.getUser(), message);
+                Util.sendDM(member.getIdLong(), message);
                 return;
             case "current":
                 if (current == null) return;

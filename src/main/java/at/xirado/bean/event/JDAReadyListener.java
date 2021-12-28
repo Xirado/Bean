@@ -5,7 +5,7 @@ import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -21,15 +21,19 @@ public class JDAReadyListener extends ListenerAdapter
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
+    private boolean ready = false;
 
     @Override
-    public void onReady(@NotNull ReadyEvent event)
+    public void onGuildReady(@NotNull GuildReadyEvent event)
     {
+        if (ready)
+            return;
+        ready = true;
         Bean.getInstance().getExecutor().submit(() -> {
             LOGGER.info("Successfully started "+Bean.getInstance().getShardManager().getShards().size()+" shards!");
             Bean.getInstance().getSlashCommandHandler().initialize();
             if (Bean.getInstance().isDebug())
-                LOGGER.warn("Debug mode enabled! Commands will not be executed for users.");
+                LOGGER.warn("Development mode enabled.");
             Bean.getInstance().initCommandCheck();
             JdaLavalink lavalink = Bean.getInstance().getLavalink();
             lavalink.setJdaProvider((shard) -> Bean.getInstance().getShardManager().getShardById(shard));
@@ -44,7 +48,7 @@ public class JDAReadyListener extends ListenerAdapter
                     lavalink.addNode(new URI(url), password);
                 } catch (URISyntaxException e)
                 {
-                    LOGGER.error("Could not add Lavaink node!", e);
+                    LOGGER.error("Could not add Lavalink node!", e);
                 }
             });
         });
@@ -56,7 +60,7 @@ public class JDAReadyListener extends ListenerAdapter
                     .sum();
             Bean.getInstance().getShardManager()
                     .getShardCache()
-                    .forEach(shard -> shard.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching("bean.bz | "+memberCount+" users")));
-        }, 0, 5, TimeUnit.MINUTES);
+                    .forEach(shard -> shard.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching(memberCount+" users | bean.bz")));
+        }, 0, 1, TimeUnit.MINUTES);
     }
 }
