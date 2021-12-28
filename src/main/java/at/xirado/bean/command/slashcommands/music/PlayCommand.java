@@ -189,7 +189,6 @@ public class PlayCommand extends SlashCommand
             @Override
             public void loadFailed(FriendlyException exception)
             {
-                exception.printStackTrace();
                 event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred while loading track!\n`" + exception.getMessage() + "`")).queue();
             }
         });
