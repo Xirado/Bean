@@ -22,6 +22,14 @@ public class GuildJoinListener extends ListenerAdapter
         Guild guild = event.getGuild();
         String name = guild.getName();
         int memberCount = guild.getMemberCount();
+        if (isGuildBanned(guild.getIdLong()))
+        {
+            log.info("Joined banned guild " + name + " with " + memberCount + " members");
+            Bean.getInstance().getShardManager().getShards().get(0).openPrivateChannelById(Bean.OWNER_ID)
+                    .flatMap(chan -> chan.sendMessageEmbeds(EmbedUtil.defaultEmbed("Joined banned guild " + name + "with " + memberCount + "members")))
+                    .queue();
+            return;
+        }
         log.info("Joined guild " + name + " with " + memberCount + " members");
         Bean.getInstance().getShardManager().getShards().get(0).openPrivateChannelById(Bean.OWNER_ID)
                 .flatMap(chan -> chan.sendMessageEmbeds(EmbedUtil.defaultEmbed("Joined guild " + name + "with " + memberCount + "members")))
