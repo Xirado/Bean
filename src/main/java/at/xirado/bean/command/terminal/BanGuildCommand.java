@@ -1,8 +1,14 @@
 package at.xirado.bean.command.terminal;
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.command.ConsoleCommand;
 import at.xirado.bean.event.GuildJoinListener;
 import at.xirado.bean.log.Shell;
+import at.xirado.bean.misc.EmbedUtil;
+import at.xirado.bean.misc.Util;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.util.Arrays;
@@ -40,5 +46,16 @@ public class BanGuildCommand extends ConsoleCommand
         }
         GuildJoinListener.banGuild(guildId, reason);
         Shell.println("Banned guild "+guildId+"!");
+        Guild guildObject = Bean.getInstance().getShardManager().getGuildById(guildId);
+        if (guildObject != null)
+        {
+            MessageEmbed embed = new EmbedBuilder()
+                    .setColor(EmbedUtil.ERROR_COLOR)
+                    .setTitle("Your server " + guildObject.getName() + " has been blacklisted!")
+                    .addField("Reason", reason, true)
+                    .setDescription("No commands will work on this server anymore.\nSend a message to xirado#0001 ("+Bean.OWNER_ID+") to appeal.")
+                    .build();
+            Util.sendDM(guildObject.getOwnerIdLong(), embed);
+        }
     }
 }

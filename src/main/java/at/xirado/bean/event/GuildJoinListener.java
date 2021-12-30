@@ -6,6 +6,8 @@ import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -32,6 +34,30 @@ public class GuildJoinListener extends ListenerAdapter
         log.info("Joined guild " + name + " with " + memberCount + " members");
         Util.sendOwnerDM(EmbedUtil.defaultEmbed("Joined guild **" + name + "** with **" + memberCount + "** members"));
     }
+
+    @Override
+    public void onGuildLeave(@NotNull GuildLeaveEvent event)
+    {
+        Guild guild = event.getGuild();
+        String name = guild.getName();
+        int memberCount = guild.getMemberCount();
+        if (isGuildBanned(guild.getIdLong()))
+        {
+            log.info("Left banned guild " + name + " with " + memberCount + " members");
+            Util.sendOwnerDM(EmbedUtil.defaultEmbed("Left banned guild **" + name + "** with **" + memberCount + "** members"));
+            return;
+        }
+        log.info("Left guild " + name + " with " + memberCount + " members");
+        Util.sendOwnerDM(EmbedUtil.defaultEmbed("Left guild **" + name + "** with **" + memberCount + "** members"));
+    }
+
+    @Override
+    public void onPrivateMessageReceived(@NotNull PrivateMessageReceivedEvent event)
+    {
+        if (event.getAuthor().getIdLong() == event.getJDA().getSelfUser().getIdLong()) return;
+        log.info("[DM]: {} ({}): {}", event.getAuthor().getAsTag(), event.getAuthor().getIdLong(), event.getMessage().getContentRaw());
+    }
+
 
     public static boolean isGuildBanned(long guildId)
     {
