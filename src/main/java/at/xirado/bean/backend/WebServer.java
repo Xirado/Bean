@@ -27,8 +27,6 @@ public class WebServer
     public WebServer(int port)
     {
         port(port);
-        if (Bean.getInstance().getConfig().getBoolean("force_http") != null && !Bean.getInstance().getConfig().getBoolean("force_http"))
-            secure("cert.jks", Bean.getInstance().getConfig().getString("cert_pw"), null, null);
         enableCORS("*", "*", "*");
         get("/guilds", GetGuilds::handle);
         get("/token", GetTokens::handle);
