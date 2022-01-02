@@ -26,6 +26,7 @@ public class WebServer
 
     public WebServer(int port)
     {
+        ipAddress("127.0.0.1");
         port(port);
         enableCORS("*", "*", "*");
         get("/guilds", GetGuilds::handle);
