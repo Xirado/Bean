@@ -210,7 +210,7 @@ public class PlayCommand extends SlashCommand
                 {
                     event.deferChoices(
                             result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
-                    ).queue();
+                    ).queue(s -> {}, e -> {});
                     return;
                 }
                 List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), false);
@@ -221,7 +221,7 @@ public class PlayCommand extends SlashCommand
                         .forEachOrdered(result::add);
                 event.deferChoices(
                         result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
-                ).queue();
+                ).queue(s -> {}, e -> {});
                 return;
             }
             BookmarkCommand.getBookmarks(userId, true)
@@ -240,7 +240,7 @@ public class PlayCommand extends SlashCommand
                 {
                     event.deferChoices(
                             result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
-                    ).queue();
+                    ).queue(s -> {}, e -> {});
                     response.close();
                     return;
                 }
@@ -253,7 +253,7 @@ public class PlayCommand extends SlashCommand
                         .forEachOrdered(result::add);
                 event.deferChoices(
                         result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
-                ).queue();
+                ).queue(s -> {}, e -> {});
                 response.close();
                 return;
             }
@@ -282,7 +282,7 @@ public class PlayCommand extends SlashCommand
                 result.add(new BasicAutocompletionChoice(query.getAsString(), query.getAsString()));
             event.deferChoices(
                     result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
-            ).queue();
+            ).queue(s -> {}, e -> {});
             response.close();
         }
     }
