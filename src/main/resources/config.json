@@ -2,7 +2,6 @@
   "token" : "TOKEN",
   "debug": false,
   "ws_host" : "wss://bean.bz:8000",
-  "force_http": true,
   "ws_password": "youshallnotpass",
   "client_id" : "CLIENT_ID",
   "client_secret" : "CLIENT_SECRET",
