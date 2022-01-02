@@ -1,11 +1,21 @@
 {
-  "token" : "token",
+  "token" : "TOKEN",
   "debug": false,
+  "ws_host" : "wss://bean.bz:8000",
+  "force_http": true,
+  "ws_password": "youshallnotpass",
+  "client_id" : "CLIENT_ID",
+  "client_secret" : "CLIENT_SECRET",
+  "redirect_uri" : "http://localhost:8080/auth/discord",
   "database" : {
     "host": "localhost",
     "database": "Bean",
-    "username": "Bean",
-    "password": "Bean",
+    "username": "user",
+    "password": "password",
     "port": 3306
-  }
+  },
+
+  "lavalink_nodes" : [
+    { "url" : "ws://127.0.0.1:2333", "password" : "youshallnotpass" }
+  ]
 }

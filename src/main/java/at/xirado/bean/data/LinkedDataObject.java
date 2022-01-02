@@ -113,9 +113,15 @@ public class LinkedDataObject
         return this;
     }
 
-    public String toJson() throws JsonProcessingException
+    public String toJson()
     {
-        return MAPPER.writeValueAsString(map);
+        try
+        {
+            return MAPPER.writeValueAsString(map);
+        } catch (JsonProcessingException e)
+        {
+            return null;
+        }
     }
 
     public String toPrettyString() throws JsonProcessingException

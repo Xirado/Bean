@@ -23,19 +23,20 @@ public class GuildData
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(GuildData.class);
 
-    private final long guildID;
+    private final long guildId;
     private final DataObject dataObject;
 
     private Set<ReactionRole> reactionRoles = new HashSet<>();
 
     public GuildData(long guildID, DataObject json)
     {
-        this.guildID = guildID;
+        this.guildId = guildID;
         this.dataObject = json;
         ReactionRole[] reactions = json.isNull("reaction_roles") ? new ReactionRole[0] : json.getArray("reaction_roles")
                 .stream(DataArray::getObject)
                 .map(object -> new ReactionRole(object.getString("emote"), object.getLong("message_id"), object.getLong("role_id")))
                 .toArray(ReactionRole[]::new);
+
         if (reactions.length > 0)
             reactionRoles.addAll(Arrays.asList(reactions));
     }
@@ -111,7 +112,7 @@ public class GuildData
         {
             String jsonString = dataObject.toString();
             new SQLBuilder(sql)
-                    .addParameters(guildID, jsonString, jsonString)
+                    .addParameters(guildId, jsonString, jsonString)
                     .execute();
         }catch (SQLException exception)
         {
@@ -165,12 +166,12 @@ public class GuildData
         return this;
     }
 
-    public Set<Role> getModeratorRoles()
+    public List<Role> getModeratorRoles()
     {
-        Set<Role> roles = new HashSet<>();
+        List<Role> roles = new ArrayList<>();
         if (dataObject.isNull("moderator_roles")) return roles;
         Long[] roleIds = dataObject.getArray("moderator_roles").stream(DataArray::getLong).toArray(Long[]::new);
-        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
+        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
         if (guild == null) return roles;
         for (long roleId : roleIds)
         {
@@ -184,7 +185,7 @@ public class GuildData
     public GuildData addModeratorRoles(Role... roles)
     {
         Checks.notEmpty(roles, "Roles");
-        Set<Role> modRoles = getModeratorRoles();
+        List<Role> modRoles = getModeratorRoles();
         modRoles.addAll(Arrays.asList(roles));
         dataObject.put("moderator_roles", DataArray.fromCollection(modRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toList())));
         return this;
@@ -194,7 +195,7 @@ public class GuildData
     public GuildData removeModeratorRoles(Role... roles)
     {
         Checks.notEmpty(roles, "Roles");
-        Set<Role> modRoles = getModeratorRoles();
+        List<Role> modRoles = getModeratorRoles();
         Arrays.asList(roles).forEach(modRoles::remove);
         dataObject.put("moderator_roles", DataArray.fromCollection(modRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toList())));
         return this;
@@ -203,18 +204,18 @@ public class GuildData
     public boolean isModerator(Member member)
     {
         if (member.hasPermission(Permission.ADMINISTRATOR)) return true;
-        Set<Role> roles = getModeratorRoles();
+        List<Role> roles = getModeratorRoles();
         return CollectionUtils.containsAny(roles, member.getRoles());
     }
 
-    public Set<Role> getDJRoles(boolean includeMods)
+    public List<Role> getDJRoles(boolean includeMods)
     {
-        Set<Role> roles = new HashSet<>();
+        List<Role> roles = new ArrayList<>();
         if (includeMods) roles.addAll(getModeratorRoles());
         if (dataObject.isNull("dj_roles"))
             return roles;
         Long[] roleIds = dataObject.getArray("dj_roles").stream(DataArray::getLong).toArray(Long[]::new);
-        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
+        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
         if (guild == null) return roles;
         for (long roleId : roleIds)
         {
@@ -228,7 +229,7 @@ public class GuildData
     public GuildData addDJRoles(Role... roles)
     {
         Checks.notEmpty(roles, "Roles");
-        Set<Role> djRoles = getDJRoles(false);
+        List<Role> djRoles = getDJRoles(false);
         djRoles.addAll(Arrays.asList(roles));
         dataObject.put("dj_roles", DataArray.fromCollection(djRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toList())));
         return this;
@@ -238,7 +239,7 @@ public class GuildData
     public GuildData removeDJRoles(Role... roles)
     {
         Checks.notEmpty(roles, "Roles");
-        Set<Role> djRoles = getDJRoles(false);
+        List<Role> djRoles = getDJRoles(false);
         Arrays.asList(roles).forEach(djRoles::remove);
         dataObject.put("dj_roles", DataArray.fromCollection(djRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toList())));
         return this;
@@ -247,7 +248,7 @@ public class GuildData
     public boolean isDJ(Member member)
     {
         if (member.hasPermission(Permission.ADMINISTRATOR)) return true;
-        Set<Role> roles = getDJRoles(true);
+        List<Role> roles = getDJRoles(true);
         if (CollectionUtils.containsAny(roles, member.getRoles())) return true;
         if (getDJMembers().contains(member.getIdLong())) return true;
         GuildVoiceState guildVoiceState = member.getVoiceState();
@@ -261,21 +262,21 @@ public class GuildData
         return getDJRoles(false).contains(role);
     }
 
-    public Set<Long> getDJMembers()
+    public List<Long> getDJMembers()
     {
         if (dataObject.isNull("dj_members"))
-            return new HashSet<>();
+            return new ArrayList<>();
         return dataObject.getArray("dj_members")
                         .stream(DataArray::getLong)
                         .filter(Objects::nonNull)
-                        .collect(Collectors.toCollection(HashSet::new));
+                        .collect(Collectors.toList());
     }
 
     @CheckReturnValue
     public GuildData addDJMembers(Member... members)
     {
         Checks.noneNull(members, "Members");
-        Set<Long> djMembers = getDJMembers();
+        List<Long> djMembers = getDJMembers();
         djMembers.addAll(Arrays.stream(members).map(Member::getIdLong).collect(Collectors.toSet()));
         dataObject.put("dj_members", DataArray.fromCollection(djMembers.stream().toList()));
         return this;
@@ -285,27 +286,27 @@ public class GuildData
     public GuildData removeDJMembers(Member... members)
     {
         Checks.notEmpty(members, "Members");
-        Set<Long> djMembers = getDJMembers();
+        List<Long> djMembers = getDJMembers();
         Arrays.asList(members).stream().map(ISnowflake::getIdLong).forEach(djMembers::remove);
         dataObject.put("dj_members", DataArray.fromCollection(djMembers.stream().toList()));
         return this;
     }
 
-    public Set<RoleReward> getRoleRewards()
+    public List<RoleReward> getRoleRewards()
     {
         if (dataObject.isNull("role_rewards"))
-            return new HashSet<>();
+            return new ArrayList<>();
         return dataObject.getArray("role_rewards")
                 .stream(DataArray::getObject)
                 .map(RoleReward::fromData)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     @CheckReturnValue
     public GuildData addRoleReward(int level, long roleId, boolean persist, boolean removeOnNextReward)
     {
         RoleReward roleReward = new RoleReward(level, roleId, persist, removeOnNextReward);
-        Set<RoleReward> currentRewards = new HashSet<>(getRoleRewards());
+        List<RoleReward> currentRewards = new ArrayList<>(getRoleRewards());
         if (hasRoleReward(level))
             currentRewards.remove(getRoleReward(level));
         currentRewards.add(roleReward);
@@ -317,7 +318,7 @@ public class GuildData
     public GuildData removeRoleReward(int level)
     {
         if (!hasRoleReward(level)) return this;
-        Set<RoleReward> currentRewards = new HashSet<>(getRoleRewards());
+        List<RoleReward> currentRewards = new ArrayList<>(getRoleRewards());
         currentRewards.removeIf(reward -> reward.getLevel() == level);
         dataObject.put("role_rewards", DataArray.fromCollection(currentRewards));
         return this;
@@ -336,7 +337,7 @@ public class GuildData
     public RoleReward getLastRoleReward(int starting)
     {
         if (starting < 1) return null;
-        Set<RoleReward> rewards = getRoleRewards();
+        List<RoleReward> rewards = getRoleRewards();
         AtomicInteger integer = new AtomicInteger(starting);
         while (integer.get() > 0)
         {
@@ -361,13 +362,13 @@ public class GuildData
      * @param level The level
      * @return A Set of RoleRewards
      */
-    public Set<RoleReward> getEffectiveRoleRewards(int level)
+    public List<RoleReward> getEffectiveRoleRewards(int level)
     {
         List<RoleReward> rewardList = new ArrayList<>(getAllRoleRewardsUpTo(level));
         if (rewardList.isEmpty())
-            return Collections.emptySet();
+            return Collections.emptyList();
         rewardList.sort(Comparator.comparingInt(RoleReward::getLevel));
-        Set<RoleReward> result = new HashSet<>();
+        List<RoleReward> result = new ArrayList<>();
         RoleReward previous = null;
         for (RoleReward reward : rewardList)
         {
@@ -380,6 +381,52 @@ public class GuildData
         }
         return result;
     }
+
+    public long getBalance(long userId)
+    {
+        try(var rs = new SQLBuilder("SELECT balance from userbalance WHERE guild_id = ? AND user_id = ?").addParameters(guildId, userId).executeQuery())
+        {
+            if (rs.next())
+                return rs.getLong("balance");
+            return 0;
+        } catch (SQLException throwables)
+        {
+            LOGGER.error("Could not get balance for user {} on guild {}!", userId, guildId);
+            return 0;
+        }
+    }
+
+    public void addBalance(long userId, long amount)
+    {
+        long oldBalance = getBalance(userId);
+
+        try
+        {
+            new SQLBuilder("INSERT INTO userbalance (guild_id, user_id, balance) values (?,?,?) ON DUPLICATE KEY UPDATE balance = ?").addParameters(guildId, userId, oldBalance+amount, oldBalance+amount).execute();
+
+        } catch (SQLException throwables)
+        {
+            LOGGER.error("Could not add balance amount {} to user {} on guild {}", amount, userId, guildId);
+        }
+    }
+
+    public void setBalance(long userId, long amount)
+    {
+        try
+        {
+            new SQLBuilder("INSERT INTO userbalance (guild_id, user_id, balance) values (?,?,?) ON DUPLICATE KEY UPDATE balance = ?").addParameters(guildId, userId, amount, amount).execute();
+
+        } catch (SQLException throwables)
+        {
+            LOGGER.error("Could not set balance amount {} to user {} on guild {}", amount, userId, guildId);
+        }
+    }
+
+    public void resetBalance(long userId)
+    {
+        setBalance(userId, 0);
+    }
+
 
     public DataObject toData()
     {

@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Set;
 
 public class DJCommand extends SlashCommand
@@ -114,8 +115,8 @@ public class DJCommand extends SlashCommand
                 }
             }
             case "list" -> {
-                Set<Role> djRoles = guildData.getDJRoles(false);
-                Set<Long> djMembers = guildData.getDJMembers();
+                List<Role> djRoles = guildData.getDJRoles(false);
+                List<Long> djMembers = guildData.getDJMembers();
                 if (djRoles.isEmpty() && djMembers.isEmpty())
                 {
                     ctx.sendSimpleEmbed("There are no DJs!");

@@ -21,7 +21,7 @@ public class CommandArgument
         Checks.notEmpty(argumentString, "Argument");
         Checks.notEmpty(prefix, "Prefix");
         String[] argumentArray = argumentString.split("\\s+");
-        this.command = argumentArray[0].substring(prefix.length());
+        command = argumentArray[0].substring(prefix.length());
         List<String> arguments = new ArrayList<>(Arrays.asList(argumentArray).subList(1, argumentArray.length));
         args = new String[arguments.size()];
         arguments.toArray(args);

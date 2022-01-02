@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GuildManager
@@ -31,6 +32,14 @@ public class GuildManager
         GuildData createdData = createGuildData(guild);
         GUILD_DATA.put(guild.getIdLong(), createdData);
         return createdData;
+    }
+
+    public static Optional<GuildData> optGuildData(long guildId)
+    {
+        if (GUILD_DATA.containsKey(guildId))
+            return Optional.of(GUILD_DATA.get(guildId));
+        GuildData retrievedData = retrieveGuildData(guildId);
+        return Optional.ofNullable(retrievedData);
     }
 
     public static String getGuildDataJSON(long guildId) throws JsonProcessingException

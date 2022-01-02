@@ -27,14 +27,8 @@ public class TestCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
-        ButtonPaginator paginator = new ButtonPaginator.Builder(event.getJDA())
-                .setColor(0x00ff00)
-                .setEventWaiter(Bean.getInstance().getEventWaiter())
-                .addAllowedUsers(event.getUser().getIdLong())
-                .setFooter("Footer")
-                .setItems(new String[]{"lorem", "ipsum","lorem", "ipsum","lorem", "ipsum","lorem", "ipsum","lorem", "ipsum","lorem", "ipsum","lorem", "ipsum","lorem", "ipsum","lorem", "ipsum","lorem", "ipsum","lorem", "ipsum","lorem", "ipsum","lorem", "ipsum","lorem", "ipsum"})
-                .setTimeout(1, TimeUnit.MINUTES)
-                .build();
-        event.deferReply(true).queue(hook -> paginator.paginate(hook.sendMessage(""), 1));
+        Member member = event.getMember();
+        long balance = ctx.getGuildData().getBalance(member.getIdLong());
+        event.reply("Your balance is: $"+balance).queue();
     }
 }

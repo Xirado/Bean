@@ -51,6 +51,13 @@ public class EmbedUtil
                 .build();
     }
 
+    public static EmbedBuilder defaultEmbedBuilder(String content)
+    {
+        return new EmbedBuilder()
+                .setDescription(content)
+                .setColor(DEFAULT_COLOR);
+    }
+
     public static MessageEmbed errorEmbed(String content)
     {
         return new EmbedBuilder()

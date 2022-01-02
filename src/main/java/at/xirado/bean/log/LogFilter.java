@@ -20,19 +20,11 @@ public class LogFilter extends Filter<ILoggingEvent>
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
     private static final Set<Class<?>> FILTERED_CLASSES = new HashSet<>();
 
-    static
-    {
-        addFilteredClass(FriendlyException.class);
-    }
     @Override
     public FilterReply decide(final ILoggingEvent event)
     {
         if (!event.getLevel().isGreaterOrEqual(Level.INFO))
             return FilterReply.DENY;
-        if (event.getLoggerName().startsWith("com.sedmelluq.discord.lavaplayer"))
-        {
-            return FilterReply.DENY;
-        }
         final IThrowableProxy throwableProxy = event.getThrowableProxy();
         if (throwableProxy == null)
         {

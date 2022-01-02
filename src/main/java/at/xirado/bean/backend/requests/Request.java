@@ -36,6 +36,7 @@ public class Request
             {
                 Response response = client.newCall(request).execute();
                 success.accept(response);
+                response.close();
             } catch (Exception ex)
             {
                 failure.accept(ex);
@@ -50,11 +51,11 @@ public class Request
             {
                 Response response = client.newCall(request).execute();
                 success.accept(response);
+                response.close();
             } catch (Exception ex)
             {
                 LOGGER.error("Error occurred while executing Request!", ex);
             }
         });
     }
-
 }

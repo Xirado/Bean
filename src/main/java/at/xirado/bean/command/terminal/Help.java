@@ -19,15 +19,16 @@ public class Help extends ConsoleCommand
     {
         StringBuilder builder = new StringBuilder();
         int neededspaces = 0;
-        for (ConsoleCommand ccmd : Bean.getInstance().getConsoleCommandManager().consoleCommands)
+
+        for (ConsoleCommand ccmd : Bean.getInstance().getConsoleCommandManager().getCommands())
         {
             if (neededspaces < ccmd.getInvoke().length() + 2)
-            {
                 neededspaces = ccmd.getInvoke().length() + 2;
-            }
         }
+
         builder.append("\n");
-        for (ConsoleCommand ccmd : Bean.getInstance().getConsoleCommandManager().consoleCommands)
+
+        for (ConsoleCommand ccmd : Bean.getInstance().getConsoleCommandManager().getCommands())
         {
             builder.append("|» ").append(ccmd.getInvoke());
             int remainingspaces = (neededspaces) - (ccmd.getInvoke().length());
@@ -39,5 +40,4 @@ public class Help extends ConsoleCommand
         }
         System.out.println(builder.toString().trim() + "\n");
     }
-
 }

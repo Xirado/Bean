@@ -10,8 +10,14 @@ plugins {
 }
 
 mainClassName = 'at.xirado.bean.Bean'
+
 group 'at.xirado'
-version '3.0.1-WEBHOOK-INTERACTIONS-DEV'
+version '4.1.0'
+
+shadowJar {
+    archiveFileName = "Bean.jar"
+}
+
 compileJava.options.encoding = 'UTF-8'
 repositories {
     mavenCentral()
@@ -31,23 +37,23 @@ tasks.build {
     dependsOn(tasks.clearResources)
     dependsOn(tasks.shadowJar)
 }
+
 dependencies {
-//    implementation 'net.dv8tion:JDA:4.3.0_331'
     implementation 'com.github.Xirado:JDA:5cc3119'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
     implementation 'com.sparkjava:spark-core:2.9.3'
     implementation 'org.codehaus.groovy:groovy-jsr223:3.0.8'
-    implementation 'com.github.walkyst:lavaplayer-fork:8d31fcb'
-    implementation 'com.sedmelluq:jda-nas:1.1.0'
     implementation 'org.jline:jline:3.20.0'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
     implementation 'ch.qos.logback:logback-classic:1.3.0-alpha5'
     implementation 'com.zaxxer:HikariCP:5.0.0'
-    implementation 'org.fusesource.jansi:jansi:2.3.4'
-    implementation 'com.google.guava:guava:30.1.1-jre'
+    implementation 'org.fusesource.jansi:jansi:2.4.0'
+    implementation 'com.google.guava:guava:31.0.1-jre'
     implementation 'pw.chew:jda-chewtils:1.20.2'
-    implementation group: 'org.scilab.forge', name: 'jlatexmath', version: '1.0.7'
+    implementation 'org.scilab.forge:jlatexmath:1.0.7'
+    implementation 'com.github.freyacodes:Lavalink-Client:8d9b660'
+    implementation 'com.github.thelinmichael:spotify-web-api-java:master-SNAPSHOT'
 }
 
 processResources {

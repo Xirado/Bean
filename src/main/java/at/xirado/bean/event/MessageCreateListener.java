@@ -9,11 +9,13 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 
-public class OnGuildMessageReceived extends ListenerAdapter
+public class MessageCreateListener extends ListenerAdapter
 {
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
     {
+        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
+            return;
         if (event.isWebhookMessage() || event.getAuthor().isBot()) return;
         Member member = event.getMember();
         if (member == null) return;
@@ -23,11 +25,8 @@ public class OnGuildMessageReceived extends ListenerAdapter
         String[] args = content.split("\\s+");
         if (args.length == 1 && event.getMessage().getMentionedUsers().contains(event.getJDA().getSelfUser()) && event.getMessage().getReferencedMessage() == null)
         {
-            event.getMessage().reply("<a:ping:818580038949273621> My prefix is `" + prefix + "`").mentionRepliedUser(false).queue(s ->
-            {
-            }, e ->
-            {
-            });
+            event.getMessage().reply("<a:ping:818580038949273621>")
+                    .mentionRepliedUser(false).queue(s -> {}, e -> {});
             return;
         }
         if (content.startsWith(prefix))

@@ -19,7 +19,6 @@ public abstract class Command
     private final List<Permission> requiredBotPermissions;
     private final List<Long> allowedGuilds;
     private final EnumSet<CommandFlag> commandFlags;
-    private CommandCategory commandCategory;
 
     public Command(String name, String description, String usage)
     {
@@ -34,7 +33,6 @@ public abstract class Command
         requiredBotPermissions = new ArrayList<>();
         allowedGuilds = new ArrayList<>();
         commandFlags = EnumSet.noneOf(CommandFlag.class);
-        commandCategory = CommandCategory.NONE;
     }
 
 
@@ -66,12 +64,6 @@ public abstract class Command
     {
         Checks.notNull(commandFlags, "CommandFlags");
         this.commandFlags.addAll(Arrays.asList(commandFlags));
-    }
-
-    public void setCommandCategory(CommandCategory commandCategory)
-    {
-        Checks.notNull(commandCategory, "CommandCategory");
-        this.commandCategory = commandCategory;
     }
 
     public String getName()
@@ -108,11 +100,6 @@ public abstract class Command
     public List<Long> getAllowedGuilds()
     {
         return allowedGuilds;
-    }
-
-    public CommandCategory getCommandCategory()
-    {
-        return commandCategory;
     }
 
     public EnumSet<CommandFlag> getCommandFlags()
