@@ -3,6 +3,7 @@ package at.xirado.bean.data.database;
 import at.xirado.bean.Bean;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,11 +25,14 @@ public class Database
         {
             if (!isConnected())
             {
-                String host = Bean.getInstance().getConfig().getString("database.host");
-                String database = Bean.getInstance().getConfig().getString("database.database");
-                String username = Bean.getInstance().getConfig().getString("database.username");
-                String password = Bean.getInstance().getConfig().getString("database.password");
-                int port = Bean.getInstance().getConfig().getInt("database.port");
+                DataObject dbConfig = Bean.getInstance().getConfig().optObject("database").orElse(DataObject.empty());
+                if (dbConfig.anyNull("host", "database", "username", "password", "port"))
+                    throw new IllegalStateException("Missing database configuration!");
+                String host = dbConfig.getString("host");
+                String database = dbConfig.getString("database");
+                String username = dbConfig.getString("username");
+                String password = dbConfig.getString("password");
+                int port = dbConfig.getInt("port");
                 config.setJdbcUrl("jdbc:mariadb://" + host + ":" + port + "/" + database);
                 config.setUsername(username);
                 config.setPassword(password);

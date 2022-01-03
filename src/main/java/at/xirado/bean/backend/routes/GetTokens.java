@@ -34,7 +34,7 @@ public class GetTokens
         try
         {
             DataObject object = DataObject.empty();
-            DataObject tokens = WebServer.retrieveTokens(authCode);
+            DataObject tokens = Bean.getInstance().getWebServer().retrieveTokens(authCode);
             if (tokens.getInt("status") > 304 || tokens.isNull("access_token"))
             {
                 response.status(400);

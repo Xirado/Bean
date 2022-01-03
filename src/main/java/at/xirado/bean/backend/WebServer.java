@@ -6,8 +6,6 @@ import at.xirado.bean.backend.routes.*;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import okhttp3.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,15 +15,22 @@ import static spark.Spark.*;
 
 public class WebServer
 {
-    public static final String CLIENT_ID = Bean.getInstance().getConfig().getString("client_id");
-    public static final String CLIENT_SECRET = Bean.getInstance().getConfig().getString("client_secret");
-    public static final String REDIRECT_URI = Bean.getInstance().getConfig().getString("redirect_uri");
+    private final String clientId;
+    private final String clientSecret;
+    private final String redirectUri;
+
     public static final String BASE_URL = "https://discord.com/api/v9";
 
     public static final Map<String, DataObject> USER_CACHE = new ConcurrentHashMap<>();
 
     public WebServer(int port)
     {
+        DataObject config = Bean.getInstance().getConfig();
+        if (config.anyNull("client_id", "client_secret", "redirect_uri"))
+            throw new IllegalStateException("Missing Discord Oauth2 configuration!");
+        clientId = config.getString("client_id");
+        clientSecret = config.getString("client_secret");
+        redirectUri = config.getString("redirect_uri");
         ipAddress("127.0.0.1");
         port(port);
         enableCORS("*", "*", "*");
@@ -46,13 +51,13 @@ public class WebServer
         });
     }
 
-    public static DataObject refreshToken(String refreshToken) throws IOException
+    public DataObject refreshToken(String refreshToken) throws IOException
     {
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
 
         DataObject requestObject = DataObject.empty()
-                .put("client_id", CLIENT_ID)
-                .put("client_secret", CLIENT_SECRET)
+                .put("client_id", clientId)
+                .put("client_secret", clientSecret)
                 .put("grant_type", "refresh_token")
                 .put("refresh_token", refreshToken);
 
@@ -69,53 +74,6 @@ public class WebServer
         Response response = call.execute();
         return DataObject.fromJson(response.body().byteStream());
     }
-
-    public static DataObject handleCache(long expiresOn, String accessToken, String refreshToken) throws IOException
-    {
-        boolean updateToken = false;
-        String oldToken = accessToken;
-        DataObject returnObject = DataObject.empty();
-        if (expiresOn < System.currentTimeMillis()/1000)
-        {
-            DataObject newTokens = refreshToken(refreshToken);
-            accessToken = newTokens.getString("access_token");
-            refreshToken = newTokens.getString("refresh_token");
-            expiresOn = (System.currentTimeMillis()/1000) + newTokens.getLong("expires_in");
-            updateToken = true;
-            returnObject.put("access_token", accessToken)
-                    .put("refresh_token", refreshToken)
-                    .put("expires_on", expiresOn);
-        }
-        if (!updateToken)
-        {
-            returnObject.put("access_token", accessToken)
-                    .put("refresh_token", refreshToken)
-                    .put("expires_on", expiresOn);
-        }
-        WebServer webServer = Bean.getInstance().getWebServer();
-        Map<String, DataObject> userCache = webServer.USER_CACHE;
-        DataObject oldUserCache = userCache.get(oldToken);
-        userCache.remove(oldToken);
-        if (oldUserCache != null)
-        {
-            userCache.put(accessToken, oldUserCache);
-            long cached = oldUserCache.getLong("cached");
-            if (System.currentTimeMillis() < cached+300)
-                returnObject.put("user", oldUserCache);
-            else
-                returnObject.put("user", retrieveUser(accessToken));
-
-        }
-        else
-        {
-            DataObject newUser = WebServer.retrieveUser(accessToken);
-            newUser.put("cached", System.currentTimeMillis()/1000);
-            userCache.put(accessToken, newUser);
-            returnObject.put("user", newUser);
-        }
-        return returnObject;
-    }
-
 
     public static DataObject retrieveUser(String accessToken) throws IOException
     {
@@ -188,16 +146,16 @@ public class WebServer
         });
     }
 
-    public static DataObject retrieveTokens(String code) throws IOException
+    public DataObject retrieveTokens(String code) throws IOException
     {
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
 
         RequestBody requestBody = new FormBody.Builder()
-                .add("client_id", CLIENT_ID)
-                .add("client_secret", CLIENT_SECRET)
+                .add("client_id", clientId)
+                .add("client_secret", clientSecret)
                 .add("grant_type", "authorization_code")
                 .add("code", code)
-                .add("redirect_uri", REDIRECT_URI)
+                .add("redirect_uri", redirectUri)
                 .build();
         Request request = new Request.Builder()
                 .header("Content-Type", "application/x-www-form-urlencoded")
@@ -210,4 +168,18 @@ public class WebServer
         return DataObject.fromJson(response.body().byteStream()).put("status", response.code());
     }
 
+    public String getClientId()
+    {
+        return clientId;
+    }
+
+    public String getClientSecret()
+    {
+        return clientSecret;
+    }
+
+    public String getRedirectUri()
+    {
+        return redirectUri;
+    }
 }

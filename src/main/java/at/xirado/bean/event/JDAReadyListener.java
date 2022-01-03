@@ -38,7 +38,7 @@ public class JDAReadyListener extends ListenerAdapter
             JdaLavalink lavalink = Bean.getInstance().getLavalink();
             lavalink.setJdaProvider((shard) -> Bean.getInstance().getShardManager().getShardById(shard));
             lavalink.setUserId(event.getJDA().getSelfUser().getId());
-            DataObject config = DataObject.fromJson(Bean.getInstance().getConfig().toJson()); // TODO: Use DataObject instead of LinkedDataObject. This is shitty...
+            DataObject config = Bean.getInstance().getConfig();
             DataArray nodes = config.optArray("lavalink_nodes").orElse(DataArray.empty());
             nodes.stream(DataArray::getObject).forEach(node -> {
                 String url = node.getString("url");

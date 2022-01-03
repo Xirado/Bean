@@ -26,14 +26,13 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,7 +52,7 @@ public class Bean
     private static long BUILD_TIME;
     private static Bean instance;
     private final ShardManager shardManager;
-    private final LinkedDataObject config = loadConfig();
+    private final DataObject config = loadConfig();
     private final boolean debug;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setNameFormat("Bean Thread %d").build());
     private final ConsoleCommandManager consoleCommandManager;
@@ -68,13 +67,13 @@ public class Bean
 
     public Bean() throws Exception
     {
-        LavalinkUtil.getPlayerManager().registerSourceManager(new SpotifyAudioSource());
         instance = this;
+        LavalinkUtil.getPlayerManager().registerSourceManager(new SpotifyAudioSource());
         Database.connect();
         Database.awaitReady();
         consoleCommandManager = new ConsoleCommandManager();
         consoleCommandManager.registerAllCommands();
-        debug = config.getBoolean("debug");
+        debug = !config.isNull("debug") && config.getBoolean("debug");
         slashCommandHandler = new SlashCommandHandler();
         commandHandler = new CommandHandler();
         eventWaiter = new EventWaiter();
@@ -86,6 +85,9 @@ public class Bean
                 1,
                 null
         );
+        if (config.isNull("token"))
+            throw new IllegalStateException("Can not start without a token!");
+
         shardManager = DefaultShardManagerBuilder.create(config.getString("token"), getIntents())
                 .setShardsTotal(-1)
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
@@ -121,7 +123,7 @@ public class Bean
 
     public static void main(String[] args)
     {
-        Thread.currentThread().setName("Main-Thread");
+        Thread.currentThread().setName("Main");
         try
         {
             loadPropertiesFile();
@@ -135,7 +137,7 @@ public class Bean
                 LOGGER.error("Could not login to Discord!", ex);
                 return;
             }
-            LOGGER.error("An error occurred starting bot!", e);
+            LOGGER.error("An error occurred while starting the bot!", e);
         }
     }
 
@@ -149,7 +151,6 @@ public class Bean
             BUILD_TIME = Long.parseLong(properties.getProperty("build-time"));
         } catch (Exception e)
         {
-            e.printStackTrace();
             LOGGER.error("An error occurred while reading app.properties file!", e);
             VERSION = "0.0.0";
             BUILD_TIME = 0L;
@@ -186,7 +187,7 @@ public class Bean
         return BUILD_TIME;
     }
 
-    public LinkedDataObject getConfig()
+    public DataObject getConfig()
     {
         return config;
     }
@@ -241,7 +242,7 @@ public class Bean
         return authenticator;
     }
 
-    private LinkedDataObject loadConfig()
+    private DataObject loadConfig()
     {
         File configFile = new File("config.json");
         if (!configFile.exists())
@@ -250,10 +251,9 @@ public class Bean
             if (inputStream == null)
             {
                 LOGGER.error("Could not copy config from resources folder!");
-                return LinkedDataObject.empty();
+                return DataObject.empty();
             }
             Path path = Paths.get(Util.getJarPath() + "/config.json");
-            System.out.println(path.toAbsolutePath());
             try
             {
                 Files.copy(inputStream, path);
@@ -262,7 +262,11 @@ public class Bean
                 LOGGER.error("Could not copy config file!", e);
             }
         }
-        return LinkedDataObject.parse(configFile);
+        try
+        {
+            return DataObject.fromJson(new FileInputStream(configFile));
+        } catch (FileNotFoundException ignored) {}
+        return DataObject.empty();
     }
 
     public WebServer getWebServer()
@@ -393,5 +397,4 @@ public class Bean
             });
         });
     }
-
 }

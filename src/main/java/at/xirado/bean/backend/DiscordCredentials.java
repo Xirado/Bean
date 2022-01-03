@@ -1,5 +1,6 @@
 package at.xirado.bean.backend;
 
+import at.xirado.bean.Bean;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -27,7 +28,7 @@ public class DiscordCredentials
 
     public DiscordCredentials refreshToken() throws IOException
     {
-        DataObject object = WebServer.refreshToken(this.refreshToken);
+        DataObject object = Bean.getInstance().getWebServer().refreshToken(this.refreshToken);
         this.accessToken = object.getString("access_token");
         this.refreshToken = object.getString("refresh_token");
         this.scopes = object.getString("scope").split("\\s+");
