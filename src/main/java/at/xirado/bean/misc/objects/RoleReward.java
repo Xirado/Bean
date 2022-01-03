@@ -25,12 +25,6 @@ public class RoleReward implements Serializable
         this.removeOnNextReward = removeOnNextReward;
     }
 
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(this);
-    }
-
     public int getLevel()
     {
         return level;
