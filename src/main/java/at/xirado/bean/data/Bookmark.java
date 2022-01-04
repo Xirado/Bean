@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 
 public class Bookmark implements IAutocompleteChoice
 {
-    public static final String BOOKMARK_EMOJI = "\uD83D\uDD16";
+    public static final String BOOKMARK_EMOJI = "\uD83D\uDCCC";
     public static final String SCROLL = "\uD83D\uDCDC"; // indicates that this is a playlist
 
     private final String name; // Title of the video or the playlist
