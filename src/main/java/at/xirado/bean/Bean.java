@@ -52,7 +52,6 @@ public class Bean
     private static long BUILD_TIME;
     private static Bean instance;
     private final ShardManager shardManager;
-    private final DataObject config = loadConfig();
     private final boolean debug;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setNameFormat("Bean Thread %d").build());
     private final ConsoleCommandManager consoleCommandManager;
@@ -64,6 +63,8 @@ public class Bean
     private final WebServer webServer;
     private final Authenticator authenticator;
     private final JdaLavalink lavalink;
+
+    private DataObject config = loadConfig();
 
     public Bean() throws Exception
     {
@@ -187,9 +188,14 @@ public class Bean
         return BUILD_TIME;
     }
 
-    public DataObject getConfig()
+    public synchronized DataObject getConfig()
     {
         return config;
+    }
+
+    public synchronized void updateConfig()
+    {
+        this.config = loadConfig();
     }
 
     public ScheduledExecutorService getExecutor()
