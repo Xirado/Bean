@@ -3,6 +3,7 @@
   "debug": false,
   "client_id" : "CLIENT_ID",
   "client_secret" : "CLIENT_SECRET",
+  "innertube_api_key" : "TOKEN",
   "redirect_uri" : "http://localhost:8080/auth/discord",
   "database" : {
     "host": "localhost",

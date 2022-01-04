@@ -33,17 +33,16 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.utils.data.DataArray;
-import okhttp3.Call;
-import okhttp3.Request;
-import okhttp3.Response;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -230,33 +229,6 @@ public class PlayCommand extends SlashCommand
                     .limit(25)
                     .forEach(result::add);
             List<String> valueList = result.stream().map(IAutocompleteChoice::getValue).collect(Collectors.toList());
-            String url = "https://clients1.google.com/complete/search?client=youtube&gs_ri=youtube&hl=en&ds=yt&q="+ URLEncoder.encode(query.getAsString(), StandardCharsets.UTF_8);
-            Request request = new Request.Builder().url(url).build();
-            Call call = Bean.getInstance().getOkHttpClient().newCall(request);
-            Response response = call.execute();
-            if (!response.isSuccessful())
-            {
-                if (!hasSearchEntries)
-                {
-                    event.deferChoices(
-                            result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
-                    ).queue(s -> {}, e -> {});
-                    response.close();
-                    return;
-                }
-                List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), true);
-                searchEntries
-                        .stream()
-                        .filter(x -> !valueList.contains(x.getValue()))
-                        .filter(choice -> StringUtils.startsWithIgnoreCase(choice.getName(), query.getAsString()))
-                        .limit(25-result.size())
-                        .forEachOrdered(result::add);
-                event.deferChoices(
-                        result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
-                ).queue(s -> {}, e -> {});
-                response.close();
-                return;
-            }
             List<String> alreadyAdded = new ArrayList<>();
             if (hasSearchEntries)
             {
@@ -271,19 +243,16 @@ public class PlayCommand extends SlashCommand
                             alreadyAdded.add(entry.getName().toLowerCase(Locale.ROOT));
                         });
             }
-            String string = response.body().string();
-            string = string.substring(19, string.length()-1);
-            DataArray array = DataArray.fromJson(string).getArray(1);
-            array.stream(DataArray::getArray)
-                    .filter(x -> !alreadyAdded.contains(x.getString(0).toLowerCase(Locale.ROOT)))
+            List<String> ytMusicResults = getYoutubeMusicSearchResults(query.getAsString());
+            ytMusicResults.stream()
+                    .filter(x -> !alreadyAdded.contains(x.toLowerCase(Locale.ROOT)))
                     .limit(Util.zeroIfNegative(25-result.size()-alreadyAdded.size()))
-                    .forEach(x -> result.add(new BasicAutocompletionChoice(x.getString(0), x.getString(0))));
+                    .forEach(x -> result.add(new BasicAutocompletionChoice(x, x)));
             if (result.size() == 0)
                 result.add(new BasicAutocompletionChoice(query.getAsString(), query.getAsString()));
             event.deferChoices(
                     result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
             ).queue(s -> {}, e -> {});
-            response.close();
         }
     }
 
@@ -353,5 +322,54 @@ public class PlayCommand extends SlashCommand
             LOGGER.error("Could not add search entry for user "+userId+"!", ex);
 
         }
+    }
+
+    public List<String> getYoutubeMusicSearchResults(String query)
+    {
+        try
+        {
+            DataObject config = Bean.getInstance().getConfig();
+            if (config.isNull("innertube_api_key"))
+                return Collections.emptyList();
+            if (config.isNull("innertube_request_body"))
+            {
+                LOGGER.warn("Missing innertube_request_body config property!");
+                return Collections.emptyList();
+            }
+            URI uri = new URIBuilder()
+                    .setScheme("https")
+                    .setHost("music.youtube.com")
+                    .setPath("/youtubei/v1/music/get_search_suggestions")
+                    .addParameter("key", config.getString("innertube_api_key"))
+                    .build();
+            DataObject body = config.getObject("innertube_request_body");
+            body.put("input", query);
+            RequestBody requestBody = RequestBody.create(MediaType.get("application/json"), body.toString());
+            Request request = new Request.Builder()
+                    .url(uri.toURL())
+                    .post(requestBody)
+                    .addHeader("referer", "https://music.youtube.com/")
+                    .addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
+                    .addHeader("content-type", "application/json")
+                    .build();
+            Call call = Bean.getInstance().getOkHttpClient().newCall(request);
+            Response response = call.execute();
+            DataObject responseBody = DataObject.fromJson(response.body().string());
+            response.close();
+            Optional<DataArray> optContents = responseBody.optArray("contents");
+            if (!optContents.isPresent())
+                return Collections.emptyList();
+            DataObject renderer = optContents.get().getObject(0).getObject("searchSuggestionsSectionRenderer");
+            DataArray contents = renderer.optArray("contents").orElse(DataArray.empty());
+            List<String> results = new ArrayList<>();
+            contents.stream(DataArray::getObject).forEach(content -> {
+                String result = content.getObject("searchSuggestionRenderer").getObject("navigationEndpoint").getObject("searchEndpoint").getString("query");
+                results.add(result);
+            });
+            return results;
+        } catch (Exception e) {
+            LOGGER.warn("Innertube API is broken!", e);
+        }
+        return Collections.emptyList();
     }
 }
