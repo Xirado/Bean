@@ -217,6 +217,7 @@ public class PlayCommand extends SlashCommand
                 searchEntries.stream()
                         .filter(x -> !valueList.contains(x.getValue()))
                         .limit(25-result.size())
+                        .limit(7)
                         .forEachOrdered(result::add);
                 event.deferChoices(
                         result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
