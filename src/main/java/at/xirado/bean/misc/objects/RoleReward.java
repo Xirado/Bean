@@ -67,6 +67,6 @@ public class RoleReward implements Serializable
 
     public static RoleReward fromData(DataObject object)
     {
-        return new RoleReward(object.getInt("level"), object.getLong("role_id"), object.getBoolean("persists"), object.getBoolean("remove_on_next_reward"));
+        return new RoleReward(object.getInt("level"), object.getLong("role_id"), object.isNull("persistant") ? object.getBoolean("persists") : object.getBoolean("persistant"), object.getBoolean("remove_on_next_reward"));
     }
 }

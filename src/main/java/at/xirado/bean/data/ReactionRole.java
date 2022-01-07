@@ -1,10 +1,13 @@
 package at.xirado.bean.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
-public class ReactionRole implements Serializable
+public class ReactionRole implements SerializableData
 {
     private String emote;
 
@@ -49,5 +52,15 @@ public class ReactionRole implements Serializable
         this.emote = emote;
         this.messageId = messageId;
         this.roleId = roleId;
+    }
+
+    @NotNull
+    @Override
+    public DataObject toData()
+    {
+        return DataObject.empty()
+                .put("role_id", roleId)
+                .put("emote", emote)
+                .put("message_id", messageId);
     }
 }

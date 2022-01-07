@@ -143,7 +143,7 @@ public class GuildData
     {
         Checks.noneNull(reactionRoles, "Reaction roles");
         this.reactionRoles.addAll(Arrays.asList(reactionRoles));
-        dataObject.put("reaction_roles", this.reactionRoles.stream().toList());
+        dataObject.put("reaction_roles", DataArray.fromCollection(this.reactionRoles));
         return this;
     }
 
@@ -187,7 +187,9 @@ public class GuildData
         Checks.notEmpty(roles, "Roles");
         List<Role> modRoles = getModeratorRoles();
         modRoles.addAll(Arrays.asList(roles));
-        dataObject.put("moderator_roles", DataArray.fromCollection(modRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toList())));
+        DataArray array = DataArray.empty();
+        modRoles.stream().map(ISnowflake::getIdLong).forEach(array::add);
+        dataObject.put("moderator_roles", array);
         return this;
     }
 
@@ -197,7 +199,9 @@ public class GuildData
         Checks.notEmpty(roles, "Roles");
         List<Role> modRoles = getModeratorRoles();
         Arrays.asList(roles).forEach(modRoles::remove);
-        dataObject.put("moderator_roles", DataArray.fromCollection(modRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toList())));
+        DataArray array = DataArray.empty();
+        modRoles.stream().map(ISnowflake::getIdLong).forEach(array::add);
+        dataObject.put("moderator_roles", modRoles);
         return this;
     }
 
@@ -310,7 +314,18 @@ public class GuildData
         if (hasRoleReward(level))
             currentRewards.remove(getRoleReward(level));
         currentRewards.add(roleReward);
-        dataObject.put("role_rewards", DataArray.fromCollection(currentRewards));
+        DataArray array = DataArray.empty();
+        for (RoleReward reward : currentRewards)
+        {
+            array.add(
+              DataObject.empty()
+                      .put("persistant", reward.isPersistant())
+                      .put("level", reward.getLevel())
+                      .put("role_id", reward.getRoleId())
+                      .put("remove_on_next_reward", reward.doesRemoveOnNextReward())
+            );
+        }
+        dataObject.put("role_rewards", array);
         return this;
     }
 
@@ -320,7 +335,18 @@ public class GuildData
         if (!hasRoleReward(level)) return this;
         List<RoleReward> currentRewards = new ArrayList<>(getRoleRewards());
         currentRewards.removeIf(reward -> reward.getLevel() == level);
-        dataObject.put("role_rewards", DataArray.fromCollection(currentRewards));
+        DataArray array = DataArray.empty();
+        for (RoleReward reward : currentRewards)
+        {
+            array.add(
+                    DataObject.empty()
+                            .put("persistant", reward.isPersistant())
+                            .put("level", reward.getLevel())
+                            .put("role_id", reward.getRoleId())
+                            .put("remove_on_next_reward", reward.doesRemoveOnNextReward())
+            );
+        }
+        dataObject.put("role_rewards", array);
         return this;
     }
 
