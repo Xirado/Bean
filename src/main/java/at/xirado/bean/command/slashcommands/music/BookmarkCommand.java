@@ -97,13 +97,13 @@ public class BookmarkCommand extends SlashCommand
                     @Override
                     public void noMatches()
                     {
-                        event.replyEmbeds(EmbedUtil.errorEmbed("Sorry, that is not a valid track i can play!")).queue();
+                        event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Sorry, that is not a valid track i can play!")).queue();
                     }
 
                     @Override
                     public void loadFailed(FriendlyException exception)
                     {
-                        event.replyEmbeds(EmbedUtil.errorEmbed("Sorry, that is not a valid track i can play!\n"+exception.getLocalizedMessage())).queue();
+                        event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Sorry, that is not a valid track i can play!\n"+exception.getLocalizedMessage())).queue();
                     }
                 });
             }
