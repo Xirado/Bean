@@ -54,6 +54,7 @@ dependencies {
     implementation 'org.scilab.forge:jlatexmath:1.0.7'
     implementation 'com.github.freyacodes:Lavalink-Client:8d9b660'
     implementation 'com.github.thelinmichael:spotify-web-api-java:master-SNAPSHOT'
+    implementation("club.minnced:discord-webhooks:0.7.5")
 }
 
 processResources {

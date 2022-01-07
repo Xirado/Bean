@@ -6,12 +6,13 @@ import at.xirado.bean.command.ConsoleCommandManager;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.handler.CommandHandler;
 import at.xirado.bean.command.handler.SlashCommandHandler;
-import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.event.*;
 import at.xirado.bean.log.Shell;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.AudioManager;
+import club.minnced.discord.webhook.WebhookClient;
+import club.minnced.discord.webhook.WebhookClientBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import lavalink.client.LavalinkUtil;
@@ -64,6 +65,7 @@ public class Bean
     private final Authenticator authenticator;
     private final JdaLavalink lavalink;
 
+    private WebhookClient webhookClient = null;
     private DataObject config = loadConfig();
 
     public Bean() throws Exception
@@ -81,6 +83,9 @@ public class Bean
         Class.forName("at.xirado.bean.translation.LocaleLoader");
         okHttpClient = new OkHttpClient.Builder()
                 .build();
+        if (!config.isNull("webhook_url"))
+            webhookClient = new WebhookClientBuilder(config.getString("webhook_url"))
+                    .build();
         lavalink = new JdaLavalink(
                 null,
                 1,
@@ -88,7 +93,6 @@ public class Bean
         );
         if (config.isNull("token"))
             throw new IllegalStateException("Can not start without a token!");
-
         shardManager = DefaultShardManagerBuilder.create(config.getString("token"), getIntents())
                 .setShardsTotal(-1)
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
@@ -156,6 +160,11 @@ public class Bean
             VERSION = "0.0.0";
             BUILD_TIME = 0L;
         }
+    }
+
+    public WebhookClient getWebhookClient()
+    {
+        return webhookClient;
     }
 
     public static void info(String msg)
