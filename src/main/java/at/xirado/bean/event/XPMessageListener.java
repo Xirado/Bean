@@ -10,6 +10,7 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.RoleReward;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -57,7 +58,10 @@ public class XPMessageListener extends ListenerAdapter
                         Util.closeQuietly(connection);
                         if (xpAmount + currentXP >= xpLeft)
                         {
-                            XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
+                            try
+                            {
+                                XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
+                            } catch (InsufficientPermissionException ignored) {}
                             GuildData data = GuildManager.getGuildData(event.getGuild());
                             if (data.hasRoleReward(level + 1))
                             {
@@ -109,7 +113,10 @@ public class XPMessageListener extends ListenerAdapter
                     Util.closeQuietly(connection);
                     if (xpAmount + currentXP >= xpLeft)
                     {
-                        XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
+                        try
+                        {
+                            XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
+                        } catch (InsufficientPermissionException ignored) {}
                         GuildData data = GuildManager.getGuildData(event.getGuild());
                         if (data.hasRoleReward(level + 1))
                         {
