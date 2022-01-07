@@ -1,5 +1,6 @@
 package at.xirado.bean.command.commands;
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.command.Command;
 import at.xirado.bean.command.CommandContext;
 import at.xirado.bean.command.CommandFlag;
@@ -7,6 +8,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -60,6 +62,7 @@ public class Eval extends Command
         SCRIPT_ENGINE.put("bot", event.getJDA().getSelfUser());
         SCRIPT_ENGINE.put("selfuser", event.getJDA().getSelfUser());
         SCRIPT_ENGINE.put("selfmember", event.getGuild().getSelfMember());
+        SCRIPT_ENGINE.put("log", LoggerFactory.getLogger(Bean.class));
 
         var toEval = new StringBuilder();
         var evalString = context.getArguments().toString();
