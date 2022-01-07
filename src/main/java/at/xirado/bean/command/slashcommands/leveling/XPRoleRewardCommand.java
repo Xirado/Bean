@@ -37,7 +37,7 @@ public class XPRoleRewardCommand extends SlashCommand
                 .addSubcommands(new SubcommandData("list", "Lists all role rewards."))
         );
         setRequiredUserPermissions(Permission.ADMINISTRATOR);
-        setRequiredBotPermissions(Permission.MANAGE_PERMISSIONS, Permission.MANAGE_ROLES);
+        setRequiredBotPermissions(Permission.MANAGE_ROLES);
     }
 
     @Override
