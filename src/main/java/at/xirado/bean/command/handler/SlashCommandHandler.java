@@ -86,11 +86,9 @@ public class SlashCommandHandler
         registerCommand(new UrbanDictionaryCommand());
         registerCommand(new AvatarCommand());
         registerCommand(new ChooseCommand());
-        registerCommand(new JokeCommand());
         registerCommand(new RandomFactCommand());
         registerCommand(new MockCommand());
         registerCommand(new InfoCommand());
-        //registerCommand(new BlackJackCommand());
         registerCommand(new TestCommand());
         registerCommand(new SlapCommand());
     }
