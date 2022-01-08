@@ -42,6 +42,7 @@ public class WebServer
         get("/user", GetUser::handle);
         post("/modifyguild", SetGuildData::handle);
         get("/commands", GetCommands::handle);
+        get("/guilds/:guild/levels", new LeaderboardRoute());
         get("/*", (req, res) -> {
             res.status(404);
             return DataObject.empty()

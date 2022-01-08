@@ -5,6 +5,8 @@ import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +23,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class RankingSystem
 {
@@ -433,6 +436,38 @@ public class RankingSystem
         g2.dispose();
 
         return output;
+    }
+
+    public static DataArray getLeaderboard(long guildId, int page, int itemsPerPage) throws SQLException
+    {
+        var start = page == 1 ? 0 : ((page - 1) * itemsPerPage);
+        var query = new SQLBuilder("SELECT * FROM levels WHERE guildID = ? ORDER by totalXP DESC LIMIT ?, ?", guildId, start, itemsPerPage);
+        try (var rs = query.executeQuery())
+        {
+            DataArray array = DataArray.empty();
+            while (rs.next())
+            {
+                array.add(
+                        DataObject.empty()
+                                .put("user", rs.getLong("userID"))
+                                .put("xp", rs.getLong("totalXP"))
+                                .put("name", rs.getString("name"))
+                                .put("discriminator", rs.getString("discriminator"))
+                );
+            }
+            return array;
+        }
+    }
+
+    public static int getDataCount(long guildId) throws SQLException
+    {
+        var query = new SQLBuilder("SELECT COUNT(*) FROM levels WHERE guildID = ?", guildId);
+        try (var rs = query.executeQuery())
+        {
+            if (rs.next())
+                return rs.getInt("COUNT(*)");
+            return 0;
+        }
     }
 
     public static ArrayList<RankedUser> getTopTen(long guildID)
