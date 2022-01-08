@@ -39,9 +39,7 @@ public class LeaderboardRoute implements Route
             if (pageHeaderParsed > 1)
                 page = pageHeaderParsed;
         }
-        var start = (page == 1 ? 0 : ((page - 1) * 100));
         DataArray result = RankingSystem.getLeaderboard(guildIdLong, page, 100);
-        var end = start+result.length();
         DataObject obj = DataObject.empty()
                 .put("users", result);
         if (availablePages > page)
