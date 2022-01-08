@@ -169,13 +169,13 @@ public class RankingSystem
         }
     }
 
-    public static void addXP(@Nonnull Connection connection, long guildID, long userID, long addedAmount, String name, String discriminator)
+    public static void addXP(@Nonnull Connection connection, long guildID, long userID, long addedAmount, String name, String discriminator, String avatarUrl)
     {
-        var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?";
+        var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator, avatar) values (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?, avatar = ?";
         var totalXP = getTotalXP(connection, guildID, userID) + addedAmount;
         var query = new SQLBuilder(sql)
                 .useConnection(connection)
-                .addParameters(guildID, userID, totalXP, name, discriminator, totalXP, name, discriminator);
+                .addParameters(guildID, userID, totalXP, name, discriminator, avatarUrl, totalXP, name, discriminator, avatarUrl);
         try
         {
             query.execute();
@@ -453,6 +453,7 @@ public class RankingSystem
                                 .put("xp", rs.getLong("totalXP"))
                                 .put("name", rs.getString("name"))
                                 .put("discriminator", rs.getString("discriminator"))
+                                .put("avatar", rs.getString("avatar"))
                 );
             }
             return array;

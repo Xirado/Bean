@@ -84,7 +84,7 @@ public class Database
     private static void executeQueries()
     {
         String[] commands = new String[]{"CREATE TABLE IF NOT EXISTS modcases (uuid VARCHAR(36) PRIMARY KEY, caseType TINYINT, guild BIGINT, user BIGINT, moderator BIGINT, reason VARCHAR(256), createdAt BIGINT, duration BIGINT)",
-                "CREATE TABLE IF NOT EXISTS levels (guildID BIGINT, userID BIGINT, totalXP BIGINT, name VARCHAR(256), discriminator VARCHAR(4), PRIMARY KEY(guildID, userID)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
+                "CREATE TABLE IF NOT EXISTS levels (guildID BIGINT, userID BIGINT, totalXP BIGINT, name VARCHAR(256), discriminator VARCHAR(4), avatar VARCHAR(128), PRIMARY KEY(guildID, userID)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
                 "CREATE TABLE IF NOT EXISTS guildsettings (guildID BIGINT PRIMARY KEY, data JSON CHECK (JSON_VALID(data)))",
                 "CREATE TABLE IF NOT EXISTS usersettings (userID BIGINT PRIMARY KEY, data JSON CHECK (JSON_VALID(data)))",
                 "CREATE TABLE IF NOT EXISTS xpalerts (guildID BIGINT PRIMARY KEY, mode VARCHAR(128))",

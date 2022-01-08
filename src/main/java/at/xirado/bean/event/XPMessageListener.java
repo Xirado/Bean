@@ -29,6 +29,8 @@ public class XPMessageListener extends ListenerAdapter
     private static final Logger LOGGER = LoggerFactory.getLogger(XPMessageListener.class);
     private static final ConcurrentHashMap<Long, Long> timeout = new ConcurrentHashMap<>();
 
+    private static final Random RANDOM = new Random();
+
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
     {
@@ -53,8 +55,8 @@ public class XPMessageListener extends ListenerAdapter
                         int level = RankingSystem.getLevel(currentTotalXP);
                         long currentXP = currentTotalXP - RankingSystem.getTotalXPNeeded(level);
                         long xpLeft = RankingSystem.getXPToLevelUp(level);
-                        int xpAmount = 15 + new Random().nextInt(11);
-                        RankingSystem.addXP(connection, guildID, userID, xpAmount, event.getAuthor().getName(), event.getAuthor().getDiscriminator());
+                        int xpAmount = 15 + RANDOM.nextInt(11);
+                        RankingSystem.addXP(connection, guildID, userID, xpAmount, event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getEffectiveAvatarUrl());
                         Util.closeQuietly(connection);
                         if (xpAmount + currentXP >= xpLeft)
                         {
@@ -69,11 +71,7 @@ public class XPMessageListener extends ListenerAdapter
                                 Role role = event.getGuild().getRoleById(reward.getRoleId());
                                 if (role != null)
                                 {
-                                    event.getGuild().addRoleToMember(userID, role).queue(s ->
-                                    {
-                                    }, e ->
-                                    {
-                                    });
+                                    event.getGuild().addRoleToMember(userID, role).queue(s -> {}, e -> {});
                                     RoleReward oldReward = data.getLastRoleReward(level);
                                     if (oldReward != null)
                                     {
@@ -82,11 +80,7 @@ public class XPMessageListener extends ListenerAdapter
                                             Role oldRole = event.getGuild().getRoleById(oldReward.getRoleId());
                                             if (oldRole != null)
                                             {
-                                                event.getGuild().removeRoleFromMember(userID, oldRole).queue(s ->
-                                                {
-                                                }, e ->
-                                                {
-                                                });
+                                                event.getGuild().removeRoleFromMember(userID, oldRole).queue(s -> {}, e -> {});
                                             }
                                         }
                                     }
@@ -108,8 +102,8 @@ public class XPMessageListener extends ListenerAdapter
                     int level = RankingSystem.getLevel(currentTotalXP);
                     long currentXP = currentTotalXP - RankingSystem.getTotalXPNeeded(level);
                     long xpLeft = RankingSystem.getXPToLevelUp(level);
-                    int xpAmount = 15 + new Random().nextInt(11);
-                    RankingSystem.addXP(connection, guildID, userID, xpAmount, event.getAuthor().getName(), event.getAuthor().getDiscriminator());
+                    int xpAmount = 15 + RANDOM.nextInt(11);
+                    RankingSystem.addXP(connection, guildID, userID, xpAmount, event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getEffectiveAvatarUrl());
                     Util.closeQuietly(connection);
                     if (xpAmount + currentXP >= xpLeft)
                     {
@@ -124,11 +118,7 @@ public class XPMessageListener extends ListenerAdapter
                             Role role = event.getGuild().getRoleById(reward.getRoleId());
                             if (role != null)
                             {
-                                event.getGuild().addRoleToMember(userID, role).queue(s ->
-                                {
-                                }, e ->
-                                {
-                                });
+                                event.getGuild().addRoleToMember(userID, role).queue(s -> {}, e -> {});
                                 RoleReward oldReward = data.getLastRoleReward(level);
                                 if (oldReward != null)
                                 {
@@ -137,11 +127,7 @@ public class XPMessageListener extends ListenerAdapter
                                         Role oldRole = event.getGuild().getRoleById(oldReward.getRoleId());
                                         if (oldRole != null)
                                         {
-                                            event.getGuild().removeRoleFromMember(userID, oldRole).queue(s ->
-                                            {
-                                            }, e ->
-                                            {
-                                            });
+                                            event.getGuild().removeRoleFromMember(userID, oldRole).queue(s -> {}, e -> {});
                                         }
                                     }
                                 }
