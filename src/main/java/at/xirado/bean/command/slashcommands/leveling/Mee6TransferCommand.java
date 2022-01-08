@@ -128,7 +128,7 @@ public class Mee6TransferCommand extends SlashCommand
                                                         {
                                                             EmbedBuilder embedBuilder1 = new EmbedBuilder()
                                                                     .setColor(Color.RED)
-                                                                    .setDescription(ctx.getLocalized("general.unknown_error_occured"));
+                                                                    .setDescription("MEE6 banned my IP. Please try again tomorrow.");
                                                             hook2.editOriginalEmbeds(embedBuilder1.build()).queue();
                                                         }
                                                     }
