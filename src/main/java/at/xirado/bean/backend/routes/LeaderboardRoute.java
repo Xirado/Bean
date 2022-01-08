@@ -43,7 +43,7 @@ public class LeaderboardRoute implements Route
         DataObject obj = DataObject.empty()
                 .put("users", result);
         if (availablePages > page)
-            obj.put("paging", DataObject.empty().put("next", request.url()+"?page="+(page+1)));
+            obj.put("paging", DataObject.empty().put("next", (request.url().replace("http://", "https://"))+"?page="+(page+1)));
         return obj;
     }
 }
