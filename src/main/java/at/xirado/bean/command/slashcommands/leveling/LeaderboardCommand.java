@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.components.Button;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,28 +27,8 @@ public class LeaderboardCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
-        Guild guild = event.getGuild();
-        ArrayList<RankedUser> users = RankingSystem.getTopTen(guild.getIdLong());
-        if (users.size() == 0)
-        {
-            EmbedBuilder builder = new EmbedBuilder()
-                    .setColor(0xff0000)
-                    .setDescription("There are no ranked members!");
-            ctx.reply(builder.build()).setEphemeral(true).queue();
-            return;
-        }
-        StringBuilder builder = new StringBuilder();
-        int index = 1;
-        for (RankedUser user : users)
-        {
-            builder.append("`#").append(index).append("` | **").append(user.getName()).append("#").append(user.getDiscriminator()).append("** ").append(RankingSystem.formatXP(user.getTotalXP())).append(" XP (Level " + RankingSystem.getLevel(user.getTotalXP()) + ")\n");
-            index++;
-        }
-        EmbedBuilder embed = new EmbedBuilder()
-                .setColor(0x00FFFF)
-                .setTitle("Top 10 members")
-                .setDescription(builder.toString().trim())
-                .setAuthor(guild.getName(), null, guild.getIconUrl());
-        ctx.reply(embed.build()).queue();
+        event.reply("Here:")
+                .addActionRow(Button.link("https://bean.bz/leaderboard?id="+ event.getGuild().getIdLong(), "Leaderboard"))
+                .queue();
     }
 }
