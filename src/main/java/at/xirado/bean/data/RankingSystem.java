@@ -23,7 +23,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class RankingSystem
 {
@@ -76,20 +75,20 @@ public class RankingSystem
     /**
      * returns the current level
      *
-     * @param totalXP total xp
+     * @param xp total xp
      * @return the level
      */
-    public static int getLevel(long totalXP)
+    public static int getLevel(long xp)
     {
-        if (totalXP < 100) return 0;
+        if (xp < 100) return 0;
         int counter = 0;
         long total = 0L;
         while (true)
         {
             long neededForNextLevel = getXPToLevelUp(counter);
-            if (neededForNextLevel > totalXP) return counter;
+            if (neededForNextLevel > xp) return counter;
             total += neededForNextLevel;
-            if (total > totalXP) return counter;
+            if (total > xp) return counter;
             counter++;
         }
     }
@@ -513,16 +512,12 @@ public class RankingSystem
 
     public static Color getRankColor(int rank)
     {
-        switch (rank)
-        {
-            case 1:
-                return Color.decode("#D4AF37");
-            case 2:
-                return Color.decode("#BEC2CB");
-            case 3:
-                return Color.decode("#CD7F32");
-            default:
-                return null;
-        }
+        return switch (rank)
+                {
+                    case 1 -> Color.decode("#D4AF37");
+                    case 2 -> Color.decode("#BEC2CB");
+                    case 3 -> Color.decode("#CD7F32");
+                    default -> null;
+                };
     }
 }
