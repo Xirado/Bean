@@ -124,7 +124,7 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
         if (event.getThrowableProxy() != null)
         {
             IThrowableProxy iThrowableProxy = event.getThrowableProxy();
-            String result = ThrowableProxyUtil.asString(iThrowableProxy).length() > 1500 ? "    [!] Stacktrace too long!" : ThrowableProxyUtil.asString(iThrowableProxy);
+            String result = ThrowableProxyUtil.asString(iThrowableProxy).length() > 1500 ? "    [!] Stacktrace too long!\n" : ThrowableProxyUtil.asString(iThrowableProxy)+"\n";
             builder.append(result).append(RESET);
         }
         return builder.toString();
