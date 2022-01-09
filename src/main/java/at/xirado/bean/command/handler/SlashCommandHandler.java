@@ -201,11 +201,11 @@ public class SlashCommandHandler
             } catch (Exception ex)
             {
                 LOGGER.warn("An error occurred while handling autocomplete!", ex);
-                event.deferChoices(Collections.emptyList()).queue();
+                event.deferChoices(Collections.emptyList()).queue(s -> {}, e -> {});
             }
         };
 
-        Bean.getInstance().getExecutor().submit(r);
+        Bean.getInstance().getExecutor().execute(r);
     }
 
     public void handleSlashCommand(@NotNull SlashCommandEvent event, @Nullable Member member)
@@ -307,6 +307,11 @@ public class SlashCommandHandler
 
             } catch (Exception e)
             {
+                LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
+                if (event.isAcknowledged())
+                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {}, ex -> {});
+                else
+                    event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {}, ex -> {});
                 LOGGER.error("Could not execute slash-command", e);
                 StringBuilder path = new StringBuilder("/"+event.getCommandPath().replace("/", " "));
                 for(OptionMapping option : event.getOptions())
@@ -323,11 +328,9 @@ public class SlashCommandHandler
                 event.getJDA().openPrivateChannelById(Bean.OWNER_ID)
                         .flatMap(c -> c.sendMessageEmbeds(builder.build()).content("```fix\n"+ExceptionUtils.getStackTrace(e)+"\n```"))
                         .queue();
-                LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
-                event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {}, ex -> {});
             }
         };
-        Bean.getInstance().getExecutor().submit(r);
+        Bean.getInstance().getExecutor().execute(r);
     }
 
     public List<SlashCommand> getRegisteredCommands()
