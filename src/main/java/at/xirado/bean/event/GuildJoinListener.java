@@ -28,11 +28,9 @@ public class GuildJoinListener extends ListenerAdapter
         if (isGuildBanned(guild.getIdLong()))
         {
             log.info("Joined banned guild " + name + " with " + memberCount + " members");
-            Util.sendOwnerDM(EmbedUtil.defaultEmbed("Joined banned guild **" + name + "** with **" + memberCount + "** members"));
             return;
         }
         log.info("Joined guild " + name + " with " + memberCount + " members");
-        Util.sendOwnerDM(EmbedUtil.defaultEmbed("Joined guild **" + name + "** with **" + memberCount + "** members"));
     }
 
     @Override
@@ -44,11 +42,9 @@ public class GuildJoinListener extends ListenerAdapter
         if (isGuildBanned(guild.getIdLong()))
         {
             log.info("Left banned guild " + name + " with " + memberCount + " members");
-            Util.sendOwnerDM(EmbedUtil.defaultEmbed("Left banned guild **" + name + "** with **" + memberCount + "** members"));
             return;
         }
         log.info("Left guild " + name + " with " + memberCount + " members");
-        Util.sendOwnerDM(EmbedUtil.defaultEmbed("Left guild **" + name + "** with **" + memberCount + "** members"));
     }
 
     @Override
@@ -57,7 +53,6 @@ public class GuildJoinListener extends ListenerAdapter
         if (event.getAuthor().getIdLong() == event.getJDA().getSelfUser().getIdLong()) return;
         log.info("[DM]: {} ({}): {}", event.getAuthor().getAsTag(), event.getAuthor().getIdLong(), event.getMessage().getContentRaw());
     }
-
 
     public static boolean isGuildBanned(long guildId)
     {
