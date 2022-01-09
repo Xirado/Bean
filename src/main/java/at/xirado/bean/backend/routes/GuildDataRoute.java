@@ -1,32 +1,28 @@
 package at.xirado.bean.backend.routes;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.backend.WebServer;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.api.utils.data.DataType;
-import org.apache.commons.codec.binary.Hex;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Set;
 
-public class SetGuildData
+public class GuildDataRoute implements Route
 {
 
     public static final Set<String> ALLOWED_SETTINGS = Set.of("log_channel", "dj_roles", "allow_earrape");
 
-    public static Object handle(Request request, Response response) throws IOException
+    @Override
+    public Object handle(Request request, Response response) throws Exception
     {
         String authHeader = request.headers("authorization");
         if (authHeader == null || !authHeader.startsWith("Token "))

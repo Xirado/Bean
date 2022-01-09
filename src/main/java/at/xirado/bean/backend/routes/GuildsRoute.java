@@ -5,26 +5,23 @@ import at.xirado.bean.backend.Authenticator;
 import at.xirado.bean.backend.DiscordCredentials;
 import at.xirado.bean.backend.DiscordUtils;
 import at.xirado.bean.backend.WebServer;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import org.apache.commons.codec.binary.Hex;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GetGuilds
+public class GuildsRoute implements Route
 {
-
-    public static Object handle(Request request, Response response) throws IOException
+    @Override
+    public Object handle(Request request, Response response) throws Exception
     {
         String authHeader = request.headers("authorization");
         if (authHeader == null || !authHeader.startsWith("Token "))
@@ -94,7 +91,7 @@ public class GetGuilds
         guildArray.addAll(nonInvitedGuilds);
         return DataObject.empty()
                 .put("guilds", guildArray)
-                .put("base_invite_url", GetInviteURL.getInviteURL())
+                .put("base_invite_url", InviteURLRoute.getInviteURL())
                 .put("http_code", guilds.getInt("http_code"))
                 .toString();
     }

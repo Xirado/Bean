@@ -9,15 +9,17 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 
 import java.io.IOException;
 import java.util.List;
 
-public class GetCommands
+public class CommandsRoute implements Route
 {
     public static final long DEV_GUILD_ID = 815597207617142814L;
 
-    public static Object handle(Request request, Response response) throws IOException
+    @Override
+    public Object handle(Request request, Response response) throws Exception
     {
         List<SlashCommand> commands = Bean.getInstance().isDebug()
                 ? Bean.getInstance().getSlashCommandHandler().getRegisteredGuildCommands().get(DEV_GUILD_ID)

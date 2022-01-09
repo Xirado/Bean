@@ -34,14 +34,14 @@ public class WebServer
         ipAddress("127.0.0.1");
         port(port);
         enableCORS("*", "*", "*");
-        get("/guilds", GetGuilds::handle);
-        get("/token", GetTokens::handle);
-        get("/login", GetURL::handle);
-        get("/guild", GetGuildPage::handle);
-        get("/invite", GetInviteURL::handle);
-        get("/user", GetUser::handle);
-        post("/modifyguild", SetGuildData::handle);
-        get("/commands", GetCommands::handle);
+        get("/guilds", new GuildsRoute());
+        get("/token", new TokenRoute());
+        get("/login", new LoginUrlRoute());
+        get("/guild", new GuildPageRoute());
+        get("/invite", new InviteURLRoute());
+        get("/user", new UserRoute());
+        post("/modifyguild", new GuildDataRoute());
+        get("/commands", new CommandsRoute());
         get("/guilds/:guild/levels", new LeaderboardRoute());
         get("/*", (req, res) -> {
             res.status(404);

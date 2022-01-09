@@ -15,15 +15,17 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GetGuildPage
+public class GuildPageRoute implements Route
 {
-    public static Object handle(Request request, Response response) throws IOException
+    @Override
+    public Object handle(Request request, Response response) throws Exception
     {
         String authHeader = request.headers("authorization");
         if (authHeader == null || !authHeader.startsWith("Token "))

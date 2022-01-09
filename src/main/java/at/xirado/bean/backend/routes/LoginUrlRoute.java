@@ -6,14 +6,16 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import org.apache.http.client.utils.URIBuilder;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 
 import java.net.URISyntaxException;
 
-public class GetURL
+public class LoginUrlRoute implements Route
 {
     public static final String HOST = "discord.com";
 
-    public static Object handle(Request request, Response response) throws URISyntaxException
+    @Override
+    public Object handle(Request request, Response response) throws Exception
     {
         URIBuilder builder = new URIBuilder()
                 .setScheme("https")

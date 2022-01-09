@@ -5,13 +5,15 @@ import at.xirado.bean.backend.WebServer;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class GetTokens
+public class TokenRoute implements Route
 {
-    public static Object handle(Request request, Response response) throws IOException
+    @Override
+    public Object handle(Request request, Response response) throws Exception
     {
         if (request.headers("authorization") == null)
         {
