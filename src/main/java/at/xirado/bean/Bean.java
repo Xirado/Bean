@@ -54,7 +54,12 @@ public class Bean
     private static Bean instance;
     private final ShardManager shardManager;
     private final boolean debug;
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setNameFormat("Bean Thread %d").build());
+    private final ScheduledExecutorService scheduledExecutorService =
+            Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(),
+                    new ThreadFactoryBuilder()
+                            .setNameFormat("Bean Thread %d")
+                            .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the Threadpool! (Thread "+t.getName()+")", e))
+                            .build());
     private final ConsoleCommandManager consoleCommandManager;
     private final SlashCommandHandler slashCommandHandler;
     private final CommandHandler commandHandler;
