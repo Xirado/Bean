@@ -3,6 +3,7 @@ package at.xirado.bean.command.slashcommands.leveling;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.RankingSystem;
+import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -38,7 +39,13 @@ public class RankCommand extends SlashCommand
                 commandHook.sendMessage("You are not yet ranked!").queue();
                 return;
             }
-            commandHook.sendMessage("").addFile(RankingSystem.generateLevelCard(user, event.getGuild()), "card.png").queue();
+            byte[] rankCard = RankingSystem.generateLevelCard(user, event.getGuild());
+            if (rankCard == null)
+            {
+                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Could not load rank card! Please try again later!")).queue();
+                return;
+            }
+            commandHook.sendFile(rankCard, "card.png").queue();
         } else
         {
             User user = optionData.getAsUser();
@@ -48,13 +55,13 @@ public class RankCommand extends SlashCommand
                 commandHook.sendMessage("This member is not yet ranked!").queue();
                 return;
             }
-            byte[] levelCard = RankingSystem.generateLevelCard(user, event.getGuild());
-            if (levelCard == null)
+            byte[] rankCard = RankingSystem.generateLevelCard(user, event.getGuild());
+            if (rankCard == null)
             {
-                commandHook.sendMessage("This member is not yet ranked!").queue();
+                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Could not load rank card for "+user.getAsTag()+"! Please try again later!")).queue();
                 return;
             }
-            commandHook.sendMessage("").addFile(levelCard, "card.png").queue();
+            commandHook.sendFile(rankCard, "card.png").queue();
         }
     }
 }

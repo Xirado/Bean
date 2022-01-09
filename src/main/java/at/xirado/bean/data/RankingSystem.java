@@ -92,7 +92,6 @@ public class RankingSystem
             if (total > totalXP) return counter;
             counter++;
         }
-
     }
 
     /**
