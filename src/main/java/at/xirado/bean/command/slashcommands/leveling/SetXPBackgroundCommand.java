@@ -21,6 +21,7 @@ public class SetXPBackgroundCommand extends SlashCommand
                         .addChoice("Green", "card2")
                         .addChoice("Red", "card3")
                         .addChoice("Purple", "card4")
+                        .setRequired(true)
                 )
         );
     }
