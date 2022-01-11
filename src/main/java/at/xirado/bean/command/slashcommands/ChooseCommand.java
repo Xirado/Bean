@@ -4,11 +4,14 @@ import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.text.html.Option;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ChooseCommand extends SlashCommand
@@ -34,15 +37,20 @@ public class ChooseCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
-        String firstOption = event.getOption("1st").getAsString();
-        String secondOption = event.getOption("2nd").getAsString();
-        int i = ThreadLocalRandom.current().nextInt(2);
-        if (i == 0)
-        {
-            ctx.reply("I choose... " + firstOption).queue();
-        } else
-        {
-            ctx.reply("I choose... " + secondOption).queue();
+        List<OptionMapping> chooseOptions = event.getOptions();
+        if(checkOptions(chooseOptions)){
+            ctx.reply("Trying to exploit bots and annoying other people is not nice :(").setEphemeral(true).queue();
+            return;
         }
+        int i = ThreadLocalRandom.current().nextInt(event.getOptions().size());
+        ctx.reply(String.format("I choose... %s", chooseOptions.get(i).getAsString())).queue();
+    }
+
+    public boolean checkOptions(List<OptionMapping> options){ //checks if a option could lead to a mass-ping
+        for(OptionMapping option : options){
+            if(option.getAsString().contains("@everyone") || option.getAsString().contains("@here"))
+                return true;
+        }
+        return false;
     }
 }
