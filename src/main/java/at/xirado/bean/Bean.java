@@ -18,6 +18,7 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import lavalink.client.LavalinkUtil;
 import lavalink.client.io.jda.JdaLavalink;
 import lavaplayer.SpotifyAudioSource;
+import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -104,6 +105,7 @@ public class Bean
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setBulkDeleteSplittingEnabled(false)
                 .setChunkingFilter(ChunkingFilter.NONE)
+                .setGatewayEncoding(GatewayEncoding.ETF)
                 .setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor())
                 .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS)
                 .addEventListeners(new JDAReadyListener(), new SlashCommandListener(), new MessageCreateListener(),
