@@ -20,14 +20,14 @@ public class ChooseCommand extends SlashCommand
         setCommandData(new CommandData("choose", "Chooses between up to 10 things.")
                 .addOption(OptionType.STRING, "1st", "First argument.", true)
                 .addOption(OptionType.STRING, "2nd", "Second argument.", true)
-                .addOption(OptionType.STRING, "3rd", "Third argument.", false)
-                .addOption(OptionType.STRING, "4th", "Fourth argument.", false)
-                .addOption(OptionType.STRING, "5th", "Fifth argument.", false)
-                .addOption(OptionType.STRING, "6th", "Sixth argument.", false)
-                .addOption(OptionType.STRING, "7th", "Seventh argument.", false)
-                .addOption(OptionType.STRING, "8th", "Eighth argument.", false)
-                .addOption(OptionType.STRING, "9th", "Ninth argument.", false)
-                .addOption(OptionType.STRING, "10th", "Tenth argument.", false)
+                .addOption(OptionType.STRING, "3rd", "Third argument.")
+                .addOption(OptionType.STRING, "4th", "Fourth argument.")
+                .addOption(OptionType.STRING, "5th", "Fifth argument.")
+                .addOption(OptionType.STRING, "6th", "Sixth argument.")
+                .addOption(OptionType.STRING, "7th", "Seventh argument.")
+                .addOption(OptionType.STRING, "8th", "Eighth argument.")
+                .addOption(OptionType.STRING, "9th", "Ninth argument.")
+                .addOption(OptionType.STRING, "10th", "Tenth argument.")
         );
         setRunnableInDM(true);
     }
