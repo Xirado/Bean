@@ -60,6 +60,7 @@ public class RedditCommand extends SlashCommand
             Call call = client.newCall(request);
             Response response = call.execute();
             DataObject object = DataObject.fromJson(response.body().string());
+            response.close();
             if (!response.isSuccessful())
             {
                 if (!object.isNull("message"))
