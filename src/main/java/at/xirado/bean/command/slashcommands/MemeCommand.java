@@ -19,7 +19,7 @@ public class MemeCommand extends SlashCommand {
     public MemeCommand()
     {
         setCommandData(new CommandData("meme", "Gets a random random Meme from a specific subreddit")
-                .addOptions(new OptionData(OptionType.STRING, "subreddit", "Select the Subreddit you want to get the Meme from", true)
+                .addOptions(new OptionData(OptionType.STRING, "subreddit", "Select the Subreddit you want to get the Meme from")
                         .addChoice("r/memes", "memes")
                         .addChoice("r/me_irl", "me_irl")
                         .addChoice("r/ProgrammerHumor", "programmerhumor")
