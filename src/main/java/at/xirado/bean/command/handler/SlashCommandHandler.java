@@ -91,7 +91,7 @@ public class SlashCommandHandler
         registerCommand(new InfoCommand());
         registerCommand(new TestCommand());
         registerCommand(new SlapCommand());
-        registerCommand(new MemeCommand());
+        registerCommand(new RedditCommand());
     }
 
     public void updateCommands(Consumer<List<Command>> success, Consumer<Throwable> failure)
