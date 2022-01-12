@@ -163,7 +163,12 @@
 		},
 		"xp": {
 			"ranked" : "Hey {}, you just ranked up to level **{}**!"
-		}
+		},
+		"meme":{
+	        "api_down": "The API cannot be reached at the moment. Please try again later!",
+			"subreddit_not_existing": "Something went wrong here!\\nMake sure you spelled your subreddit correct and try again!\"",
+			"source" : "Source"
+        }
 	},
 	"time": {
 		"january" : "January",

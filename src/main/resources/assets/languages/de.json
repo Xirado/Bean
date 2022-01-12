@@ -163,6 +163,11 @@
 		},
 		"xp": {
 			"ranked" : "Hey {}, du bist gerade auf Level **{}** aufgestiegen!"
+		},
+		"meme":{
+			"api_down": "Die API kann momentan nicht erreicht werden. Bitte versuche es später erneut!",
+			"subreddit_not_existing": "Sieht aus als wär hier was schiefgelaufen!\nVersichere dich dass du deinen Subreddit korrekt geschrieben hast und versuche es erneut!",
+			"source" : "Quelle"
 		}
 	},
 	"time": {
