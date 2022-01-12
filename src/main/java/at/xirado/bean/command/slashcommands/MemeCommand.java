@@ -44,7 +44,7 @@ public class MemeCommand extends SlashCommand {
                 return;
             }
 
-            if (json.getBoolean("nsfw")&&!event.getTextChannel().isNSFW())
+            if (json.getBoolean("nsfw") && !event.getTextChannel().isNSFW())
             {
                 ctx.replyError(ctx.getLocalized("commands.meme.is_nsfw")).setEphemeral(true).queue();
                 return;
