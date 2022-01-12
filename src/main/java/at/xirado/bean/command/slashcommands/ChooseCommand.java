@@ -4,20 +4,30 @@ import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ChooseCommand extends SlashCommand
 {
     public ChooseCommand()
     {
-        setCommandData(new CommandData("choose", "Chooses between 2 things.")
+        setCommandData(new CommandData("choose", "Chooses between up to 10 things.")
                 .addOption(OptionType.STRING, "1st", "First argument.", true)
                 .addOption(OptionType.STRING, "2nd", "Second argument.", true)
+                .addOption(OptionType.STRING, "3rd", "Third argument.")
+                .addOption(OptionType.STRING, "4th", "Fourth argument.")
+                .addOption(OptionType.STRING, "5th", "Fifth argument.")
+                .addOption(OptionType.STRING, "6th", "Sixth argument.")
+                .addOption(OptionType.STRING, "7th", "Seventh argument.")
+                .addOption(OptionType.STRING, "8th", "Eighth argument.")
+                .addOption(OptionType.STRING, "9th", "Ninth argument.")
+                .addOption(OptionType.STRING, "10th", "Tenth argument.")
         );
         setRunnableInDM(true);
     }
@@ -26,15 +36,8 @@ public class ChooseCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
-        String firstOption = event.getOption("1st").getAsString();
-        String secondOption = event.getOption("2nd").getAsString();
-        int i = ThreadLocalRandom.current().nextInt(2);
-        if (i == 0)
-        {
-            ctx.reply("I choose... " + firstOption).queue();
-        } else
-        {
-            ctx.reply("I choose... " + secondOption).queue();
-        }
+        List<OptionMapping> chooseOptions = event.getOptions();
+        int i = ThreadLocalRandom.current().nextInt(event.getOptions().size());
+        ctx.reply(String.format("I choose... %s", chooseOptions.get(i).getAsString())).queue();
     }
 }
