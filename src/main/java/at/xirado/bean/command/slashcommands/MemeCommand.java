@@ -43,18 +43,19 @@ public class MemeCommand extends SlashCommand {
                 ctx.replyError(ctx.getLocalized("commands.meme.api_down")).queue();
                 return;
             }
-            if(!json.getBoolean("nsfw")){
-                EmbedBuilder builder = new EmbedBuilder()
-                        .setTitle(json.getString("title"))
-                        .setImage(json.getString("url"))
-                        .setDescription("[" + ctx.getLocalized("commands.meme.source") + "](" + json.getString("postLink") + ")")
-                        .setColor(0x152238);
-                ctx.reply(builder.build()).queue();
-            }
-            else{
+
+            if (json.getBoolean("nsfw")&&!event.getTextChannel().isNSFW())
+            {
                 ctx.replyError(ctx.getLocalized("commands.meme.is_nsfw")).setEphemeral(true).queue();
+                return;
             }
 
+            EmbedBuilder builder = new EmbedBuilder()
+                 .setTitle(json.getString("title"))
+                 .setImage(json.getString("url"))
+                 .setDescription("[" + ctx.getLocalized("commands.meme.source") + "](" + json.getString("postLink") + ")")
+                 .setColor(0x152238);
+            ctx.reply(builder.build()).queue();
         } catch (Exception e)
         {
             ctx.replyError(ctx.getLocalized("general.unknown_error_occured")).queue();
