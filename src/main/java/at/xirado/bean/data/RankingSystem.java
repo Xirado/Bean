@@ -22,7 +22,6 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 public class RankingSystem
 {
