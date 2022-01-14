@@ -78,7 +78,7 @@ public class RedditCommand extends SlashCommand
 
             EmbedBuilder builder = new EmbedBuilder()
                     .setTitle(object.getString("title"))
-                    .setImage(object.getString("url"))
+                    .setImage("SPOILER_"+object.getString("url"))
                     .setDescription("[" + ctx.getLocalized("commands.meme.source") + "](" + object.getString("postLink") + ")")
                     .setFooter("r/" + object.getString("subreddit"))
                     .setColor(0x152238);
