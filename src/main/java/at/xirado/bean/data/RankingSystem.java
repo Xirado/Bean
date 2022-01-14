@@ -469,31 +469,6 @@ public class RankingSystem
         }
     }
 
-    public static ArrayList<RankedUser> getTopTen(long guildID)
-    {
-        String sql = "SELECT * FROM levels WHERE guildID = ? ORDER by totalXP DESC LIMIT 10";
-        var query = new SQLBuilder(sql)
-                .addParameter(guildID);
-        try (var rs = query.executeQuery())
-        {
-            ArrayList<RankedUser> rankedUsers = new ArrayList<>();
-            while (rs.next())
-            {
-                long userID = rs.getLong("userID");
-                long totalXP = rs.getLong("totalXP");
-                String name = rs.getString("name");
-                String discriminator = rs.getString("discriminator");
-                rankedUsers.add(new RankedUser(guildID, userID, totalXP, name, discriminator));
-            }
-            return rankedUsers;
-        }catch (SQLException ex)
-        {
-            LOGGER.error("Could not get leaderboard for guild " + guildID + "!", ex);
-            return new ArrayList<>();
-        }
-    }
-
-
     public static int getRank(long guildID, long userID)
     {
         String qry = "SELECT totalXP, FIND_IN_SET( totalXP, ( SELECT GROUP_CONCAT( totalXP ORDER BY totalXP DESC ) FROM levels WHERE guildID = ? )) AS rank FROM levels WHERE guildID = ? and userID = ?";
