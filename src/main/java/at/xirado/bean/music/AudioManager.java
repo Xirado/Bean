@@ -1,9 +1,7 @@
 package at.xirado.bean.music;
 
-import at.xirado.bean.misc.objects.CachedMessage;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import net.dv8tion.jda.api.sharding.ShardManager;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
