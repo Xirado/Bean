@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class GuildMemberJoinListener extends ListenerAdapter
 {
@@ -40,7 +41,7 @@ public class GuildMemberJoinListener extends ListenerAdapter
             }
             if (!rolesToAdd.isEmpty())
             {
-                event.getGuild().modifyMemberRoles(event.getMember(), rolesToAdd).queue(s -> {}, e -> {});
+                event.getGuild().modifyMemberRoles(event.getMember(), rolesToAdd).queueAfter(10, TimeUnit.SECONDS); // delay due to possible race condition with other bots
             }
         }
     }
