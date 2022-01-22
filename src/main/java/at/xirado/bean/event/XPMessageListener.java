@@ -12,6 +12,8 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,11 @@ public class XPMessageListener extends ListenerAdapter
         if (event.getAuthor().isBot() || event.isWebhookMessage() || event.getMessage().getType().isSystem()) return;
         if (event.getMessage().getContentRaw().startsWith(GuildManager.getGuildData(event.getGuild()).getPrefix()))
             return;
+        GuildData data = GuildManager.getGuildData(event.getGuild());
+        DataObject dataObject = data.toData();
+        DataArray disabledChannels = dataObject.optArray("no_xp_channels").orElse(DataArray.empty());
+        if (disabledChannels.stream(DataArray::getString).anyMatch(x -> x.equals(event.getChannel().getId())))
+            return;
         Bean.getInstance().getExecutor().submit(() ->
         {
             long userID = event.getAuthor().getIdLong();
@@ -64,7 +71,6 @@ public class XPMessageListener extends ListenerAdapter
                             {
                                 XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
                             } catch (InsufficientPermissionException ignored) {}
-                            GuildData data = GuildManager.getGuildData(event.getGuild());
                             if (data.hasRoleReward(level + 1))
                             {
                                 RoleReward reward = data.getRoleReward(level + 1);
@@ -111,7 +117,6 @@ public class XPMessageListener extends ListenerAdapter
                         {
                             XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
                         } catch (InsufficientPermissionException ignored) {}
-                        GuildData data = GuildManager.getGuildData(event.getGuild());
                         if (data.hasRoleReward(level + 1))
                         {
                             RoleReward reward = data.getRoleReward(level + 1);

@@ -19,7 +19,7 @@ import java.util.Set;
 public class GuildDataRoute implements Route
 {
 
-    public static final Set<String> ALLOWED_SETTINGS = Set.of("log_channel", "dj_roles", "allow_earrape");
+    public static final Set<String> ALLOWED_SETTINGS = Set.of("log_channel", "dj_roles", "allow_earrape", "no_xp_channels");
 
     @Override
     public Object handle(Request request, Response response) throws Exception

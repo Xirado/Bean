@@ -163,7 +163,12 @@
 		},
 		"xp": {
 			"ranked" : "Hey {}, you just ranked up to level **{}**!"
-		}
+		},
+		"meme":{
+			"api_down": "The API cannot be reached at the moment. Please try again later!",
+			"source" : "Source",
+			"is_nsfw": "This is a NSFW Meme! In order for you to receive NSFW Memes your channel needs to be flagged as NSFW!"
+        }
 	},
 	"time": {
 		"january" : "January",
