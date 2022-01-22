@@ -86,7 +86,7 @@ public class PlayCommand extends SlashCommand
                 link.connect(voiceState.getChannel());
             } catch (PermissionException exception)
             {
-                event.replyEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
+                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
                 return;
             }
             if (voiceState.getChannel() instanceof StageChannel)
