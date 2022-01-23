@@ -21,13 +21,13 @@ public class LeaderboardCommand extends SlashCommand
 
     public LeaderboardCommand()
     {
-        setCommandData(new CommandData("leaderboard", "Gets the top 10 members of a server."));
+        setCommandData(new CommandData("leaderboard", "Gets the most active members of a server."));
     }
 
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
-        event.reply("Here:")
+        event.reply("**Visit the leaderboard here:**")
                 .addActionRow(Button.link("https://bean.bz/leaderboard?id="+ event.getGuild().getIdLong(), "Leaderboard"))
                 .queue();
     }
