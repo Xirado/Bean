@@ -16,10 +16,12 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.io.jda.JdaLink;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -157,7 +159,11 @@ public class PlayCommand extends SlashCommand
                 {
                     amount += "\n**Now playing** " + Util.titleMarkdown(playlist.getTracks().get(0));
                 }
-                event.getHook().sendMessageEmbeds(ctx.getSimpleEmbed(amount)).queue();
+                EmbedBuilder embed = EmbedUtil.defaultEmbedBuilder(amount);
+                if (playlist.getTracks().get(0) instanceof YoutubeAudioTrack)
+                    embed.setThumbnail("https://img.youtube.com/vi/" + playlist.getTracks().get(0).getIdentifier() + "/mqdefault.jpg");
+                embed.setFooter(playlist.getName());
+                event.getHook().sendMessageEmbeds(embed.build()).queue();
                 if (!Hints.hasAcknowledged(userId, "bookmark") && !isBookmarked)
                 {
                     event.getHook().sendMessageEmbeds(BOOKMARK_HINT_EMBED)
