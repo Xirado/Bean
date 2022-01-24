@@ -4,7 +4,7 @@ import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.player.LavalinkPlayer;
-import lavaplayer.SpotifyTrack;
+import at.xirado.bean.lavaplayer.SpotifyTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 

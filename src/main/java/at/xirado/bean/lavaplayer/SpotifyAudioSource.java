@@ -1,4 +1,4 @@
-package lavaplayer;
+package at.xirado.bean.lavaplayer;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;

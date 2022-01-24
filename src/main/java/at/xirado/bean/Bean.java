@@ -17,7 +17,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import lavalink.client.LavalinkUtil;
 import lavalink.client.io.jda.JdaLavalink;
-import lavaplayer.SpotifyAudioSource;
+import at.xirado.bean.lavaplayer.SpotifyAudioSource;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
