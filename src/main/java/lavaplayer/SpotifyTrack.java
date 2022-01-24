@@ -1,99 +1,91 @@
 package lavaplayer;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.track.*;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity;
+import com.sedmelluq.discord.lavaplayer.track.AudioItem;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
+import com.sedmelluq.discord.lavaplayer.track.AudioReference;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import com.sedmelluq.discord.lavaplayer.track.DelegatedAudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.InternalAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor;
-import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
-import com.wrapper.spotify.model_objects.specification.Track;
-import com.wrapper.spotify.model_objects.specification.TrackSimplified;
-import lavalink.client.LavalinkUtil;
+import se.michaelthelin.spotify.model_objects.specification.Album;
+import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
+import se.michaelthelin.spotify.model_objects.specification.Image;
+import se.michaelthelin.spotify.model_objects.specification.Track;
+import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
 
-public class SpotifyTrack extends DelegatedAudioTrack
-{
-    private final SpotifyAudioSource source;
-    private String isrc;
+public class SpotifyTrack extends DelegatedAudioTrack{
 
-    public SpotifyTrack(String title, String identifier, ArtistSimplified[] artists, Integer trackDuration, SpotifyAudioSource source)
-    {
-        this(new AudioTrackInfo(title, artists[0].getName(), trackDuration.longValue(), identifier, false, "https://open.spotify.com/track/" + identifier), source);
+    private final String isrc;
+    private final String artworkURL;
+    private final SpotifyAudioSource spotifyAudioSource;
+
+    public SpotifyTrack(String title, String identifier, String isrc, Image[] images, String uri, ArtistSimplified[] artists, Integer trackDuration, SpotifyAudioSource spotifySourceManager){
+        this(new AudioTrackInfo(title,
+                artists.length == 0 ? "unknown" : artists[0].getName(),
+                trackDuration.longValue(),
+                identifier,
+                false,
+                "https://open.spotify.com/track/" + identifier
+        ), isrc, images.length == 0 ? null : images[0].getUrl(), spotifySourceManager);
     }
 
-    public SpotifyTrack(AudioTrackInfo trackInfo, SpotifyAudioSource source)
-    {
+    public SpotifyTrack(AudioTrackInfo trackInfo, String isrc, String artworkURL, SpotifyAudioSource spotifySourceManager){
         super(trackInfo);
-        this.source = source;
-    }
-
-    public SpotifyTrack setIsrc(String isrc)
-    {
         this.isrc = isrc;
-        return this;
+        this.artworkURL = artworkURL;
+        this.spotifyAudioSource = spotifySourceManager;
     }
 
-    public String getISRC()
-    {
-        return isrc;
+    public static SpotifyTrack of(TrackSimplified track, Album album, SpotifyAudioSource spotifySourceManager){
+        return new SpotifyTrack(track.getName(), track.getId(), null, album.getImages(), track.getUri(), track.getArtists(), track.getDurationMs(), spotifySourceManager);
     }
 
-    public boolean hasISRC()
-    {
-        return isrc != null;
+    public static SpotifyTrack of(Track track, SpotifyAudioSource spotifySourceManager){
+        return new SpotifyTrack(track.getName(), track.getId(), track.getExternalIds().getExternalIds().getOrDefault("isrc", null), track.getAlbum().getImages(), track.getUri(), track.getArtists(), track.getDurationMs(), spotifySourceManager);
     }
 
-    public static SpotifyTrack of(TrackSimplified track, SpotifyAudioSource source)
-    {
-        return new SpotifyTrack(track.getName(), track.getId() != null ? track.getId() : track.getUri(), track.getArtists(), track.getDurationMs(), source);
+    public String getISRC(){
+        return this.isrc;
     }
 
-    public static SpotifyTrack of(Track track, SpotifyAudioSource source)
-    {
-        return new SpotifyTrack(track.getName(), track.getId() != null ? track.getId() : track.getUri(), track.getArtists(), track.getDurationMs(), source);
+    public String getArtworkURL(){
+        return this.artworkURL;
+    }
+
+    private String getQuery(){
+        var query = "ytsearch:" + trackInfo.title;
+        if(!trackInfo.author.equals("unknown")){
+            query += " " + trackInfo.author;
+        }
+        return query;
     }
 
     @Override
-    public void process(LocalAudioTrackExecutor executor) throws Exception
-    {
-        AudioItem delegate = getDelegate();
-
-        if (delegate == null)
-            throw new RuntimeException("No matching youtube track found");
-
-        if (delegate instanceof AudioPlaylist)
-            delegate = ((AudioPlaylist) delegate).getTracks().get(0);
-
-        if (delegate instanceof InternalAudioTrack)
-        {
-            processDelegate((InternalAudioTrack) delegate, executor);
-            return;
+    public void process(LocalAudioTrackExecutor executor) throws Exception{
+        AudioItem track = null;
+        if(this.isrc != null){
+            track = this.spotifyAudioSource.loadItem(null, new AudioReference("ytsearch:\"" + this.isrc + "\"", null));
+        }
+        if(track == null){
+            track = this.spotifyAudioSource.loadItem(null, new AudioReference(getQuery(), null));
         }
 
-        throw new RuntimeException("No matching youtube track found");
+        if(track instanceof AudioPlaylist){
+            track = ((AudioPlaylist) track).getTracks().get(0);
+        }
+        if(track instanceof InternalAudioTrack){
+            processDelegate((InternalAudioTrack) track, executor);
+            return;
+        }
+        throw new FriendlyException("No matching Spotify track found", Severity.COMMON, new RuntimeException());
     }
 
     @Override
-    public AudioSourceManager getSourceManager()
-    {
-        return this.source;
+    public AudioSourceManager getSourceManager(){
+        return this.spotifyAudioSource;
     }
 
-    private boolean hasResult(AudioItem item)
-    {
-        return item instanceof AudioTrack || item instanceof AudioPlaylist;
-    }
-
-    private AudioItem getDelegate()
-    {
-        AudioPlayerManager apm = LavalinkUtil.getPlayerManager();
-        YoutubeAudioSourceManager asm = apm.source(YoutubeAudioSourceManager.class);
-        AudioItem audioItem = null;
-        if (hasISRC())
-            audioItem = asm.loadItem(apm, new AudioReference("ytsearch:\"" + getISRC() + "\"", null));
-        if (!hasResult(audioItem))
-            audioItem = asm.loadItem(apm, new AudioReference("ytsearch:" + trackInfo.title + " " + trackInfo.author, null));
-        if (!hasResult(audioItem))
-            return null;
-        return audioItem;
-    }
 }
