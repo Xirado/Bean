@@ -21,6 +21,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.io.jda.JdaLink;
+import lavaplayer.SpotifyTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
@@ -60,6 +61,7 @@ public class PlayCommand extends SlashCommand
                 .addOptions(new OptionData(OptionType.STRING, "query", "Youtube search term or a URL that is supported.", true).setAutoComplete(true))
                 .addOptions(new OptionData(OptionType.STRING, "provider", "Provider to search in. (Ignore if you put a direct link)", false)
                         .addChoice("Youtube (Default)", "ytsearch:")
+                        .addChoice("Spotify", "spsearch:")
                         .addChoice("Soundcloud", "scsearch:")
                         .addChoice("Youtube Music", "ytmsearch:")
                 )
@@ -112,7 +114,7 @@ public class PlayCommand extends SlashCommand
         }
         long userId = event.getUser().getIdLong();
         long channelId = event.getChannel().getIdLong();
-        final String rawQuery = event.getOption("query").getAsString();
+        String rawQuery = event.getOption("query").getAsString();
         link.getRestClient().loadItem(query, new AudioLoadResultHandler()
         {
             @Override
@@ -162,6 +164,8 @@ public class PlayCommand extends SlashCommand
                 EmbedBuilder embed = EmbedUtil.defaultEmbedBuilder(amount);
                 if (playlist.getTracks().get(0) instanceof YoutubeAudioTrack)
                     embed.setThumbnail("https://img.youtube.com/vi/" + playlist.getTracks().get(0).getIdentifier() + "/mqdefault.jpg");
+                else if (playlist.getTracks().get(0) instanceof SpotifyTrack track)
+                    embed.setThumbnail(track.getArtworkURL());
                 embed.setFooter(playlist.getName());
                 event.getHook().sendMessageEmbeds(embed.build()).queue();
                 if (!Hints.hasAcknowledged(userId, "bookmark") && !isBookmarked)
