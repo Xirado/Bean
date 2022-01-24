@@ -1,10 +1,10 @@
 package at.xirado.bean.misc;
 
 import at.xirado.bean.music.GuildAudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.player.LavalinkPlayer;
+import lavaplayer.SpotifyTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -31,9 +31,9 @@ public class MusicUtil
             builder.setDescription("**Added** " + Util.titleMarkdown(track) + " **to the queue!** (**" + FormatUtil.formatTime(track.getDuration()) + "**)");
         }
         if (track instanceof YoutubeAudioTrack)
-        {
             builder.setThumbnail("https://img.youtube.com/vi/" + track.getIdentifier() + "/mqdefault.jpg");
-        }
+        else if (track instanceof SpotifyTrack spotifyTrack)
+            builder.setThumbnail(spotifyTrack.getArtworkURL());
         return builder.build();
     }
 }
