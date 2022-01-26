@@ -81,6 +81,7 @@ public class SlashCommandHandler
         registerCommand(new RepeatCommand());
         registerCommand(new VoteSkipCommand());
         registerCommand(new SkipToCommand());
+        registerCommand(new PlayerCommand());
         registerCommand(new BookmarkCommand());
         registerCommand(new LaTeXCommand());
         registerCommand(new UrbanDictionaryCommand());

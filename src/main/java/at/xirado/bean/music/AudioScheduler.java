@@ -1,14 +1,17 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.lavaplayer.SpotifyTrack;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.MusicUtil;
 import at.xirado.bean.misc.objects.TrackInfo;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavalinkPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -18,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class AudioScheduler extends PlayerEventListenerAdapter
 {
@@ -26,15 +30,17 @@ public class AudioScheduler extends PlayerEventListenerAdapter
 
     private final LavalinkPlayer player;
     private final BlockingQueue<AudioTrack> queue;
+    private final GuildAudioPlayer guildAudioPlayer;
     private final long guildId;
     private boolean repeat = false;
     private AudioTrack lastTrack;
 
-    public AudioScheduler(LavalinkPlayer player, long guildId)
+    public AudioScheduler(LavalinkPlayer player, long guildId, GuildAudioPlayer guildAudioPlayer)
     {
         this.guildId = guildId;
         this.player = player;
         this.queue = new LinkedBlockingQueue<>();
+        this.guildAudioPlayer = guildAudioPlayer;
     }
 
     public void queue(AudioTrack track)
@@ -104,6 +110,19 @@ public class AudioScheduler extends PlayerEventListenerAdapter
                 stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(track)).queue();
             }
         }
+        if (guildAudioPlayer.getOpenPlayers().size() > 0)
+        {
+            guildAudioPlayer.getOpenPlayers().forEach(hook -> {
+                EmbedBuilder builder = new EmbedBuilder()
+                        .setTitle(track.getInfo().title);
+                if (track instanceof SpotifyTrack spotifyTrack)
+                    builder.setThumbnail(spotifyTrack.getArtworkURL());
+                else if (track instanceof YoutubeAudioTrack)
+                    builder.setThumbnail("https://img.youtube.com/vi/" + track.getIdentifier() + "/mqdefault.jpg");
+                hook.editOriginalEmbeds(builder.build()).queue(null, (e) -> guildAudioPlayer.getOpenPlayers().remove(hook));
+            });
+        }
+
     }
 
     @Override
