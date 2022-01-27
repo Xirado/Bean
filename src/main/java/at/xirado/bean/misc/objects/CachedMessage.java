@@ -10,8 +10,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
-public class CachedMessage
-{
+public class CachedMessage {
+
     private final long messageId;
     private final long channelId;
     private final long authorId;
@@ -19,8 +19,7 @@ public class CachedMessage
     private final OffsetDateTime creationDate;
     private final JDA jda;
 
-    public CachedMessage(@Nonnull Message message)
-    {
+    public CachedMessage(@Nonnull Message message) {
         Checks.notNull(message, "Message");
         messageId = message.getIdLong();
         channelId = message.getChannel().getIdLong();
@@ -31,41 +30,34 @@ public class CachedMessage
     }
 
     @Nonnull
-    public RestAction<Message> retrieveMessage()
-    {
+    public RestAction<Message> retrieveMessage() {
         TextChannel channel = getChannel();
         Checks.check(channel != null, "Channel no longer exists!");
         return channel.retrieveMessageById(messageId);
     }
 
     @Nullable
-    public TextChannel getChannel()
-    {
+    public TextChannel getChannel() {
         return jda.getTextChannelById(channelId);
     }
 
-    public long getMessageId()
-    {
+    public long getMessageId() {
         return messageId;
     }
 
-    public long getChannelId()
-    {
+    public long getChannelId() {
         return channelId;
     }
 
-    public long getAuthorId()
-    {
+    public long getAuthorId() {
         return authorId;
     }
 
-    public String getContent()
-    {
+    public String getContent() {
         return content;
     }
 
-    public OffsetDateTime getCreationDate()
-    {
+    public OffsetDateTime getCreationDate() {
         return creationDate;
     }
 }

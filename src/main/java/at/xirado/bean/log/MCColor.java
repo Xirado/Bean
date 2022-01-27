@@ -6,8 +6,7 @@ import org.jline.utils.AttributedStyle;
 /**
  * Uses JLine3's AttributedStringBuilder to format Strings with Minecraft Color-codes
  */
-public class MCColor
-{
+public class MCColor {
 
     public static final String DARK_RED = new AttributedStringBuilder().style(AttributedStyle.DEFAULT.foreground(0xAA, 0x00, 0x00)).toAnsi();
     public static final String RED = new AttributedStringBuilder().style(AttributedStyle.DEFAULT.foreground(0xFF, 0x55, 0x55)).toAnsi();
@@ -31,18 +30,14 @@ public class MCColor
     public static final String RESET = new AttributedStringBuilder().style(AttributedStyle.DEFAULT).append("").toAnsi();
 
 
-    public static String translate(char character, String text)
-    {
+    public static String translate(char character, String text) {
         char[] charArray = text.toCharArray();
         AttributedStringBuilder attributedStringBuilder = new AttributedStringBuilder();
-        for (int i = 0; i < charArray.length; i++)
-        {
-            if (charArray[i] == character && charArray.length > i + 1)
-            {
+        for (int i = 0; i < charArray.length; i++) {
+            if (charArray[i] == character && charArray.length > i + 1) {
                 char colorcode = charArray[i + 1];
                 boolean validCode = true;
-                switch (colorcode)
-                {
+                switch (colorcode) {
                     case '4':
                         attributedStringBuilder.style(AttributedStyle.DEFAULT.foreground(0xAA, 0x00, 0x00));
                         break;
@@ -107,8 +102,7 @@ public class MCColor
                         validCode = false;
 
                 }
-                if (validCode && i + 1 < charArray.length)
-                {
+                if (validCode && i + 1 < charArray.length) {
                     charArray[i] = Character.MIN_VALUE;
                     charArray[i + 1] = Character.MIN_VALUE;
                 }
@@ -118,8 +112,7 @@ public class MCColor
         return attributedStringBuilder.toAnsi();
     }
 
-    public static String translate(String text)
-    {
+    public static String translate(String text) {
         return translate('&', text);
     }
 }

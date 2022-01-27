@@ -17,19 +17,16 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GuildPageRoute implements Route
-{
+public class GuildPageRoute implements Route {
+
     @Override
-    public Object handle(Request request, Response response) throws Exception
-    {
+    public Object handle(Request request, Response response) throws Exception {
         String authHeader = request.headers("authorization");
-        if (authHeader == null || !authHeader.startsWith("Token "))
-        {
+        if (authHeader == null || !authHeader.startsWith("Token ")) {
             response.status(401);
             return DataObject.empty()
                     .put("code", 401)
@@ -37,8 +34,7 @@ public class GuildPageRoute implements Route
                     .toString();
         }
         String guildIdString = request.headers("guild_id");
-        if (guildIdString == null)
-        {
+        if (guildIdString == null) {
             response.status(400);
             return DataObject.empty()
                     .put("code", 400)
@@ -48,8 +44,7 @@ public class GuildPageRoute implements Route
         String token = authHeader.substring(7);
         byte[] tokenBytes = token.getBytes(StandardCharsets.UTF_8);
         Authenticator authenticator = Bean.getInstance().getAuthenticator();
-        if (!authenticator.isAuthenticated(tokenBytes))
-        {
+        if (!authenticator.isAuthenticated(tokenBytes)) {
             response.status(401);
             return DataObject.empty()
                     .put("code", 401)
@@ -62,8 +57,7 @@ public class GuildPageRoute implements Route
         String accessToken = credentials.getAccessToken();
 
         DataObject guilds = WebServer.retrieveGuilds(accessToken);
-        if (guilds.isNull("guilds"))
-        {
+        if (guilds.isNull("guilds")) {
             DataObject object = DataObject.empty();
             object.put("http_code", guilds.getInt("http_code"));
             if (!guilds.isNull("code"))
@@ -85,8 +79,7 @@ public class GuildPageRoute implements Route
                 .filter(id -> id.equals(guildId))
                 .map(shardManager::getGuildById)
                 .findFirst().orElse(null);
-        if (guild == null)
-        {
+        if (guild == null) {
             response.status(401);
             return DataObject.empty()
                     .put("code", 401)

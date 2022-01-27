@@ -14,10 +14,9 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RankCommand extends SlashCommand
-{
-    public RankCommand()
-    {
+public class RankCommand extends SlashCommand {
+
+    public RankCommand() {
         setCommandData(new CommandData("rank", "Shows a users level.")
                 .addOption(OptionType.USER, "user", "Member to get the level from.", false)
         );
@@ -25,40 +24,33 @@ public class RankCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         InteractionHook commandHook = event.getHook();
         event.deferReply(false).queue();
         OptionMapping optionData = event.getOption("user");
-        if (optionData == null)
-        {
+        if (optionData == null) {
             User user = event.getUser();
             long xp = RankingSystem.getTotalXP(event.getGuild().getIdLong(), user.getIdLong());
-            if (xp < 100)
-            {
+            if (xp < 100) {
                 commandHook.sendMessage("You are not yet ranked!").queue();
                 return;
             }
             byte[] rankCard = RankingSystem.generateLevelCard(user, event.getGuild());
-            if (rankCard == null)
-            {
+            if (rankCard == null) {
                 event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Could not load rank card! Please try again later!")).queue();
                 return;
             }
             commandHook.sendFile(rankCard, "card.png").queue();
-        } else
-        {
+        } else {
             User user = optionData.getAsUser();
             long xp = RankingSystem.getTotalXP(event.getGuild().getIdLong(), user.getIdLong());
-            if (xp < 100)
-            {
+            if (xp < 100) {
                 commandHook.sendMessage("This member is not yet ranked!").queue();
                 return;
             }
             byte[] rankCard = RankingSystem.generateLevelCard(user, event.getGuild());
-            if (rankCard == null)
-            {
-                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Could not load rank card for "+user.getAsTag()+"! Please try again later!")).queue();
+            if (rankCard == null) {
+                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Could not load rank card for " + user.getAsTag() + "! Please try again later!")).queue();
                 return;
             }
             commandHook.sendFile(rankCard, "card.png").queue();

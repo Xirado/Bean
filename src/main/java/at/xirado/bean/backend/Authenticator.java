@@ -14,18 +14,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class Authenticator
-{
+public class Authenticator {
+
     private final Map<ByteBuffer, DataObject> users = new HashMap<>();
 
     private final SecureRandom secureRandom = new SecureRandom();
     private final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 
-    public Authenticator()
-    {
+    public Authenticator() {
         Bean.getInstance().getExecutor().scheduleAtFixedRate(() -> {
-            for (Map.Entry<ByteBuffer, DataObject> entries : users.entrySet())
-            {
+            for (Map.Entry<ByteBuffer, DataObject> entries : users.entrySet()) {
                 ByteBuffer token = entries.getKey();
                 DataObject user = entries.getValue();
                 long generationTime = user.getLong("generation_time");
@@ -38,34 +36,29 @@ public class Authenticator
         }, 1, 1, TimeUnit.DAYS);
     }
 
-    public byte[] generateNewToken()
-    {
+    public byte[] generateNewToken() {
         byte[] randomBytes = new byte[32];
         secureRandom.nextBytes(randomBytes);
         return base64Encoder.encode(randomBytes);
     }
 
-    public byte[] addSession(DataObject object)
-    {
-        object.put("generation_time", System.currentTimeMillis()/1000);
-        object.put("discord_timestamp", System.currentTimeMillis()/1000);
+    public byte[] addSession(DataObject object) {
+        object.put("generation_time", System.currentTimeMillis() / 1000);
+        object.put("discord_timestamp", System.currentTimeMillis() / 1000);
         byte[] token = generateNewToken();
         users.put(ByteBuffer.wrap(token), object);
         return token;
     }
 
-    public void invalidate(byte[] token)
-    {
+    public void invalidate(byte[] token) {
         users.remove(ByteBuffer.wrap(token));
     }
 
-    public void invalidate(ByteBuffer buffer)
-    {
+    public void invalidate(ByteBuffer buffer) {
         users.remove(buffer);
     }
 
-    public boolean isAuthenticated(byte[] token)
-    {
+    public boolean isAuthenticated(byte[] token) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(token);
         if (!users.containsKey(byteBuffer))
             return false;
@@ -74,16 +67,14 @@ public class Authenticator
         OffsetDateTime maxAge = OffsetDateTime
                 .of(LocalDateTime.ofEpochSecond(generationTime, 0, ZoneOffset.UTC), ZoneOffset.UTC)
                 .plusDays(3);
-        if (maxAge.isBefore(OffsetDateTime.now()))
-        {
+        if (maxAge.isBefore(OffsetDateTime.now())) {
             invalidate(byteBuffer);
             return false;
         }
         return true;
     }
 
-    public DataObject getUser(byte[] token)
-    {
+    public DataObject getUser(byte[] token) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(token);
         if (!users.containsKey(byteBuffer))
             return null;
@@ -91,8 +82,7 @@ public class Authenticator
         return users.get(byteBuffer).getObject("user");
     }
 
-    public DataObject getData(byte[] token)
-    {
+    public DataObject getData(byte[] token) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(token);
         if (!users.containsKey(byteBuffer))
             return null;
@@ -100,24 +90,21 @@ public class Authenticator
         return users.get(byteBuffer);
     }
 
-    public DiscordCredentials getCredentials(byte[] token)
-    {
+    public DiscordCredentials getCredentials(byte[] token) {
         DataObject data = getData(token);
         if (data == null)
             return null;
         return new DiscordCredentials(data.getObject("tokens"));
     }
 
-    public boolean isAccessTokenExpired(byte[] token)
-    {
+    public boolean isAccessTokenExpired(byte[] token) {
         if (!isAuthenticated(token))
             throw new IllegalStateException("User unauthenticated!");
         DataObject data = getData(token);
-        return data.getLong("discord_timestamp") + data.getObject("tokens").getLong("expires_in") < System.currentTimeMillis()/1000;
+        return data.getLong("discord_timestamp") + data.getObject("tokens").getLong("expires_in") < System.currentTimeMillis() / 1000;
     }
 
-    public void refreshAccessToken(byte[] token) throws IOException
-    {
+    public void refreshAccessToken(byte[] token) throws IOException {
         if (!isAuthenticated(token))
             throw new IllegalStateException("User unauthenticated!");
         DiscordCredentials credentials = getCredentials(token);
@@ -131,7 +118,7 @@ public class Authenticator
                 .put("token_type", newCredentials.getTokenType())
                 .put("expires_in", newCredentials.getExpiresIn());
         DataObject data = getData(token);
-        data.put("discord_timestamp", System.currentTimeMillis()/1000)
+        data.put("discord_timestamp", System.currentTimeMillis() / 1000)
                 .put("tokens", tokens);
         users.put(ByteBuffer.wrap(token), data);
     }

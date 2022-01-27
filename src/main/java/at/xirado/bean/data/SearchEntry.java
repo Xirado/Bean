@@ -2,8 +2,8 @@ package at.xirado.bean.data;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
 
-public class SearchEntry implements IAutocompleteChoice
-{
+public class SearchEntry implements IAutocompleteChoice {
+
     public static final String MAGNIFYING_GLASS = "\uD83D\uDD0E";
     public static final String SCROLL = "\uD83D\uDCDC"; // indicates that this is a playlist
 
@@ -11,35 +11,29 @@ public class SearchEntry implements IAutocompleteChoice
     private final String value; // url or search term
     private final boolean playlist; // if this is a playlist or not
 
-    public SearchEntry(String name, String value, boolean playlist)
-    {
+    public SearchEntry(String name, String value, boolean playlist) {
         this.name = name;
         this.value = value.length() > 100 ? value.substring(0, 100) : value;
         this.playlist = playlist;
     }
 
-    public boolean isPlaylist()
-    {
+    public boolean isPlaylist() {
         return playlist;
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
-    public String getValue()
-    {
+    public String getValue() {
         return value;
     }
 
-    public String getFormattedString()
-    {
-        String x = MAGNIFYING_GLASS+(playlist ? SCROLL : "")+" "+name;
-        if (x.length() > 100)
-        {
+    public String getFormattedString() {
+        String x = MAGNIFYING_GLASS + (playlist ? SCROLL : "") + " " + name;
+        if (x.length() > 100) {
             String replaceString = "...";
             String substr = x.substring(0, 100 - replaceString.length());
             x = substr + replaceString;
@@ -48,8 +42,7 @@ public class SearchEntry implements IAutocompleteChoice
     }
 
     @Override
-    public Command.Choice toCommandAutocompleteChoice()
-    {
+    public Command.Choice toCommandAutocompleteChoice() {
         return new Command.Choice(getFormattedString(), value);
     }
 }

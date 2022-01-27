@@ -13,8 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static spark.Spark.*;
 
-public class WebServer
-{
+public class WebServer {
+
     private final String clientId;
     private final String clientSecret;
     private final String redirectUri;
@@ -23,8 +23,7 @@ public class WebServer
 
     public static final Map<String, DataObject> USER_CACHE = new ConcurrentHashMap<>();
 
-    public WebServer(int port)
-    {
+    public WebServer(int port) {
         DataObject config = Bean.getInstance().getConfig();
         if (config.anyNull("client_id", "client_secret", "redirect_uri"))
             throw new IllegalStateException("Missing Discord Oauth2 configuration!");
@@ -52,8 +51,7 @@ public class WebServer
         });
     }
 
-    public DataObject refreshToken(String refreshToken) throws IOException
-    {
+    public DataObject refreshToken(String refreshToken) throws IOException {
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
 
         DataObject requestObject = DataObject.empty()
@@ -67,7 +65,7 @@ public class WebServer
         Request request = new Request.Builder()
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .post(requestBody)
-                .url(BASE_URL+"/oauth2/token")
+                .url(BASE_URL + "/oauth2/token")
                 .build();
 
         Call call = client.newCall(request);
@@ -76,13 +74,12 @@ public class WebServer
         return DataObject.fromJson(response.body().byteStream());
     }
 
-    public static DataObject retrieveUser(String accessToken) throws IOException
-    {
+    public static DataObject retrieveUser(String accessToken) throws IOException {
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
         Request request = new Request.Builder()
-                .header("authorization", "Bearer "+accessToken)
+                .header("authorization", "Bearer " + accessToken)
                 .get()
-                .url(BASE_URL+"/users/@me")
+                .url(BASE_URL + "/users/@me")
                 .build();
 
         Call call = client.newCall(request);
@@ -91,15 +88,14 @@ public class WebServer
         return DataObject.fromJson(response.body().byteStream());
     }
 
-    public static DataObject retrieveGuilds(String accessToken) throws IOException
-    {
+    public static DataObject retrieveGuilds(String accessToken) throws IOException {
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
 
         Request request = new Request.Builder()
-                .header("Authorization", "Bearer "+accessToken)
-                .header("User-Agent", "Bean (https://bean.bz, "+Bean.getBeanVersion()+")")
+                .header("Authorization", "Bearer " + accessToken)
+                .header("User-Agent", "Bean (https://bean.bz, " + Bean.getBeanVersion() + ")")
                 .get()
-                .url(BASE_URL+"/users/@me/guilds")
+                .url(BASE_URL + "/users/@me/guilds")
                 .build();
 
         Call call = client.newCall(request);
@@ -120,8 +116,7 @@ public class WebServer
         return object;
     }
 
-    private static void enableCORS(final String origin, final String methods, final String headers)
-    {
+    private static void enableCORS(final String origin, final String methods, final String headers) {
 
         options("/*", (request, response) -> {
 
@@ -147,8 +142,7 @@ public class WebServer
         });
     }
 
-    public DataObject retrieveTokens(String code) throws IOException
-    {
+    public DataObject retrieveTokens(String code) throws IOException {
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
 
         RequestBody requestBody = new FormBody.Builder()
@@ -161,7 +155,7 @@ public class WebServer
         Request request = new Request.Builder()
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .post(requestBody)
-                .url(BASE_URL+"/oauth2/token")
+                .url(BASE_URL + "/oauth2/token")
                 .build();
 
         Call call = client.newCall(request);
@@ -169,18 +163,15 @@ public class WebServer
         return DataObject.fromJson(response.body().byteStream()).put("status", response.code());
     }
 
-    public String getClientId()
-    {
+    public String getClientId() {
         return clientId;
     }
 
-    public String getClientSecret()
-    {
+    public String getClientSecret() {
         return clientSecret;
     }
 
-    public String getRedirectUri()
-    {
+    public String getRedirectUri() {
         return redirectUri;
     }
 }

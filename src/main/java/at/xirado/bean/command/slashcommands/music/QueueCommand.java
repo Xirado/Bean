@@ -20,10 +20,9 @@ import java.awt.*;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
-public class QueueCommand extends SlashCommand
-{
-    public QueueCommand()
-    {
+public class QueueCommand extends SlashCommand {
+
+    public QueueCommand() {
         setCommandData(new CommandData("queue", "Shows the current queue.")
                 .addOption(OptionType.INTEGER, "page", "Page of the queue.", false)
         );
@@ -31,8 +30,7 @@ public class QueueCommand extends SlashCommand
 
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         ButtonPaginator.Builder builder = new ButtonPaginator.Builder(event.getJDA())
                 .setEventWaiter(Bean.getInstance().getEventWaiter())
                 .setItemsPerPage(10)
@@ -41,10 +39,8 @@ public class QueueCommand extends SlashCommand
         if (event.getOption("page") != null) page = (int) event.getOption("page").getAsLong();
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         Queue<AudioTrack> queue = guildAudioPlayer.getScheduler().getQueue();
-        if (queue.isEmpty())
-        {
-            if (guildAudioPlayer.getPlayer().getPlayingTrack() != null)
-            {
+        if (queue.isEmpty()) {
+            if (guildAudioPlayer.getPlayer().getPlayingTrack() != null) {
                 if (guildAudioPlayer.getScheduler().isRepeat())
                     ctx.sendSimpleEmbed("\uD83D\uDD01 **Currently playing** " + Util.titleMarkdown(guildAudioPlayer.getPlayer().getPlayingTrack()));
                 else
@@ -62,17 +58,14 @@ public class QueueCommand extends SlashCommand
         event.deferReply().queue(hook -> builder.build().paginate(hook.sendMessage(""), finalPage));
     }
 
-    private String getQueueTitle(GuildAudioPlayer player)
-    {
+    private String getQueueTitle(GuildAudioPlayer player) {
         final StringBuilder sb = new StringBuilder();
-        if (player.getPlayer().getPlayingTrack() != null)
-        {
+        if (player.getPlayer().getPlayingTrack() != null) {
             sb.append(player.getPlayer().isPaused() ? "\u23f8" : "\u25b6").append(player.getScheduler().isRepeat() ? "\uD83D\uDD01" : "").append(" ").append(Util.titleMarkdown(player.getPlayer().getPlayingTrack())).append("\n");
         }
         int entries = player.getScheduler().getQueue().size();
         long duration = 0;
-        for (AudioTrack track : player.getScheduler().getQueue())
-        {
+        for (AudioTrack track : player.getScheduler().getQueue()) {
             duration += track.getDuration();
         }
         return FormatUtil.filter(sb.append(entries).append(entries == 1 ? " entry | `" : " entries | `").append(FormatUtil.formatTime(duration)).append("`").toString());

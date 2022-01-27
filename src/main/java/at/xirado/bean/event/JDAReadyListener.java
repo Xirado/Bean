@@ -17,20 +17,18 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 
-public class JDAReadyListener extends ListenerAdapter
-{
+public class JDAReadyListener extends ListenerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
     private boolean ready = false;
 
     @Override
-    public void onGuildReady(@NotNull GuildReadyEvent event)
-    {
+    public void onGuildReady(@NotNull GuildReadyEvent event) {
         if (ready)
             return;
         ready = true;
         Bean.getInstance().getExecutor().submit(() -> {
-            LOGGER.info("Successfully started "+Bean.getInstance().getShardManager().getShards().size()+" shards!");
+            LOGGER.info("Successfully started " + Bean.getInstance().getShardManager().getShards().size() + " shards!");
             Bean.getInstance().getSlashCommandHandler().initialize();
             if (Bean.getInstance().isDebug())
                 LOGGER.warn("Development mode enabled.");
@@ -43,11 +41,9 @@ public class JDAReadyListener extends ListenerAdapter
             nodes.stream(DataArray::getObject).forEach(node -> {
                 String url = node.getString("url");
                 String password = node.getString("password");
-                try
-                {
+                try {
                     lavalink.addNode(new URI(url), password);
-                } catch (URISyntaxException e)
-                {
+                } catch (URISyntaxException e) {
                     LOGGER.error("Could not add Lavalink node!", e);
                 }
             });
@@ -60,7 +56,7 @@ public class JDAReadyListener extends ListenerAdapter
                     .sum();
             Bean.getInstance().getShardManager()
                     .getShardCache()
-                    .forEach(shard -> shard.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching(memberCount+" users | bean.bz")));
+                    .forEach(shard -> shard.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching(memberCount + " users | bean.bz")));
         }, 0, 1, TimeUnit.MINUTES);
     }
 }

@@ -30,32 +30,32 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-public class SlashCommandHandler
-{
+public class SlashCommandHandler {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SlashCommandHandler.class);
 
     private final List<SlashCommand> registeredCommands;
     private final ConcurrentHashMap<Long, List<SlashCommand>> registeredGuildCommands;
     private CommandListUpdateAction commandUpdateAction;
 
-    public SlashCommandHandler()
-    {
+    public SlashCommandHandler() {
         registeredCommands = Collections.synchronizedList(new ArrayList<>());
         registeredGuildCommands = new ConcurrentHashMap<>();
     }
 
-    public void initialize()
-    {
+    public void initialize() {
         commandUpdateAction = Bean.getInstance().getShardManager().getShards().get(0).updateCommands();
         registerAllCommands();
     }
 
-    public void registerAllCommands()
-    {
+    public void registerAllCommands() {
         registerCommand(new BanCommand());
         registerCommand(new UnbanCommand());
         registerCommand(new KickCommand());
@@ -94,13 +94,10 @@ public class SlashCommandHandler
         registerCommand(new RedditCommand());
     }
 
-    public void updateCommands(Consumer<List<Command>> success, Consumer<Throwable> failure)
-    {
-        if (!Bean.getInstance().isDebug())
-        {
+    public void updateCommands(Consumer<List<Command>> success, Consumer<Throwable> failure) {
+        if (!Bean.getInstance().isDebug()) {
             commandUpdateAction.queue(success, failure);
-            for (Map.Entry<Long, List<SlashCommand>> entrySet : registeredGuildCommands.entrySet())
-            {
+            for (Map.Entry<Long, List<SlashCommand>> entrySet : registeredGuildCommands.entrySet()) {
                 Long guildID = entrySet.getKey();
                 List<SlashCommand> slashCommands = entrySet.getValue();
                 if (guildID == null || slashCommands == null) continue;
@@ -108,16 +105,14 @@ public class SlashCommandHandler
                 Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
                 if (guild == null) continue;
                 CommandListUpdateAction guildCommandUpdateAction = guild.updateCommands();
-                for (SlashCommand cmd : slashCommands)
-                {
+                for (SlashCommand cmd : slashCommands) {
                     guildCommandUpdateAction = guildCommandUpdateAction.addCommands(cmd.getCommandData());
                 }
                 if (slashCommands.size() > 0) guildCommandUpdateAction.queue();
             }
         } else {
             List<SlashCommand> commands = registeredGuildCommands.get(815597207617142814L);
-            if (commands != null && !commands.isEmpty())
-            {
+            if (commands != null && !commands.isEmpty()) {
                 Guild guild = Bean.getInstance().getShardManager().getGuildById(815597207617142814L);
                 if (guild == null)
                     return;
@@ -130,34 +125,27 @@ public class SlashCommandHandler
 
     }
 
-    private void registerCommand(SlashCommand command)
-    {
-        if (!command.isGlobal() && !Bean.getInstance().isDebug())
-        {
+    private void registerCommand(SlashCommand command) {
+        if (!command.isGlobal() && !Bean.getInstance().isDebug()) {
             if (command.getEnabledGuilds() == null) return;
             if (command.getEnabledGuilds().isEmpty()) return;
-            for (Long guildID : command.getEnabledGuilds())
-            {
+            for (Long guildID : command.getEnabledGuilds()) {
                 Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
                 if (guild == null) continue;
                 List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(guildID) ? registeredGuildCommands.get(guildID) : new ArrayList<>();
                 alreadyRegistered.add(command);
-                if (registeredGuildCommands.containsKey(guildID))
-                {
+                if (registeredGuildCommands.containsKey(guildID)) {
                     registeredGuildCommands.replace(guildID, alreadyRegistered);
-                } else
-                {
+                } else {
                     registeredGuildCommands.put(guildID, alreadyRegistered);
                 }
             }
             return;
         }
-        if (Bean.getInstance().isDebug())
-        {
+        if (Bean.getInstance().isDebug()) {
             long testServerID = 815597207617142814L;
             Guild guild = Bean.getInstance().getShardManager().getGuildById(testServerID);
-            if (guild != null)
-            {
+            if (guild != null) {
                 List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(testServerID) ? registeredGuildCommands.get(testServerID) : new ArrayList<>();
                 alreadyRegistered.add(command);
                 registeredGuildCommands.put(testServerID, alreadyRegistered);
@@ -169,18 +157,15 @@ public class SlashCommandHandler
     }
 
 
-    public void handleAutocomplete(@NotNull ApplicationCommandAutocompleteEvent event)
-    {
+    public void handleAutocomplete(@NotNull ApplicationCommandAutocompleteEvent event) {
         if (event.getGuild() == null)
             return;
         Runnable r = () ->
         {
-            try
-            {
+            try {
                 SlashCommand command = null;
                 long guildId = event.getGuild().getIdLong();
-                if (registeredGuildCommands.containsKey(guildId))
-                {
+                if (registeredGuildCommands.containsKey(guildId)) {
                     List<SlashCommand> guildCommands = registeredGuildCommands.get(guildId);
                     SlashCommand guildCommand = guildCommands.stream().filter(cmd -> cmd.getCommandName().equalsIgnoreCase(event.getName()))
                             .findFirst()
@@ -188,8 +173,7 @@ public class SlashCommandHandler
                     if (guildCommand != null)
                         command = guildCommand;
                 }
-                if (command == null)
-                {
+                if (command == null) {
                     SlashCommand globalCommand = registeredCommands.stream()
                             .filter(cmd -> cmd.getCommandName().equalsIgnoreCase(event.getName()))
                             .findFirst()
@@ -199,30 +183,28 @@ public class SlashCommandHandler
                 }
                 if (command != null)
                     command.handleAutocomplete(event);
-            } catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 LOGGER.warn("An error occurred while handling autocomplete!", ex);
-                event.deferChoices(Collections.emptyList()).queue(s -> {}, e -> {});
+                event.deferChoices(Collections.emptyList()).queue(s -> {
+                }, e -> {
+                });
             }
         };
 
         Bean.getInstance().getExecutor().execute(r);
     }
 
-    public void handleSlashCommand(@NotNull SlashCommandEvent event, @Nullable Member member)
-    {
+    public void handleSlashCommand(@NotNull SlashCommandEvent event, @Nullable Member member) {
         Runnable r = () ->
         {
-            try
-            {
+            try {
                 if (!event.isFromGuild())
                     return;
                 Guild guild = event.getGuild();
                 SlashCommand command = null;
                 long guildId = event.getGuild().getIdLong();
 
-                if (registeredGuildCommands.containsKey(guildId))
-                {
+                if (registeredGuildCommands.containsKey(guildId)) {
                     List<SlashCommand> guildCommands = registeredGuildCommands.get(guildId);
                     SlashCommand guildCommand = guildCommands.stream().filter(cmd -> cmd.getCommandName().equalsIgnoreCase(event.getName()))
                             .findFirst()
@@ -231,8 +213,7 @@ public class SlashCommandHandler
                         command = guildCommand;
                 }
 
-                if (command == null)
-                {
+                if (command == null) {
                     SlashCommand globalCommand = registeredCommands.stream()
                             .filter(cmd -> cmd.getCommandName().equalsIgnoreCase(event.getName()))
                             .findFirst()
@@ -241,62 +222,50 @@ public class SlashCommandHandler
                         command = globalCommand;
                 }
 
-                if (command != null)
-                {
+                if (command != null) {
                     SlashCommandContext ctx = new SlashCommandContext(event);
                     List<Permission> neededPermissions = command.getRequiredUserPermissions();
                     List<Permission> neededBotPermissions = command.getRequiredBotPermissions();
-                    if (neededPermissions != null && !member.hasPermission((GuildChannel) event.getChannel(), neededPermissions))
-                    {
+                    if (neededPermissions != null && !member.hasPermission((GuildChannel) event.getChannel(), neededPermissions)) {
                         event.reply(LocaleLoader.ofGuild(guild).get("general.no_perms", String.class))
                                 .queue();
                         return;
                     }
 
-                    if (neededBotPermissions != null && !event.getGuild().getSelfMember().hasPermission((GuildChannel) event.getChannel(), neededBotPermissions))
-                    {
+                    if (neededBotPermissions != null && !event.getGuild().getSelfMember().hasPermission((GuildChannel) event.getChannel(), neededBotPermissions)) {
                         event.reply(LocaleLoader.ofGuild(guild).get("general.no_bot_perms1", String.class))
                                 .queue();
                         return;
                     }
 
-                    if (command.getCommandFlags().contains(CommandFlag.DJ_ONLY))
-                    {
-                        if (!ctx.getGuildData().isDJ(member))
-                        {
+                    if (command.getCommandFlags().contains(CommandFlag.DJ_ONLY)) {
+                        if (!ctx.getGuildData().isDJ(member)) {
                             event.replyEmbeds(EmbedUtil.errorEmbed("You need to be a DJ to do this!")).queue();
                             return;
                         }
                     }
 
-                    if (command.getCommandFlags().contains(CommandFlag.MUST_BE_IN_VC))
-                    {
+                    if (command.getCommandFlags().contains(CommandFlag.MUST_BE_IN_VC)) {
                         GuildVoiceState guildVoiceState = member.getVoiceState();
-                        if (guildVoiceState == null || !guildVoiceState.inVoiceChannel())
-                        {
+                        if (guildVoiceState == null || !guildVoiceState.inVoiceChannel()) {
                             event.replyEmbeds(EmbedUtil.errorEmbed("You are not connected to a voice-channel!")).queue();
                             return;
                         }
                     }
 
-                    if (command.getCommandFlags().contains(CommandFlag.MUST_BE_IN_SAME_VC))
-                    {
+                    if (command.getCommandFlags().contains(CommandFlag.MUST_BE_IN_SAME_VC)) {
                         GuildVoiceState voiceState = member.getVoiceState();
                         AudioManager manager = event.getGuild().getAudioManager();
-                        if (manager.isConnected())
-                        {
-                            if (!manager.getConnectedChannel().equals(voiceState.getChannel()))
-                            {
+                        if (manager.isConnected()) {
+                            if (!manager.getConnectedChannel().equals(voiceState.getChannel())) {
                                 event.replyEmbeds(EmbedUtil.errorEmbed("You must be listening in " + manager.getConnectedChannel().getAsMention() + "to do this!")).setEphemeral(true).queue();
                                 return;
                             }
                         }
                     }
 
-                    if (command.getCommandFlags().contains(CommandFlag.REQUIRES_LAVALINK_NODE))
-                    {
-                        if (!ctx.isLavalinkNodeAvailable())
-                        {
+                    if (command.getCommandFlags().contains(CommandFlag.REQUIRES_LAVALINK_NODE)) {
+                        if (!ctx.isLavalinkNodeAvailable()) {
                             event.replyEmbeds(EmbedUtil.errorEmbed("There are currently no voice nodes available!\nIf the issue persists, please leave a message on our support server!"))
                                     .addActionRow(Util.getSupportButton())
                                     .queue();
@@ -306,42 +275,41 @@ public class SlashCommandHandler
                     command.executeCommand(event, member, ctx);
                 }
 
-            } 
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
                 if (event.isAcknowledged())
-                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {}, ex -> {});
+                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {
+                    }, ex -> {
+                    });
                 else
-                    event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {}, ex -> {});
+                    event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {
+                    }, ex -> {
+                    });
                 LOGGER.error("Could not execute slash-command", e);
-                StringBuilder path = new StringBuilder("/"+event.getCommandPath().replace("/", " "));
-                for(OptionMapping option : event.getOptions())
-                {
+                StringBuilder path = new StringBuilder("/" + event.getCommandPath().replace("/", " "));
+                for (OptionMapping option : event.getOptions()) {
                     path.append(" *").append(option.getName()).append("* : ").append("`").append(option.getAsString()).append("`");
                 }
                 EmbedBuilder builder = new EmbedBuilder()
                         .setTitle("An error occurred while executing a slash-command!")
-                        .addField("Guild", event.getGuild() == null ? "None (Direct message)" : event.getGuild().getIdLong()+" ("+event.getGuild().getName()+")",true)
-                        .addField("Channel", event.getGuild() == null ? "None (Direct message)" : event.getChannel().getName() , true)
-                        .addField("User", event.getUser().getAsMention()+" ("+event.getUser().getAsTag()+")", true)
+                        .addField("Guild", event.getGuild() == null ? "None (Direct message)" : event.getGuild().getIdLong() + " (" + event.getGuild().getName() + ")", true)
+                        .addField("Channel", event.getGuild() == null ? "None (Direct message)" : event.getChannel().getName(), true)
+                        .addField("User", event.getUser().getAsMention() + " (" + event.getUser().getAsTag() + ")", true)
                         .addField("Command", path.toString(), false)
                         .setColor(EmbedUtil.ERROR_COLOR);
                 event.getJDA().openPrivateChannelById(Bean.OWNER_ID)
-                        .flatMap(c -> c.sendMessageEmbeds(builder.build()).content("```fix\n"+ExceptionUtils.getStackTrace(e)+"\n```"))
+                        .flatMap(c -> c.sendMessageEmbeds(builder.build()).content("```fix\n" + ExceptionUtils.getStackTrace(e) + "\n```"))
                         .queue();
             }
         };
         Bean.getInstance().getExecutor().execute(r);
     }
 
-    public List<SlashCommand> getRegisteredCommands()
-    {
+    public List<SlashCommand> getRegisteredCommands() {
         return registeredCommands;
     }
 
-    public ConcurrentHashMap<Long, List<SlashCommand>> getRegisteredGuildCommands()
-    {
+    public ConcurrentHashMap<Long, List<SlashCommand>> getRegisteredGuildCommands() {
         return registeredGuildCommands;
     }
 }

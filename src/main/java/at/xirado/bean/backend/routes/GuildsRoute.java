@@ -18,14 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GuildsRoute implements Route
-{
+public class GuildsRoute implements Route {
+
     @Override
-    public Object handle(Request request, Response response) throws Exception
-    {
+    public Object handle(Request request, Response response) throws Exception {
         String authHeader = request.headers("authorization");
-        if (authHeader == null || !authHeader.startsWith("Token "))
-        {
+        if (authHeader == null || !authHeader.startsWith("Token ")) {
             response.status(401);
             return DataObject.empty()
                     .put("code", 401)
@@ -35,8 +33,7 @@ public class GuildsRoute implements Route
         String token = authHeader.substring(7);
         byte[] tokenBytes = token.getBytes(StandardCharsets.UTF_8);
         Authenticator authenticator = Bean.getInstance().getAuthenticator();
-        if (!authenticator.isAuthenticated(tokenBytes))
-        {
+        if (!authenticator.isAuthenticated(tokenBytes)) {
             response.status(401);
             return DataObject.empty()
                     .put("code", 401)
@@ -50,8 +47,7 @@ public class GuildsRoute implements Route
 
         String accessToken = credentials.getAccessToken();
         DataObject guilds = WebServer.retrieveGuilds(accessToken);
-        if (guilds.isNull("guilds"))
-        {
+        if (guilds.isNull("guilds")) {
             DataObject o = DataObject.empty();
             o.put("http_code", guilds.getInt("http_code"));
             if (!guilds.isNull("code"))
@@ -66,17 +62,16 @@ public class GuildsRoute implements Route
                 .collect(Collectors.toList());
         DataArray guildArray = DataArray.empty();
         List<DataObject> nonInvitedGuilds = new ArrayList<>();
-        for(DataObject guild : adminGuilds)
-        {
+        for (DataObject guild : adminGuilds) {
             String name = guild.getString("name");
             long id = guild.getLong("id");
             String iconHash = guild.isNull("icon") ? null : guild.getString("icon");
             boolean botJoined = shardManager.getGuildById(id) != null;
             DataObject o = DataObject.empty();
             o.put("name", name);
-            o.put("id", id+"");
+            o.put("id", id + "");
             if (iconHash != null)
-                o.put("icon", DiscordUtils.getIconUrl(id+"", iconHash));
+                o.put("icon", DiscordUtils.getIconUrl(id + "", iconHash));
             o.put("bot_joined", botJoined);
             StringBuilder initials = new StringBuilder();
             for (String s : name.split("\\s+")) {

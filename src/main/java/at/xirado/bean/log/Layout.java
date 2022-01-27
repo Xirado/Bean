@@ -12,17 +12,15 @@ import org.jline.utils.AttributedStyle;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Layout extends LayoutBase<ILoggingEvent>
-{
+public class Layout extends LayoutBase<ILoggingEvent> {
 
-    private static final AttributedStyle PRIMARY =   AttributedStyle.DEFAULT.foreground(25, 140, 255);
+    private static final AttributedStyle PRIMARY = AttributedStyle.DEFAULT.foreground(25, 140, 255);
     private static final AttributedStyle SECONDARY = AttributedStyle.DEFAULT.foreground(85, 85, 85);
-    private static final AttributedStyle FATAL =     AttributedStyle.DEFAULT.foreground(222, 23, 56);
-    private static final AttributedStyle WARN =      AttributedStyle.DEFAULT.foreground(255, 255, 0);
+    private static final AttributedStyle FATAL = AttributedStyle.DEFAULT.foreground(222, 23, 56);
+    private static final AttributedStyle WARN = AttributedStyle.DEFAULT.foreground(255, 255, 0);
 
     @Override
-    public String doLayout(ILoggingEvent event)
-    {
+    public String doLayout(ILoggingEvent event) {
         StringBuilder sBuilder = new StringBuilder();
         LocalDateTime myDateObj = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd.MM HH:mm:ss");
@@ -40,8 +38,7 @@ public class Layout extends LayoutBase<ILoggingEvent>
                 .style(priColour).append(event.getThreadName()).style(SECONDARY).append("] [").style(priColour)
                 .append(event.getLevel().levelStr.toUpperCase()).style(SECONDARY).append("]: ").style(priColour)
                 .append(event.getFormattedMessage());
-        if (event.getThrowableProxy() != null)
-        {
+        if (event.getThrowableProxy() != null) {
             IThrowableProxy iThrowableProxy = event.getThrowableProxy();
             asb.append("\n").style(priColour).append(ThrowableProxyUtil.asString(iThrowableProxy));
         }

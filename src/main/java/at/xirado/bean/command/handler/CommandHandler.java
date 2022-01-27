@@ -5,7 +5,7 @@ import at.xirado.bean.command.Command;
 import at.xirado.bean.command.CommandArgument;
 import at.xirado.bean.command.CommandContext;
 import at.xirado.bean.command.CommandFlag;
-import at.xirado.bean.command.commands.*;
+import at.xirado.bean.command.commands.Eval;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.translation.LocaleLoader;
@@ -22,32 +22,26 @@ import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-public class CommandHandler
-{
+public class CommandHandler {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandHandler.class);
 
     private final ConcurrentMap<String, Command> registeredCommands = new ConcurrentSkipListMap<>(String.CASE_INSENSITIVE_ORDER);
 
-    public CommandHandler()
-    {
+    public CommandHandler() {
         registerCommand(new Eval());
     }
 
-    private void registerCommand(Command command)
-    {
+    private void registerCommand(Command command) {
         String name = command.getName();
-        if (registeredCommands.containsKey(name))
-        {
+        if (registeredCommands.containsKey(name)) {
             LOGGER.error("Command \"" + name + "\" could not be registered because a command (or alias) with this name already exists!");
             return;
         }
         registeredCommands.put(name, command);
-        if (command.getAliases() != null && command.getAliases().size() >= 1)
-        {
-            for (String alias : command.getAliases())
-            {
-                if (registeredCommands.containsKey(alias))
-                {
+        if (command.getAliases() != null && command.getAliases().size() >= 1) {
+            for (String alias : command.getAliases()) {
+                if (registeredCommands.containsKey(alias)) {
                     LOGGER.error("Alias \"" + alias + "\" could not be registered because a command (or alias) with this name already exists!");
                     continue;
                 }
@@ -56,8 +50,7 @@ public class CommandHandler
         }
     }
 
-    public List<Command> getRegisteredCommands()
-    {
+    public List<Command> getRegisteredCommands() {
         return registeredCommands.values().stream().distinct().toList();
     }
 
@@ -67,16 +60,14 @@ public class CommandHandler
      * @param guildID the id of the guild
      * @return immutable list containing the commands
      */
-    public List<Command> getRegisteredCommands(long guildID)
-    {
+    public List<Command> getRegisteredCommands(long guildID) {
         return registeredCommands
                 .values()
                 .stream().distinct()
                 .filter(x -> x.isAvailableIn(guildID)).toList();
     }
 
-    public List<Command> getGuildCommands(long guildID)
-    {
+    public List<Command> getGuildCommands(long guildID) {
         return registeredCommands
                 .values()
                 .stream().distinct()
@@ -84,12 +75,10 @@ public class CommandHandler
     }
 
     @SuppressWarnings("ConstantConditions")
-    public void handleCommandFromGuild(@Nonnull GuildMessageReceivedEvent event)
-    {
+    public void handleCommandFromGuild(@Nonnull GuildMessageReceivedEvent event) {
         Runnable r = () ->
         {
-            try
-            {
+            try {
                 GuildData guildData = GuildManager.getGuildData(event.getGuild());
                 CommandArgument arguments = new CommandArgument(event.getMessage().getContentRaw(), guildData.getPrefix());
                 String name = arguments.getCommandName();
@@ -97,61 +86,54 @@ public class CommandHandler
                     return;
                 Command command = registeredCommands.get(name);
 
-                if (command.hasCommandFlag(CommandFlag.PRIVATE_COMMAND))
-                {
+                if (command.hasCommandFlag(CommandFlag.PRIVATE_COMMAND)) {
                     if (!command.getAllowedGuilds().contains(event.getGuild().getIdLong())) return;
                 }
 
-                if (command.hasCommandFlag(CommandFlag.DEVELOPER_ONLY))
-                {
-                    if (Bean.WHITELISTED_USERS.stream().noneMatch(x -> x == event.getMember().getIdLong()))
-                    {
+                if (command.hasCommandFlag(CommandFlag.DEVELOPER_ONLY)) {
+                    if (Bean.WHITELISTED_USERS.stream().noneMatch(x -> x == event.getMember().getIdLong())) {
                         event.getMessage().addReaction("❌").queue();
                         return;
                     }
                 }
 
-                if (command.hasCommandFlag(CommandFlag.DISABLED))
-                {
+                if (command.hasCommandFlag(CommandFlag.DISABLED)) {
                     if (Bean.WHITELISTED_USERS.stream().noneMatch(x -> x == event.getMember().getIdLong()))
                         return;
                 }
 
-                if (command.hasCommandFlag(CommandFlag.MODERATOR_ONLY))
-                {
-                    if (!guildData.isModerator(event.getMember()))
-                    {
+                if (command.hasCommandFlag(CommandFlag.MODERATOR_ONLY)) {
+                    if (!guildData.isModerator(event.getMember())) {
                         event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class))
-                                .mentionRepliedUser(false).queue(s -> {}, ex -> {});
+                                .mentionRepliedUser(false).queue(s -> {
+                                }, ex -> {
+                                });
                         return;
                     }
                 }
 
-                if (!event.getMember().hasPermission(command.getRequiredPermissions()))
-                {
+                if (!event.getMember().hasPermission(command.getRequiredPermissions())) {
                     event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class))
-                            .mentionRepliedUser(false).queue(s -> {}, ex -> {});
+                            .mentionRepliedUser(false).queue(s -> {
+                            }, ex -> {
+                            });
                     return;
                 }
 
                 List<Permission> missingBotPermissions = new ArrayList<>();
 
-                for (Permission p : command.getRequiredBotPermissions())
-                {
-                    if (!event.getGuild().getSelfMember().hasPermission(p))
-                    {
+                for (Permission p : command.getRequiredBotPermissions()) {
+                    if (!event.getGuild().getSelfMember().hasPermission(p)) {
                         missingBotPermissions.add(p);
                     }
                 }
 
-                if (missingBotPermissions.size() > 0)
-                {
+                if (missingBotPermissions.size() > 0) {
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(Color.red)
                             .setFooter(LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms", String.class));
                     StringBuilder sb = new StringBuilder();
-                    for (Permission p : missingBotPermissions)
-                    {
+                    for (Permission p : missingBotPermissions) {
                         sb.append("`").append(p.getName()).append("`, ");
                     }
                     String toString = sb.toString();
@@ -162,11 +144,12 @@ public class CommandHandler
                 }
                 CommandContext context = new CommandContext(event, arguments, command, event.getMember());
                 command.executeCommand(event, context);
-            } catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 LOGGER.error("An error occurred whilst executing command", ex);
                 event.getChannel().sendMessage(CommandContext.ERROR_EMOTE + " " + LocaleLoader.ofGuild(event.getGuild()).get("general.unknown_error_occured", String.class))
-                        .queue(s -> {}, exception -> {});
+                        .queue(s -> {
+                        }, exception -> {
+                        });
             }
         };
 

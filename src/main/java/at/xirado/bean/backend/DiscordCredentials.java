@@ -6,16 +6,15 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import java.io.IOException;
 
-public class DiscordCredentials
-{
+public class DiscordCredentials {
+
     private String accessToken;
     private String refreshToken;
     private String[] scopes;
     private String tokenType;
     private long expiresIn;
-    
-    public DiscordCredentials(DataObject object)
-    {
+
+    public DiscordCredentials(DataObject object) {
         Checks.notNull(object, "Object");
         if (object.isNull("access_token") || object.isNull("refresh_token") || object.isNull("scope") || object.isNull("token_type"))
             throw new IllegalArgumentException("Object is not a valid Discord Token response!");
@@ -26,8 +25,7 @@ public class DiscordCredentials
         this.expiresIn = object.getLong("expires_in");
     }
 
-    public DiscordCredentials refreshToken() throws IOException
-    {
+    public DiscordCredentials refreshToken() throws IOException {
         DataObject object = Bean.getInstance().getWebServer().refreshToken(this.refreshToken);
         this.accessToken = object.getString("access_token");
         this.refreshToken = object.getString("refresh_token");
@@ -37,28 +35,23 @@ public class DiscordCredentials
         return this;
     }
 
-    public String getAccessToken()
-    {
+    public String getAccessToken() {
         return accessToken;
     }
 
-    public String getRefreshToken()
-    {
+    public String getRefreshToken() {
         return refreshToken;
     }
 
-    public long getExpiresIn()
-    {
+    public long getExpiresIn() {
         return expiresIn;
     }
 
-    public String getTokenType()
-    {
+    public String getTokenType() {
         return tokenType;
     }
 
-    public String[] getScopes()
-    {
+    public String[] getScopes() {
         return scopes;
     }
 }

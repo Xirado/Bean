@@ -17,15 +17,12 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ModeratorCommand extends SlashCommand
-{
-    public ModeratorCommand()
-    {
+public class ModeratorCommand extends SlashCommand {
+
+    public ModeratorCommand() {
         setCommandData(new CommandData("moderator", "Sets up moderator roles.")
                 .addSubcommands(new SubcommandData("add", "Adds a moderator role.")
                         .addOption(OptionType.ROLE, "role", "Role to add.", true)
@@ -39,16 +36,13 @@ public class ModeratorCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         String subcommand = event.getSubcommandName();
-        switch (subcommand)
-        {
+        switch (subcommand) {
             case "add" -> {
                 Role role = event.getOption("role").getAsRole();
                 List<Role> moderatorRoles = ctx.getGuildData().getModeratorRoles();
-                if (moderatorRoles.contains(role))
-                {
+                if (moderatorRoles.contains(role)) {
                     ctx.sendSimpleEmbed(ctx.getLocalized("commands.moderator.already_added"));
                     return;
                 }
@@ -61,8 +55,7 @@ public class ModeratorCommand extends SlashCommand
             case "remove" -> {
                 Role role = event.getOption("role").getAsRole();
                 List<Role> allowedRoles = ctx.getGuildData().getModeratorRoles();
-                if (!allowedRoles.contains(role))
-                {
+                if (!allowedRoles.contains(role)) {
                     ctx.sendSimpleEmbed(ctx.getLocalized("commands.moderator.not_added"));
                     return;
                 }
@@ -75,20 +68,17 @@ public class ModeratorCommand extends SlashCommand
             case "list" -> {
                 GuildData guildData = ctx.getGuildData();
                 List<Role> allowedRoles = guildData.getModeratorRoles();
-                if (allowedRoles == null || allowedRoles.isEmpty())
-                {
+                if (allowedRoles == null || allowedRoles.isEmpty()) {
                     ctx.sendSimpleEmbed(ctx.getLocalized("commands.listmods.no_roles_found"));
                     return;
                 }
                 StringBuilder sb = new StringBuilder();
                 Color firstColor = null;
-                if (allowedRoles.size() > 1)
-                {
+                if (allowedRoles.size() > 1) {
                     allowedRoles = allowedRoles.stream().sorted(Comparator.comparingInt(Role::getPosition)).collect(Collectors.toList());
                     allowedRoles = allowedRoles.stream().sorted(Collections.reverseOrder()).collect(Collectors.toList());
                 }
-                for (Role r : allowedRoles)
-                {
+                for (Role r : allowedRoles) {
                     if (firstColor == null) firstColor = r.getColor();
                     sb.append(r.getAsMention()).append(", ");
                 }

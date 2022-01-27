@@ -1,7 +1,7 @@
 package at.xirado.bean.data;
 
-public class RankedUser
-{
+public class RankedUser {
+
     private final long totalXP;
     private final long guildID;
     private final long userID;
@@ -9,8 +9,7 @@ public class RankedUser
     private final String name;
     private final String discriminator;
 
-    public RankedUser(long guildID, long userID, long totalXP, String name, String discriminator)
-    {
+    public RankedUser(long guildID, long userID, long totalXP, String name, String discriminator) {
         this.guildID = guildID;
         this.userID = userID;
         this.totalXP = totalXP;
@@ -19,33 +18,27 @@ public class RankedUser
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return userID + " (" + name + "#" + discriminator + ") " + totalXP;
     }
 
-    public long getUserID()
-    {
+    public long getUserID() {
         return userID;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public String getDiscriminator()
-    {
+    public String getDiscriminator() {
         return discriminator;
     }
 
-    public long getTotalXP()
-    {
+    public long getTotalXP() {
         return totalXP;
     }
 
-    public long getGuildID()
-    {
+    public long getGuildID() {
         return guildID;
     }
 }

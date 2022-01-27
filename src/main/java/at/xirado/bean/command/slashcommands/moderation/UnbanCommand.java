@@ -15,10 +15,9 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class UnbanCommand extends SlashCommand
-{
-    public UnbanCommand()
-    {
+public class UnbanCommand extends SlashCommand {
+
+    public UnbanCommand() {
         setCommandData(new CommandData("unban", "Unbans a user from a server.")
                 .addOption(OptionType.USER, "user", "User to unban.", true)
         );
@@ -27,14 +26,13 @@ public class UnbanCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         Guild guild = event.getGuild();
         if (guild == null) return;
         User user = event.getOption("user").getAsUser();
         event.deferReply(true)
                 .flatMap(ban -> guild.unban(user))
-                .flatMap(ban -> event.getHook().sendMessageEmbeds(EmbedUtil.successEmbed(user.getAsTag()+" has been unbanned!")))
+                .flatMap(ban -> event.getHook().sendMessageEmbeds(EmbedUtil.successEmbed(user.getAsTag() + " has been unbanned!")))
                 .queue(null,
                         new ErrorHandler().handle(ErrorResponse.UNKNOWN_BAN, (e) -> event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("This user is not banned!")).queue()));
     }

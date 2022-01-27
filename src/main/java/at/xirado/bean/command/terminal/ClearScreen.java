@@ -6,27 +6,23 @@ import org.jline.utils.InfoCmp;
 
 import java.util.Arrays;
 
-public class ClearScreen extends ConsoleCommand
-{
-    public ClearScreen()
-    {
+public class ClearScreen extends ConsoleCommand {
+
+    public ClearScreen() {
         this.invoke = "cls";
         this.description = "Clears the screen";
         this.aliases = Arrays.asList("clear", "clearscreen");
     }
 
     @Override
-    public void executeCommand(String invoke, String[] args)
-    {
-        if (args.length == 0)
-        {
+    public void executeCommand(String invoke, String[] args) {
+        if (args.length == 0) {
             Shell.terminal.puts(InfoCmp.Capability.clear_screen);
             Shell.terminal.flush();
             return;
         }
 
-        if (args.length == 1 && args[0].equalsIgnoreCase("-f"))
-        {
+        if (args.length == 1 && args[0].equalsIgnoreCase("-f")) {
             Shell.terminal.flush();
         }
 

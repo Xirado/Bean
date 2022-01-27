@@ -11,29 +11,24 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RepeatCommand extends SlashCommand
-{
-    public RepeatCommand()
-    {
+public class RepeatCommand extends SlashCommand {
+
+    public RepeatCommand() {
         setCommandData(new CommandData("repeat", "Repeats the currently playing track."));
         addCommandFlags(CommandFlag.MUST_BE_IN_SAME_VC, CommandFlag.DJ_ONLY, CommandFlag.MUST_BE_IN_VC);
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         GuildAudioPlayer player = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        if (player.getPlayer().getPlayingTrack() == null)
-        {
+        if (player.getPlayer().getPlayingTrack() == null) {
             ctx.replyError("I'm currently not playing any music!").queue();
             return;
         }
-        if (!player.getScheduler().isRepeat())
-        {
+        if (!player.getScheduler().isRepeat()) {
             player.getScheduler().setRepeat(true);
             ctx.sendSimpleEmbed("\uD83D\uDD01 Repeat mode turned **ON**\nUse this command again to turn it off.");
-        } else
-        {
+        } else {
             player.getScheduler().setRepeat(false);
             ctx.sendSimpleEmbed("\uD83D\uDD01 Repeat mode turned **OFF**");
         }

@@ -13,37 +13,30 @@ import org.jetbrains.annotations.Nullable;
 import java.net.URL;
 import java.time.Instant;
 
-public class JokeCommand extends SlashCommand
-{
+public class JokeCommand extends SlashCommand {
 
-    public JokeCommand()
-    {
+    public JokeCommand() {
         setCommandData(new CommandData("joke", "Tells you a random joke."));
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
-        try
-        {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
+        try {
             String requestURL = "https://v2.jokeapi.dev/joke/Miscellaneous,Dark,Pun";
             URL url = new URL(requestURL);
             LinkedDataObject json = LinkedDataObject.parse(url);
-            if (json == null)
-            {
+            if (json == null) {
                 ctx.replyError(ctx.getLocalized("commands.fact.api_down")).queue();
                 return;
             }
             boolean error = json.getBoolean("error");
-            if (error)
-            {
+            if (error) {
                 ctx.replyError("The API has sent invalid data!").setEphemeral(true).queue();
                 return;
             }
             boolean twoPart = json.getString("type").equals("twopart");
             String category = json.getString("category");
-            switch (category)
-            {
+            switch (category) {
                 case "Misc":
                     category = ctx.getLocalized("commands.joke.misc");
                     break;
@@ -73,15 +66,12 @@ public class JokeCommand extends SlashCommand
             if (sexist) builder.append(ctx.getLocalized("commands.joke.sexist")).append(", ");
             if (explicit) builder.append(ctx.getLocalized("commands.joke.explicit")).append(", ");
             String flags = builder.toString();
-            if (flags.length() > 2)
-            {
+            if (flags.length() > 2) {
                 flags = flags.substring(0, flags.length() - 2);
-            } else
-            {
+            } else {
                 flags = ctx.getLocalized("commands.joke.none");
             }
-            if (twoPart)
-            {
+            if (twoPart) {
                 String setup = json.getString("setup");
                 String delivery = json.getString("delivery");
                 EmbedBuilder embedbuilder = new EmbedBuilder()
@@ -92,8 +82,7 @@ public class JokeCommand extends SlashCommand
                         .setTimestamp(Instant.now());
                 ctx.reply(embedbuilder.build()).queue();
 
-            } else
-            {
+            } else {
                 String joke = json.getString("joke");
                 EmbedBuilder embedbuilder = new EmbedBuilder()
                         .setColor(0x152238)
@@ -104,8 +93,7 @@ public class JokeCommand extends SlashCommand
                 ctx.reply(embedbuilder.build()).queue();
             }
 
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             ctx.replyError(ctx.getLocalized("general.unknown_error_occured")).queue();
         }

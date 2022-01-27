@@ -24,11 +24,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class RedditCommand extends SlashCommand
-{
+public class RedditCommand extends SlashCommand {
 
-    public RedditCommand()
-    {
+    public RedditCommand() {
         setCommandData(new CommandData("reddit", "Gets a trending post from a subreddit")
                 .addOptions(new OptionData(OptionType.STRING, "subreddit", "Select a subreddit")
                         .setAutoComplete(true)
@@ -37,18 +35,17 @@ public class RedditCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx){
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         InteractionHook hook = event.getHook();
 
-        try
-        {
+        try {
             event.deferReply().queue();
             OptionMapping option = event.getOption("subreddit");
             String subreddit = option == null || option.getAsString().isEmpty()
                     ? "memes"
                     : option.getAsString().startsWith("r/")
-                        ? option.getAsString().substring(2)
-                        : option.getAsString();
+                    ? option.getAsString().substring(2)
+                    : option.getAsString();
 
             String requestURL = String.format("https://meme-api.herokuapp.com/gimme/%s", subreddit);
             OkHttpClient client = Bean.getInstance().getOkHttpClient();
@@ -61,8 +58,7 @@ public class RedditCommand extends SlashCommand
             Response response = call.execute();
             DataObject object = DataObject.fromJson(response.body().string());
             response.close();
-            if (!response.isSuccessful())
-            {
+            if (!response.isSuccessful()) {
                 if (!object.isNull("message"))
                     hook.sendMessageEmbeds(EmbedUtil.errorEmbed(object.getString("message"))).queue();
                 else
@@ -70,8 +66,7 @@ public class RedditCommand extends SlashCommand
                 return;
             }
 
-            if (object.getBoolean("nsfw") && !event.getTextChannel().isNSFW())
-            {
+            if (object.getBoolean("nsfw") && !event.getTextChannel().isNSFW()) {
                 hook.sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("commands.meme.is_nsfw"))).setEphemeral(true).queue();
                 return;
             }
@@ -83,15 +78,13 @@ public class RedditCommand extends SlashCommand
                     .setFooter("r/" + object.getString("subreddit"))
                     .setColor(0x152238);
             hook.sendMessageEmbeds(builder.build()).queue();
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             hook.sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).queue();
         }
     }
 
     @Override
-    public void handleAutocomplete(@NotNull ApplicationCommandAutocompleteEvent event)
-    {
+    public void handleAutocomplete(@NotNull ApplicationCommandAutocompleteEvent event) {
         List<BasicAutocompletionChoice> choices = List.of(
                 new BasicAutocompletionChoice("r/memes", "memes"),
                 new BasicAutocompletionChoice("r/me_irl", "me_irl"),

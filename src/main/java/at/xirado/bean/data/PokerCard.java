@@ -2,8 +2,7 @@ package at.xirado.bean.data;
 
 import java.util.Arrays;
 
-public enum PokerCard
-{
+public enum PokerCard {
     // Clubs
     ACE_CLUB("<:ace_of_clubs:909935152019410975>", CardSuit.CLUB, true, false, false, 11),
     TWO_CLUB("<:2_of_clubs:909935143601446922>", CardSuit.CLUB, false, true, false, 2),
@@ -63,8 +62,8 @@ public enum PokerCard
     JACK_SPADE("<:jack_of_spades:909938949068312586>", CardSuit.SPADE, false, false, true, 10),
     QUEEN_SPADE("<:queen_of_spades:909938948854403113>", CardSuit.SPADE, false, false, true, 10),
     KING_SPADE("<:king_of_spades:909938948854403112>", CardSuit.SPADE, false, false, true, 10);
-    enum CardSuit
-    {
+
+    enum CardSuit {
         CLUB(),
         DIAMOND(),
         HEART(),
@@ -76,8 +75,7 @@ public enum PokerCard
     private final boolean isAce, isNumber, isPicture;
     private final int value;
 
-    PokerCard(String emote, CardSuit cardType, boolean isAce, boolean isNumber, boolean isPicture, int value)
-    {
+    PokerCard(String emote, CardSuit cardType, boolean isAce, boolean isNumber, boolean isPicture, int value) {
         this.emote = emote;
         this.cardType = cardType;
         this.isAce = isAce;
@@ -86,43 +84,35 @@ public enum PokerCard
         this.value = value;
     }
 
-    public String getEmote()
-    {
+    public String getEmote() {
         return emote;
     }
 
-    public CardSuit getCardType()
-    {
+    public CardSuit getCardType() {
         return cardType;
     }
 
-    public boolean isAce()
-    {
+    public boolean isAce() {
         return isAce;
     }
 
-    public boolean isNumber()
-    {
+    public boolean isNumber() {
         return isNumber;
     }
 
-    public boolean isPicture()
-    {
+    public boolean isPicture() {
         return isPicture;
     }
 
-    public int getValue()
-    {
+    public int getValue() {
         return value;
     }
 
-    public static PokerCard[] getCards()
-    {
+    public static PokerCard[] getCards() {
         return PokerCard.values();
     }
 
-    public static PokerCard[] getCards(CardSuit cardType)
-    {
+    public static PokerCard[] getCards(CardSuit cardType) {
         return Arrays.stream(PokerCard.values())
                 .filter(card -> card.cardType == cardType)
                 .toArray(PokerCard[]::new);

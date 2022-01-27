@@ -3,8 +3,8 @@ package at.xirado.bean.misc.urbandictionary;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class UrbanDefinition
-{
+public class UrbanDefinition {
+
     private String word;
     private String definition;
     private String example;
@@ -37,8 +37,7 @@ public class UrbanDefinition
      * @param likes
      * @param dislikes
      */
-    public UrbanDefinition(String wordName, String definition, String example, String author, String writtenDate, String permaLink, int refID, int likes, int dislikes)
-    {
+    public UrbanDefinition(String wordName, String definition, String example, String author, String writtenDate, String permaLink, int refID, int likes, int dislikes) {
         this.word = wordName;
         this.definition = definition;
         this.example = example;
@@ -50,53 +49,43 @@ public class UrbanDefinition
         this.downvotes = dislikes;
     }
 
-    public UrbanDefinition()
-    {
+    public UrbanDefinition() {
 
     }
 
-    public void setWord(String word)
-    {
+    public void setWord(String word) {
         this.word = word;
     }
 
-    public void setDefinition(String definition)
-    {
+    public void setDefinition(String definition) {
         this.definition = definition;
     }
 
-    public void setExample(String example)
-    {
+    public void setExample(String example) {
         this.example = example;
     }
 
-    public void setAuthor(String author)
-    {
+    public void setAuthor(String author) {
         this.author = author;
     }
 
-    public void setWrittenOn(String writtenOn)
-    {
+    public void setWrittenOn(String writtenOn) {
         this.writtenOn = writtenOn;
     }
 
-    public void setPermalink(String permalink)
-    {
+    public void setPermalink(String permalink) {
         this.permalink = permalink;
     }
 
-    public void setDefid(int defid)
-    {
+    public void setDefid(int defid) {
         this.defid = defid;
     }
 
-    public void setDownvotes(int downvotes)
-    {
+    public void setDownvotes(int downvotes) {
         this.downvotes = downvotes;
     }
 
-    public void setUpvotes(int upvotes)
-    {
+    public void setUpvotes(int upvotes) {
         this.upvotes = upvotes;
     }
 
@@ -107,8 +96,7 @@ public class UrbanDefinition
      * @return a comma-delimited String.
      */
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "\"" + word + "\",\"" + definition + "\",\"" + example + "\",\"" + author + "\",\"" + writtenOn + "\"," + defid + "," + upvotes + "," + downvotes;
     }
 
@@ -117,28 +105,23 @@ public class UrbanDefinition
      *
      * @return a shortened permalink to the UrbanDictionary definition of the word based on reference ID.
      */
-    public String getPermalink()
-    {
+    public String getPermalink() {
         return permalink;
     }
 
-    public String getWord()
-    {
+    public String getWord() {
         return word;
     }
 
-    public String getDefinition()
-    {
+    public String getDefinition() {
         return definition;
     }
 
-    public String getExample()
-    {
+    public String getExample() {
         return example;
     }
 
-    public String getAuthor()
-    {
+    public String getAuthor() {
         return author;
     }
 
@@ -147,28 +130,23 @@ public class UrbanDefinition
      *
      * @return the date of the Definition in ISO-8601 format.
      */
-    public String getWrittenOn()
-    {
+    public String getWrittenOn() {
         return writtenOn;
     }
 
-    public int getDefid()
-    {
+    public int getDefid() {
         return defid;
     }
 
-    public int getUpvotes()
-    {
+    public int getUpvotes() {
         return upvotes;
     }
 
-    public int getDownvotes()
-    {
+    public int getDownvotes() {
         return downvotes;
     }
 
-    public Object getSound_urls()
-    {
+    public Object getSound_urls() {
         return sound_urls;
     }
 }

@@ -11,10 +11,9 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SetXPBackgroundCommand extends SlashCommand
-{
-    public SetXPBackgroundCommand()
-    {
+public class SetXPBackgroundCommand extends SlashCommand {
+
+    public SetXPBackgroundCommand() {
         setCommandData(new CommandData("setxpcard", "Updates /rank background.")
                 .addOptions(new OptionData(OptionType.STRING, "background", "The Background.")
                         .addChoice("Blue (Default)", "card1")
@@ -27,14 +26,11 @@ public class SetXPBackgroundCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
-        try
-        {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
+        try {
             RankingSystem.setPreferredCard(event.getUser(), event.getOption("background").getAsString());
             ctx.reply("Your background has been updated!").setEphemeral(true).queue();
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             ctx.replyError("Could not update background!").setEphemeral(true).queue();
             ex.printStackTrace();
         }

@@ -19,8 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class AudioScheduler extends PlayerEventListenerAdapter
-{
+public class AudioScheduler extends PlayerEventListenerAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(AudioScheduler.class);
 
@@ -30,34 +29,28 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     private boolean repeat = false;
     private AudioTrack lastTrack;
 
-    public AudioScheduler(LavalinkPlayer player, long guildId)
-    {
+    public AudioScheduler(LavalinkPlayer player, long guildId) {
         this.guildId = guildId;
         this.player = player;
         this.queue = new LinkedBlockingQueue<>();
     }
 
-    public void queue(AudioTrack track)
-    {
+    public void queue(AudioTrack track) {
         if (player.getPlayingTrack() != null)
             queue.offer(track);
         else
             player.playTrack(track);
     }
 
-    public void nextTrack()
-    {
-        if (repeat)
-        {
+    public void nextTrack() {
+        if (repeat) {
             player.playTrack(lastTrack.makeClone());
             return;
         }
         AudioTrack track = queue.poll();
-        if (track == null)
-        {
+        if (track == null) {
             VoiceChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getSelfMember().getVoiceState().getChannel();
-            if (current instanceof StageChannel stageChannel)
-            {
+            if (current instanceof StageChannel stageChannel) {
                 if (stageChannel.getStageInstance() != null)
                     stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(null)).queue();
             }
@@ -69,53 +62,43 @@ public class AudioScheduler extends PlayerEventListenerAdapter
 
     }
 
-    public boolean isRepeat()
-    {
+    public boolean isRepeat() {
         return repeat;
     }
 
-    public void setRepeat(boolean repeat)
-    {
+    public void setRepeat(boolean repeat) {
         this.repeat = repeat;
     }
 
-    public BlockingQueue<AudioTrack> getQueue()
-    {
+    public BlockingQueue<AudioTrack> getQueue() {
         return queue;
     }
 
-    public LavalinkPlayer getPlayer()
-    {
+    public LavalinkPlayer getPlayer() {
         return player;
     }
 
     @Override
-    public void onTrackStart(IPlayer player, AudioTrack track)
-    {
+    public void onTrackStart(IPlayer player, AudioTrack track) {
         lastTrack = track;
         VoiceChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getSelfMember().getVoiceState().getChannel();
-        if (current instanceof StageChannel stageChannel)
-        {
-            if (stageChannel.getStageInstance() == null)
-            {
+        if (current instanceof StageChannel stageChannel) {
+            if (stageChannel.getStageInstance() == null) {
                 stageChannel.createStageInstance(MusicUtil.getStageTopicString(track)).queue();
-            } else
-            {
+            } else {
                 stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(track)).queue();
             }
         }
     }
 
     @Override
-    public void onTrackEnd(IPlayer player, AudioTrack track, AudioTrackEndReason endReason)
-    {
+    public void onTrackEnd(IPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         if (endReason.mayStartNext)
             nextTrack();
     }
 
     @Override
-    public void onTrackException(IPlayer player, AudioTrack track, Exception exception)
-    {
+    public void onTrackException(IPlayer player, AudioTrack track, Exception exception) {
         if (repeat)
             repeat = false;
         nextTrack();
@@ -126,17 +109,15 @@ public class AudioScheduler extends PlayerEventListenerAdapter
         TextChannel channel = guild.getTextChannelById(info.getChannelId());
         if (channel == null)
             return;
-        channel.sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred while playing track **"+track.getInfo().title+"**!\n`"+exception.getCause().getMessage()+"`")).queue();
-        log.warn("(Guild: "+guildId+") An error occurred while playing track \""+track.getInfo().title+"\" by \""+track.getInfo().author+"\"", exception);
+        channel.sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred while playing track **" + track.getInfo().title + "**!\n`" + exception.getCause().getMessage() + "`")).queue();
+        log.warn("(Guild: " + guildId + ") An error occurred while playing track \"" + track.getInfo().title + "\" by \"" + track.getInfo().author + "\"", exception);
     }
 
-    public long getGuildId()
-    {
+    public long getGuildId() {
         return guildId;
     }
 
-    public void destroy()
-    {
+    public void destroy() {
         queue.clear();
         lastTrack = null;
     }

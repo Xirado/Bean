@@ -6,7 +6,6 @@ import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.music.GuildAudioPlayer;
-import lavalink.client.io.filters.Filters;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -15,10 +14,9 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class VolumeCommand extends SlashCommand
-{
-    public VolumeCommand()
-    {
+public class VolumeCommand extends SlashCommand {
+
+    public VolumeCommand() {
         setCommandData(new CommandData("volume", "Changes the volume of the player.")
                 .addOption(OptionType.INTEGER, "volume", "Volume in percent.", true)
         );
@@ -26,8 +24,7 @@ public class VolumeCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         Member member = event.getMember();
         OptionMapping option = event.getOption("volume");
         GuildData guildData = ctx.getGuildData();

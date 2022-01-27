@@ -1,8 +1,8 @@
 package at.xirado.bean.command;
 
-import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
+import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -16,8 +16,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class CommandContext
-{
+public class CommandContext {
+
     public static final String LOADING_EMOTE = "<a:loading:779763323821359104>";
     public static final String WARNING_EMOTE = "⚠";
     public static final String ERROR_EMOTE = "❌";
@@ -29,41 +29,34 @@ public class CommandContext
     private final CommandArgument commandArgument;
 
 
-    public CommandContext(GuildMessageReceivedEvent event, CommandArgument commandArgument, Command command, Member member)
-    {
+    public CommandContext(GuildMessageReceivedEvent event, CommandArgument commandArgument, Command command, Member member) {
         this.event = event;
         this.commandArgument = commandArgument;
         this.command = command;
         this.member = member;
     }
 
-    public GuildData getGuildData()
-    {
+    public GuildData getGuildData() {
         return GuildManager.getGuildData(event.getGuild());
     }
 
-    public GuildMessageReceivedEvent getEvent()
-    {
+    public GuildMessageReceivedEvent getEvent() {
         return event;
     }
 
-    public CommandArgument getArguments()
-    {
+    public CommandArgument getArguments() {
         return commandArgument;
     }
 
-    public Command getCommand()
-    {
+    public Command getCommand() {
         return command;
     }
 
-    public Member getMember()
-    {
+    public Member getMember() {
         return member;
     }
 
-    public void replyError(String message)
-    {
+    public void replyError(String message) {
         this.event.getChannel().sendMessageEmbeds(
                 new EmbedBuilder()
                         .setColor(Color.red)
@@ -72,8 +65,7 @@ public class CommandContext
         ).queue();
     }
 
-    public void deleteInvokeMessage()
-    {
+    public void deleteInvokeMessage() {
         this.event.getMessage().delete().queue(s ->
         {
         }, e ->
@@ -81,37 +73,31 @@ public class CommandContext
         });
     }
 
-    public void replyInLogChannel(String message)
-    {
+    public void replyInLogChannel(String message) {
         TextChannel logChannel = getGuildData().getLogChannel();
         if (logChannel != null) logChannel.sendMessage(message).queue();
     }
 
 
-    public TextChannel getLogChannel()
-    {
+    public TextChannel getLogChannel() {
         return getGuildData().getLogChannel();
     }
 
-    public boolean hasLogChannel()
-    {
+    public boolean hasLogChannel() {
         return getGuildData().getLogChannel() != null;
     }
 
-    public void replyInLogChannel(Message message)
-    {
+    public void replyInLogChannel(Message message) {
         TextChannel logChannel = getGuildData().getLogChannel();
         if (logChannel != null) logChannel.sendMessage(message).queue();
     }
 
-    public void replyInLogChannel(MessageEmbed message)
-    {
+    public void replyInLogChannel(MessageEmbed message) {
         TextChannel logChannel = getGuildData().getLogChannel();
         if (logChannel != null) logChannel.sendMessageEmbeds(message).queue();
     }
 
-    public void replyErrorUsage()
-    {
+    public void replyErrorUsage() {
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(Color.red)
                 .setTitle(LocaleLoader.ofGuild(event.getGuild()).get("general.invalid_arguments", String.class))
@@ -120,17 +106,14 @@ public class CommandContext
         List<String> aliases = this.getCommand().getAliases();
         StringBuilder sb = new StringBuilder();
         String aliasesstring = null;
-        if (aliases.size() > 0)
-        {
-            for (String alias : aliases)
-            {
+        if (aliases.size() > 0) {
+            for (String alias : aliases) {
                 sb.append(alias).append(", ");
             }
             aliasesstring = sb.toString().trim();
         }
         String description = "`" + usage + "`\n" + this.getCommand().getDescription();
-        if (aliases.size() > 0 && aliasesstring != null)
-        {
+        if (aliases.size() > 0 && aliasesstring != null) {
             description += "\n" + LocaleLoader.ofGuild(event.getGuild()).get("general.aliases", String.class) + ": `" + aliasesstring + "`";
         }
         builder.setDescription(description);
@@ -138,8 +121,7 @@ public class CommandContext
 
     }
 
-    public void replyWarning(String message)
-    {
+    public void replyWarning(String message) {
         this.event.getChannel().sendMessage(
                 new EmbedBuilder()
                         .setColor(Color.yellow)
@@ -149,8 +131,7 @@ public class CommandContext
         ).queue();
     }
 
-    public void replySuccess(String message)
-    {
+    public void replySuccess(String message) {
         this.event.getChannel().sendMessage(
                 new EmbedBuilder()
                         .setColor(Color.green)
@@ -159,53 +140,43 @@ public class CommandContext
         ).queue();
     }
 
-    public void reply(Message message, Consumer<Message> success, Consumer<Throwable> failure)
-    {
+    public void reply(Message message, Consumer<Message> success, Consumer<Throwable> failure) {
         event.getChannel().sendMessage(message).queue(success, failure);
     }
 
-    public void reply(Message message, Consumer<Message> success)
-    {
+    public void reply(Message message, Consumer<Message> success) {
         event.getChannel().sendMessage(message).queue(success);
     }
 
-    public void reply(Message message)
-    {
+    public void reply(Message message) {
         event.getChannel().sendMessage(message).queue();
     }
 
-    public void reply(String message, Consumer<Message> success, Consumer<Throwable> failure)
-    {
+    public void reply(String message, Consumer<Message> success, Consumer<Throwable> failure) {
         event.getChannel().sendMessage(message).queue(success, failure);
     }
 
-    public void reply(String message, Consumer<Message> success)
-    {
+    public void reply(String message, Consumer<Message> success) {
         event.getChannel().sendMessage(message).queue(success);
     }
 
-    public void reply(String message)
-    {
+    public void reply(String message) {
         event.getChannel().sendMessage(message).queue();
     }
 
-    public void reply(MessageEmbed embed, Consumer<Message> success, Consumer<Throwable> failure)
-    {
+    public void reply(MessageEmbed embed, Consumer<Message> success, Consumer<Throwable> failure) {
         event.getChannel().sendMessage(embed).queue(success, failure);
     }
 
-    public void reply(MessageEmbed embed, Consumer<Message> success)
-    {
+    public void reply(MessageEmbed embed, Consumer<Message> success) {
         event.getChannel().sendMessageEmbeds(embed).queue(success);
     }
 
-    public void reply(MessageEmbed embed)
-    {
+    public void reply(MessageEmbed embed) {
         event.getChannel().sendMessage(embed).queue();
     }
 
-    public void replyInDM(Message message, Consumer<Message> success, Consumer<Throwable> failure)
-    {
+    public void replyInDM(Message message, Consumer<Message> success, Consumer<Throwable> failure) {
         User user = this.event.getAuthor();
         user.openPrivateChannel().queue(
                 (pc) ->
@@ -215,8 +186,7 @@ public class CommandContext
         );
     }
 
-    public void replyInDM(Message message, Consumer<Message> success)
-    {
+    public void replyInDM(Message message, Consumer<Message> success) {
         User user = this.event.getAuthor();
         user.openPrivateChannel().queue(
                 (pc) ->
@@ -227,8 +197,7 @@ public class CommandContext
         );
     }
 
-    public void replyInDM(Message message)
-    {
+    public void replyInDM(Message message) {
         User user = this.event.getAuthor();
         user.openPrivateChannel().queue(
                 (pc) ->
@@ -239,8 +208,7 @@ public class CommandContext
         );
     }
 
-    public void replyInDM(MessageEmbed embed, Consumer<Message> success, Consumer<Throwable> failure)
-    {
+    public void replyInDM(MessageEmbed embed, Consumer<Message> success, Consumer<Throwable> failure) {
         User user = this.event.getAuthor();
         user.openPrivateChannel().queue(
                 (pc) ->
@@ -250,8 +218,7 @@ public class CommandContext
         );
     }
 
-    public void replyInDM(MessageEmbed embed, Consumer<Message> success)
-    {
+    public void replyInDM(MessageEmbed embed, Consumer<Message> success) {
         User user = this.event.getAuthor();
         user.openPrivateChannel().queue(
                 (pc) ->
@@ -262,8 +229,7 @@ public class CommandContext
         );
     }
 
-    public void replyInDM(MessageEmbed embed)
-    {
+    public void replyInDM(MessageEmbed embed) {
         User user = this.event.getAuthor();
         user.openPrivateChannel().queue(
                 (pc) ->
@@ -274,8 +240,7 @@ public class CommandContext
         );
     }
 
-    public void replyInDM(String message, Consumer<Message> success, Consumer<Throwable> failure)
-    {
+    public void replyInDM(String message, Consumer<Message> success, Consumer<Throwable> failure) {
         User user = this.event.getAuthor();
         user.openPrivateChannel().queue(
                 (pc) ->
@@ -285,14 +250,12 @@ public class CommandContext
         );
     }
 
-    public LinkedDataObject getLanguage()
-    {
+    public LinkedDataObject getLanguage() {
         Guild g = event.getGuild();
         return LocaleLoader.ofGuild(g);
     }
 
-    public void replyInDM(String message, Consumer<Message> success)
-    {
+    public void replyInDM(String message, Consumer<Message> success) {
         User user = this.event.getAuthor();
         user.openPrivateChannel().queue(
                 (pc) ->
@@ -303,18 +266,15 @@ public class CommandContext
         );
     }
 
-    public String getLocalized(String query, Object... objects)
-    {
+    public String getLocalized(String query, Object... objects) {
         return String.format(LocaleLoader.ofGuild(event.getGuild()).get(query, String.class), objects);
     }
 
-    public String parseDuration(long seconds, String delimiter)
-    {
+    public String parseDuration(long seconds, String delimiter) {
         return LocaleLoader.parseDuration(seconds, getLanguage(), delimiter);
     }
 
-    public void replyInDM(String message)
-    {
+    public void replyInDM(String message) {
         User user = this.event.getMember().getUser();
         user.openPrivateChannel().queue(
                 (pc) ->

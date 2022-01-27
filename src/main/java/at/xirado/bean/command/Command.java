@@ -9,8 +9,8 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
-public abstract class Command
-{
+public abstract class Command {
+
     private final String name;
     private final String description;
     private final String usage;
@@ -20,8 +20,7 @@ public abstract class Command
     private final List<Long> allowedGuilds;
     private final EnumSet<CommandFlag> commandFlags;
 
-    public Command(String name, String description, String usage)
-    {
+    public Command(String name, String description, String usage) {
         Checks.notNull(name, "name");
         Checks.notNull(description, "description");
         Checks.notNull(usage, "usage");
@@ -36,84 +35,69 @@ public abstract class Command
     }
 
 
-    public void setAliases(String... aliases)
-    {
+    public void setAliases(String... aliases) {
         Checks.notNull(aliases, "Aliases");
         this.aliases.addAll(Arrays.asList(aliases));
     }
 
-    public void setRequiredPermissions(Permission... permissions)
-    {
+    public void setRequiredPermissions(Permission... permissions) {
         Checks.notNull(permissions, "Permissions");
         this.requiredPermissions.addAll(Arrays.asList(permissions));
     }
 
-    public void setRequiredBotPermissions(Permission... permissions)
-    {
+    public void setRequiredBotPermissions(Permission... permissions) {
         Checks.notNull(permissions, "Permissions");
         this.requiredBotPermissions.addAll(Arrays.asList(permissions));
     }
 
-    public void addAllowedGuilds(Long... guildIDs)
-    {
+    public void addAllowedGuilds(Long... guildIDs) {
         Checks.notEmpty(guildIDs, "Guild Ids");
         this.allowedGuilds.addAll(Arrays.asList(guildIDs));
     }
 
-    public void setCommandFlags(CommandFlag... commandFlags)
-    {
+    public void setCommandFlags(CommandFlag... commandFlags) {
         Checks.notNull(commandFlags, "CommandFlags");
         this.commandFlags.addAll(Arrays.asList(commandFlags));
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
-    public String getUsage()
-    {
+    public String getUsage() {
         return usage;
     }
 
 
-    public List<String> getAliases()
-    {
+    public List<String> getAliases() {
         return aliases;
     }
 
-    public List<Permission> getRequiredPermissions()
-    {
+    public List<Permission> getRequiredPermissions() {
         return requiredPermissions;
     }
 
-    public List<Permission> getRequiredBotPermissions()
-    {
+    public List<Permission> getRequiredBotPermissions() {
         return requiredBotPermissions;
     }
 
-    public List<Long> getAllowedGuilds()
-    {
+    public List<Long> getAllowedGuilds() {
         return allowedGuilds;
     }
 
-    public EnumSet<CommandFlag> getCommandFlags()
-    {
+    public EnumSet<CommandFlag> getCommandFlags() {
         return commandFlags;
     }
 
-    public boolean hasCommandFlag(CommandFlag flag)
-    {
+    public boolean hasCommandFlag(CommandFlag flag) {
         return commandFlags.contains(flag);
     }
 
-    public boolean isAvailableIn(long GuildID)
-    {
+    public boolean isAvailableIn(long GuildID) {
         if (!hasCommandFlag(CommandFlag.PRIVATE_COMMAND)) return true;
         return getAllowedGuilds().contains(GuildID);
     }

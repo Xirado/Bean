@@ -13,10 +13,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ChooseCommand extends SlashCommand
-{
-    public ChooseCommand()
-    {
+public class ChooseCommand extends SlashCommand {
+
+    public ChooseCommand() {
         setCommandData(new CommandData("choose", "Chooses between up to 10 things.")
                 .addOption(OptionType.STRING, "1st", "First argument.", true)
                 .addOption(OptionType.STRING, "2nd", "Second argument.", true)
@@ -34,8 +33,7 @@ public class ChooseCommand extends SlashCommand
 
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         List<OptionMapping> chooseOptions = event.getOptions();
         int i = ThreadLocalRandom.current().nextInt(event.getOptions().size());
         ctx.reply(String.format("I choose... %s", chooseOptions.get(i).getAsString())).queue();

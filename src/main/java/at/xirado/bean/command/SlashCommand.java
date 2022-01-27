@@ -12,8 +12,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public abstract class SlashCommand
-{
+public abstract class SlashCommand {
 
     private CommandData commandData;
     private final List<Permission> requiredUserPermissions;
@@ -23,94 +22,76 @@ public abstract class SlashCommand
     private boolean runnableInDM;
     private final Set<CommandFlag> commandFlags;
 
-    public boolean isRunnableInDM()
-    {
+    public boolean isRunnableInDM() {
         return runnableInDM;
     }
 
-    public void setRunnableInDM(boolean runnableInDM)
-    {
+    public void setRunnableInDM(boolean runnableInDM) {
         this.runnableInDM = runnableInDM;
     }
 
-    public String getCommandName()
-    {
+    public String getCommandName() {
         return commandData.getName();
     }
 
-    public String getCommandDescription()
-    {
+    public String getCommandDescription() {
         return commandData.getDescription();
     }
 
-    public List<OptionData> getOptions()
-    {
+    public List<OptionData> getOptions() {
         return commandData.getOptions();
     }
 
-    public CommandData getCommandData()
-    {
+    public CommandData getCommandData() {
         return commandData;
     }
 
-    public void setCommandData(CommandData commandData)
-    {
+    public void setCommandData(CommandData commandData) {
         this.commandData = commandData;
     }
 
-    public List<Permission> getRequiredUserPermissions()
-    {
+    public List<Permission> getRequiredUserPermissions() {
         return requiredUserPermissions;
     }
 
-    public Set<CommandFlag> getCommandFlags()
-    {
+    public Set<CommandFlag> getCommandFlags() {
         return commandFlags;
     }
 
-    public void setRequiredUserPermissions(Permission... permissions)
-    {
+    public void setRequiredUserPermissions(Permission... permissions) {
         this.requiredUserPermissions.addAll(Arrays.asList(permissions));
     }
 
-    public List<Permission> getRequiredBotPermissions()
-    {
+    public List<Permission> getRequiredBotPermissions() {
         return requiredBotPermissions;
     }
 
-    public void setRequiredBotPermissions(Permission... permissions)
-    {
+    public void setRequiredBotPermissions(Permission... permissions) {
         this.requiredBotPermissions.addAll(Arrays.asList(permissions));
     }
 
-    public boolean isGlobal()
-    {
+    public boolean isGlobal() {
         return isGlobal;
     }
 
-    public void setGlobal(boolean global)
-    {
+    public void setGlobal(boolean global) {
         isGlobal = global;
     }
 
-    public List<Long> getEnabledGuilds()
-    {
+    public List<Long> getEnabledGuilds() {
         return enabledGuilds;
     }
 
-    public void setEnabledGuilds(Long... enabledGuilds)
-    {
+    public void setEnabledGuilds(Long... enabledGuilds) {
         this.enabledGuilds.addAll(Arrays.asList(enabledGuilds));
     }
 
-    public void addCommandFlags(CommandFlag... flags)
-    {
+    public void addCommandFlags(CommandFlag... flags) {
         Checks.notEmpty(flags, "Flags");
         commandFlags.addAll(Set.of(flags));
     }
 
-    public SlashCommand()
-    {
+    public SlashCommand() {
         this.requiredBotPermissions = new ArrayList<>();
         this.requiredUserPermissions = new ArrayList<>();
         this.commandData = null;
@@ -129,6 +110,9 @@ public abstract class SlashCommand
      */
     public abstract void executeCommand(@Nonnull SlashCommandEvent event, @Nullable Member sender, @Nonnull SlashCommandContext ctx);
 
-    public void handleAutocomplete(@Nonnull ApplicationCommandAutocompleteEvent event) throws Exception {};
+    public void handleAutocomplete(@Nonnull ApplicationCommandAutocompleteEvent event) throws Exception {
+    }
+
+    ;
 
 }

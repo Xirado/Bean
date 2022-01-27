@@ -16,17 +16,14 @@ import spark.Route;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
-public class GuildDataRoute implements Route
-{
+public class GuildDataRoute implements Route {
 
     public static final Set<String> ALLOWED_SETTINGS = Set.of("log_channel", "dj_roles", "allow_earrape", "no_xp_channels");
 
     @Override
-    public Object handle(Request request, Response response) throws Exception
-    {
+    public Object handle(Request request, Response response) throws Exception {
         String authHeader = request.headers("authorization");
-        if (authHeader == null || !authHeader.startsWith("Token "))
-        {
+        if (authHeader == null || !authHeader.startsWith("Token ")) {
             response.status(401);
             return DataObject.empty()
                     .put("code", 401)
@@ -35,8 +32,7 @@ public class GuildDataRoute implements Route
         }
         String token = authHeader.substring(7);
         byte[] tokenBytes = token.getBytes(StandardCharsets.UTF_8);
-        if (!Bean.getInstance().getAuthenticator().isAuthenticated(tokenBytes))
-        {
+        if (!Bean.getInstance().getAuthenticator().isAuthenticated(tokenBytes)) {
             response.status(401);
             return DataObject.empty()
                     .put("code", 401)
@@ -45,8 +41,7 @@ public class GuildDataRoute implements Route
         }
         DataObject user = Bean.getInstance().getAuthenticator().getUser(tokenBytes);
         DataObject body = DataObject.fromJson(request.bodyAsBytes());
-        if (body.isNull("guild") || body.isNull("data"))
-        {
+        if (body.isNull("guild") || body.isNull("data")) {
             response.status(400);
             return DataObject.empty()
                     .put("code", 400)
@@ -57,8 +52,7 @@ public class GuildDataRoute implements Route
         long userId = user.getLong("id");
         ShardManager manager = Bean.getInstance().getShardManager();
         Guild guild = manager.getGuildById(guildId);
-        if (guild == null)
-        {
+        if (guild == null) {
             response.status(401);
             return DataObject.empty()
                     .put("code", 401)
@@ -66,19 +60,16 @@ public class GuildDataRoute implements Route
                     .toString();
         }
         Member member;
-        try
-        {
+        try {
             member = guild.retrieveMemberById(userId).complete();
-        }catch (ErrorResponseException ex)
-        {
+        } catch (ErrorResponseException ex) {
             response.status(401);
             return DataObject.empty()
                     .put("code", 401)
                     .put("message", ex.getMessage())
                     .toString();
         }
-        if (!member.hasPermission(Permission.ADMINISTRATOR))
-        {
+        if (!member.hasPermission(Permission.ADMINISTRATOR)) {
             response.status(401);
             return DataObject.empty()
                     .put("code", 401)
@@ -90,8 +81,7 @@ public class GuildDataRoute implements Route
         DataObject updatedData = body.getObject("data"); // Stuff to update
         DataObject currentData = guildData.toData(); // old data
 
-        for (String key : updatedData.keys())
-        {
+        for (String key : updatedData.keys()) {
             if (ALLOWED_SETTINGS.contains(key))
                 currentData.put(key, updatedData.get(key));
         }

@@ -6,10 +6,9 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
-public class ObjectBuilder
-{
-    public static DataObject serializeJDAGuild(Guild guild)
-    {
+public class ObjectBuilder {
+
+    public static DataObject serializeJDAGuild(Guild guild) {
         DataObject object = DataObject.empty()
                 .put("name", guild.getName())
                 .put("id", guild.getId())
@@ -18,8 +17,7 @@ public class ObjectBuilder
                 .put("afk_channel_id", guild.getAfkChannel() == null ? null : guild.getAfkChannel().getIdLong())
                 .put("afk_timeout", guild.getAfkTimeout().getSeconds());
         DataArray roles = DataArray.empty();
-        for (Role role : guild.getRoles())
-        {
+        for (Role role : guild.getRoles()) {
             DataObject roleObject = DataObject.empty()
                     .put("id", role.getIdLong())
                     .put("name", role.getName())
@@ -33,8 +31,7 @@ public class ObjectBuilder
         }
         object.put("roles", roles);
         DataArray channels = DataArray.empty();
-        for (GuildChannel channel : guild.getChannels())
-        {
+        for (GuildChannel channel : guild.getChannels()) {
             DataObject channelObject = DataObject.empty()
                     .put("id", channel.getIdLong())
                     .put("type", channel.getType().getId())

@@ -4,8 +4,6 @@ import at.xirado.bean.Bean;
 import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
-import at.xirado.bean.music.GuildAudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import lavalink.client.io.jda.JdaLink;
 import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.entities.Member;
@@ -14,25 +12,21 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ResumeCommand extends SlashCommand
-{
-    public ResumeCommand()
-    {
+public class ResumeCommand extends SlashCommand {
+
+    public ResumeCommand() {
         setCommandData(new CommandData("resume", "Resumes the player if paused."));
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.DJ_ONLY);
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
         LavalinkPlayer player = link.getPlayer();
-        if (player.getPlayingTrack() == null)
-        {
+        if (player.getPlayingTrack() == null) {
             ctx.replyError("I'm currently not playing any music!").queue();
         }
-        if (!player.isPaused())
-        {
+        if (!player.isPaused()) {
             ctx.replyError("The player is not paused!").queue();
             return;
         }

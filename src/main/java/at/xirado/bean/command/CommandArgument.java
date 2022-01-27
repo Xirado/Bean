@@ -8,16 +8,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CommandArgument
-{
+public class CommandArgument {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandArgument.class);
 
     private final String command;
     private final String[] args;
 
-    public CommandArgument(String argumentString, String prefix)
-    {
+    public CommandArgument(String argumentString, String prefix) {
         Checks.notEmpty(argumentString, "Argument");
         Checks.notEmpty(prefix, "Prefix");
         String[] argumentArray = argumentString.split("\\s+");
@@ -27,29 +25,24 @@ public class CommandArgument
         arguments.toArray(args);
     }
 
-    public String getCommandName()
-    {
+    public String getCommandName() {
         return command;
     }
 
-    public String[] toStringArray()
-    {
+    public String[] toStringArray() {
         return args;
     }
 
-    public String toString(int startIndex)
-    {
+    public String toString(int startIndex) {
         StringBuilder sb = new StringBuilder();
-        for (int i = startIndex; i < args.length; i++)
-        {
+        for (int i = startIndex; i < args.length; i++) {
             sb.append(args[i]).append(" ");
         }
         return sb.toString().trim();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return toString(0);
     }
 }

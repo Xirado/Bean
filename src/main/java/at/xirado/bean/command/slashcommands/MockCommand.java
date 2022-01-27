@@ -9,23 +9,19 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class MockCommand extends SlashCommand
-{
+public class MockCommand extends SlashCommand {
 
-    public MockCommand()
-    {
+    public MockCommand() {
         setCommandData(new CommandData("mock", "Mock something.")
                 .addOption(OptionType.STRING, "text", "Text to mock.", true)
         );
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         String toMock = event.getOption("text").getAsString();
         StringBuilder sensitive = new StringBuilder();
-        for (int i = 0; i < toMock.length(); i++)
-        {
+        for (int i = 0; i < toMock.length(); i++) {
             if (i % 2 == 0)
                 sensitive.append(String.valueOf(toMock.charAt(i)).toLowerCase());
             else

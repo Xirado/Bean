@@ -7,19 +7,16 @@ import net.dv8tion.jda.api.JDAInfo;
 
 import java.util.Arrays;
 
-public class Info extends ConsoleCommand
-{
+public class Info extends ConsoleCommand {
 
-    public Info()
-    {
+    public Info() {
         this.invoke = "info";
         this.description = "Shows logo and information";
         this.aliases = Arrays.asList("about", "information");
     }
 
     @Override
-    public void executeCommand(String invoke, String[] args)
-    {
+    public void executeCommand(String invoke, String[] args) {
         String logo = Shell.getLogo();
         StringBuilder sb = new StringBuilder();
         long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
@@ -33,8 +30,7 @@ public class Info extends ConsoleCommand
     }
 
 
-    public static String convertBytes(long bytes)
-    {
+    public static String convertBytes(long bytes) {
         if (bytes < 1024) return bytes + " bytes";
         if (bytes < 1048576) return bytes / 1024 + " kB";
         if (bytes < 1073741824) return (bytes / 1024) / 1024 + " MB";

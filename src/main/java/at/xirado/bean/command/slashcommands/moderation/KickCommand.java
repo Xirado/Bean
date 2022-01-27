@@ -17,10 +17,9 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class KickCommand extends SlashCommand
-{
-    public KickCommand()
-    {
+public class KickCommand extends SlashCommand {
+
+    public KickCommand() {
         setCommandData(new CommandData("kick", "Kicks a member from a server.")
                 .addOption(OptionType.USER, "user", "User to kick.", true)
                 .addOption(OptionType.STRING, "reason", "Reason for this kick.")
@@ -30,34 +29,28 @@ public class KickCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         Guild guild = event.getGuild();
         if (guild == null) return;
         Member member = event.getOption("user").getAsMember();
         String reason = event.getOption("reason") == null ? null : event.getOption("reason").getAsString();
-        if (member == null)
-        {
+        if (member == null) {
             event.replyEmbeds(EmbedUtil.errorEmbed("This user is not member of this guild!")).setEphemeral(true).queue();
             return;
         }
-        if (sender.getIdLong() == member.getIdLong())
-        {
+        if (sender.getIdLong() == member.getIdLong()) {
             ctx.reply(EmbedUtil.errorEmbed("You cannot kick yourself!")).setEphemeral(true).queue();
             return;
         }
-        if (!sender.canInteract(member))
-        {
+        if (!sender.canInteract(member)) {
             ctx.reply(EmbedUtil.noEntryEmbed(ctx.getLocalized("commands.kick.you_cannot_kick"))).setEphemeral(true).queue();
             return;
         }
-        if (ctx.getGuildData().isModerator(member))
-        {
+        if (ctx.getGuildData().isModerator(member)) {
             ctx.reply(EmbedUtil.noEntryEmbed(ctx.getLocalized("commands.kick.you_cannot_kick_moderator"))).setEphemeral(true).queue();
             return;
         }
-        if (!guild.getSelfMember().canInteract(member))
-        {
+        if (!guild.getSelfMember().canInteract(member)) {
             ctx.reply(EmbedUtil.noEntryEmbed(ctx.getLocalized("commands.kick.i_cannot_kick"))).setEphemeral(true).queue();
             return;
         }
@@ -69,7 +62,7 @@ public class KickCommand extends SlashCommand
         EmbedBuilder dmEmbed = new EmbedBuilder()
                 .setColor(CaseType.KICK.getEmbedColor())
                 .setAuthor(ctx.getLocalized("commands.kick.you_have_been_kicked", guild.getName()), null, guild.getIconUrl())
-                .addField("Moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true);
+                .addField("Moderator", sender.getAsMention() + " (" + sender.getUser().getAsTag() + ")", true);
         if (reason != null)
             dmEmbed.addField(ctx.getLocalized("commands.reason"), reason, true);
 
@@ -80,17 +73,18 @@ public class KickCommand extends SlashCommand
                 .flatMap(x -> event.getHook().sendMessageEmbeds(confirmationEmbed))
                 .queue(x -> {
                     ModCase.createModCase(CaseType.KICK, guild.getIdLong(), member.getIdLong(), sender.getIdLong(), reason);
-                    if (ctx.getGuildData().getLogChannel() != null)
-                    {
+                    if (ctx.getGuildData().getLogChannel() != null) {
                         TextChannel logChannel = ctx.getGuildData().getLogChannel();
                         MessageEmbed logEmbed = new EmbedBuilder()
                                 .setColor(CaseType.KICK.getEmbedColor())
-                                .setAuthor("Kick • "+member.getUser().getAsTag(), null, member.getUser().getEffectiveAvatarUrl())
+                                .setAuthor("Kick • " + member.getUser().getAsTag(), null, member.getUser().getEffectiveAvatarUrl())
                                 .addField(ctx.getLocalized("commands.reason"), reason, true)
-                                .addField("Moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true)
+                                .addField("Moderator", sender.getAsMention() + " (" + sender.getUser().getAsTag() + ")", true)
                                 .setFooter(ctx.getLocalized("commands.user_id", member.getIdLong()))
                                 .build();
-                        logChannel.sendMessageEmbeds(logEmbed).queue(s -> {}, e -> {});
+                        logChannel.sendMessageEmbeds(logEmbed).queue(s -> {
+                        }, e -> {
+                        });
                     }
                 }, e -> event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).setEphemeral(true).queue());
     }

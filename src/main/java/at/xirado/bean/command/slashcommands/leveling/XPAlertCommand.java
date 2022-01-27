@@ -19,10 +19,9 @@ import javax.annotation.Nonnull;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class XPAlertCommand extends SlashCommand
-{
-    public XPAlertCommand()
-    {
+public class XPAlertCommand extends SlashCommand {
+
+    public XPAlertCommand() {
         setCommandData(new CommandData("setxpalerts", "Changes XP levelup alert behaviour.")
                 .addSubcommands(new SubcommandData("none", "Disables xp alerts entirely."))
                 .addSubcommands(new SubcommandData("dm", "Notifies the user via DM when they level up."))
@@ -35,11 +34,9 @@ public class XPAlertCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         Guild guild = event.getGuild();
-        switch (event.getSubcommandName())
-        {
+        switch (event.getSubcommandName()) {
             case "none":
                 boolean a = setXPAlert(guild, "none");
                 if (a)
@@ -63,8 +60,7 @@ public class XPAlertCommand extends SlashCommand
                 return;
             case "channel":
                 GuildChannel channel = event.getOption("targetchannel").getAsGuildChannel();
-                if (channel.getType() != ChannelType.TEXT)
-                {
+                if (channel.getType() != ChannelType.TEXT) {
                     ctx.replyError("Can only use text-channels as XP alert target!").setEphemeral(true).queue();
                     return;
                 }
@@ -80,35 +76,29 @@ public class XPAlertCommand extends SlashCommand
     }
 
 
-    public static String getXPAlert(@Nonnull Guild guild)
-    {
+    public static String getXPAlert(@Nonnull Guild guild) {
         Connection connection = Database.getConnectionFromPool();
-        try (var ps = connection.prepareStatement("SELECT mode FROM xpAlerts WHERE guildID = ?"))
-        {
+        try (var ps = connection.prepareStatement("SELECT mode FROM xpAlerts WHERE guildID = ?")) {
             ps.setLong(1, guild.getIdLong());
             var rs = ps.executeQuery();
             if (rs.next()) return rs.getString("mode");
             return "current";
-        } catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             ex.printStackTrace();
             return "none";
-        } finally
-        {
+        } finally {
             Util.closeQuietly(connection);
         }
     }
 
-    public static void sendXPAlert(@Nonnull Member member, int level, TextChannel current)
-    {
+    public static void sendXPAlert(@Nonnull Member member, int level, TextChannel current) {
         LinkedDataObject json = LocaleLoader.ofGuild(member.getGuild());
         String mode = getXPAlert(member.getGuild());
-        switch (mode)
-        {
+        switch (mode) {
             case "none":
                 return;
             case "dm":
-                String message = "**"+member.getGuild().getName()+"**: "+"Hey, you just ranked up to level **"+level+"**!";
+                String message = "**" + member.getGuild().getName() + "**: " + "Hey, you just ranked up to level **" + level + "**!";
                 Util.sendDM(member.getIdLong(), message);
                 return;
             case "current":
@@ -122,22 +112,18 @@ public class XPAlertCommand extends SlashCommand
         }
     }
 
-    public static boolean setXPAlert(@Nonnull Guild guild, String modeOrChannelID)
-    {
+    public static boolean setXPAlert(@Nonnull Guild guild, String modeOrChannelID) {
         Connection connection = Database.getConnectionFromPool();
-        try (var ps = connection.prepareStatement("INSERT INTO xpAlerts (guildID, mode) VALUES (?,?) ON DUPLICATE KEY UPDATE mode = ?"))
-        {
+        try (var ps = connection.prepareStatement("INSERT INTO xpAlerts (guildID, mode) VALUES (?,?) ON DUPLICATE KEY UPDATE mode = ?")) {
             ps.setLong(1, guild.getIdLong());
             ps.setString(2, modeOrChannelID);
             ps.setString(3, modeOrChannelID);
             ps.execute();
             return true;
-        } catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             ex.printStackTrace();
             return false;
-        } finally
-        {
+        } finally {
             Util.closeQuietly(connection);
         }
     }

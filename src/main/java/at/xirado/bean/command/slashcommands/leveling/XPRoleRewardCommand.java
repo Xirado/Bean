@@ -21,10 +21,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class XPRoleRewardCommand extends SlashCommand
-{
-    public XPRoleRewardCommand()
-    {
+public class XPRoleRewardCommand extends SlashCommand {
+
+    public XPRoleRewardCommand() {
         setCommandData(new CommandData("xprolereward", "Rewards a member with a role when they reach a certain level.")
                 .addSubcommands(new SubcommandData("create", "Creates a role reward.")
                         .addOption(OptionType.INTEGER, "level", "Level a member needs to reach to get the role.", true)
@@ -41,28 +40,23 @@ public class XPRoleRewardCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         GuildData guildData = ctx.getGuildData();
-        switch (event.getSubcommandName())
-        {
+        switch (event.getSubcommandName()) {
             case "create" -> {
                 long level = event.getOption("level").getAsLong();
                 Role role = event.getOption("role").getAsRole();
                 boolean persist = event.getOption("persist") == null || event.getOption("persist").getAsBoolean();
                 boolean removeOnNextReward = event.getOption("remove_on_next_reward") != null && event.getOption("remove_on_next_reward").getAsBoolean();
-                if (level < 1)
-                {
+                if (level < 1) {
                     event.replyEmbeds(EmbedUtil.errorEmbed("Cannot create role wards on levels below 1!")).setEphemeral(true).queue();
                     return;
                 }
-                if (level > 200)
-                {
+                if (level > 200) {
                     event.replyEmbeds(EmbedUtil.errorEmbed("Can only create role rewards on levels upto 200!")).setEphemeral(true).queue();
                     return;
                 }
-                if (guildData.hasRoleReward((int) level))
-                {
+                if (guildData.hasRoleReward((int) level)) {
                     guildData.addRoleReward((int) level, role.getIdLong(), persist, removeOnNextReward).update();
                     event.replyEmbeds(EmbedUtil.successEmbed("Role reward has been successfully updated!")).setEphemeral(true).queue();
                     return;
@@ -72,8 +66,7 @@ public class XPRoleRewardCommand extends SlashCommand
             }
             case "remove" -> {
                 long level = event.getOption("level").getAsLong();
-                if (!guildData.hasRoleReward((int) level))
-                {
+                if (!guildData.hasRoleReward((int) level)) {
                     event.replyEmbeds(EmbedUtil.errorEmbed("I couldn't find a role reward with that level!")).setEphemeral(true).queue();
                     return;
                 }
@@ -82,8 +75,7 @@ public class XPRoleRewardCommand extends SlashCommand
             }
             case "list" -> {
                 List<RoleReward> rewards = new ArrayList<>(guildData.getRoleRewards());
-                if (rewards.isEmpty())
-                {
+                if (rewards.isEmpty()) {
                     event.replyEmbeds(EmbedUtil.warningEmbed("Your server does not appear to have any role rewards!")).setEphemeral(true).queue();
                     return;
                 }
@@ -92,20 +84,15 @@ public class XPRoleRewardCommand extends SlashCommand
 
                 StringBuilder builder = new StringBuilder();
                 builder.append("`P - Persists on rejoin`\n`R - Gets removed on next reward`\n\n");
-                for (RoleReward reward : rewards)
-                {
+                for (RoleReward reward : rewards) {
                     String properties = "";
-                    if (reward.isPersistant())
-                    {
+                    if (reward.isPersistant()) {
                         properties = " - P";
                     }
-                    if (reward.doesRemoveOnNextReward())
-                    {
-                        if (properties.isEmpty())
-                        {
+                    if (reward.doesRemoveOnNextReward()) {
+                        if (properties.isEmpty()) {
                             properties = " - R";
-                        } else
-                        {
+                        } else {
                             properties += "R";
                         }
                     }

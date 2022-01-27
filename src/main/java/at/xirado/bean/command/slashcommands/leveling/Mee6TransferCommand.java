@@ -26,17 +26,15 @@ import java.sql.Connection;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-public class Mee6TransferCommand extends SlashCommand
-{
-    public Mee6TransferCommand()
-    {
+public class Mee6TransferCommand extends SlashCommand {
+
+    public Mee6TransferCommand() {
         setCommandData(new CommandData("mee6transfer", "Transfers MEE6 XP to Bean for all members."));
         setRequiredUserPermissions(Permission.ADMINISTRATOR);
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx) {
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(Color.RED)
                 .setDescription("This transfers all XP from MEE6 over to Bean.\n" +
@@ -45,7 +43,7 @@ public class Mee6TransferCommand extends SlashCommand
                         "Are you sure you want to continue?\n");
         event.deferReply(true).queue();
         event.getHook().sendMessageEmbeds(builder.build())
-                .addActionRow(Button.danger("mee6transfer:"+event.getIdLong(), "Continue").withEmoji(Emoji.fromUnicode("⚠")))
+                .addActionRow(Button.danger("mee6transfer:" + event.getIdLong(), "Continue").withEmoji(Emoji.fromUnicode("⚠")))
                 .setEphemeral(true)
                 .queue(
                         (hook) ->
@@ -63,10 +61,8 @@ public class Mee6TransferCommand extends SlashCommand
                                                 hook2 ->
                                                 {
                                                     long startTime = System.currentTimeMillis();
-                                                    try(Connection connection = Database.getConnectionFromPool())
-                                                    {
-                                                        if (connection == null)
-                                                        {
+                                                    try (Connection connection = Database.getConnectionFromPool()) {
+                                                        if (connection == null) {
                                                             EmbedBuilder embedBuilder1 = new EmbedBuilder()
                                                                     .setDescription(ctx.getLocalized("general.db_error"))
                                                                     .setColor(0x452350);
@@ -77,10 +73,8 @@ public class Mee6TransferCommand extends SlashCommand
                                                         int transferredPlayers = 0;
                                                         long guildID = event.getGuild().getIdLong();
                                                         ObjectMapper objectMapper = new ObjectMapper();
-                                                        while (true)
-                                                        {
-                                                            if (System.currentTimeMillis() > startTime + 30000)
-                                                            {
+                                                        while (true) {
+                                                            if (System.currentTimeMillis() > startTime + 30000) {
                                                                 EmbedBuilder embedBuilder2 = new EmbedBuilder()
                                                                         .setDescription("Timed out! Please try again later!")
                                                                         .setColor(0x452350);
@@ -89,12 +83,10 @@ public class Mee6TransferCommand extends SlashCommand
                                                             }
                                                             JsonNode node = objectMapper.readTree(new URL("https://mee6.xyz/api/plugins/levels/leaderboard/" + guildID + "?page=" + page));
                                                             MEE6Player[] players = objectMapper.treeToValue(node.at("/players"), MEE6Player[].class);
-                                                            if (players == null || players.length == 0)
-                                                            {
+                                                            if (players == null || players.length == 0) {
                                                                 break;
                                                             }
-                                                            for (MEE6Player player : players)
-                                                            {
+                                                            for (MEE6Player player : players) {
                                                                 long id = Long.parseLong(player.getId());
                                                                 long xp = player.getXp();
                                                                 String name = player.getUsername();
@@ -104,8 +96,7 @@ public class Mee6TransferCommand extends SlashCommand
                                                             }
                                                             page++;
                                                         }
-                                                        if (transferredPlayers == 0)
-                                                        {
+                                                        if (transferredPlayers == 0) {
                                                             EmbedBuilder builder1 = new EmbedBuilder()
                                                                     .setColor(Color.RED)
                                                                     .setDescription("Could not find any users!");
@@ -116,16 +107,13 @@ public class Mee6TransferCommand extends SlashCommand
                                                                 .setColor(Color.green)
                                                                 .setDescription("✅ XP has been successfully transferred for **" + transferredPlayers + "** users!");
                                                         hook2.editOriginalEmbeds(builder1.build()).queue();
-                                                    } catch (Exception ex)
-                                                    {
-                                                        if (ex instanceof FileNotFoundException)
-                                                        {
+                                                    } catch (Exception ex) {
+                                                        if (ex instanceof FileNotFoundException) {
                                                             EmbedBuilder embedBuilder1 = new EmbedBuilder()
                                                                     .setColor(Color.RED)
                                                                     .setDescription("Could not find any data for this guild! (Can you access the leaderboard?)");
                                                             hook2.editOriginalEmbeds(embedBuilder1.build()).queue();
-                                                        } else
-                                                        {
+                                                        } else {
                                                             EmbedBuilder embedBuilder1 = new EmbedBuilder()
                                                                     .setColor(Color.RED)
                                                                     .setDescription("MEE6 banned my IP. Please try again tomorrow.");
@@ -138,9 +126,9 @@ public class Mee6TransferCommand extends SlashCommand
                                     () ->
                                     {
                                         hook.editMessageEmbeds(new EmbedBuilder()
-                                                .setColor(Color.RED)
-                                                .setDescription("Timed out!")
-                                                .build())
+                                                        .setColor(Color.RED)
+                                                        .setDescription("Timed out!")
+                                                        .build())
                                                 .setActionRow(Collections.emptyList()).queue();
                                     }
                             );
