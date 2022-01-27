@@ -306,7 +306,8 @@ public class SlashCommandHandler
                     command.executeCommand(event, member, ctx);
                 }
 
-            } catch (Exception e)
+            } 
+            catch (Exception e)
             {
                 LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
                 if (event.isAcknowledged())
