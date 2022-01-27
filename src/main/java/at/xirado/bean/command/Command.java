@@ -3,64 +3,60 @@ package at.xirado.bean.command;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 public abstract class Command
 {
     private final String name;
     private final String description;
     private final String usage;
-    private final List<String> aliases;
-    private final List<Permission> requiredPermissions;
-    private final List<Permission> requiredBotPermissions;
-    private final List<Long> allowedGuilds;
+    private final List<String> aliases = new ArrayList<>();
+    private final List<Permission> requiredPermissions = new ArrayList<>();
+    private final List<Permission> requiredBotPermissions = new ArrayList<>();
+    private final List<Long> allowedGuilds = new ArrayList<>();
     private final EnumSet<CommandFlag> commandFlags;
 
-    public Command(String name, String description, String usage)
+    protected Command(String name, String description, String usage)
     {
         Checks.notNull(name, "name");
         Checks.notNull(description, "description");
         Checks.notNull(usage, "usage");
+
         this.name = name;
         this.description = description;
         this.usage = usage;
-        aliases = new ArrayList<>();
-        requiredPermissions = new ArrayList<>();
-        requiredBotPermissions = new ArrayList<>();
-        allowedGuilds = new ArrayList<>();
         commandFlags = EnumSet.noneOf(CommandFlag.class);
     }
 
 
-    public void setAliases(String... aliases)
+    public void addAliases(@NotNull String... aliases)
     {
         Checks.notNull(aliases, "Aliases");
         this.aliases.addAll(Arrays.asList(aliases));
     }
 
-    public void setRequiredPermissions(Permission... permissions)
+    public void addRequiredPermissions(@NotNull Permission... permissions)
     {
         Checks.notNull(permissions, "Permissions");
         this.requiredPermissions.addAll(Arrays.asList(permissions));
     }
 
-    public void setRequiredBotPermissions(Permission... permissions)
+    public void addRequiredBotPermissions(@NotNull Permission... permissions)
     {
         Checks.notNull(permissions, "Permissions");
         this.requiredBotPermissions.addAll(Arrays.asList(permissions));
     }
 
-    public void addAllowedGuilds(Long... guildIDs)
+    public void addAllowedGuilds(@NotNull Long... guildIDs)
     {
         Checks.notEmpty(guildIDs, "Guild Ids");
         this.allowedGuilds.addAll(Arrays.asList(guildIDs));
     }
 
-    public void setCommandFlags(CommandFlag... commandFlags)
+    public void addCommandFlags(@NotNull CommandFlag... commandFlags)
     {
         Checks.notNull(commandFlags, "CommandFlags");
         this.commandFlags.addAll(Arrays.asList(commandFlags));
@@ -82,29 +78,29 @@ public abstract class Command
     }
 
 
-    public List<String> getAliases()
+    public @NotNull List<String> getAliases()
     {
-        return aliases;
+        return Collections.unmodifiableList(aliases);
     }
 
-    public List<Permission> getRequiredPermissions()
+    public @NotNull List<Permission> getRequiredPermissions()
     {
-        return requiredPermissions;
+        return Collections.unmodifiableList(requiredPermissions);
     }
 
-    public List<Permission> getRequiredBotPermissions()
+    public @NotNull List<Permission> getRequiredBotPermissions()
     {
-        return requiredBotPermissions;
+        return Collections.unmodifiableList(requiredBotPermissions);
     }
 
-    public List<Long> getAllowedGuilds()
+    public @NotNull List<Long> getAllowedGuilds()
     {
-        return allowedGuilds;
+        return Collections.unmodifiableList(allowedGuilds);
     }
 
-    public EnumSet<CommandFlag> getCommandFlags()
+    public @NotNull Set<CommandFlag> getCommandFlags()
     {
-        return commandFlags;
+        return Collections.unmodifiableSet(commandFlags);
     }
 
     public boolean hasCommandFlag(CommandFlag flag)
@@ -112,11 +108,30 @@ public abstract class Command
         return commandFlags.contains(flag);
     }
 
-    public boolean isAvailableIn(long GuildID)
+    public boolean isAvailableIn(long guildID)
     {
-        if (!hasCommandFlag(CommandFlag.PRIVATE_COMMAND)) return true;
-        return getAllowedGuilds().contains(GuildID);
+        if (hasCommandFlag(CommandFlag.PRIVATE_COMMAND)) {
+            return getAllowedGuilds().contains(guildID);
+        } else {
+            return true;
+        }
     }
 
     public abstract void executeCommand(GuildMessageReceivedEvent event, CommandContext context);
+
+    @NonNls
+    @NotNull
+    @Override
+    public String toString() {
+        return "Command{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", usage='" + usage + '\'' +
+                ", aliases=" + aliases +
+                ", requiredPermissions=" + requiredPermissions +
+                ", requiredBotPermissions=" + requiredBotPermissions +
+                ", allowedGuilds=" + allowedGuilds +
+                ", commandFlags=" + commandFlags +
+                '}';
+    }
 }
