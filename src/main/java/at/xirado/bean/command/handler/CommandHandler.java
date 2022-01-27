@@ -5,19 +5,21 @@ import at.xirado.bean.command.Command;
 import at.xirado.bean.command.CommandArgument;
 import at.xirado.bean.command.CommandContext;
 import at.xirado.bean.command.CommandFlag;
-import at.xirado.bean.command.commands.*;
+import at.xirado.bean.command.commands.Eval;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -33,24 +35,24 @@ public class CommandHandler
         registerCommand(new Eval());
     }
 
-    private void registerCommand(Command command)
+    private void registerCommand(@NotNull Command command)
     {
         String name = command.getName();
+
         if (registeredCommands.containsKey(name))
         {
-            LOGGER.error("Command \"" + name + "\" could not be registered because a command (or alias) with this name already exists!");
+            LOGGER.error("Command \"{}\" could not be registered because a command (or alias) with this name already exists!", name);
             return;
         }
+
         registeredCommands.put(name, command);
-        if (command.getAliases() != null && command.getAliases().size() >= 1)
-        {
-            for (String alias : command.getAliases())
+
+        List<String> commandAliases = command.getAliases();
+        for (String alias : commandAliases) {
+            if (registeredCommands.containsKey(alias))
+                LOGGER.error("Alias \"{}\" could not be registered because a command (or alias) with this name already exists!", alias);
+            else
             {
-                if (registeredCommands.containsKey(alias))
-                {
-                    LOGGER.error("Alias \"" + alias + "\" could not be registered because a command (or alias) with this name already exists!");
-                    continue;
-                }
                 registeredCommands.put(alias, command);
             }
         }
@@ -72,7 +74,7 @@ public class CommandHandler
         return registeredCommands
                 .values()
                 .stream().distinct()
-                .filter(x -> x.isAvailableIn(guildID)).toList();
+                .filter(command -> command.isAvailableIn(guildID)).toList();
     }
 
     public List<Command> getGuildCommands(long guildID)
@@ -80,26 +82,28 @@ public class CommandHandler
         return registeredCommands
                 .values()
                 .stream().distinct()
-                .filter(x -> x.hasCommandFlag(CommandFlag.PRIVATE_COMMAND) && x.getAllowedGuilds().contains(guildID)).toList();
+                .filter(command -> command.hasCommandFlag(CommandFlag.PRIVATE_COMMAND) && command.getAllowedGuilds().contains(guildID)).toList();
     }
 
     @SuppressWarnings("ConstantConditions")
     public void handleCommandFromGuild(@Nonnull GuildMessageReceivedEvent event)
     {
-        Runnable r = () ->
+        Bean.getInstance().getExecutor().submit(() ->
         {
             try
             {
                 GuildData guildData = GuildManager.getGuildData(event.getGuild());
                 CommandArgument arguments = new CommandArgument(event.getMessage().getContentRaw(), guildData.getPrefix());
                 String name = arguments.getCommandName();
+
                 if (!registeredCommands.containsKey(name))
                     return;
+
                 Command command = registeredCommands.get(name);
 
                 if (command.hasCommandFlag(CommandFlag.PRIVATE_COMMAND))
                 {
-                    if (!command.getAllowedGuilds().contains(event.getGuild().getIdLong())) return;
+                    if (!command.isAvailableIn(event.getGuild().getIdLong())) return;
                 }
 
                 if (command.hasCommandFlag(CommandFlag.DEVELOPER_ONLY))
@@ -113,7 +117,7 @@ public class CommandHandler
 
                 if (command.hasCommandFlag(CommandFlag.DISABLED))
                 {
-                    if (Bean.WHITELISTED_USERS.stream().noneMatch(x -> x == event.getMember().getIdLong()))
+                    if (!Bean.isWhitelistedUser(event.getAuthor().getIdLong()))
                         return;
                 }
 
@@ -122,7 +126,7 @@ public class CommandHandler
                     if (!guildData.isModerator(event.getMember()))
                     {
                         event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class))
-                                .mentionRepliedUser(false).queue(s -> {}, ex -> {});
+                                .mentionRepliedUser(false).queue(message -> {}, ex -> {});
                         return;
                     }
                 }
@@ -130,46 +134,48 @@ public class CommandHandler
                 if (!event.getMember().hasPermission(command.getRequiredPermissions()))
                 {
                     event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class))
-                            .mentionRepliedUser(false).queue(s -> {}, ex -> {});
+                            .mentionRepliedUser(false).queue(message -> {}, ex -> {});
                     return;
                 }
 
-                List<Permission> missingBotPermissions = new ArrayList<>();
+                Member selfMember = event.getGuild().getSelfMember();
 
-                for (Permission p : command.getRequiredBotPermissions())
-                {
-                    if (!event.getGuild().getSelfMember().hasPermission(p))
-                    {
-                        missingBotPermissions.add(p);
-                    }
-                }
 
-                if (missingBotPermissions.size() > 0)
+                Collection<Permission> missingBotPermissions = command.getRequiredBotPermissions().stream()
+                        .filter(permission -> !selfMember.hasPermission(permission))
+                        .toList();
+
+
+                if (!missingBotPermissions.isEmpty())
                 {
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(Color.red)
                             .setFooter(LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms", String.class));
-                    StringBuilder sb = new StringBuilder();
+
+                    StringBuilder stringBuilder = new StringBuilder();
                     for (Permission p : missingBotPermissions)
                     {
-                        sb.append("`").append(p.getName()).append("`, ");
+                        stringBuilder.append("`").append(p.getName()).append("`, ");
                     }
-                    String toString = sb.toString();
-                    toString = toString.substring(0, toString.length() - 2);
-                    builder.setDescription(LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms1", String.class) + " \uD83D\uDE26\n" + LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms", String.class) + ": " + toString);
-                    event.getChannel().sendMessage(builder.build()).queue();
+
+                    String formattedMissingPermissions = stringBuilder.toString();
+                    formattedMissingPermissions = formattedMissingPermissions.substring(0, formattedMissingPermissions.length() - 2);
+
+                    builder.setDescription(LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms1", String.class) + " \uD83D\uDE26\n" + LocaleLoader.ofGuild(event.getGuild()).get("general.no_bot_perms", String.class) + ": " + formattedMissingPermissions);
+
+                    event.getChannel().sendMessageEmbeds(builder.build()).queue();
                     return;
                 }
+
                 CommandContext context = new CommandContext(event, arguments, command, event.getMember());
                 command.executeCommand(event, context);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 LOGGER.error("An error occurred whilst executing command", ex);
                 event.getChannel().sendMessage(CommandContext.ERROR_EMOTE + " " + LocaleLoader.ofGuild(event.getGuild()).get("general.unknown_error_occured", String.class))
-                        .queue(s -> {}, exception -> {});
+                        .queue(message -> {}, exception -> {});
             }
-        };
-
-        Bean.getInstance().getExecutor().submit(r);
+        });
     }
 }

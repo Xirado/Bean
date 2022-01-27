@@ -8,6 +8,7 @@ import at.xirado.bean.command.handler.CommandHandler;
 import at.xirado.bean.command.handler.SlashCommandHandler;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.event.*;
+import at.xirado.bean.lavaplayer.SpotifyAudioSource;
 import at.xirado.bean.log.Shell;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.AudioManager;
@@ -17,7 +18,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import lavalink.client.LavalinkUtil;
 import lavalink.client.io.jda.JdaLavalink;
-import at.xirado.bean.lavaplayer.SpotifyAudioSource;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -203,6 +203,11 @@ public class Bean
     public static long getBuildTime()
     {
         return BUILD_TIME;
+    }
+
+    public static boolean isWhitelistedUser(long userId)
+    {
+        return WHITELISTED_USERS.contains(userId);
     }
 
     public synchronized DataObject getConfig()
