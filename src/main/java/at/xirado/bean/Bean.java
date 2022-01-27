@@ -204,7 +204,8 @@ public class Bean
         return BUILD_TIME;
     }
 
-    public static boolean isWhitelistedUser(long userId) {
+    public static boolean isWhitelistedUser(long userId)
+    {
         return WHITELISTED_USERS.contains(userId);
     }
 

@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-public class CommandHandler {
+public class CommandHandler
+{
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandHandler.class);
 
     private final ConcurrentMap<String, Command> registeredCommands = new ConcurrentSkipListMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -49,9 +50,7 @@ public class CommandHandler {
         List<String> commandAliases = command.getAliases();
         for (String alias : commandAliases) {
             if (registeredCommands.containsKey(alias))
-            {
                 LOGGER.error("Alias \"{}\" could not be registered because a command (or alias) with this name already exists!", alias);
-            }
             else
             {
                 registeredCommands.put(alias, command);
@@ -98,9 +97,7 @@ public class CommandHandler {
                 String name = arguments.getCommandName();
 
                 if (!registeredCommands.containsKey(name))
-                {
                     return;
-                }
 
                 Command command = registeredCommands.get(name);
 

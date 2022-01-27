@@ -110,11 +110,10 @@ public abstract class Command
 
     public boolean isAvailableIn(long guildID)
     {
-        if (hasCommandFlag(CommandFlag.PRIVATE_COMMAND)) {
+        if (hasCommandFlag(CommandFlag.PRIVATE_COMMAND))
             return getAllowedGuilds().contains(guildID);
-        } else {
+        else
             return true;
-        }
     }
 
     public abstract void executeCommand(GuildMessageReceivedEvent event, CommandContext context);
@@ -122,7 +121,8 @@ public abstract class Command
     @NonNls
     @NotNull
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "Command{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
