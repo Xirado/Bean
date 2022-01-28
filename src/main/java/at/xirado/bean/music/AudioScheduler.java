@@ -109,6 +109,7 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     @Override
     public void onTrackEnd(IPlayer player, AudioTrack track, AudioTrackEndReason endReason)
     {
+        log.debug("Track "+track.getInfo().title+" stopped with reason "+endReason);
         if (endReason.mayStartNext)
             nextTrack();
     }
