@@ -63,7 +63,7 @@ public class SQLBuilder
             if (!parameters.isEmpty())
             {
                 int index = 1;
-                for(Object object : parameters)
+                for (Object object : parameters)
                 {
                     ps.setObject(index, object);
                     index++;
@@ -87,7 +87,7 @@ public class SQLBuilder
             if (!parameters.isEmpty())
             {
                 int index = 1;
-                for(Object object : parameters)
+                for (Object object : parameters)
                 {
                     ps.setObject(index, object);
                     index++;

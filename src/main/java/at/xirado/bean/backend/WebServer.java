@@ -67,7 +67,7 @@ public class WebServer
         Request request = new Request.Builder()
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .post(requestBody)
-                .url(BASE_URL+"/oauth2/token")
+                .url(BASE_URL + "/oauth2/token")
                 .build();
 
         Call call = client.newCall(request);
@@ -80,9 +80,9 @@ public class WebServer
     {
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
         Request request = new Request.Builder()
-                .header("authorization", "Bearer "+accessToken)
+                .header("authorization", "Bearer " + accessToken)
                 .get()
-                .url(BASE_URL+"/users/@me")
+                .url(BASE_URL + "/users/@me")
                 .build();
 
         Call call = client.newCall(request);
@@ -96,10 +96,10 @@ public class WebServer
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
 
         Request request = new Request.Builder()
-                .header("Authorization", "Bearer "+accessToken)
-                .header("User-Agent", "Bean (https://bean.bz, "+Bean.getBeanVersion()+")")
+                .header("Authorization", "Bearer " + accessToken)
+                .header("User-Agent", "Bean (https://bean.bz, " + Bean.getBeanVersion() + ")")
                 .get()
-                .url(BASE_URL+"/users/@me/guilds")
+                .url(BASE_URL + "/users/@me/guilds")
                 .build();
 
         Call call = client.newCall(request);
@@ -126,12 +126,14 @@ public class WebServer
         options("/*", (request, response) -> {
 
             String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
-            if (accessControlRequestHeaders != null) {
+            if (accessControlRequestHeaders != null)
+            {
                 response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
             }
 
             String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
-            if (accessControlRequestMethod != null) {
+            if (accessControlRequestMethod != null)
+            {
                 response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
             }
             return "OK";
@@ -161,7 +163,7 @@ public class WebServer
         Request request = new Request.Builder()
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .post(requestBody)
-                .url(BASE_URL+"/oauth2/token")
+                .url(BASE_URL + "/oauth2/token")
                 .build();
 
         Call call = client.newCall(request);

@@ -17,7 +17,6 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;

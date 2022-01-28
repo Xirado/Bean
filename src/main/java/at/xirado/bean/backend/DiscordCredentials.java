@@ -13,7 +13,7 @@ public class DiscordCredentials
     private String[] scopes;
     private String tokenType;
     private long expiresIn;
-    
+
     public DiscordCredentials(DataObject object)
     {
         Checks.notNull(object, "Object");

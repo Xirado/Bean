@@ -22,6 +22,7 @@ public class VoteSkipCommand extends SlashCommand
         setCommandData(new CommandData("voteskip", "Votes to skip the currently playing track."));
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
     }
+
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
@@ -53,7 +54,7 @@ public class VoteSkipCommand extends SlashCommand
             ctx.sendSimpleEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
             return;
         }
-        int listeners = (int)event.getMember().getVoiceState().getChannel().getMembers().stream()
+        int listeners = (int) event.getMember().getVoiceState().getChannel().getMembers().stream()
                 .filter(m -> !m.getUser().isBot() && !m.getVoiceState().isDeafened()).count();
         if (trackInfo.getVoteSkips().contains(event.getUser().getIdLong()))
         {
@@ -61,9 +62,9 @@ public class VoteSkipCommand extends SlashCommand
             return;
         }
         trackInfo.addVoteSkip(event.getMember().getIdLong());
-        int skippers = (int)event.getMember().getVoiceState().getChannel().getMembers().stream()
+        int skippers = (int) event.getMember().getVoiceState().getChannel().getMembers().stream()
                 .filter(m -> trackInfo.getVoteSkips().contains(m.getIdLong())).count();
-        int required = (int)Math.ceil(listeners * .55);
+        int required = (int) Math.ceil(listeners * .55);
         if (skippers >= required)
         {
             if (guildAudioPlayer.getScheduler().isRepeat())
@@ -76,8 +77,9 @@ public class VoteSkipCommand extends SlashCommand
                 return;
             }
             ctx.sendSimpleEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
-        } else {
-            ctx.sendSimpleEmbed("Voted to skip: **"+(required-skippers)+"** more votes needed");
+        } else
+        {
+            ctx.sendSimpleEmbed("Voted to skip: **" + (required - skippers) + "** more votes needed");
 
         }
 

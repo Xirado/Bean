@@ -21,9 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,7 +50,7 @@ public class UrbanDictionaryCommand extends SlashCommand
         LinkedDataObject dataObject;
         try
         {
-            String url = "http://api.urbandictionary.com/v0/define?term="+phrase.replaceAll("\\s+", "+");
+            String url = "http://api.urbandictionary.com/v0/define?term=" + phrase.replaceAll("\\s+", "+");
             Response response = Bean.getInstance().getOkHttpClient()
                     .newCall(new Request.Builder().url(url).build()).execute();
             dataObject = LinkedDataObject.parse(response.body().byteStream());
@@ -92,7 +90,7 @@ public class UrbanDictionaryCommand extends SlashCommand
                 .setTitle(result.getWord())
                 .setTitle(result.getWord(), result.getPermalink())
                 .setFooter(Util.ordinal(index) + " definition")
-                .setFooter(Util.ordinal(index)+" definition", "https://bean.bz/assets/udlogo.png")
+                .setFooter(Util.ordinal(index) + " definition", "https://bean.bz/assets/udlogo.png")
                 .setDescription(description);
         String example = result.getExample();
         if (example != null)

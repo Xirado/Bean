@@ -129,6 +129,10 @@ public abstract class SlashCommand
      */
     public abstract void executeCommand(@Nonnull SlashCommandEvent event, @Nullable Member sender, @Nonnull SlashCommandContext ctx);
 
-    public void handleAutocomplete(@Nonnull ApplicationCommandAutocompleteEvent event) throws Exception {};
+    public void handleAutocomplete(@Nonnull ApplicationCommandAutocompleteEvent event) throws Exception
+    {
+    }
+
+    ;
 
 }

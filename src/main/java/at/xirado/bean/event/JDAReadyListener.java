@@ -30,7 +30,7 @@ public class JDAReadyListener extends ListenerAdapter
             return;
         ready = true;
         Bean.getInstance().getExecutor().submit(() -> {
-            LOGGER.info("Successfully started "+Bean.getInstance().getShardManager().getShards().size()+" shards!");
+            LOGGER.info("Successfully started " + Bean.getInstance().getShardManager().getShards().size() + " shards!");
             Bean.getInstance().getSlashCommandHandler().initialize();
             if (Bean.getInstance().isDebug())
                 LOGGER.warn("Development mode enabled.");
@@ -60,7 +60,7 @@ public class JDAReadyListener extends ListenerAdapter
                     .sum();
             Bean.getInstance().getShardManager()
                     .getShardCache()
-                    .forEach(shard -> shard.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching(memberCount+" users | bean.bz")));
+                    .forEach(shard -> shard.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching(memberCount + " users | bean.bz")));
         }, 0, 1, TimeUnit.MINUTES);
     }
 }

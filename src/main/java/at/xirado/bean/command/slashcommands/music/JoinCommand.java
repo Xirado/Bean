@@ -7,17 +7,12 @@ import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.GuildAudioPlayer;
-import lavalink.client.io.Link;
-import lavalink.client.io.jda.JdaLavalink;
-import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +45,7 @@ public class JoinCommand extends SlashCommand
             }
             if (Util.getListeningUsers(channel) > 0)
             {
-                event.replyEmbeds(EmbedUtil.errorEmbed("I am already playing music in **"+channel.getName()+"**!")).queue();
+                event.replyEmbeds(EmbedUtil.errorEmbed("I am already playing music in **" + channel.getName() + "**!")).queue();
                 return;
             }
         }
@@ -63,6 +58,6 @@ public class JoinCommand extends SlashCommand
             event.replyEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
             return;
         }
-        event.replyEmbeds(EmbedUtil.successEmbed("Joined <#"+voiceState.getChannel().getIdLong()+">!")).queue();
+        event.replyEmbeds(EmbedUtil.successEmbed("Joined <#" + voiceState.getChannel().getIdLong() + ">!")).queue();
     }
 }

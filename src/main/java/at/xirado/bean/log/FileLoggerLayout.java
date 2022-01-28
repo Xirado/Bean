@@ -53,7 +53,9 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
                 try
                 {
                     Thread.sleep(100);
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException ignored)
+                {
+                }
             }
         });
         webhookThread.setDaemon(true);
@@ -107,7 +109,7 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
             priColor = YELLOW;
         else if (level.equals(Level.ERROR))
             priColor = RED;
-        else if(level.equals(Level.INFO))
+        else if (level.equals(Level.INFO))
             priColor = BLUE;
         else
             priColor = WHITE;
@@ -124,7 +126,7 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
         if (event.getThrowableProxy() != null)
         {
             IThrowableProxy iThrowableProxy = event.getThrowableProxy();
-            String result = ThrowableProxyUtil.asString(iThrowableProxy).length() > 1500 ? "    [!] Stacktrace too long!\n" : ThrowableProxyUtil.asString(iThrowableProxy)+"\n";
+            String result = ThrowableProxyUtil.asString(iThrowableProxy).length() > 1500 ? "    [!] Stacktrace too long!\n" : ThrowableProxyUtil.asString(iThrowableProxy) + "\n";
             builder.append(result).append(RESET);
         }
         return builder.toString();
@@ -150,6 +152,7 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
 
     /**
      * Splits up a List of Strings into smaller Lists that are smaller than 2000 characters in length
+     *
      * @param input The input list
      * @return a List of Lists with a resulting length smaller than 2000 characters
      */

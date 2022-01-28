@@ -48,7 +48,8 @@ public class CommandHandler
         registeredCommands.put(name, command);
 
         List<String> commandAliases = command.getAliases();
-        for (String alias : commandAliases) {
+        for (String alias : commandAliases)
+        {
             if (registeredCommands.containsKey(alias))
                 LOGGER.error("Alias \"{}\" could not be registered because a command (or alias) with this name already exists!", alias);
             else

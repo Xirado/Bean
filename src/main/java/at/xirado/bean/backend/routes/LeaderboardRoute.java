@@ -57,7 +57,7 @@ public class LeaderboardRoute implements Route
                 .put("guild", data)
                 .put("users", result);
         if (availablePages > page)
-            obj.put("paging", DataObject.empty().put("next", (request.url().replace("http://", "https://"))+"?page="+(page+1)));
+            obj.put("paging", DataObject.empty().put("next", (request.url().replace("http://", "https://")) + "?page=" + (page + 1)));
         return obj;
     }
 }

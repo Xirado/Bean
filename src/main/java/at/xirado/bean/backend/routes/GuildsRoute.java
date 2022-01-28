@@ -66,7 +66,7 @@ public class GuildsRoute implements Route
                 .collect(Collectors.toList());
         DataArray guildArray = DataArray.empty();
         List<DataObject> nonInvitedGuilds = new ArrayList<>();
-        for(DataObject guild : adminGuilds)
+        for (DataObject guild : adminGuilds)
         {
             String name = guild.getString("name");
             long id = guild.getLong("id");
@@ -74,12 +74,13 @@ public class GuildsRoute implements Route
             boolean botJoined = shardManager.getGuildById(id) != null;
             DataObject o = DataObject.empty();
             o.put("name", name);
-            o.put("id", id+"");
+            o.put("id", id + "");
             if (iconHash != null)
-                o.put("icon", DiscordUtils.getIconUrl(id+"", iconHash));
+                o.put("icon", DiscordUtils.getIconUrl(id + "", iconHash));
             o.put("bot_joined", botJoined);
             StringBuilder initials = new StringBuilder();
-            for (String s : name.split("\\s+")) {
+            for (String s : name.split("\\s+"))
+            {
                 initials.append(s.charAt(0));
             }
             o.put("initials", initials.toString());

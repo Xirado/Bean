@@ -2,18 +2,13 @@ package at.xirado.bean.event;
 
 import at.xirado.bean.Bean;
 import at.xirado.bean.misc.MusicUtil;
-import at.xirado.bean.music.AudioScheduler;
 import at.xirado.bean.music.GuildAudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import lavalink.client.player.LavalinkPlayer;
-import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.internal.JDAImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
@@ -31,6 +26,7 @@ public class VoiceUpdateListener extends ListenerAdapter
 
     /**
      * For when the bot joins a channel
+     *
      * @param event
      */
     @Override
@@ -43,8 +39,12 @@ public class VoiceUpdateListener extends ListenerAdapter
             if (!event.getGuild().getSelfMember().getVoiceState().isGuildDeafened())
                 try
                 {
-                    event.getGuild().deafen(event.getGuild().getSelfMember(), true).queue(s -> {}, e -> {});
-                } catch (InsufficientPermissionException ignored) {}
+                    event.getGuild().deafen(event.getGuild().getSelfMember(), true).queue(s -> {
+                    }, e -> {
+                    });
+                } catch (InsufficientPermissionException ignored)
+                {
+                }
             if (event.getChannelJoined() instanceof StageChannel stageChannel)
             {
                 GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
@@ -63,6 +63,7 @@ public class VoiceUpdateListener extends ListenerAdapter
 
     /**
      * For when the bot leaves a channel
+     *
      * @param event
      */
     @Override
@@ -79,7 +80,9 @@ public class VoiceUpdateListener extends ListenerAdapter
             {
                 if (stageChannel.getStageInstance().getTopic().startsWith("Playing "))
                 {
-                    stageChannel.getStageInstance().delete().queue(s -> {}, e -> {});
+                    stageChannel.getStageInstance().delete().queue(s -> {
+                    }, e -> {
+                    });
                 }
             }
         }
@@ -88,6 +91,7 @@ public class VoiceUpdateListener extends ListenerAdapter
 
     /**
      * For when the bot gets moved to another channel
+     *
      * @param event
      */
     @Override
@@ -142,6 +146,7 @@ public class VoiceUpdateListener extends ListenerAdapter
 
     /**
      * For when a member gets moved or leaves a channel
+     *
      * @param event
      */
     @Override
@@ -162,9 +167,11 @@ public class VoiceUpdateListener extends ListenerAdapter
                 {
                     GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
                     LavalinkPlayer player = audioPlayer.getPlayer();
-                    if (player.getPlayingTrack() != null) {
+                    if (player.getPlayingTrack() != null)
+                    {
                         player.setPaused(true);
-                    } else {
+                    } else
+                    {
                         audioPlayer.destroy();
                         return;
                     }

@@ -37,7 +37,7 @@ public class SearchEntry implements IAutocompleteChoice
 
     public String getFormattedString()
     {
-        String x = MAGNIFYING_GLASS+(playlist ? SCROLL : "")+" "+name;
+        String x = MAGNIFYING_GLASS + (playlist ? SCROLL : "") + " " + name;
         if (x.length() > 100)
         {
             String replaceString = "...";
