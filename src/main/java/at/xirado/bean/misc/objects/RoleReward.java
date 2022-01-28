@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 public class RoleReward implements Serializable
 {

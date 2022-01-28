@@ -114,7 +114,7 @@ public class GuildData
             new SQLBuilder(sql)
                     .addParameters(guildId, jsonString, jsonString)
                     .execute();
-        }catch (SQLException exception)
+        } catch (SQLException exception)
         {
             LOGGER.error("Could not update guild data!", exception);
         }
@@ -271,9 +271,9 @@ public class GuildData
         if (dataObject.isNull("dj_members"))
             return new ArrayList<>();
         return dataObject.getArray("dj_members")
-                        .stream(DataArray::getLong)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+                .stream(DataArray::getLong)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     @CheckReturnValue
@@ -318,11 +318,11 @@ public class GuildData
         for (RoleReward reward : currentRewards)
         {
             array.add(
-              DataObject.empty()
-                      .put("persistant", reward.isPersistant())
-                      .put("level", reward.getLevel())
-                      .put("role_id", reward.getRoleId())
-                      .put("remove_on_next_reward", reward.doesRemoveOnNextReward())
+                    DataObject.empty()
+                            .put("persistant", reward.isPersistant())
+                            .put("level", reward.getLevel())
+                            .put("role_id", reward.getRoleId())
+                            .put("remove_on_next_reward", reward.doesRemoveOnNextReward())
             );
         }
         dataObject.put("role_rewards", array);
@@ -410,7 +410,7 @@ public class GuildData
 
     public long getBalance(long userId)
     {
-        try(var rs = new SQLBuilder("SELECT balance from userbalance WHERE guild_id = ? AND user_id = ?").addParameters(guildId, userId).executeQuery())
+        try (var rs = new SQLBuilder("SELECT balance from userbalance WHERE guild_id = ? AND user_id = ?").addParameters(guildId, userId).executeQuery())
         {
             if (rs.next())
                 return rs.getLong("balance");
@@ -428,7 +428,7 @@ public class GuildData
 
         try
         {
-            new SQLBuilder("INSERT INTO userbalance (guild_id, user_id, balance) values (?,?,?) ON DUPLICATE KEY UPDATE balance = ?").addParameters(guildId, userId, oldBalance+amount, oldBalance+amount).execute();
+            new SQLBuilder("INSERT INTO userbalance (guild_id, user_id, balance) values (?,?,?) ON DUPLICATE KEY UPDATE balance = ?").addParameters(guildId, userId, oldBalance + amount, oldBalance + amount).execute();
 
         } catch (SQLException throwables)
         {

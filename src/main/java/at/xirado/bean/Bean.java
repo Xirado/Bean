@@ -59,7 +59,7 @@ public class Bean
             Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(),
                     new ThreadFactoryBuilder()
                             .setNameFormat("Bean Thread %d")
-                            .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the Threadpool! (Thread "+t.getName()+")", e))
+                            .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the Threadpool! (Thread " + t.getName() + ")", e))
                             .build());
     private final ConsoleCommandManager consoleCommandManager;
     private final SlashCommandHandler slashCommandHandler;
@@ -292,7 +292,9 @@ public class Bean
         try
         {
             return DataObject.fromJson(new FileInputStream(configFile));
-        } catch (FileNotFoundException ignored) {}
+        } catch (FileNotFoundException ignored)
+        {
+        }
         return DataObject.empty();
     }
 
@@ -327,7 +329,8 @@ public class Bean
                             LOGGER.warn("New command(s) has/have been added! Updating Discords cache...");
                         else
                             LOGGER.warn("Command(s) has/have been removed! Updating Discords cache...");
-                        Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {});
+                        Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {
+                        });
                         return;
                     }
                     boolean outdated = false;
@@ -366,7 +369,8 @@ public class Bean
                         }
                     }
                     if (outdated)
-                        Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {});
+                        Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {
+                        });
                 });
             }
             Bean.getInstance().getShardManager().getShards().get(0).retrieveCommands().queue((list) -> {
@@ -381,7 +385,8 @@ public class Bean
                         LOGGER.warn("New command(s) has/have been added! Updating Discords cache...");
                     else
                         LOGGER.warn("Command(s) has/have been removed! Updating Discords cache...");
-                    Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {});
+                    Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {
+                    });
                     return;
                 }
                 boolean outdated = false;
@@ -420,7 +425,8 @@ public class Bean
                     }
                 }
                 if (outdated)
-                    Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {});
+                    Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {
+                    });
             });
         });
     }

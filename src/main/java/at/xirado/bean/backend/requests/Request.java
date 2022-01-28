@@ -1,14 +1,12 @@
 package at.xirado.bean.backend.requests;
 
 import at.xirado.bean.Bean;
-import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class Request

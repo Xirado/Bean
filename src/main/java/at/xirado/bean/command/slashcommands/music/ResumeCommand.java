@@ -4,8 +4,6 @@ import at.xirado.bean.Bean;
 import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
-import at.xirado.bean.music.GuildAudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import lavalink.client.io.jda.JdaLink;
 import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.entities.Member;

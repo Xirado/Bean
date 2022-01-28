@@ -108,7 +108,7 @@ public class XPAlertCommand extends SlashCommand
             case "none":
                 return;
             case "dm":
-                String message = "**"+member.getGuild().getName()+"**: "+"Hey, you just ranked up to level **"+level+"**!";
+                String message = "**" + member.getGuild().getName() + "**: " + "Hey, you just ranked up to level **" + level + "**!";
                 Util.sendDM(member.getIdLong(), message);
                 return;
             case "current":

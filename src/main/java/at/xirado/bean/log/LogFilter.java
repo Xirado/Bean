@@ -7,7 +7,6 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +40,7 @@ public class LogFilter extends Filter<ILoggingEvent>
         final Throwable throwable = throwableProxyImpl.getThrowable();
         if (FILTERED_CLASSES.stream().anyMatch(x -> x.isInstance(throwable)))
         {
-            Bean.error("Redacted error ("+throwable.getClass().getName()+")");
+            Bean.error("Redacted error (" + throwable.getClass().getName() + ")");
             return FilterReply.DENY;
         }
         return FilterReply.NEUTRAL;

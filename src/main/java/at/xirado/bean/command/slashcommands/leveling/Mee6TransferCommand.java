@@ -45,7 +45,7 @@ public class Mee6TransferCommand extends SlashCommand
                         "Are you sure you want to continue?\n");
         event.deferReply(true).queue();
         event.getHook().sendMessageEmbeds(builder.build())
-                .addActionRow(Button.danger("mee6transfer:"+event.getIdLong(), "Continue").withEmoji(Emoji.fromUnicode("⚠")))
+                .addActionRow(Button.danger("mee6transfer:" + event.getIdLong(), "Continue").withEmoji(Emoji.fromUnicode("⚠")))
                 .setEphemeral(true)
                 .queue(
                         (hook) ->
@@ -63,7 +63,7 @@ public class Mee6TransferCommand extends SlashCommand
                                                 hook2 ->
                                                 {
                                                     long startTime = System.currentTimeMillis();
-                                                    try(Connection connection = Database.getConnectionFromPool())
+                                                    try (Connection connection = Database.getConnectionFromPool())
                                                     {
                                                         if (connection == null)
                                                         {
@@ -138,9 +138,9 @@ public class Mee6TransferCommand extends SlashCommand
                                     () ->
                                     {
                                         hook.editMessageEmbeds(new EmbedBuilder()
-                                                .setColor(Color.RED)
-                                                .setDescription("Timed out!")
-                                                .build())
+                                                        .setColor(Color.RED)
+                                                        .setDescription("Timed out!")
+                                                        .build())
                                                 .setActionRow(Collections.emptyList()).queue();
                                     }
                             );

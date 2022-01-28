@@ -45,7 +45,7 @@ public class BanGuildCommand extends ConsoleCommand
             return;
         }
         GuildJoinListener.banGuild(guildId, reason);
-        Shell.println("Banned guild "+guildId+"!");
+        Shell.println("Banned guild " + guildId + "!");
         Guild guildObject = Bean.getInstance().getShardManager().getGuildById(guildId);
         if (guildObject != null)
         {
@@ -53,7 +53,7 @@ public class BanGuildCommand extends ConsoleCommand
                     .setColor(EmbedUtil.ERROR_COLOR)
                     .setTitle("Your server " + guildObject.getName() + " has been blacklisted!")
                     .addField("Reason", reason, true)
-                    .setDescription("No commands will work on this server anymore.\nSend a message to xirado#0001 ("+Bean.OWNER_ID+") to appeal.")
+                    .setDescription("No commands will work on this server anymore.\nSend a message to xirado#0001 (" + Bean.OWNER_ID + ") to appeal.")
                     .build();
             Util.sendDM(guildObject.getOwnerIdLong(), embed);
         }

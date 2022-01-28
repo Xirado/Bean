@@ -34,7 +34,7 @@ public class UnbanCommand extends SlashCommand
         User user = event.getOption("user").getAsUser();
         event.deferReply(true)
                 .flatMap(ban -> guild.unban(user))
-                .flatMap(ban -> event.getHook().sendMessageEmbeds(EmbedUtil.successEmbed(user.getAsTag()+" has been unbanned!")))
+                .flatMap(ban -> event.getHook().sendMessageEmbeds(EmbedUtil.successEmbed(user.getAsTag() + " has been unbanned!")))
                 .queue(null,
                         new ErrorHandler().handle(ErrorResponse.UNKNOWN_BAN, (e) -> event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("This user is not banned!")).queue()));
     }

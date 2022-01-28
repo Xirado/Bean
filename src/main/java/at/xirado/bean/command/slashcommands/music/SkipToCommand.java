@@ -43,10 +43,10 @@ public class SkipToCommand extends SlashCommand
         }
         if (index < 1 || index > queue.size())
         {
-            ctx.sendSimpleEmbed("Index must be a valid integer between 1 and "+queue.size()+"!");
+            ctx.sendSimpleEmbed("Index must be a valid integer between 1 and " + queue.size() + "!");
             return;
         }
-        for (int i = 0; i < index-1; i++)
+        for (int i = 0; i < index - 1; i++)
         {
             queue.remove();
         }

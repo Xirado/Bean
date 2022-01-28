@@ -39,13 +39,13 @@ public class BalanceCommand extends ConsoleCommand
 
                 if (!Helpers.isNumeric(args[1]))
                 {
-                    Shell.printErr("\""+args[1]+"\" is not a valid guild id!");
+                    Shell.printErr("\"" + args[1] + "\" is not a valid guild id!");
                     return;
                 }
 
                 if (!Helpers.isNumeric(args[2]))
                 {
-                    Shell.printErr("\""+args[2]+"\" is not a valid user id!");
+                    Shell.printErr("\"" + args[2] + "\" is not a valid user id!");
                     return;
                 }
 
@@ -60,7 +60,7 @@ public class BalanceCommand extends ConsoleCommand
                 }
                 GuildData guildData = optGuildData.get();
                 long amount = guildData.getBalance(userId);
-                Shell.println("The balance of user "+userId+" on guild "+guildId+(guild != null ? " ("+guild.getName()+")" : " ")+" is: $"+amount);
+                Shell.println("The balance of user " + userId + " on guild " + guildId + (guild != null ? " (" + guild.getName() + ")" : " ") + " is: $" + amount);
             }
             case "set" -> {
                 if (args.length < 4)
@@ -71,19 +71,19 @@ public class BalanceCommand extends ConsoleCommand
 
                 if (!Helpers.isNumeric(args[1]))
                 {
-                    Shell.printErr("\""+args[1]+"\" is not a valid guild id!");
+                    Shell.printErr("\"" + args[1] + "\" is not a valid guild id!");
                     return;
                 }
 
                 if (!Helpers.isNumeric(args[2]))
                 {
-                    Shell.printErr("\""+args[2]+"\" is not a valid user id!");
+                    Shell.printErr("\"" + args[2] + "\" is not a valid user id!");
                     return;
                 }
 
                 if (!Helpers.isNumeric(args[3]))
                 {
-                    Shell.printErr("\""+args[3]+"\" is not a valid integer!");
+                    Shell.printErr("\"" + args[3] + "\" is not a valid integer!");
                     return;
                 }
 
@@ -99,7 +99,7 @@ public class BalanceCommand extends ConsoleCommand
                 GuildData guildData = optGuildData.get();
                 long oldBalance = guildData.getBalance(userId);
                 guildData.setBalance(userId, newBalance);
-                Shell.println("Updated balance for user "+userId+" on guild "+guildId+"! New balance: $"+newBalance+" (Old balance: $"+oldBalance+")");
+                Shell.println("Updated balance for user " + userId + " on guild " + guildId + "! New balance: $" + newBalance + " (Old balance: $" + oldBalance + ")");
             }
 
             case "add" -> {
@@ -111,19 +111,19 @@ public class BalanceCommand extends ConsoleCommand
 
                 if (!Helpers.isNumeric(args[1]))
                 {
-                    Shell.printErr("\""+args[1]+"\" is not a valid guild id!");
+                    Shell.printErr("\"" + args[1] + "\" is not a valid guild id!");
                     return;
                 }
 
                 if (!Helpers.isNumeric(args[2]))
                 {
-                    Shell.printErr("\""+args[2]+"\" is not a valid user id!");
+                    Shell.printErr("\"" + args[2] + "\" is not a valid user id!");
                     return;
                 }
 
                 if (!Helpers.isNumeric(args[3]))
                 {
-                    Shell.printErr("\""+args[3]+"\" is not a valid integer!");
+                    Shell.printErr("\"" + args[3] + "\" is not a valid integer!");
                     return;
                 }
 
@@ -138,13 +138,13 @@ public class BalanceCommand extends ConsoleCommand
                 }
                 GuildData guildData = optGuildData.get();
                 long oldBalance = guildData.getBalance(userId);
-                long newBalance = oldBalance+addedBalance;
-                guildData.setBalance(userId, oldBalance+addedBalance);
-                Shell.println("Updated balance for user "+userId+" on guild "+guildId+"! New balance: $"+newBalance+" (Old balance: $"+oldBalance+")");
+                long newBalance = oldBalance + addedBalance;
+                guildData.setBalance(userId, oldBalance + addedBalance);
+                Shell.println("Updated balance for user " + userId + " on guild " + guildId + "! New balance: $" + newBalance + " (Old balance: $" + oldBalance + ")");
             }
             default -> {
                 String arg = args[0].toLowerCase(Locale.ROOT);
-                Shell.printErr("Invalid argument \""+arg+"\"!");
+                Shell.printErr("Invalid argument \"" + arg + "\"!");
             }
         }
     }

@@ -83,7 +83,7 @@ public class BookmarkCommand extends SlashCommand
                     {
                         Bookmark entry = new Bookmark(track.getInfo().title, url, false);
                         addBookmark(userId, entry);
-                        event.getHook().sendMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **"+track.getInfo().title+"**")).queue();
+                        event.getHook().sendMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + track.getInfo().title + "**")).queue();
                     }
 
                     @Override
@@ -91,7 +91,7 @@ public class BookmarkCommand extends SlashCommand
                     {
                         Bookmark entry = new Bookmark(playlist.getName(), url, true);
                         addBookmark(userId, entry);
-                        event.getHook().sendMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **"+playlist.getName()+"**")).queue();
+                        event.getHook().sendMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + playlist.getName() + "**")).queue();
                     }
 
                     @Override
@@ -103,7 +103,7 @@ public class BookmarkCommand extends SlashCommand
                     @Override
                     public void loadFailed(FriendlyException exception)
                     {
-                        event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Sorry, that is not a valid track i can play!\n"+exception.getLocalizedMessage())).queue();
+                        event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Sorry, that is not a valid track i can play!\n" + exception.getLocalizedMessage())).queue();
                     }
                 });
             }
@@ -117,7 +117,7 @@ public class BookmarkCommand extends SlashCommand
                     return;
                 }
                 deleteBookmark(userId, bookmark);
-                event.replyEmbeds(EmbedUtil.defaultEmbed("Removed bookmark **"+bookmark.getName()+"**!")).queue();
+                event.replyEmbeds(EmbedUtil.defaultEmbed("Removed bookmark **" + bookmark.getName() + "**!")).queue();
             }
 
             case "add_current" -> {
@@ -138,7 +138,7 @@ public class BookmarkCommand extends SlashCommand
                     }
                     Bookmark entry = new Bookmark(currentTrack.getInfo().title, currentTrackInfo.getTrackUrl(), false);
                     addBookmark(userId, entry);
-                    event.replyEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **"+currentTrack.getInfo().title+"**")).queue();
+                    event.replyEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + currentTrack.getInfo().title + "**")).queue();
                     return;
                 }
                 String trackUrl = currentTrackInfo.getTrackUrl();
@@ -146,8 +146,8 @@ public class BookmarkCommand extends SlashCommand
                 String name = currentTrack.getInfo().title;
                 String playlistName = currentTrackInfo.getPlaylistName();
                 String interactionId = event.getInteraction().getId();
-                Button singleTrack = Button.primary(interactionId+":single", "Single Track");
-                Button wholePlaylist = Button.primary(interactionId+":playlist", "Playlist");
+                Button singleTrack = Button.primary(interactionId + ":single", "Single Track");
+                Button wholePlaylist = Button.primary(interactionId + ":playlist", "Playlist");
                 event.replyEmbeds(SINGLE_OR_PLAYLIST_EMBED)
                         .addActionRow(singleTrack, wholePlaylist)
                         .setEphemeral(true)
@@ -160,8 +160,8 @@ public class BookmarkCommand extends SlashCommand
                                 },
                                 (e) -> {
                                     int colonIndex = e.getComponentId().indexOf(":");
-                                    String mode = e.getComponentId().substring(colonIndex+1);
-                                    switch(mode)
+                                    String mode = e.getComponentId().substring(colonIndex + 1);
+                                    switch (mode)
                                     {
                                         case "single" -> {
                                             if (getBookmark(userId, trackUrl) != null)
@@ -173,7 +173,7 @@ public class BookmarkCommand extends SlashCommand
                                             }
                                             Bookmark entry = new Bookmark(name, trackUrl, false);
                                             addBookmark(userId, entry);
-                                            e.editMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **"+name+"**"))
+                                            e.editMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + name + "**"))
                                                     .setActionRows(Collections.emptyList())
                                                     .queue();
                                         }
@@ -187,7 +187,7 @@ public class BookmarkCommand extends SlashCommand
                                             }
                                             Bookmark entry = new Bookmark(playlistName, playlistUrl, true);
                                             addBookmark(userId, entry);
-                                            e.editMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **"+playlistName+"**"))
+                                            e.editMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + playlistName + "**"))
                                                     .setActionRows(Collections.emptyList())
                                                     .queue();
                                         }
@@ -229,7 +229,7 @@ public class BookmarkCommand extends SlashCommand
 
     public static Bookmark getBookmark(long userId, String url)
     {
-        try(ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM bookmarks WHERE user_id = ? AND value = ?", userId, url).executeQuery())
+        try (ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM bookmarks WHERE user_id = ? AND value = ?", userId, url).executeQuery())
         {
             if (rs.next())
                 return new Bookmark(rs.getString("name"), rs.getString("value"), rs.getBoolean("playlist"));
@@ -243,7 +243,7 @@ public class BookmarkCommand extends SlashCommand
 
     public static List<Bookmark> getBookmarks(long userId, boolean all)
     {
-        try(ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM bookmarks WHERE user_id = ? ORDER BY added_at desc"+(all ? "" : " LIMIT 25")).addParameter(userId).executeQuery())
+        try (ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM bookmarks WHERE user_id = ? ORDER BY added_at desc" + (all ? "" : " LIMIT 25")).addParameter(userId).executeQuery())
         {
             List<Bookmark> entries = new ArrayList<>();
             while (rs.next())
@@ -252,14 +252,14 @@ public class BookmarkCommand extends SlashCommand
             return entries;
         } catch (SQLException throwables)
         {
-            LOGGER.warn("Could not get bookmarks from "+userId+"!", throwables);
+            LOGGER.warn("Could not get bookmarks from " + userId + "!", throwables);
             return Collections.emptyList();
         }
     }
 
     public static List<Bookmark> getMatchingBookmarks(long userId, String prefix, boolean all)
     {
-        try(ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM bookmarks WHERE user_id = ? AND name like ? ORDER BY added_at desc"+(all ? "" : " LIMIT 25")).addParameters(userId, prefix+"%").executeQuery())
+        try (ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM bookmarks WHERE user_id = ? AND name like ? ORDER BY added_at desc" + (all ? "" : " LIMIT 25")).addParameters(userId, prefix + "%").executeQuery())
         {
             List<Bookmark> entries = new ArrayList<>();
             while (rs.next())
@@ -267,7 +267,7 @@ public class BookmarkCommand extends SlashCommand
             return entries;
         } catch (SQLException throwables)
         {
-            LOGGER.warn("Could not get bookmarks from "+userId+"!", throwables);
+            LOGGER.warn("Could not get bookmarks from " + userId + "!", throwables);
             return Collections.emptyList();
         }
     }
@@ -286,24 +286,24 @@ public class BookmarkCommand extends SlashCommand
 
     private boolean isDuplicate(long userId, String name)
     {
-        try(ResultSet rs = new SQLBuilder("SELECT 1 FROM bookmarks WHERE user_id = ? AND value = ?", userId, name).executeQuery())
+        try (ResultSet rs = new SQLBuilder("SELECT 1 FROM bookmarks WHERE user_id = ? AND value = ?", userId, name).executeQuery())
         {
             return rs.next();
         } catch (SQLException ex)
         {
-            LOGGER.error("Could not check if duplicate exists! (User: "+userId+", Term: "+name+")", ex);
+            LOGGER.error("Could not check if duplicate exists! (User: " + userId + ", Term: " + name + ")", ex);
             return true;
         }
     }
 
     private boolean hasBookmarks(long userId)
     {
-        try(ResultSet rs = new SQLBuilder("SELECT 1 FROM bookmarks WHERE user_id = ?").addParameters(userId).executeQuery())
+        try (ResultSet rs = new SQLBuilder("SELECT 1 FROM bookmarks WHERE user_id = ?").addParameters(userId).executeQuery())
         {
             return rs.next();
         } catch (SQLException ex)
         {
-            LOGGER.error("Could not check if user "+userId+" has bookmarks!", ex);
+            LOGGER.error("Could not check if user " + userId + " has bookmarks!", ex);
             return false;
         }
     }
@@ -317,8 +317,7 @@ public class BookmarkCommand extends SlashCommand
                     .execute();
         } catch (SQLException ex)
         {
-            LOGGER.error("Could not add bookmark for user "+userId+"!", ex);
-
+            LOGGER.error("Could not add bookmark for user " + userId + "!", ex);
         }
     }
 }

@@ -43,21 +43,21 @@ public class MessageReactionRemoveListener extends ListenerAdapter
         data.getReactionRoles().stream()
                 .filter(x -> x.getMessageId() == e.getMessageIdLong() && x.getEmote().equals(reacted))
                 .findFirst().ifPresent(reactionRole -> e.getGuild().retrieveMemberById(e.getUserId()).queue(
-                (member) ->
-                {
-                    if (member.getUser().isBot()) return;
-                    Role role = e.getGuild().getRoleById(reactionRole.getRoleId());
-                    if (role != null)
-                        e.getGuild().removeRoleFromMember(member, role).queue(s ->
+                        (member) ->
                         {
-                        }, ex ->
+                            if (member.getUser().isBot()) return;
+                            Role role = e.getGuild().getRoleById(reactionRole.getRoleId());
+                            if (role != null)
+                                e.getGuild().removeRoleFromMember(member, role).queue(s ->
+                                {
+                                }, ex ->
+                                {
+                                });
+                        },
+                        (error) ->
                         {
-                        });
-                },
-                (error) ->
-                {
-                }
-        ));
+                        }
+                ));
 
     }
 }

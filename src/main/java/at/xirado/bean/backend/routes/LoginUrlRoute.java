@@ -1,14 +1,11 @@
 package at.xirado.bean.backend.routes;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.backend.WebServer;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import org.apache.http.client.utils.URIBuilder;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-
-import java.net.URISyntaxException;
 
 public class LoginUrlRoute implements Route
 {

@@ -33,9 +33,9 @@ public class Hints
         if (hasSeen(userId, hint))
             return true;
         silentAcknowledge(userId, hint);
-        try(ResultSet rs = new SQLBuilder("SELECT 1 FROM acknowledged_hints WHERE user_id = ? AND hint = ?", userId, hint).executeQuery())
+        try (ResultSet rs = new SQLBuilder("SELECT 1 FROM acknowledged_hints WHERE user_id = ? AND hint = ?", userId, hint).executeQuery())
         {
-           return rs.next();
+            return rs.next();
         } catch (SQLException ex)
         {
             LOGGER.warn("Could not check if user {} acknowledged hint {}", userId, hint);
@@ -45,7 +45,7 @@ public class Hints
 
     public static boolean hasPressedAckButton(long userId, String hint)
     {
-        try(ResultSet rs = new SQLBuilder("SELECT 1 FROM acknowledged_hints WHERE user_id = ? AND hint = ?", userId, hint).executeQuery())
+        try (ResultSet rs = new SQLBuilder("SELECT 1 FROM acknowledged_hints WHERE user_id = ? AND hint = ?", userId, hint).executeQuery())
         {
             return rs.next();
         } catch (SQLException ex)

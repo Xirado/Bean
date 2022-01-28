@@ -3,7 +3,10 @@ package at.xirado.bean.misc;
 import at.xirado.bean.Bean;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.slf4j.Logger;
@@ -35,7 +38,7 @@ public class Util
 
     public static Button getDontShowThisAgainButton(String hint)
     {
-        return Button.secondary("ackHint:"+hint, "Don't show this again");
+        return Button.secondary("ackHint:" + hint, "Don't show this again");
     }
 
     public static int getAvailableLavalinkNodes()
@@ -59,19 +62,21 @@ public class Util
                 try
                 {
                     c.close();
-                } catch (Exception ignored) {}
+                } catch (Exception ignored)
+                {
+                }
             }
         }
     }
 
     public static String titleMarkdown(AudioTrack track)
     {
-        return "[" + track.getInfo().title +"](<" + track.getInfo().uri + ">)"+(track.getInfo().author == null ? "" : " **by "+track.getInfo().author+"**");
+        return "[" + track.getInfo().title + "](<" + track.getInfo().uri + ">)" + (track.getInfo().author == null ? "" : " **by " + track.getInfo().author + "**");
     }
 
     public static String titleMarkdown(AudioTrack track, boolean withAuthor)
     {
-        return "[" + track.getInfo().title +"](<" + track.getInfo().uri + ">)"+(withAuthor ? (track.getInfo().author == null ? "" : " **by "+track.getInfo().author+"**") : "");
+        return "[" + track.getInfo().title + "](<" + track.getInfo().uri + ">)" + (withAuthor ? (track.getInfo().author == null ? "" : " **by " + track.getInfo().author + "**") : "");
     }
 
     public static String timeFormat(long seconds)
@@ -83,7 +88,9 @@ public class Util
     {
         firstShard().openPrivateChannelById(userId)
                 .flatMap(channel -> channel.sendMessage(sequence))
-                .queue( s -> {}, e -> {} );
+                .queue(s -> {
+                }, e -> {
+                });
     }
 
     public static void sendDM(long userId, MessageEmbed embed, MessageEmbed... embeds)
@@ -92,7 +99,9 @@ public class Util
         Checks.noneNull(embeds, "Embeds");
         firstShard().openPrivateChannelById(userId)
                 .flatMap(channel -> channel.sendMessageEmbeds(embed, embeds))
-                .queue( s -> {}, e -> {} );
+                .queue(s -> {
+                }, e -> {
+                });
 
     }
 
@@ -100,7 +109,9 @@ public class Util
     {
         firstShard().openPrivateChannelById(Bean.OWNER_ID)
                 .flatMap(channel -> channel.sendMessage(sequence))
-                .queue( s -> {}, e -> {} );
+                .queue(s -> {
+                }, e -> {
+                });
     }
 
     public static void sendOwnerDM(MessageEmbed embed, MessageEmbed... embeds)
@@ -109,7 +120,9 @@ public class Util
         Checks.noneNull(embeds, "Embeds");
         firstShard().openPrivateChannelById(Bean.OWNER_ID)
                 .flatMap(channel -> channel.sendMessageEmbeds(embed, embeds))
-                .queue( s -> {}, e -> {} );
+                .queue(s -> {
+                }, e -> {
+                });
     }
 
     public static int zeroIfNegative(int x)
@@ -189,7 +202,7 @@ public class Util
     @SuppressWarnings("unchecked")
     public static <T> T[] addToArray(T[] source, T element)
     {
-        T[] destination = (T[]) Array.newInstance(element.getClass(), source.length+1);
+        T[] destination = (T[]) Array.newInstance(element.getClass(), source.length + 1);
         System.arraycopy(source, 0, destination, 0, source.length);
         destination[source.length] = element;
         return destination;

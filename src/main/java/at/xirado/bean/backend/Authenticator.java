@@ -47,8 +47,8 @@ public class Authenticator
 
     public byte[] addSession(DataObject object)
     {
-        object.put("generation_time", System.currentTimeMillis()/1000);
-        object.put("discord_timestamp", System.currentTimeMillis()/1000);
+        object.put("generation_time", System.currentTimeMillis() / 1000);
+        object.put("discord_timestamp", System.currentTimeMillis() / 1000);
         byte[] token = generateNewToken();
         users.put(ByteBuffer.wrap(token), object);
         return token;
@@ -113,7 +113,7 @@ public class Authenticator
         if (!isAuthenticated(token))
             throw new IllegalStateException("User unauthenticated!");
         DataObject data = getData(token);
-        return data.getLong("discord_timestamp") + data.getObject("tokens").getLong("expires_in") < System.currentTimeMillis()/1000;
+        return data.getLong("discord_timestamp") + data.getObject("tokens").getLong("expires_in") < System.currentTimeMillis() / 1000;
     }
 
     public void refreshAccessToken(byte[] token) throws IOException
@@ -131,7 +131,7 @@ public class Authenticator
                 .put("token_type", newCredentials.getTokenType())
                 .put("expires_in", newCredentials.getExpiresIn());
         DataObject data = getData(token);
-        data.put("discord_timestamp", System.currentTimeMillis()/1000)
+        data.put("discord_timestamp", System.currentTimeMillis() / 1000)
                 .put("tokens", tokens);
         users.put(ByteBuffer.wrap(token), data);
     }

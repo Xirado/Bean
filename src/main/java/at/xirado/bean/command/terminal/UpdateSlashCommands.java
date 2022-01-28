@@ -15,6 +15,6 @@ public class UpdateSlashCommands extends ConsoleCommand
     @Override
     public void executeCommand(String invoke, String[] args)
     {
-        Bean.getInstance().getSlashCommandHandler().updateCommands((x) -> System.out.println(MCColor.translate("&aUpdated "+x.size()+" commands!")), Throwable::printStackTrace);
+        Bean.getInstance().getSlashCommandHandler().updateCommands((x) -> System.out.println(MCColor.translate("&aUpdated " + x.size() + " commands!")), Throwable::printStackTrace);
     }
 }

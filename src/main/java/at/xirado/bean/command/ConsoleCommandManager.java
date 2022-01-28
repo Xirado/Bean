@@ -1,6 +1,7 @@
 package at.xirado.bean.command;
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.command.terminal.Shutdown;
 import at.xirado.bean.command.terminal.*;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
