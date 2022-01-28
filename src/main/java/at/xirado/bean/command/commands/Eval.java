@@ -47,7 +47,7 @@ public class Eval extends Command
     public Eval()
     {
         super("eval", "evaluates some code", "eval [code]");
-        setCommandFlags(CommandFlag.DEVELOPER_ONLY);
+        addCommandFlags(CommandFlag.DEVELOPER_ONLY);
     }
 
     @Override
