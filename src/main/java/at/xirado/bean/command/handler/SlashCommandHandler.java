@@ -40,6 +40,7 @@ import java.util.function.Consumer;
 public class SlashCommandHandler
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(SlashCommandHandler.class);
+    private static final Long TEST_SERVER_ID = 815597207617142814L;
 
     private final List<SlashCommand> registeredCommands;
     private final ConcurrentHashMap<Long, List<SlashCommand>> registeredGuildCommands;
@@ -119,10 +120,10 @@ public class SlashCommandHandler
             }
         } else
         {
-            List<SlashCommand> commands = registeredGuildCommands.get(815597207617142814L);
+            List<SlashCommand> commands = registeredGuildCommands.get(TEST_SERVER_ID);
             if (commands != null && !commands.isEmpty())
             {
-                Guild guild = Bean.getInstance().getShardManager().getGuildById(815597207617142814L);
+                Guild guild = Bean.getInstance().getShardManager().getGuildById(TEST_SERVER_ID);
                 if (guild == null)
                     return;
                 CommandListUpdateAction commandListUpdateAction = guild.updateCommands();
@@ -138,8 +139,7 @@ public class SlashCommandHandler
     {
         if (!command.isGlobal() && !Bean.getInstance().isDebug())
         {
-            if (command.getEnabledGuilds() == null) return;
-            if (command.getEnabledGuilds().isEmpty()) return;
+            if (command.getEnabledGuilds() == null || command.getEnabledGuilds().isEmpty()) return;
             for (Long guildID : command.getEnabledGuilds())
             {
                 Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
@@ -147,9 +147,6 @@ public class SlashCommandHandler
                 List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(guildID) ? registeredGuildCommands.get(guildID) : new ArrayList<>();
                 alreadyRegistered.add(command);
                 if (registeredGuildCommands.containsKey(guildID))
-                {
-                    registeredGuildCommands.replace(guildID, alreadyRegistered);
-                } else
                 {
                     registeredGuildCommands.put(guildID, alreadyRegistered);
                 }
@@ -159,12 +156,12 @@ public class SlashCommandHandler
         if (Bean.getInstance().isDebug())
         {
             long testServerID = 815597207617142814L;
-            Guild guild = Bean.getInstance().getShardManager().getGuildById(testServerID);
+            Guild guild = Bean.getInstance().getShardManager().getGuildById(TEST_SERVER_ID);
             if (guild != null)
             {
-                List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(testServerID) ? registeredGuildCommands.get(testServerID) : new ArrayList<>();
+                List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(TEST_SERVER_ID) ? registeredGuildCommands.get(TEST_SERVER_ID) : new ArrayList<>();
                 alreadyRegistered.add(command);
-                registeredGuildCommands.put(testServerID, alreadyRegistered);
+                registeredGuildCommands.put(TEST_SERVER_ID, alreadyRegistered);
             }
             return;
         }
@@ -312,7 +309,8 @@ public class SlashCommandHandler
                     command.executeCommand(event, member, ctx);
                 }
 
-            } catch (Exception e)
+            } 
+            catch (Exception e)
             {
                 LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
                 if (event.isAcknowledged())
