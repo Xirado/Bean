@@ -154,7 +154,6 @@ public class SlashCommandHandler
         }
         if (Bean.getInstance().isDebug())
         {
-            Guild guild = Bean.getInstance().getShardManager().getGuildById(Bean.TEST_SERVER_ID);
             if (guild != null)
             {
                 List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(Bean.TEST_SERVER_ID) ? registeredGuildCommands.get(Bean.TEST_SERVER_ID) : new ArrayList<>();
