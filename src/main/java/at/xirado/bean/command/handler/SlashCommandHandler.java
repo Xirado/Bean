@@ -154,7 +154,6 @@ public class SlashCommandHandler
         }
         if (Bean.getInstance().isDebug())
         {
-            long testServerID = 815597207617142814L;
             Guild guild = Bean.getInstance().getShardManager().getGuildById(Bean.TEST_SERVER_ID);
             if (guild != null)
             {
