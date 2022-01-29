@@ -40,7 +40,6 @@ import java.util.function.Consumer;
 public class SlashCommandHandler
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(SlashCommandHandler.class);
-    private static final Long TEST_SERVER_ID = 815597207617142814L;
 
     private final List<SlashCommand> registeredCommands;
     private final ConcurrentHashMap<Long, List<SlashCommand>> registeredGuildCommands;
@@ -120,10 +119,10 @@ public class SlashCommandHandler
             }
         } else
         {
-            List<SlashCommand> commands = registeredGuildCommands.get(TEST_SERVER_ID);
+            List<SlashCommand> commands = registeredGuildCommands.get(Bean.TEST_SERVER_ID);
             if (commands != null && !commands.isEmpty())
             {
-                Guild guild = Bean.getInstance().getShardManager().getGuildById(TEST_SERVER_ID);
+                Guild guild = Bean.getInstance().getShardManager().getGuildById(Bean.TEST_SERVER_ID);
                 if (guild == null)
                     return;
                 CommandListUpdateAction commandListUpdateAction = guild.updateCommands();
@@ -156,12 +155,12 @@ public class SlashCommandHandler
         if (Bean.getInstance().isDebug())
         {
             long testServerID = 815597207617142814L;
-            Guild guild = Bean.getInstance().getShardManager().getGuildById(TEST_SERVER_ID);
+            Guild guild = Bean.getInstance().getShardManager().getGuildById(Bean.TEST_SERVER_ID);
             if (guild != null)
             {
-                List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(TEST_SERVER_ID) ? registeredGuildCommands.get(TEST_SERVER_ID) : new ArrayList<>();
+                List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(Bean.TEST_SERVER_ID) ? registeredGuildCommands.get(Bean.TEST_SERVER_ID) : new ArrayList<>();
                 alreadyRegistered.add(command);
-                registeredGuildCommands.put(TEST_SERVER_ID, alreadyRegistered);
+                registeredGuildCommands.put(Bean.TEST_SERVER_ID, alreadyRegistered);
             }
             return;
         }
