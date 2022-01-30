@@ -1,5 +1,6 @@
 package at.xirado.bean.misc;
 
+import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 
 public class Metrics
@@ -14,15 +15,27 @@ public class Metrics
             .help("User Count")
             .register();
 
-    public static final Gauge COMMANDS_PER_MINUTE = Gauge.build()
-            .name("bean_commands_per_minute")
-            .help("Commands per second")
+    public static final Counter COMMANDS = Counter.build()
+            .name("bean_commands_invocations_total")
+            .help("Total commands invoked")
             .labelNames("type")
             .register();
 
-    public static final Gauge REQUESTS_PER_MINUTE = Gauge.build()
-            .name("bean_requests_per_minute")
-            .help("Requests per Minute")
+    public static final Counter REQUESTS = Counter.build()
+            .name("bean_requests_total")
+            .help("Requests")
             .labelNames("type")
             .register();
+
+    public static final Counter MESSAGES = Counter.build()
+            .name("bean_received_messages_total")
+            .help("Total Messages Received")
+            .labelNames("type")
+            .register();
+
+    public static final Gauge PLAYING_MUSIC_PLAYERS = Gauge.build()
+            .name("bean_playing_music_players")
+            .help("Playing music players")
+            .register();
+
 }

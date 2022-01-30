@@ -48,17 +48,10 @@ public class SlashCommandHandler
     private final ConcurrentHashMap<Long, List<SlashCommand>> registeredGuildCommands;
     private CommandListUpdateAction commandUpdateAction;
 
-    private final FrequencyCounter successfulCommandsPerMinute = new FrequencyCounter(1, TimeUnit.MINUTES);
-    private final FrequencyCounter failedCommandsPerMinute = new FrequencyCounter(1, TimeUnit.MINUTES);
-
     public SlashCommandHandler()
     {
         registeredCommands = Collections.synchronizedList(new ArrayList<>());
         registeredGuildCommands = new ConcurrentHashMap<>();
-        Bean.getInstance().getExecutor().scheduleWithFixedDelay(() -> {
-            Metrics.COMMANDS_PER_MINUTE.labels("success").set(successfulCommandsPerMinute.getCount());
-            Metrics.COMMANDS_PER_MINUTE.labels("failed").set(failedCommandsPerMinute.getCount());
-        }, 0, 15, TimeUnit.SECONDS);
     }
 
     public void initialize()
@@ -320,12 +313,12 @@ public class SlashCommandHandler
                         }
                     }
                     command.executeCommand(event, member, ctx);
-                    successfulCommandsPerMinute.increment();
+                    Metrics.COMMANDS.labels("success").inc();
                 }
 
             } catch (Exception e)
             {
-                failedCommandsPerMinute.increment();
+                Metrics.COMMANDS.labels("failed").inc();
                 LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
                 if (event.isAcknowledged())
                     event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {

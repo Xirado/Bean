@@ -26,10 +26,6 @@ public class WebServer
 
     public static final Map<String, DataObject> USER_CACHE = new ConcurrentHashMap<>();
 
-    private final FrequencyCounter getRequestsPerMinute = new FrequencyCounter(1, TimeUnit.MINUTES);
-    private final FrequencyCounter postRequestsPerMinute = new FrequencyCounter(1, TimeUnit.MINUTES);
-    private final FrequencyCounter otherRequestsPerMinute = new FrequencyCounter(1, TimeUnit.MINUTES);
-
     public WebServer(int port)
     {
         DataObject config = Bean.getInstance().getConfig();
@@ -43,9 +39,12 @@ public class WebServer
         enableCORS("*", "*", "*");
         before(((request, response) -> {
             switch (request.raw().getMethod()) {
-                case "GET" -> getRequestsPerMinute.increment();
-                case "POST" -> postRequestsPerMinute.increment();
-                default -> otherRequestsPerMinute.increment();
+                case "GET" -> Metrics.REQUESTS.labels("get").inc();
+                case "POST" -> Metrics.REQUESTS.labels("post").inc();
+                case "PUT" -> Metrics.REQUESTS.labels("put").inc();
+                case "DELETE" -> Metrics.REQUESTS.labels("delete").inc();
+                case "PATCH" -> Metrics.REQUESTS.labels("patch").inc();
+                default -> Metrics.REQUESTS.labels("other").inc();
             }
         }));
         get("/guilds", new GuildsRoute());
@@ -64,11 +63,6 @@ public class WebServer
                     .put("message", "Site not found")
                     .toString();
         });
-        Bean.getInstance().getExecutor().scheduleWithFixedDelay(() -> {
-            Metrics.REQUESTS_PER_MINUTE.labels("get").set(getRequestsPerMinute.getCount());
-            Metrics.REQUESTS_PER_MINUTE.labels("post").set(postRequestsPerMinute.getCount());
-            Metrics.REQUESTS_PER_MINUTE.labels("other").set(otherRequestsPerMinute.getCount());
-        }, 0, 15, TimeUnit.SECONDS);
     }
 
     public DataObject refreshToken(String refreshToken) throws IOException
