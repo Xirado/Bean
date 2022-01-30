@@ -1,5 +1,6 @@
 package at.xirado.bean.prometheus;
 
+import at.xirado.bean.Bean;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ public class Prometheus
         DefaultExports.initialize();
         try
         {
-            new HTTPServer(5123);
+            new HTTPServer(Bean.getInstance().getConfig().getInt("prometheus_port", 5123));
         }
         catch (IOException ex)
         {
