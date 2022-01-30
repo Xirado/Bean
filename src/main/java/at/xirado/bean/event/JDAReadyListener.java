@@ -27,8 +27,6 @@ public class JDAReadyListener extends ListenerAdapter
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event)
     {
-        Metrics.GUILD_COUNT.set(event.getJDA().getShardManager().getGuildCache().size());
-        Metrics.USER_COUNT.set(event.getJDA().getShardManager().getGuildCache().stream().mapToInt(guild -> guild.getMemberCount()).sum());
         if (ready)
             return;
         ready = true;
@@ -56,6 +54,7 @@ public class JDAReadyListener extends ListenerAdapter
             });
         });
         Bean.getInstance().getExecutor().scheduleAtFixedRate(() -> {
+            int guildCount = (int) Bean.getInstance().getShardManager().getGuildCache().size();
             int memberCount = Bean.getInstance().getShardManager()
                     .getGuildCache()
                     .stream()
@@ -64,6 +63,8 @@ public class JDAReadyListener extends ListenerAdapter
             Bean.getInstance().getShardManager()
                     .getShardCache()
                     .forEach(shard -> shard.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching(memberCount + " users | bean.bz")));
+            Metrics.GUILD_COUNT.set(guildCount);
+            Metrics.USER_COUNT.set(memberCount);
         }, 0, 1, TimeUnit.MINUTES);
     }
 }
