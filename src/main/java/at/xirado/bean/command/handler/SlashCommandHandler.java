@@ -10,6 +10,8 @@ import at.xirado.bean.command.slashcommands.moderation.*;
 import at.xirado.bean.command.slashcommands.music.*;
 import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.misc.EmbedUtil;
+import at.xirado.bean.misc.FrequencyCounter;
+import at.xirado.bean.misc.Metrics;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -35,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class SlashCommandHandler
@@ -45,10 +48,17 @@ public class SlashCommandHandler
     private final ConcurrentHashMap<Long, List<SlashCommand>> registeredGuildCommands;
     private CommandListUpdateAction commandUpdateAction;
 
+    private final FrequencyCounter successfulCommandsPerMinute = new FrequencyCounter(1, TimeUnit.MINUTES);
+    private final FrequencyCounter failedCommandsPerMinute = new FrequencyCounter(1, TimeUnit.MINUTES);
+
     public SlashCommandHandler()
     {
         registeredCommands = Collections.synchronizedList(new ArrayList<>());
         registeredGuildCommands = new ConcurrentHashMap<>();
+        Bean.getInstance().getExecutor().scheduleWithFixedDelay(() -> {
+            Metrics.COMMANDS_PER_MINUTE.labels("success").set(successfulCommandsPerMinute.getCount());
+            Metrics.COMMANDS_PER_MINUTE.labels("failed").set(failedCommandsPerMinute.getCount());
+        }, 0, 15, TimeUnit.SECONDS);
     }
 
     public void initialize()
@@ -310,10 +320,12 @@ public class SlashCommandHandler
                         }
                     }
                     command.executeCommand(event, member, ctx);
+                    successfulCommandsPerMinute.increment();
                 }
 
             } catch (Exception e)
             {
+                failedCommandsPerMinute.increment();
                 LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
                 if (event.isAcknowledged())
                     event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {

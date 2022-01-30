@@ -3,6 +3,8 @@ package at.xirado.bean.backend;
 
 import at.xirado.bean.Bean;
 import at.xirado.bean.backend.routes.*;
+import at.xirado.bean.misc.FrequencyCounter;
+import at.xirado.bean.misc.Metrics;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import okhttp3.*;
@@ -10,6 +12,7 @@ import okhttp3.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import static spark.Spark.*;
 
@@ -23,6 +26,10 @@ public class WebServer
 
     public static final Map<String, DataObject> USER_CACHE = new ConcurrentHashMap<>();
 
+    private final FrequencyCounter getRequestsPerMinute = new FrequencyCounter(1, TimeUnit.MINUTES);
+    private final FrequencyCounter postRequestsPerMinute = new FrequencyCounter(1, TimeUnit.MINUTES);
+    private final FrequencyCounter otherRequestsPerMinute = new FrequencyCounter(1, TimeUnit.MINUTES);
+
     public WebServer(int port)
     {
         DataObject config = Bean.getInstance().getConfig();
@@ -34,6 +41,13 @@ public class WebServer
         ipAddress("127.0.0.1");
         port(port);
         enableCORS("*", "*", "*");
+        before(((request, response) -> {
+            switch (request.raw().getMethod()) {
+                case "GET" -> getRequestsPerMinute.increment();
+                case "POST" -> postRequestsPerMinute.increment();
+                default -> otherRequestsPerMinute.increment();
+            }
+        }));
         get("/guilds", new GuildsRoute());
         get("/token", new TokenRoute());
         get("/login", new LoginUrlRoute());
@@ -50,6 +64,11 @@ public class WebServer
                     .put("message", "Site not found")
                     .toString();
         });
+        Bean.getInstance().getExecutor().scheduleWithFixedDelay(() -> {
+            Metrics.REQUESTS_PER_MINUTE.labels("get").set(getRequestsPerMinute.getCount());
+            Metrics.REQUESTS_PER_MINUTE.labels("post").set(postRequestsPerMinute.getCount());
+            Metrics.REQUESTS_PER_MINUTE.labels("other").set(otherRequestsPerMinute.getCount());
+        }, 0, 15, TimeUnit.SECONDS);
     }
 
     public DataObject refreshToken(String refreshToken) throws IOException

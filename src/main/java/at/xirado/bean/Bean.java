@@ -12,6 +12,7 @@ import at.xirado.bean.lavaplayer.SpotifyAudioSource;
 import at.xirado.bean.log.Shell;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.AudioManager;
+import at.xirado.bean.prometheus.Prometheus;
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.WebhookClientBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -115,6 +116,7 @@ public class Bean
         audioManager = new AudioManager();
         authenticator = new Authenticator();
         webServer = new WebServer(8887);
+        new Prometheus();
     }
 
     public static Bean getInstance()
