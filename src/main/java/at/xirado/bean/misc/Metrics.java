@@ -33,6 +33,11 @@ public class Metrics
             .labelNames("type")
             .register();
 
+    public static final Counter EVENTS = Counter.build()
+            .name("bean_received_events_total")
+            .help("Total Events Received")
+            .register();
+
     public static final Gauge PLAYING_MUSIC_PLAYERS = Gauge.build()
             .name("bean_playing_music_players")
             .help("Playing music players")

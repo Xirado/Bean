@@ -6,6 +6,7 @@ import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -23,6 +24,12 @@ public class JDAReadyListener extends ListenerAdapter
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
     private boolean ready = false;
+
+    @Override
+    public void onGenericEvent(@NotNull GenericEvent event)
+    {
+        Metrics.EVENTS.inc();
+    }
 
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event)
