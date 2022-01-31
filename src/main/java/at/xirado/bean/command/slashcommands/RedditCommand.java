@@ -37,7 +37,8 @@ public class RedditCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx){
+    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    {
         InteractionHook hook = event.getHook();
 
         try
@@ -47,8 +48,8 @@ public class RedditCommand extends SlashCommand
             String subreddit = option == null || option.getAsString().isEmpty()
                     ? "memes"
                     : option.getAsString().startsWith("r/")
-                        ? option.getAsString().substring(2)
-                        : option.getAsString();
+                    ? option.getAsString().substring(2)
+                    : option.getAsString();
 
             String requestURL = String.format("https://meme-api.herokuapp.com/gimme/%s", subreddit);
             OkHttpClient client = Bean.getInstance().getOkHttpClient();

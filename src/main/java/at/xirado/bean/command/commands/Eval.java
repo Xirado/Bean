@@ -70,22 +70,23 @@ public class Eval extends Command
         if (evalString.startsWith("```") && evalString.endsWith("```"))
         {
             int index = evalString.indexOf(" ");
-            evalString = evalString.substring(index, evalString.length()-3);
+            evalString = evalString.substring(index, evalString.length() - 3);
         }
 
         DEFAULT_IMPORTS.forEach(imp -> toEval.append("import ").append(imp).append(".*;\n"));
         DEFAULT_STATIC_IMPORTS.forEach(imp -> toEval.append("import static ").append(imp).append(".*;\n"));
         toEval.append(evalString);
 
-        try {
+        try
+        {
             var evaluated = SCRIPT_ENGINE.eval(toEval.toString());
 
             if (evaluated instanceof RestAction<?> action)
             {
-                action.queue(s -> event.getMessage().reply("RestAction executed without errors! Received object of type `"+s.getClass().getSimpleName()+"`")
-                        .mentionRepliedUser(false)
-                        .allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE)).queue(),
-                        e -> event.getMessage().reply("RestAction returned failure!\n```fix\n"+ ExceptionUtils.getStackTrace(e)+"\n```")
+                action.queue(s -> event.getMessage().reply("RestAction executed without errors! Received object of type `" + s.getClass().getSimpleName() + "`")
+                                .mentionRepliedUser(false)
+                                .allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE)).queue(),
+                        e -> event.getMessage().reply("RestAction returned failure!\n```fix\n" + ExceptionUtils.getStackTrace(e) + "\n```")
                                 .allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE))
                                 .mentionRepliedUser(false)
                                 .queue());
@@ -100,18 +101,18 @@ public class Eval extends Command
 
             if (evaluated instanceof CharSequence || evaluated instanceof Number)
             {
-                event.getMessage().reply("Return value: `"+evaluated +"`").mentionRepliedUser(false).allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE)).queue();
+                event.getMessage().reply("Return value: `" + evaluated + "`").mentionRepliedUser(false).allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE)).queue();
                 return;
             }
 
-            event.getMessage().reply("Got return value of type `"+evaluated.getClass().getSimpleName()+"`")
+            event.getMessage().reply("Got return value of type `" + evaluated.getClass().getSimpleName() + "`")
                     .mentionRepliedUser(false)
                     .allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE))
                     .queue();
 
-        }
-        catch (ScriptException ex) {
-            String formatted = "```\n"+ex.getMessage()+"\n```";
+        } catch (ScriptException ex)
+        {
+            String formatted = "```\n" + ex.getMessage() + "\n```";
             event.getMessage().reply(formatted)
                     .mentionRepliedUser(false)
                     .allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE)).queue();

@@ -69,7 +69,7 @@ public class KickCommand extends SlashCommand
         EmbedBuilder dmEmbed = new EmbedBuilder()
                 .setColor(CaseType.KICK.getEmbedColor())
                 .setAuthor(ctx.getLocalized("commands.kick.you_have_been_kicked", guild.getName()), null, guild.getIconUrl())
-                .addField("Moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true);
+                .addField("Moderator", sender.getAsMention() + " (" + sender.getUser().getAsTag() + ")", true);
         if (reason != null)
             dmEmbed.addField(ctx.getLocalized("commands.reason"), reason, true);
 
@@ -85,12 +85,14 @@ public class KickCommand extends SlashCommand
                         TextChannel logChannel = ctx.getGuildData().getLogChannel();
                         MessageEmbed logEmbed = new EmbedBuilder()
                                 .setColor(CaseType.KICK.getEmbedColor())
-                                .setAuthor("Kick • "+member.getUser().getAsTag(), null, member.getUser().getEffectiveAvatarUrl())
+                                .setAuthor("Kick • " + member.getUser().getAsTag(), null, member.getUser().getEffectiveAvatarUrl())
                                 .addField(ctx.getLocalized("commands.reason"), reason, true)
-                                .addField("Moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true)
+                                .addField("Moderator", sender.getAsMention() + " (" + sender.getUser().getAsTag() + ")", true)
                                 .setFooter(ctx.getLocalized("commands.user_id", member.getIdLong()))
                                 .build();
-                        logChannel.sendMessageEmbeds(logEmbed).queue(s -> {}, e -> {});
+                        logChannel.sendMessageEmbeds(logEmbed).queue(s -> {
+                        }, e -> {
+                        });
                     }
                 }, e -> event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).setEphemeral(true).queue());
     }

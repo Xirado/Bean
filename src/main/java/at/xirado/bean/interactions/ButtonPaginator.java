@@ -8,9 +8,9 @@ import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -189,7 +189,7 @@ public class ButtonPaginator
             sb.append(numbered ? "**" + (i + 1) + ".** " : "").append(this.items[i]).append("\n");
         }
         EmbedBuilder builder = new EmbedBuilder()
-                .setFooter("Page " + page + "/" + pages + (footer != null ? " • "+footer : ""))
+                .setFooter("Page " + page + "/" + pages + (footer != null ? " • " + footer : ""))
                 .setColor(color)
                 .setDescription(sb.toString().trim());
         return builder.build();

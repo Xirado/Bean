@@ -50,7 +50,7 @@ public class VoiceGameCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
-        long appId =  Long.parseUnsignedLong(event.getOption("application").getAsString());
+        long appId = Long.parseUnsignedLong(event.getOption("application").getAsString());
         boolean ephemeral = event.getOption("hide") != null && event.getOption("hide").getAsBoolean();
         GuildVoiceState voiceState = event.getMember().getVoiceState();
         VoiceChannel voiceChannel = voiceState.getChannel();
@@ -67,13 +67,14 @@ public class VoiceGameCommand extends SlashCommand
 
     /**
      * Creates a Discord VoiceChannel invite url with a custom target_application_id
-     * @param maxAgeInSecs the max age of the invite in seconds (0 -> infinite)
-     * @param maxUses how often this invite can be used (0 -> infinite)
-     * @param voiceChannel The VoiceChannel the invite should be created on
+     *
+     * @param maxAgeInSecs  the max age of the invite in seconds (0 -> infinite)
+     * @param maxUses       how often this invite can be used (0 -> infinite)
+     * @param voiceChannel  The VoiceChannel the invite should be created on
      * @param applicationId The Application-ID to use
      * @return RestAction
      */
-    public static RestAction<String> createInvite(int maxAgeInSecs, int maxUses,  VoiceChannel voiceChannel, long applicationId)
+    public static RestAction<String> createInvite(int maxAgeInSecs, int maxUses, VoiceChannel voiceChannel, long applicationId)
     {
         DataObject requestBody = DataObject.empty()
                 .put("max_age", maxAgeInSecs)

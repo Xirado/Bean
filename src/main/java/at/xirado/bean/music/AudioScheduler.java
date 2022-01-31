@@ -109,6 +109,7 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     @Override
     public void onTrackEnd(IPlayer player, AudioTrack track, AudioTrackEndReason endReason)
     {
+        log.debug("Track " + track.getInfo().title + " stopped with reason " + endReason);
         if (endReason.mayStartNext)
             nextTrack();
     }
@@ -126,8 +127,8 @@ public class AudioScheduler extends PlayerEventListenerAdapter
         TextChannel channel = guild.getTextChannelById(info.getChannelId());
         if (channel == null)
             return;
-        channel.sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred while playing track **"+track.getInfo().title+"**!\n`"+exception.getCause().getMessage()+"`")).queue();
-        log.warn("(Guild: "+guildId+") An error occurred while playing track \""+track.getInfo().title+"\" by \""+track.getInfo().author+"\"", exception);
+        channel.sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred while playing track **" + track.getInfo().title + "**!\n`" + exception.getCause().getMessage() + "`")).queue();
+        log.warn("(Guild: " + guildId + ") An error occurred while playing track \"" + track.getInfo().title + "\" by \"" + track.getInfo().author + "\"", exception);
     }
 
     public long getGuildId()

@@ -1,8 +1,8 @@
 package at.xirado.bean.command;
 
-import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
+import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;

@@ -12,6 +12,7 @@ import at.xirado.bean.lavaplayer.SpotifyAudioSource;
 import at.xirado.bean.log.Shell;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.AudioManager;
+import at.xirado.bean.prometheus.Prometheus;
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.WebhookClientBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -60,7 +61,7 @@ public class Bean
             Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(),
                     new ThreadFactoryBuilder()
                             .setNameFormat("Bean Thread %d")
-                            .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the Threadpool! (Thread "+t.getName()+")", e))
+                            .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the Threadpool! (Thread " + t.getName() + ")", e))
                             .build());
     private final ConsoleCommandManager consoleCommandManager;
     private final SlashCommandHandler slashCommandHandler;
@@ -116,6 +117,7 @@ public class Bean
         audioManager = new AudioManager();
         authenticator = new Authenticator();
         webServer = new WebServer(8887);
+        new Prometheus();
     }
 
     public static Bean getInstance()
@@ -293,7 +295,9 @@ public class Bean
         try
         {
             return DataObject.fromJson(new FileInputStream(configFile));
-        } catch (FileNotFoundException ignored) {}
+        } catch (FileNotFoundException ignored)
+        {
+        }
         return DataObject.empty();
     }
 
@@ -319,6 +323,7 @@ public class Bean
                     LOGGER.error("Debug guild does not exist!");
                     return;
                 }
+              
                 guild.retrieveCommands().queue(discordCommands -> {
                     List<SlashCommand> localCommands = getInstance().getSlashCommandHandler().getRegisteredGuildCommands().get(guild.getIdLong());
                     handleCommandUpdates(discordCommands, localCommands);

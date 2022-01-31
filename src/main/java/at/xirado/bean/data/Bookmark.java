@@ -37,7 +37,7 @@ public class Bookmark implements IAutocompleteChoice
 
     public String getFormattedString()
     {
-        String x = BOOKMARK_EMOJI + (playlist ? SCROLL : "")+" "+name;
+        String x = BOOKMARK_EMOJI + (playlist ? SCROLL : "") + " " + name;
         if (x.length() > 100)
         {
             String replaceString = "...";

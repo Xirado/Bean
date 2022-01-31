@@ -7,7 +7,6 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class TokenRoute implements Route
@@ -52,18 +51,18 @@ public class TokenRoute implements Route
             int discriminator = Integer.parseInt(userObject.getString("discriminator"));
             String effectiveAvatarURL = "";
             if (userObject.isNull("avatar"))
-                effectiveAvatarURL = "https://cdn.discordapp.com/embed/avatars/"+(discriminator % 5)+".png";
+                effectiveAvatarURL = "https://cdn.discordapp.com/embed/avatars/" + (discriminator % 5) + ".png";
             else
             {
                 String avatarHash = userObject.getString("avatar");
                 boolean animated = avatarHash.startsWith("a_");
-                effectiveAvatarURL = "https://cdn.discordapp.com/avatars/"+id+"/"+avatarHash+(animated ? ".gif" : ".png");
+                effectiveAvatarURL = "https://cdn.discordapp.com/avatars/" + id + "/" + avatarHash + (animated ? ".gif" : ".png");
             }
             userObject.put("effective_avatar", effectiveAvatarURL);
             object.put("user", userObject);
             byte[] tokenBytes = Bean.getInstance().getAuthenticator().addSession(object);
             String token = new String(tokenBytes, StandardCharsets.UTF_8);
-            response.header("authorization", "Token "+token);
+            response.header("authorization", "Token " + token);
             return userObject.toString();
         } catch (Exception ex)
         {

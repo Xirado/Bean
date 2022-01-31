@@ -11,7 +11,6 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import java.io.IOException;
 import java.util.List;
 
 public class CommandsRoute implements Route

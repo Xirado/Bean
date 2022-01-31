@@ -3,6 +3,7 @@ package at.xirado.bean.event;
 import at.xirado.bean.Bean;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
+import at.xirado.bean.misc.Metrics;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -15,7 +16,11 @@ public class MessageCreateListener extends ListenerAdapter
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
     {
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
+        {
+            Metrics.MESSAGES.labels("banned").inc();
             return;
+        }
+        Metrics.MESSAGES.labels("messages").inc();
         if (event.isWebhookMessage() || event.getAuthor().isBot()) return;
         Member member = event.getMember();
         if (member == null) return;
@@ -26,7 +31,9 @@ public class MessageCreateListener extends ListenerAdapter
         if (args.length == 1 && event.getMessage().getMentionedUsers().contains(event.getJDA().getSelfUser()) && event.getMessage().getReferencedMessage() == null)
         {
             event.getMessage().reply("<a:ping:818580038949273621>")
-                    .mentionRepliedUser(false).queue(s -> {}, e -> {});
+                    .mentionRepliedUser(false).queue(s -> {
+                    }, e -> {
+                    });
             return;
         }
         if (content.startsWith(prefix))

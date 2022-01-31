@@ -99,9 +99,9 @@ public class BanCommand extends SlashCommand
                         TextChannel logChannel = ctx.getGuildData().getLogChannel();
                         MessageEmbed logEmbed = new EmbedBuilder()
                                 .setColor(CaseType.BAN.getEmbedColor())
-                                .setAuthor("Ban • "+targetUser.getAsTag(), null, targetUser.getEffectiveAvatarUrl())
+                                .setAuthor("Ban • " + targetUser.getAsTag(), null, targetUser.getEffectiveAvatarUrl())
                                 .addField(ctx.getLocalized("commands.reason"), reasonString, true)
-                                .addField("Moderator", sender.getAsMention()+" ("+sender.getUser().getAsTag()+")", true)
+                                .addField("Moderator", sender.getAsMention() + " (" + sender.getUser().getAsTag() + ")", true)
                                 .addField(ctx.getLocalized("commands.duration"), "∞", true)
                                 .setFooter(ctx.getLocalized("commands.user_id", targetUser.getIdLong()))
                                 .build();

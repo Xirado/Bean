@@ -1,10 +1,12 @@
 package at.xirado.bean.event;
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.misc.Metrics;
 import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -24,13 +26,19 @@ public class JDAReadyListener extends ListenerAdapter
     private boolean ready = false;
 
     @Override
+    public void onGenericEvent(@NotNull GenericEvent event)
+    {
+        Metrics.EVENTS.inc();
+    }
+
+    @Override
     public void onGuildReady(@NotNull GuildReadyEvent event)
     {
         if (ready)
             return;
         ready = true;
         Bean.getInstance().getExecutor().submit(() -> {
-            LOGGER.info("Successfully started "+Bean.getInstance().getShardManager().getShards().size()+" shards!");
+            LOGGER.info("Successfully started " + Bean.getInstance().getShardManager().getShards().size() + " shards!");
             Bean.getInstance().getSlashCommandHandler().initialize();
             if (Bean.getInstance().isDebug())
                 LOGGER.warn("Development mode enabled.");
@@ -53,6 +61,7 @@ public class JDAReadyListener extends ListenerAdapter
             });
         });
         Bean.getInstance().getExecutor().scheduleAtFixedRate(() -> {
+            int guildCount = (int) Bean.getInstance().getShardManager().getGuildCache().size();
             int memberCount = Bean.getInstance().getShardManager()
                     .getGuildCache()
                     .stream()
@@ -60,7 +69,9 @@ public class JDAReadyListener extends ListenerAdapter
                     .sum();
             Bean.getInstance().getShardManager()
                     .getShardCache()
-                    .forEach(shard -> shard.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching(memberCount+" users | bean.bz")));
+                    .forEach(shard -> shard.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching(memberCount + " users | bean.bz")));
+            Metrics.GUILD_COUNT.set(guildCount);
+            Metrics.USER_COUNT.set(memberCount);
         }, 0, 1, TimeUnit.MINUTES);
     }
 }

@@ -54,7 +54,12 @@ dependencies {
     implementation 'org.scilab.forge:jlatexmath:1.0.7'
     implementation 'com.github.freyacodes:Lavalink-Client:8d9b660'
     implementation "se.michaelthelin.spotify:spotify-web-api-java:7.0.0"
-    implementation("club.minnced:discord-webhooks:0.7.5")
+    implementation "club.minnced:discord-webhooks:0.7.5"
+
+    // Prometheus
+    implementation "io.prometheus:simpleclient:0.14.1"
+    implementation "io.prometheus:simpleclient_hotspot:0.14.1"
+    implementation "io.prometheus:simpleclient_httpserver:0.14.1"
 }
 
 processResources {

@@ -52,7 +52,7 @@ public class LocaleLoader
                 log.info("Successfully loaded locale {}", lang);
             } catch (Exception e)
             {
-                log.error("Could not load locale '"+lang+"'!", e);
+                log.error("Could not load locale '" + lang + "'!", e);
             }
         }
 

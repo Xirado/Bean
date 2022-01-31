@@ -9,6 +9,7 @@ import at.xirado.bean.data.Hints;
 import at.xirado.bean.data.IAutocompleteChoice;
 import at.xirado.bean.data.SearchEntry;
 import at.xirado.bean.data.database.SQLBuilder;
+import at.xirado.bean.lavaplayer.SpotifyTrack;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.FormatUtil;
 import at.xirado.bean.misc.MusicUtil;
@@ -21,7 +22,6 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.io.jda.JdaLink;
-import at.xirado.bean.lavaplayer.SpotifyTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
@@ -71,10 +71,10 @@ public class PlayCommand extends SlashCommand
 
     private static final MessageEmbed BOOKMARK_HINT_EMBED =
             EmbedUtil.defaultEmbedBuilder("Bookmark songs and playlists using the **/bookmark** command!\nHaving to always type the link to your favourite youtube or spotify playlist is annoying, isn't it?")
-                .setAuthor(Bean.getInstance().getShardManager().getShards().get(0).getSelfUser().getAsTag(), null, Bean.getInstance().getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
-                .setImage("https://bean.bz/assets/hints/bookmark.png")
-                .setTitle("Tip")
-                .build();
+                    .setAuthor(Bean.getInstance().getShardManager().getShards().get(0).getSelfUser().getAsTag(), null, Bean.getInstance().getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
+                    .setImage("https://bean.bz/assets/hints/bookmark.png")
+                    .setTitle("Tip")
+                    .build();
 
     @Override
     public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
@@ -110,7 +110,7 @@ public class PlayCommand extends SlashCommand
                 provider = "ytsearch:";
             else
                 provider = providerOption.getAsString();
-            query = provider+query;
+            query = provider + query;
         }
         long userId = event.getUser().getIdLong();
         long channelId = event.getChannel().getIdLong();
@@ -136,7 +136,7 @@ public class PlayCommand extends SlashCommand
                 guildAudioPlayer.getScheduler().queue(track);
                 SearchEntry entry = new SearchEntry(track.getInfo().title, rawQuery, false);
                 if (!isDuplicate(member.getIdLong(), entry.getName()) && !isBookmarked)
-                        addSearchEntry(member.getIdLong(), entry);
+                    addSearchEntry(member.getIdLong(), entry);
             }
 
             @Override
@@ -220,19 +220,23 @@ public class PlayCommand extends SlashCommand
                 {
                     event.deferChoices(
                             result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
-                    ).queue(s -> {}, e -> {});
+                    ).queue(s -> {
+                    }, e -> {
+                    });
                     return;
                 }
                 List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), false);
                 List<String> valueList = result.stream().map(IAutocompleteChoice::getValue).collect(Collectors.toList());
                 searchEntries.stream()
                         .filter(x -> !valueList.contains(x.getValue()))
-                        .limit(25-result.size())
+                        .limit(25 - result.size())
                         .limit(7)
                         .forEachOrdered(result::add);
                 event.deferChoices(
                         result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
-                ).queue(s -> {}, e -> {});
+                ).queue(s -> {
+                }, e -> {
+                });
                 return;
             }
             BookmarkCommand.getBookmarks(userId, true)
@@ -249,7 +253,7 @@ public class PlayCommand extends SlashCommand
                         .stream()
                         .filter(x -> !valueList.contains(x.getValue()))
                         .filter(choice -> StringUtils.startsWithIgnoreCase(choice.getName(), query.getAsString()))
-                        .limit(Util.zeroIfNegative(25-result.size()))
+                        .limit(Util.zeroIfNegative(25 - result.size()))
                         .forEachOrdered(entry -> {
                             result.add(entry);
                             alreadyAdded.add(entry.getName().toLowerCase(Locale.ROOT));
@@ -258,19 +262,21 @@ public class PlayCommand extends SlashCommand
             List<String> ytMusicResults = getYoutubeMusicSearchResults(query.getAsString());
             ytMusicResults.stream()
                     .filter(x -> !alreadyAdded.contains(x.toLowerCase(Locale.ROOT)))
-                    .limit(Util.zeroIfNegative(25-result.size()-alreadyAdded.size()))
+                    .limit(Util.zeroIfNegative(25 - result.size() - alreadyAdded.size()))
                     .forEach(x -> result.add(new BasicAutocompletionChoice(x, x)));
             if (result.size() == 0)
                 result.add(new BasicAutocompletionChoice(query.getAsString(), query.getAsString()));
             event.deferChoices(
                     result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
-            ).queue(s -> {}, e -> {});
+            ).queue(s -> {
+            }, e -> {
+            });
         }
     }
 
     private List<SearchEntry> getSearchHistory(long userId, boolean all)
     {
-        try(ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM searchqueries WHERE user_id = ? ORDER BY searched_at desc"+(all ? "" : " LIMIT 25")).addParameter(userId).executeQuery())
+        try (ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM searchqueries WHERE user_id = ? ORDER BY searched_at desc" + (all ? "" : " LIMIT 25")).addParameter(userId).executeQuery())
         {
             List<SearchEntry> entries = new ArrayList<>();
             while (rs.next())
@@ -278,14 +284,14 @@ public class PlayCommand extends SlashCommand
             return entries;
         } catch (SQLException throwables)
         {
-            LOGGER.warn("Could not get search history from "+userId+"!", throwables);
+            LOGGER.warn("Could not get search history from " + userId + "!", throwables);
             return Collections.emptyList();
         }
     }
 
     private List<SearchEntry> getMatchingEntries(long userId, String prefix, boolean all)
     {
-        try(ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM searchqueries WHERE user_id = ? AND name like ? ORDER BY searched_at desc"+(all ? "" : " LIMIT 25")).addParameters(userId, prefix+"%").executeQuery())
+        try (ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM searchqueries WHERE user_id = ? AND name like ? ORDER BY searched_at desc" + (all ? "" : " LIMIT 25")).addParameters(userId, prefix + "%").executeQuery())
         {
             List<SearchEntry> entries = new ArrayList<>();
             while (rs.next())
@@ -293,31 +299,31 @@ public class PlayCommand extends SlashCommand
             return entries;
         } catch (SQLException throwables)
         {
-            LOGGER.warn("Could not get search history from "+userId+"!", throwables);
+            LOGGER.warn("Could not get search history from " + userId + "!", throwables);
             return Collections.emptyList();
         }
     }
 
     private boolean isDuplicate(long userId, String name)
     {
-        try(ResultSet rs = new SQLBuilder("SELECT 1 FROM searchqueries WHERE user_id = ? AND name = ?").addParameters(userId, name).executeQuery())
+        try (ResultSet rs = new SQLBuilder("SELECT 1 FROM searchqueries WHERE user_id = ? AND name = ?").addParameters(userId, name).executeQuery())
         {
             return rs.next();
         } catch (SQLException ex)
         {
-            LOGGER.error("Could not check if duplicate exists! (User: "+userId+", Term: "+name+")", ex);
+            LOGGER.error("Could not check if duplicate exists! (User: " + userId + ", Term: " + name + ")", ex);
             return true;
         }
     }
 
     private boolean hasSearchEntries(long userId)
     {
-        try(ResultSet rs = new SQLBuilder("SELECT 1 FROM searchqueries WHERE user_id = ?").addParameters(userId).executeQuery())
+        try (ResultSet rs = new SQLBuilder("SELECT 1 FROM searchqueries WHERE user_id = ?").addParameters(userId).executeQuery())
         {
             return rs.next();
         } catch (SQLException ex)
         {
-            LOGGER.error("Could not check if user "+userId+" has search entries!", ex);
+            LOGGER.error("Could not check if user " + userId + " has search entries!", ex);
             return false;
         }
     }
@@ -331,7 +337,7 @@ public class PlayCommand extends SlashCommand
                     .execute();
         } catch (SQLException ex)
         {
-            LOGGER.error("Could not add search entry for user "+userId+"!", ex);
+            LOGGER.error("Could not add search entry for user " + userId + "!", ex);
 
         }
     }
@@ -379,7 +385,8 @@ public class PlayCommand extends SlashCommand
                 results.add(result);
             });
             return results;
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             LOGGER.warn("Innertube API is broken!", e);
         }
         return Collections.emptyList();

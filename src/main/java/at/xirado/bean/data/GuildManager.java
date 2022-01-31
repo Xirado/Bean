@@ -58,11 +58,11 @@ public class GuildManager
         String sql = "SELECT data FROM guildSettings WHERE guildID = ?";
         var query = new SQLBuilder(sql)
                 .addParameter(guildID);
-        try(var rs = query.executeQuery())
+        try (var rs = query.executeQuery())
         {
             if (rs.next()) return new GuildData(guildID, DataObject.fromJson(rs.getString("data")));
             return null;
-        }catch (SQLException ex)
+        } catch (SQLException ex)
         {
             LOGGER.error("Could not retrieve guild data!", ex);
             return null;

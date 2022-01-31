@@ -96,7 +96,7 @@ public class Database
                 "CREATE TABLE IF NOT EXISTS banned_guilds (guild_id BIGINT PRIMARY KEY, reason VARCHAR(256))"
         };
 
-        try(Connection connection = Database.getConnectionFromPool())
+        try (Connection connection = Database.getConnectionFromPool())
         {
             if (connection == null) return;
             for (String command : commands)

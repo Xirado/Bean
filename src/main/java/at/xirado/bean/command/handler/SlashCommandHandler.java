@@ -10,6 +10,8 @@ import at.xirado.bean.command.slashcommands.moderation.*;
 import at.xirado.bean.command.slashcommands.music.*;
 import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.misc.EmbedUtil;
+import at.xirado.bean.misc.FrequencyCounter;
+import at.xirado.bean.misc.Metrics;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -30,8 +32,12 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class SlashCommandHandler
@@ -114,7 +120,8 @@ public class SlashCommandHandler
                 }
                 if (slashCommands.size() > 0) guildCommandUpdateAction.queue();
             }
-        } else {
+        } else
+        {
             List<SlashCommand> commands = registeredGuildCommands.get(815597207617142814L);
             if (commands != null && !commands.isEmpty())
             {
@@ -202,7 +209,9 @@ public class SlashCommandHandler
             } catch (Exception ex)
             {
                 LOGGER.warn("An error occurred while handling autocomplete!", ex);
-                event.deferChoices(Collections.emptyList()).queue(s -> {}, e -> {});
+                event.deferChoices(Collections.emptyList()).queue(s -> {
+                }, e -> {
+                });
             }
         };
 
@@ -304,31 +313,36 @@ public class SlashCommandHandler
                         }
                     }
                     command.executeCommand(event, member, ctx);
+                    Metrics.COMMANDS.labels("success").inc();
                 }
 
-            } 
-            catch (Exception e)
+            } catch (Exception e)
             {
+                Metrics.COMMANDS.labels("failed").inc();
                 LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
                 if (event.isAcknowledged())
-                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {}, ex -> {});
+                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {
+                    }, ex -> {
+                    });
                 else
-                    event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {}, ex -> {});
+                    event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {
+                    }, ex -> {
+                    });
                 LOGGER.error("Could not execute slash-command", e);
-                StringBuilder path = new StringBuilder("/"+event.getCommandPath().replace("/", " "));
-                for(OptionMapping option : event.getOptions())
+                StringBuilder path = new StringBuilder("/" + event.getCommandPath().replace("/", " "));
+                for (OptionMapping option : event.getOptions())
                 {
                     path.append(" *").append(option.getName()).append("* : ").append("`").append(option.getAsString()).append("`");
                 }
                 EmbedBuilder builder = new EmbedBuilder()
                         .setTitle("An error occurred while executing a slash-command!")
-                        .addField("Guild", event.getGuild() == null ? "None (Direct message)" : event.getGuild().getIdLong()+" ("+event.getGuild().getName()+")",true)
-                        .addField("Channel", event.getGuild() == null ? "None (Direct message)" : event.getChannel().getName() , true)
-                        .addField("User", event.getUser().getAsMention()+" ("+event.getUser().getAsTag()+")", true)
+                        .addField("Guild", event.getGuild() == null ? "None (Direct message)" : event.getGuild().getIdLong() + " (" + event.getGuild().getName() + ")", true)
+                        .addField("Channel", event.getGuild() == null ? "None (Direct message)" : event.getChannel().getName(), true)
+                        .addField("User", event.getUser().getAsMention() + " (" + event.getUser().getAsTag() + ")", true)
                         .addField("Command", path.toString(), false)
                         .setColor(EmbedUtil.ERROR_COLOR);
                 event.getJDA().openPrivateChannelById(Bean.OWNER_ID)
-                        .flatMap(c -> c.sendMessageEmbeds(builder.build()).content("```fix\n"+ExceptionUtils.getStackTrace(e)+"\n```"))
+                        .flatMap(c -> c.sendMessageEmbeds(builder.build()).content("```fix\n" + ExceptionUtils.getStackTrace(e) + "\n```"))
                         .queue();
             }
         };

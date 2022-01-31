@@ -5,8 +5,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
-
 public class ReactionRole implements SerializableData
 {
     private String emote;

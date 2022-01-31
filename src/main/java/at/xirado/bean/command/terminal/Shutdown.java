@@ -34,7 +34,7 @@ public class Shutdown extends ConsoleCommand
                     .sum();
             if (playing > 0)
             {
-                Shell.println(MCColor.translate('&', "&eCareful: There are &2"+playing+"&e players running! Use shutdown -f to force-shutdown."));
+                Shell.println(MCColor.translate('&', "&eCareful: There are &2" + playing + "&e players running! Use shutdown -f to force-shutdown."));
                 return;
             }
         }

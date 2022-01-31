@@ -63,6 +63,7 @@ public enum PokerCard
     JACK_SPADE("<:jack_of_spades:909938949068312586>", CardSuit.SPADE, false, false, true, 10),
     QUEEN_SPADE("<:queen_of_spades:909938948854403113>", CardSuit.SPADE, false, false, true, 10),
     KING_SPADE("<:king_of_spades:909938948854403112>", CardSuit.SPADE, false, false, true, 10);
+
     enum CardSuit
     {
         CLUB(),

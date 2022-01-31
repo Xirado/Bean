@@ -118,7 +118,7 @@ public class RankingSystem
             if (result.next())
                 return result.getLong("totalXP");
             return 0L;
-        }catch (Exception ex)
+        } catch (Exception ex)
         {
             LOGGER.error("Could not get total xp! (guild " + guildID + ", user " + userID + ")", ex);
             return -1L;
@@ -134,7 +134,7 @@ public class RankingSystem
             if (result.next())
                 return result.getLong("totalXP");
             return 0L;
-        }catch (Exception ex)
+        } catch (Exception ex)
         {
             LOGGER.error("Could not get total xp! (guild " + guildID + ", user " + userID + ")", ex);
             return -1L;
@@ -156,7 +156,7 @@ public class RankingSystem
                 .addParameters(guildID, userID, totalXP, name, discriminator, totalXP, name, discriminator);
         try
         {
-           query.execute();
+            query.execute();
         } catch (SQLException e)
         {
             LOGGER.error("Could not add XP!", e);
@@ -215,10 +215,10 @@ public class RankingSystem
     {
         var query = new SQLBuilder("SELECT * FROM wildcardSettings WHERE userID = ?")
                 .addParameter(user.getIdLong());
-        try(var rs = query.executeQuery())
+        try (var rs = query.executeQuery())
         {
             return rs.next() ? rs.getString("card") : "card1";
-        }catch (SQLException ex)
+        } catch (SQLException ex)
         {
             LOGGER.error("Could not get user preferred wildcard background (user " + user.getIdLong() + ")", ex);
             return "card1";
@@ -233,7 +233,7 @@ public class RankingSystem
         try
         {
             query.execute();
-        }catch (SQLException ex)
+        } catch (SQLException ex)
         {
             LOGGER.error("Could not set user preferred wildcard background (user " + user.getIdLong() + ")", ex);
         }
@@ -244,10 +244,10 @@ public class RankingSystem
         var query = new SQLBuilder("SELECT * FROM wildcardSettings WHERE userID = ?")
                 .useConnection(connection)
                 .addParameter(user.getIdLong());
-        try(var rs = query.executeQuery())
+        try (var rs = query.executeQuery())
         {
             return rs.next() ? rs.getString("card") : "card1";
-        }catch (SQLException ex)
+        } catch (SQLException ex)
         {
             LOGGER.error("Could not get user preferred wildcard background (user " + user.getIdLong() + ")", ex);
             return "card1";
@@ -263,7 +263,7 @@ public class RankingSystem
         try
         {
             query.execute();
-        }catch (SQLException ex)
+        } catch (SQLException ex)
         {
             LOGGER.error("Could not set user preferred wildcard background (user " + user.getIdLong() + ")", ex);
         }
@@ -477,7 +477,7 @@ public class RankingSystem
         {
             if (rs.next()) return rs.getInt("rank");
             return -1;
-        }catch (SQLException ex)
+        } catch (SQLException ex)
         {
             LOGGER.error("Could not get rank of member! Guild: {} User: {}", guildID, userID);
             return -1;

@@ -9,17 +9,13 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import lavalink.client.io.Link;
-import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +41,7 @@ public class StopCommand extends SlashCommand
         {
             String name = state.getChannel().getName();
             player.destroy();
-            event.replyEmbeds(EmbedUtil.defaultEmbed("Disconnected from **"+name+"**!")).queue();
+            event.replyEmbeds(EmbedUtil.defaultEmbed("Disconnected from **" + name + "**!")).queue();
             return;
         }
         if (!ctx.getGuildData().isDJ(event.getMember()))
@@ -72,6 +68,6 @@ public class StopCommand extends SlashCommand
 
         String name = state.getChannel().getName();
         player.destroy();
-        event.replyEmbeds(EmbedUtil.defaultEmbed("Disconnected from **"+name+"**!")).queue();
+        event.replyEmbeds(EmbedUtil.defaultEmbed("Disconnected from **" + name + "**!")).queue();
     }
 }
