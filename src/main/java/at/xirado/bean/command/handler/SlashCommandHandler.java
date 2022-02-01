@@ -145,10 +145,7 @@ public class SlashCommandHandler
                 if (guild == null) continue;
                 List<SlashCommand> alreadyRegistered = registeredGuildCommands.containsKey(guildID) ? registeredGuildCommands.get(guildID) : new ArrayList<>();
                 alreadyRegistered.add(command);
-                if (registeredGuildCommands.containsKey(guildID))
-                {
-                    registeredGuildCommands.put(guildID, alreadyRegistered);
-                }
+                registeredGuildCommands.put(guildID, alreadyRegistered);
             }
             return;
         }
