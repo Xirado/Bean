@@ -29,7 +29,7 @@ public class Request
 
     public void queue(Consumer<Response> success, Consumer<Exception> failure)
     {
-        Bean.getInstance().getExecutor().execute(() -> {
+        Bean.getInstance().getCommandExecutor().execute(() -> {
             try
             {
                 Response response = client.newCall(request).execute();
@@ -44,7 +44,7 @@ public class Request
 
     public void queue(Consumer<Response> success)
     {
-        Bean.getInstance().getExecutor().execute(() -> {
+        Bean.getInstance().getCommandExecutor().execute(() -> {
             try
             {
                 Response response = client.newCall(request).execute();

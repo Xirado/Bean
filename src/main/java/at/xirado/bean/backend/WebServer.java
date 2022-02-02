@@ -3,7 +3,6 @@ package at.xirado.bean.backend;
 
 import at.xirado.bean.Bean;
 import at.xirado.bean.backend.routes.*;
-import at.xirado.bean.misc.FrequencyCounter;
 import at.xirado.bean.misc.Metrics;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -12,7 +11,6 @@ import okhttp3.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import static spark.Spark.*;
 

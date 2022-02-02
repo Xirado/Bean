@@ -89,7 +89,7 @@ public class CommandHandler
     @SuppressWarnings("ConstantConditions")
     public void handleCommandFromGuild(@Nonnull GuildMessageReceivedEvent event)
     {
-        Bean.getInstance().getExecutor().submit(() ->
+        Bean.getInstance().getCommandExecutor().submit(() ->
         {
             try
             {

@@ -43,4 +43,10 @@ public class Metrics
             .help("Playing music players")
             .register();
 
+    public static final Gauge BUSY_THREADS = Gauge.build()
+            .name("bean_busy_threads")
+            .help("Busy threads")
+            .labelNames("type")
+            .register();
+
 }

@@ -12,6 +12,7 @@ import at.xirado.bean.lavaplayer.SpotifyAudioSource;
 import at.xirado.bean.log.Shell;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.AudioManager;
+import at.xirado.bean.prometheus.MetricsJob;
 import at.xirado.bean.prometheus.Prometheus;
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.WebhookClientBuilder;
@@ -41,6 +42,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -58,12 +60,26 @@ public class Bean
     private static Bean instance;
     private final ShardManager shardManager;
     private final boolean debug;
-    private final ScheduledExecutorService scheduledExecutorService =
-            Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(),
+
+    private final ExecutorService commandExecutor =
+            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(),
                     new ThreadFactoryBuilder()
-                            .setNameFormat("Bean Thread %d")
-                            .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the Threadpool! (Thread " + t.getName() + ")", e))
+                            .setNameFormat("Bean Command Thread %d")
+                            .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the command thread-pool! (Thread " + t.getName() + ")", e))
                             .build());
+
+    private final ScheduledExecutorService scheduledExecutor =
+            Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder()
+                    .setNameFormat("Bean Scheduled Executor Thread")
+                    .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the scheduled executor!", e))
+                    .build());
+
+    private final ExecutorService executor =
+            Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
+                    .setNameFormat("Bean Executor Thread")
+                    .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the executor!", e))
+                    .build());
+
     private final ConsoleCommandManager consoleCommandManager;
     private final SlashCommandHandler slashCommandHandler;
     private final CommandHandler commandHandler;
@@ -119,6 +135,7 @@ public class Bean
         authenticator = new Authenticator();
         webServer = new WebServer(8887);
         new Prometheus();
+        new MetricsJob().start();
     }
 
     public static Bean getInstance()
@@ -223,9 +240,19 @@ public class Bean
         this.config = loadConfig();
     }
 
-    public ScheduledExecutorService getExecutor()
+    public ExecutorService getCommandExecutor()
     {
-        return scheduledExecutorService;
+        return commandExecutor;
+    }
+
+    public ScheduledExecutorService getScheduledExecutor()
+    {
+        return scheduledExecutor;
+    }
+
+    public ExecutorService getExecutor()
+    {
+        return executor;
     }
 
     public boolean isDebug()
@@ -315,7 +342,7 @@ public class Bean
     public void initCommandCheck()
     {
         LOGGER.info("Checking for outdated command cache...");
-        getExecutor().submit(() -> {
+        getCommandExecutor().submit(() -> {
             if (getInstance().isDebug())
             {
                 Guild guild = getInstance().getShardManager().getGuildById(815597207617142814L);

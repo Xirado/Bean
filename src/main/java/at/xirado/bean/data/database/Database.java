@@ -38,7 +38,7 @@ public class Database
                 config.setPassword(password);
                 config.setMaximumPoolSize(10);
                 config.setDriverClassName("org.mariadb.jdbc.Driver");
-                config.setScheduledExecutor(Bean.getInstance().getExecutor());
+                config.setScheduledExecutor(Bean.getInstance().getScheduledExecutor());
                 config.addDataSourceProperty("cachePrepStmts", "true");
                 config.addDataSourceProperty("prepStmtCacheSize", "250");
                 config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");

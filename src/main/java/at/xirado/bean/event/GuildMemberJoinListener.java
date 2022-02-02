@@ -23,7 +23,7 @@ public class GuildMemberJoinListener extends ListenerAdapter
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
         GuildData guildData = GuildManager.getGuildData(event.getGuild());
-        Bean.getInstance().getExecutor().schedule(() -> {
+        Bean.getInstance().getScheduledExecutor().schedule(() -> {
             long totalXP = RankingSystem.getTotalXP(event.getGuild().getIdLong(), event.getUser().getIdLong());
             int level = RankingSystem.getLevel(totalXP);
             if (level > 0)

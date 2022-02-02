@@ -10,7 +10,6 @@ import at.xirado.bean.command.slashcommands.moderation.*;
 import at.xirado.bean.command.slashcommands.music.*;
 import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.misc.EmbedUtil;
-import at.xirado.bean.misc.FrequencyCounter;
 import at.xirado.bean.misc.Metrics;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.translation.LocaleLoader;
@@ -37,7 +36,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class SlashCommandHandler
@@ -207,7 +205,7 @@ public class SlashCommandHandler
             }
         };
 
-        Bean.getInstance().getExecutor().execute(r);
+        Bean.getInstance().getCommandExecutor().execute(r);
     }
 
     public void handleSlashCommand(@NotNull SlashCommandEvent event, @Nullable Member member)
@@ -339,7 +337,7 @@ public class SlashCommandHandler
                         .queue();
             }
         };
-        Bean.getInstance().getExecutor().execute(r);
+        Bean.getInstance().getCommandExecutor().execute(r);
     }
 
     public List<SlashCommand> getRegisteredCommands()
