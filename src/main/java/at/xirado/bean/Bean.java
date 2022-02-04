@@ -351,7 +351,7 @@ public class Bean
                     LOGGER.error("Debug guild does not exist!");
                     return;
                 }
-              
+
                 guild.retrieveCommands().queue(discordCommands -> {
                     List<SlashCommand> localCommands = getInstance().getSlashCommandHandler().getRegisteredGuildCommands().get(guild.getIdLong());
                     handleCommandUpdates(discordCommands, localCommands);
@@ -367,17 +367,21 @@ public class Bean
         });
     }
 
-    private static void handleCommandUpdates(@NotNull Collection<? extends Command> discordCommands, @NotNull Collection<? extends SlashCommand> localCommands) {
+    private static void handleCommandUpdates(@NotNull Collection<? extends Command> discordCommands, @NotNull Collection<? extends SlashCommand> localCommands)
+    {
         boolean commandRemovedOrAdded = localCommands.size() != discordCommands.size();
         if (commandRemovedOrAdded)
         {
-            if (localCommands.size() > discordCommands.size()) {
+            if (localCommands.size() > discordCommands.size())
+            {
                 LOGGER.warn("New command(s) has/have been added! Updating Discords cache...");
-            } else {
+            } else
+            {
                 LOGGER.warn("Command(s) has/have been removed! Updating Discords cache...");
             }
 
-            getInstance().getSlashCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e -> {});
+            getInstance().getSlashCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e -> {
+            });
             return;
         }
 
@@ -420,8 +424,10 @@ public class Bean
             }
         }
 
-        if (outdated) {
-            getInstance().getSlashCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e -> {});
+        if (outdated)
+        {
+            getInstance().getSlashCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e -> {
+            });
         }
     }
 }

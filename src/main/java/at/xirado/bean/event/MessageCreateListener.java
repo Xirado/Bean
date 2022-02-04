@@ -5,7 +5,7 @@ import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.misc.Metrics;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,8 +13,10 @@ import org.jetbrains.annotations.NotNull;
 public class MessageCreateListener extends ListenerAdapter
 {
     @Override
-    public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
+    public void onMessageReceived(@NotNull MessageReceivedEvent event)
     {
+        if (!event.isFromGuild())
+            return;
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
         {
             Metrics.MESSAGES.labels("banned").inc();

@@ -9,10 +9,10 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavalinkPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +55,7 @@ public class AudioScheduler extends PlayerEventListenerAdapter
         AudioTrack track = queue.poll();
         if (track == null)
         {
-            VoiceChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getSelfMember().getVoiceState().getChannel();
+            AudioChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getSelfMember().getVoiceState().getChannel();
             if (current instanceof StageChannel stageChannel)
             {
                 if (stageChannel.getStageInstance() != null)
@@ -93,7 +93,7 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     public void onTrackStart(IPlayer player, AudioTrack track)
     {
         lastTrack = track;
-        VoiceChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getSelfMember().getVoiceState().getChannel();
+        AudioChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getSelfMember().getVoiceState().getChannel();
         if (current instanceof StageChannel stageChannel)
         {
             if (stageChannel.getStageInstance() == null)

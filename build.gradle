@@ -12,7 +12,7 @@ plugins {
 mainClassName = 'at.xirado.bean.Bean'
 
 group 'at.xirado'
-version '4.1.0'
+version '5.0.0'
 
 shadowJar {
     archiveFileName = "Bean.jar"
@@ -39,7 +39,7 @@ tasks.build {
 }
 
 dependencies {
-    implementation 'com.github.Xirado:JDA:e860edd'
+    implementation 'com.github.Dv8FromTheWorld:JDA:9ebcc22'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
     implementation 'com.sparkjava:spark-core:2.9.3'
     implementation 'org.codehaus.groovy:groovy-jsr223:3.0.8'
@@ -52,7 +52,7 @@ dependencies {
     implementation 'com.google.guava:guava:31.0.1-jre'
     implementation 'pw.chew:jda-chewtils:1.20.2'
     implementation 'org.scilab.forge:jlatexmath:1.0.7'
-    implementation 'com.github.freyacodes:Lavalink-Client:8d9b660'
+    implementation 'com.github.Xirado:Lavalink-Client:041082f'
     implementation "se.michaelthelin.spotify:spotify-web-api-java:7.0.0"
     implementation "club.minnced:discord-webhooks:0.7.5"
 

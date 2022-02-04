@@ -4,10 +4,10 @@ import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.scilab.forge.jlatexmath.ParseException;
@@ -26,14 +26,14 @@ public class LaTeXCommand extends SlashCommand
 {
     public LaTeXCommand()
     {
-        setCommandData(new CommandData("latex", "Creates an image from a LaTeX Formula.")
+        setCommandData(Commands.slash("latex", "Creates an image from a LaTeX Formula.")
                 .addOption(OptionType.STRING, "formula", "Formula to create the image from.", true)
         );
     }
 
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         event.deferReply().queue();
         InteractionHook hook = event.getHook();

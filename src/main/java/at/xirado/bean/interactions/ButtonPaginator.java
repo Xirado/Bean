@@ -8,9 +8,9 @@ import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -113,7 +113,7 @@ public class ButtonPaginator
     private void waitForEvent(long channelId, long messageId)
     {
         waiter.waitForEvent(
-                ButtonClickEvent.class,
+                ButtonInteractionEvent.class,
                 event ->
                 {
                     if (interactionStopped) return false;
@@ -122,7 +122,9 @@ public class ButtonPaginator
                     {
                         if (!allowedUsers.contains(event.getUser().getIdLong()))
                         {
-                            event.deferEdit().queue(s -> {}, e -> {});
+                            event.deferEdit().queue(s -> {
+                            }, e -> {
+                            });
                             return false;
                         }
                     }
@@ -147,7 +149,9 @@ public class ButtonPaginator
                         case "stop" -> {
                             interactionStopped = true;
                             if (!event.getMessage().isEphemeral())
-                                event.getMessage().delete().queue(s -> {}, e -> {});
+                                event.getMessage().delete().queue(s -> {
+                                }, e -> {
+                                });
                             else
                                 event.editMessageEmbeds(getEmbed(page)).setActionRows(Collections.emptyList()).queue();
                         }
@@ -172,7 +176,9 @@ public class ButtonPaginator
                     if (channel == null) return;
                     channel.retrieveMessageById(messageId)
                             .flatMap(m -> m.editMessageComponents(Collections.emptyList()))
-                            .queue(s -> {}, e -> {});
+                            .queue(s -> {
+                            }, e -> {
+                            });
                 }
         );
     }

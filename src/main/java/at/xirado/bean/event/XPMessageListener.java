@@ -9,7 +9,7 @@ import at.xirado.bean.data.database.Database;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.RoleReward;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -34,8 +34,10 @@ public class XPMessageListener extends ListenerAdapter
     private static final Random RANDOM = new Random();
 
     @Override
-    public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
+    public void onMessageReceived(@NotNull MessageReceivedEvent event)
     {
+        if (!event.isFromGuild())
+            return;
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
         if (event.getAuthor().isBot() || event.isWebhookMessage() || event.getMessage().getType().isSystem()) return;

@@ -19,8 +19,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.ApplicationCommandAutocompleteEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -167,7 +167,7 @@ public class SlashCommandHandler
     }
 
 
-    public void handleAutocomplete(@NotNull ApplicationCommandAutocompleteEvent event)
+    public void handleAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event)
     {
         if (event.getGuild() == null)
             return;
@@ -200,7 +200,7 @@ public class SlashCommandHandler
             } catch (Exception ex)
             {
                 LOGGER.warn("An error occurred while handling autocomplete!", ex);
-                event.deferChoices(Collections.emptyList()).queue(s -> {
+                event.replyChoices(Collections.emptyList()).queue(s -> {
                 }, e -> {
                 });
             }
@@ -209,7 +209,7 @@ public class SlashCommandHandler
         Bean.getInstance().getCommandExecutor().execute(r);
     }
 
-    public void handleSlashCommand(@NotNull SlashCommandEvent event, @Nullable Member member)
+    public void handleSlashCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member member)
     {
         Runnable r = () ->
         {
@@ -272,7 +272,7 @@ public class SlashCommandHandler
                     if (command.getCommandFlags().contains(CommandFlag.MUST_BE_IN_VC))
                     {
                         GuildVoiceState guildVoiceState = member.getVoiceState();
-                        if (guildVoiceState == null || !guildVoiceState.inVoiceChannel())
+                        if (guildVoiceState == null || !guildVoiceState.inAudioChannel())
                         {
                             event.replyEmbeds(EmbedUtil.errorEmbed("You are not connected to a voice-channel!")).queue();
                             return;
@@ -307,8 +307,7 @@ public class SlashCommandHandler
                     Metrics.COMMANDS.labels("success").inc();
                 }
 
-            } 
-            catch (Exception e)
+            } catch (Exception e)
             {
                 Metrics.COMMANDS.labels("failed").inc();
                 LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());

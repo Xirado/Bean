@@ -7,12 +7,12 @@ import at.xirado.bean.data.BasicAutocompletionChoice;
 import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.ApplicationCommandAutocompleteEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import okhttp3.Call;
@@ -29,7 +29,7 @@ public class RedditCommand extends SlashCommand
 
     public RedditCommand()
     {
-        setCommandData(new CommandData("reddit", "Gets a trending post from a subreddit")
+        setCommandData(Commands.slash("reddit", "Gets a trending post from a subreddit")
                 .addOptions(new OptionData(OptionType.STRING, "subreddit", "Select a subreddit")
                         .setAutoComplete(true)
                 )
@@ -37,7 +37,7 @@ public class RedditCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         InteractionHook hook = event.getHook();
 
@@ -91,7 +91,7 @@ public class RedditCommand extends SlashCommand
     }
 
     @Override
-    public void handleAutocomplete(@NotNull ApplicationCommandAutocompleteEvent event)
+    public void handleAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event)
     {
         List<BasicAutocompletionChoice> choices = List.of(
                 new BasicAutocompletionChoice("r/memes", "memes"),
@@ -99,7 +99,7 @@ public class RedditCommand extends SlashCommand
                 new BasicAutocompletionChoice("r/ProgrammerHumor", "programmerhumor"),
                 new BasicAutocompletionChoice("r/dankmemes", "dankmemes")
         );
-        event.deferChoices(
+        event.replyChoices(
                 choices.stream().map(BasicAutocompletionChoice::toCommandAutocompleteChoice).toList()
         ).queue();
     }

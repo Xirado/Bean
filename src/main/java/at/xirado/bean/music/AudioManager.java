@@ -1,6 +1,5 @@
 package at.xirado.bean.music;
 
-import at.xirado.bean.Bean;
 import at.xirado.bean.misc.Metrics;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -8,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 public class AudioManager
 {
@@ -20,17 +18,19 @@ public class AudioManager
         this.playerManager = new DefaultAudioPlayerManager();
         this.audioPlayers = new ConcurrentHashMap<>();
         Thread t = new Thread(() -> {
-           while (true)
-           {
-               int playingAudioPlayers = getAudioPlayers().stream()
-                       .mapToInt(pl -> pl.getPlayer().getPlayingTrack() == null ? 0 : 1)
-                       .sum();
-               Metrics.PLAYING_MUSIC_PLAYERS.set(playingAudioPlayers);
-               try
-               {
-                   Thread.sleep(15000);
-               } catch (InterruptedException ignored) {}
-           }
+            while (true)
+            {
+                int playingAudioPlayers = getAudioPlayers().stream()
+                        .mapToInt(pl -> pl.getPlayer().getPlayingTrack() == null ? 0 : 1)
+                        .sum();
+                Metrics.PLAYING_MUSIC_PLAYERS.set(playingAudioPlayers);
+                try
+                {
+                    Thread.sleep(15000);
+                } catch (InterruptedException ignored)
+                {
+                }
+            }
         });
         t.setDaemon(true);
         t.start();

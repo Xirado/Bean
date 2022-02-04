@@ -26,7 +26,10 @@ public class Database
             if (!isConnected())
             {
                 DataObject dbConfig = Bean.getInstance().getConfig().optObject("database").orElse(DataObject.empty());
-                if (dbConfig.anyNull("host", "database", "username", "password", "port"))
+                if (
+                        dbConfig.isNull("host") || dbConfig.isNull("database") || dbConfig.isNull("username")
+                                || dbConfig.isNull("password") || dbConfig.isNull("port")
+                )
                     throw new IllegalStateException("Missing database configuration!");
                 String host = dbConfig.getString("host");
                 String database = dbConfig.getString("database");

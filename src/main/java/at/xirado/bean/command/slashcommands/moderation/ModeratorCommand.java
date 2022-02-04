@@ -7,9 +7,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +24,7 @@ public class ModeratorCommand extends SlashCommand
 {
     public ModeratorCommand()
     {
-        setCommandData(new CommandData("moderator", "Sets up moderator roles.")
+        setCommandData(Commands.slash("moderator", "Sets up moderator roles.")
                 .addSubcommands(new SubcommandData("add", "Adds a moderator role.")
                         .addOption(OptionType.ROLE, "role", "Role to add.", true)
                 )
@@ -37,7 +37,7 @@ public class ModeratorCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         String subcommand = event.getSubcommandName();
         switch (subcommand)
