@@ -12,10 +12,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class SoftbanCommand extends SlashCommand
 
     public SoftbanCommand()
     {
-        setCommandData(new CommandData("softban", "Kicks a member and deletes previously written messages.")
+        setCommandData(Commands.slash("softban", "Kicks a member and deletes previously written messages.")
                 .addOption(OptionType.USER, "member", "Member to kick.", true)
                 .addOption(OptionType.STRING, "reason", "Reason for the kick.", false)
         );
@@ -37,7 +37,7 @@ public class SoftbanCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         Guild guild = event.getGuild();
         if (guild == null)

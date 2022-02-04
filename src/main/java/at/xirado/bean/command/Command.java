@@ -1,7 +1,7 @@
 package at.xirado.bean.command;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -116,7 +116,7 @@ public abstract class Command
             return true;
     }
 
-    public abstract void executeCommand(GuildMessageReceivedEvent event, CommandContext context);
+    public abstract void executeCommand(MessageReceivedEvent event, CommandContext context);
 
     @NonNls
     @NotNull

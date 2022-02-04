@@ -8,9 +8,9 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +23,7 @@ public class XPAlertCommand extends SlashCommand
 {
     public XPAlertCommand()
     {
-        setCommandData(new CommandData("setxpalerts", "Changes XP levelup alert behaviour.")
+        setCommandData(Commands.slash("setxpalerts", "Changes XP levelup alert behaviour.")
                 .addSubcommands(new SubcommandData("none", "Disables xp alerts entirely."))
                 .addSubcommands(new SubcommandData("dm", "Notifies the user via DM when they level up."))
                 .addSubcommands(new SubcommandData("current", "Notifies the user in the current channel when they level up."))
@@ -35,7 +35,7 @@ public class XPAlertCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         Guild guild = event.getGuild();
         switch (event.getSubcommandName())
@@ -99,7 +99,7 @@ public class XPAlertCommand extends SlashCommand
         }
     }
 
-    public static void sendXPAlert(@Nonnull Member member, int level, TextChannel current)
+    public static void sendXPAlert(@Nonnull Member member, int level, MessageChannel current)
     {
         LinkedDataObject json = LocaleLoader.ofGuild(member.getGuild());
         String mode = getXPAlert(member.getGuild());

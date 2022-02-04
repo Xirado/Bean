@@ -2,15 +2,15 @@ package at.xirado.bean.event;
 
 import at.xirado.bean.Bean;
 import at.xirado.bean.command.CommandContext;
-import net.dv8tion.jda.api.events.interaction.ApplicationCommandAutocompleteEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 public class SlashCommandListener extends ListenerAdapter
 {
     @Override
-    public void onSlashCommand(@NotNull SlashCommandEvent event)
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event)
     {
         if (event.getGuild() == null)
             return;
@@ -25,7 +25,7 @@ public class SlashCommandListener extends ListenerAdapter
     }
 
     @Override
-    public void onApplicationCommandAutocomplete(@NotNull ApplicationCommandAutocompleteEvent event)
+    public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event)
     {
         if (event.getGuild() == null)
             return;

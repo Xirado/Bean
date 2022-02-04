@@ -3,9 +3,6 @@ package at.xirado.bean.event;
 import at.xirado.bean.Bean;
 import at.xirado.bean.misc.Metrics;
 import lavalink.client.io.jda.JdaLavalink;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -17,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
 
 public class JDAReadyListener extends ListenerAdapter
 {

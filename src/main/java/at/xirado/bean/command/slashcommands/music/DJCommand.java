@@ -8,9 +8,9 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +21,7 @@ public class DJCommand extends SlashCommand
 {
     public DJCommand()
     {
-        setCommandData(new CommandData("dj", "Set up users/roles who can use DJ-commands.")
+        setCommandData(Commands.slash("dj", "Set up users/roles who can use DJ-commands.")
                 .addSubcommands(new SubcommandData("add", "Adds a DJ. (role or member)")
                         .addOption(OptionType.MENTIONABLE, "role_or_member", "Role or member", true)
                 )
@@ -34,7 +34,7 @@ public class DJCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         GuildData guildData = ctx.getGuildData();
         switch (event.getSubcommandName().toLowerCase())

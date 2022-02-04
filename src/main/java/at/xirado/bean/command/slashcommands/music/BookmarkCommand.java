@@ -15,15 +15,14 @@ import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.ApplicationCommandAutocompleteEvent;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -44,7 +43,7 @@ public class BookmarkCommand extends SlashCommand
 
     public BookmarkCommand()
     {
-        setCommandData(new CommandData("bookmark", "Bookmark a song or playlist from Youtube or Soundcloud")
+        setCommandData(Commands.slash("bookmark", "Bookmark a song or playlist from Youtube or Soundcloud")
                 .addSubcommands(new SubcommandData("add", "Adds a bookmark")
                         .addOptions(new OptionData(OptionType.STRING, "url", "URL to bookmark (must be a valid url that can be played)", true))
                 )
@@ -62,7 +61,7 @@ public class BookmarkCommand extends SlashCommand
                     .build();
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         long userId = event.getUser().getIdLong();
         switch (event.getSubcommandName().toLowerCase(Locale.ROOT))
@@ -152,7 +151,7 @@ public class BookmarkCommand extends SlashCommand
                         .addActionRow(singleTrack, wholePlaylist)
                         .setEphemeral(true)
                         .queue((hook) -> Bean.getInstance().getEventWaiter().waitForEvent(
-                                ButtonClickEvent.class,
+                                ButtonInteractionEvent.class,
                                 (e) -> {
                                     if (!e.getComponentId().startsWith(interactionId))
                                         return false;
@@ -193,35 +192,36 @@ public class BookmarkCommand extends SlashCommand
                                         }
                                     }
                                 },
-                                30, TimeUnit.SECONDS, () -> {}
+                                30, TimeUnit.SECONDS, () -> {
+                                }
                         ));
             }
         }
     }
 
     @Override
-    public void handleAutocomplete(@NotNull ApplicationCommandAutocompleteEvent event) throws Exception
+    public void handleAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event) throws Exception
     {
         long userId = event.getUser().getIdLong();
-        OptionMapping mapping = event.getOption("bookmark");
-        if (mapping.isFocused())
+        if (event.getFocusedOption().getName().equals("bookmark"))
         {
+            var mapping = event.getFocusedOption();
             if (!hasBookmarks(userId))
             {
-                event.deferChoices(Collections.emptyList()).queue();
+                event.replyChoices(Collections.emptyList()).queue();
                 return;
             }
-            String input = mapping.getAsString();
+            String input = mapping.getValue();
             if (input.isEmpty())
             {
                 List<Bookmark> bookmarks = getBookmarks(userId, false);
-                event.deferChoices(
+                event.replyChoices(
                         bookmarks.stream().map(Bookmark::toCommandAutocompleteChoice).collect(Collectors.toList())
                 ).queue();
                 return;
             }
             List<Bookmark> bookmarks = getMatchingBookmarks(userId, input, false);
-            event.deferChoices(
+            event.replyChoices(
                     bookmarks.stream().map(Bookmark::toCommandAutocompleteChoice).collect(Collectors.toList())
             ).queue();
         }

@@ -57,8 +57,9 @@ public class MetricsJob extends Thread
             try
             {
                 Thread.sleep(5000);
+            } catch (InterruptedException ignored)
+            {
             }
-            catch (InterruptedException ignored) {}
         }
     }
 }

@@ -12,10 +12,10 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,12 +30,12 @@ public class Mee6TransferCommand extends SlashCommand
 {
     public Mee6TransferCommand()
     {
-        setCommandData(new CommandData("mee6transfer", "Transfers MEE6 XP to Bean for all members."));
+        setCommandData(Commands.slash("mee6transfer", "Transfers MEE6 XP to Bean for all members."));
         setRequiredUserPermissions(Permission.ADMINISTRATOR);
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -51,7 +51,7 @@ public class Mee6TransferCommand extends SlashCommand
                         (hook) ->
                         {
                             Bean.getInstance().getEventWaiter().waitForEvent(
-                                    ButtonClickEvent.class,
+                                    ButtonInteractionEvent.class,
                                     e ->
                                             e.getComponentId().equals("mee6transfer:" + event.getIdLong()),
                                     e ->

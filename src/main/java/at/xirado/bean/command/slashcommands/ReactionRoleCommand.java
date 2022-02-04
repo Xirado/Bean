@@ -5,10 +5,10 @@ import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.ReactionRole;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.ErrorResponse;
@@ -27,7 +27,7 @@ public class ReactionRoleCommand extends SlashCommand
 
     public ReactionRoleCommand()
     {
-        setCommandData(new CommandData("reactionrole", "Sets up reaction roles.")
+        setCommandData(Commands.slash("reactionrole", "Sets up reaction roles.")
                 .addSubcommands(new SubcommandData("create", "Creates reaction roles.")
                         .addOptions(new OptionData(OptionType.CHANNEL, "channel", "Channel which contains the message.", true).setChannelTypes(ChannelType.TEXT))
                         .addOption(OptionType.STRING, "message_id", "ID of the message you want to have the reaction role on.", true)
@@ -44,7 +44,7 @@ public class ReactionRoleCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
 
         Guild guild = event.getGuild();

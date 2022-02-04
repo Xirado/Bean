@@ -9,9 +9,9 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.urbandictionary.UrbanDefinition;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -32,7 +32,7 @@ public class UrbanDictionaryCommand extends SlashCommand
 
     public UrbanDictionaryCommand()
     {
-        setCommandData(new CommandData("urban", "Searches for urbandictionary.com definitions.")
+        setCommandData(Commands.slash("urban", "Searches for urbandictionary.com definitions.")
                 .addOptions(new OptionData(OptionType.STRING, "phrase", "Phrase to search for.")
                         .setRequired(true))
                 .addOptions(new OptionData(OptionType.INTEGER, "definition", "Index.")
@@ -41,7 +41,7 @@ public class UrbanDictionaryCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         String phrase = event.getOption("phrase").getAsString();
         int index = event.getOption("definition") != null ? (int) event.getOption("definition").getAsLong() : 1;

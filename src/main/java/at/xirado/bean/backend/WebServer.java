@@ -27,7 +27,7 @@ public class WebServer
     public WebServer(int port)
     {
         DataObject config = Bean.getInstance().getConfig();
-        if (config.anyNull("client_id", "client_secret", "redirect_uri"))
+        if (config.isNull("client_id") || config.isNull("client_secret") || config.isNull("redirect_uri"))
             throw new IllegalStateException("Missing Discord Oauth2 configuration!");
         clientId = config.getString("client_id");
         clientSecret = config.getString("client_secret");
@@ -36,7 +36,8 @@ public class WebServer
         port(port);
         enableCORS("*", "*", "*");
         before(((request, response) -> {
-            switch (request.raw().getMethod()) {
+            switch (request.raw().getMethod())
+            {
                 case "GET" -> Metrics.REQUESTS.labels("get").inc();
                 case "POST" -> Metrics.REQUESTS.labels("post").inc();
                 case "PUT" -> Metrics.REQUESTS.labels("put").inc();

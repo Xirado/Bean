@@ -5,7 +5,7 @@ import at.xirado.bean.command.Command;
 import at.xirado.bean.command.CommandContext;
 import at.xirado.bean.command.CommandFlag;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class Eval extends Command
     }
 
     @Override
-    public void executeCommand(GuildMessageReceivedEvent event, CommandContext context)
+    public void executeCommand(MessageReceivedEvent event, CommandContext context)
     {
         SCRIPT_ENGINE.put("guild", event.getGuild());
         SCRIPT_ENGINE.put("author", event.getAuthor());

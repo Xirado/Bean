@@ -9,9 +9,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,7 @@ public class XPRoleRewardCommand extends SlashCommand
 {
     public XPRoleRewardCommand()
     {
-        setCommandData(new CommandData("xprolereward", "Rewards a member with a role when they reach a certain level.")
+        setCommandData(Commands.slash("xprolereward", "Rewards a member with a role when they reach a certain level.")
                 .addSubcommands(new SubcommandData("create", "Creates a role reward.")
                         .addOption(OptionType.INTEGER, "level", "Level a member needs to reach to get the role.", true)
                         .addOption(OptionType.ROLE, "role", "Role to receive upon reaching specified level.", true)
@@ -41,7 +41,7 @@ public class XPRoleRewardCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         GuildData guildData = ctx.getGuildData();
         switch (event.getSubcommandName())
