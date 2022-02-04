@@ -12,10 +12,10 @@ plugins {
 mainClassName = 'at.xirado.bean.Bean'
 
 group 'at.xirado'
-version '5.0.0-alpha'
+version '5.0.0'
 
 shadowJar {
-    archiveFileName = "Bean-5.0.0.jar"
+    archiveFileName = "Bean.jar"
 }
 
 compileJava.options.encoding = 'UTF-8'
