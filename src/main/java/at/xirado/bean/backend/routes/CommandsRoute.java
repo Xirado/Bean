@@ -21,13 +21,14 @@ public class CommandsRoute implements Route
     public Object handle(Request request, Response response) throws Exception
     {
         List<SlashCommand> commands = Bean.getInstance().isDebug()
-                ? Bean.getInstance().getSlashCommandHandler().getRegisteredGuildCommands().get(DEV_GUILD_ID)
-                : Bean.getInstance().getSlashCommandHandler().getRegisteredCommands();
+                ? Bean.getInstance().getInteractionCommandHandler().getRegisteredGuildCommands().get(DEV_GUILD_ID)
+                    .stream().filter(cmd -> cmd instanceof SlashCommand).map(cmd -> (SlashCommand) cmd).toList()
+                : Bean.getInstance().getInteractionCommandHandler().getRegisteredSlashCommands();
         DataArray commandArray = DataArray.empty();
         for (SlashCommand command : commands)
         {
             DataObject commandObject = DataObject.empty();
-            SlashCommandData slashCommandData = command.getCommandData();
+            SlashCommandData slashCommandData = command.getData();
             DataArray options = DataArray.empty();
             DataArray subCommands = DataArray.empty();
 

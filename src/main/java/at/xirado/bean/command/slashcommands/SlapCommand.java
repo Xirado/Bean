@@ -89,7 +89,7 @@ public class SlapCommand extends SlashCommand
         return downscaledAvatar;
     }
 
-    private static byte[] generateImage(User slapper, User victim) throws IOException
+    public static byte[] generateImage(User slapper, User victim) throws IOException
     {
         var background = SlapCommand.class.getResourceAsStream("/assets/misc/slap.jpg");
         var userAvatar = getAvatar(slapper, 200);

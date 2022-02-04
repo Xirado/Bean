@@ -3,9 +3,10 @@ package at.xirado.bean;
 import at.xirado.bean.backend.Authenticator;
 import at.xirado.bean.backend.WebServer;
 import at.xirado.bean.command.ConsoleCommandManager;
+import at.xirado.bean.command.GenericCommand;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.handler.CommandHandler;
-import at.xirado.bean.command.handler.SlashCommandHandler;
+import at.xirado.bean.command.handler.InteractionCommandHandler;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.event.*;
 import at.xirado.bean.lavaplayer.SpotifyAudioSource;
@@ -23,7 +24,9 @@ import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -81,7 +84,7 @@ public class Bean
                     .build());
 
     private final ConsoleCommandManager consoleCommandManager;
-    private final SlashCommandHandler slashCommandHandler;
+    private final InteractionCommandHandler interactionCommandHandler;
     private final CommandHandler commandHandler;
     private final AudioManager audioManager;
     private final EventWaiter eventWaiter;
@@ -102,7 +105,7 @@ public class Bean
         consoleCommandManager = new ConsoleCommandManager();
         consoleCommandManager.registerAllCommands();
         debug = !config.isNull("debug") && config.getBoolean("debug");
-        slashCommandHandler = new SlashCommandHandler();
+        interactionCommandHandler = new InteractionCommandHandler();
         commandHandler = new CommandHandler();
         eventWaiter = new EventWaiter();
         Class.forName("at.xirado.bean.translation.LocaleLoader");
@@ -270,9 +273,9 @@ public class Bean
         return consoleCommandManager;
     }
 
-    public SlashCommandHandler getSlashCommandHandler()
+    public InteractionCommandHandler getInteractionCommandHandler()
     {
-        return slashCommandHandler;
+        return interactionCommandHandler;
     }
 
     public CommandHandler getCommandHandler()
@@ -353,21 +356,25 @@ public class Bean
                 }
 
                 guild.retrieveCommands().queue(discordCommands -> {
-                    List<SlashCommand> localCommands = getInstance().getSlashCommandHandler().getRegisteredGuildCommands().get(guild.getIdLong());
+                    List<GenericCommand> localCommands = getInstance().getInteractionCommandHandler()
+                            .getRegisteredGuildCommands()
+                            .get(guild.getIdLong());
                     handleCommandUpdates(discordCommands, localCommands);
                 });
+                return;
             }
+
             getInstance().getShardManager().getShards().get(0).retrieveCommands().queue((discordCommands) -> {
-                List<SlashCommand> localCommands = getInstance().getSlashCommandHandler().getRegisteredCommands()
+                List<GenericCommand> localCommands = getInstance().getInteractionCommandHandler().getRegisteredCommands()
                         .stream()
-                        .filter(SlashCommand::isGlobal)
+                        .filter(GenericCommand::isGlobal)
                         .toList();
                 handleCommandUpdates(discordCommands, localCommands);
             });
         });
     }
 
-    private static void handleCommandUpdates(@NotNull Collection<? extends Command> discordCommands, @NotNull Collection<? extends SlashCommand> localCommands)
+    private static void handleCommandUpdates(@NotNull Collection<? extends Command> discordCommands, @NotNull Collection<? extends GenericCommand> localCommands)
     {
         boolean commandRemovedOrAdded = localCommands.size() != discordCommands.size();
         if (commandRemovedOrAdded)
@@ -380,44 +387,21 @@ public class Bean
                 LOGGER.warn("Command(s) has/have been removed! Updating Discords cache...");
             }
 
-            getInstance().getSlashCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e -> {
+            getInstance().getInteractionCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e -> {
             });
             return;
         }
 
         boolean outdated = false;
-        for (SlashCommand slashCommand : localCommands)
+        for (GenericCommand localCommand : localCommands)
         {
             Command discordCommand = discordCommands.stream()
-                    .filter(x -> x.getName().equalsIgnoreCase(slashCommand.getCommandData().getName()))
+                    .filter(x -> x.getName().equalsIgnoreCase(localCommand.getData().getName()))
                     .findFirst().orElse(null);
-            // Discord doesn't have this command yet!
-            if (discordCommand == null)
-            {
-                outdated = true;
-                break;
-            }
-            // Option size doesn't match!
-            if (discordCommand.getOptions().size() != slashCommand.getCommandData().getOptions().size())
-            {
-                outdated = true;
-                break;
-            }
 
-            String[] optionName = slashCommand.getCommandData().getOptions().stream().map(OptionData::getName).toArray(String[]::new);
-            String[] discordOptionName = discordCommand.getOptions().stream().map(Command.Option::getName).toArray(String[]::new);
-            // Option descriptions don't match!
-            if (!Arrays.equals(optionName, discordOptionName))
-            {
-                outdated = true;
-                break;
-            }
-
-
-            String[] optionDescriptions = slashCommand.getCommandData().getOptions().stream().map(OptionData::getDescription).toArray(String[]::new);
-            String[] discordOptionDescriptions = discordCommand.getOptions().stream().map(Command.Option::getDescription).toArray(String[]::new);
-            // Option descriptions don't match!
-            if (!Arrays.equals(optionDescriptions, discordOptionDescriptions))
+            CommandData localCommandData = localCommand.getData();
+            CommandData discordCommandData = CommandData.fromCommand(discordCommand);
+            if (!localCommandData.equals(discordCommandData))
             {
                 outdated = true;
                 break;
@@ -426,8 +410,12 @@ public class Bean
 
         if (outdated)
         {
-            getInstance().getSlashCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e -> {
+            getInstance().getInteractionCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e -> {
             });
+        }
+        else
+        {
+            LOGGER.info("No outdated commands found!");
         }
     }
 }

@@ -1,61 +1,40 @@
-package at.xirado.bean.command;
+package at.xirado.bean.command.context;
 
+import at.xirado.bean.command.CommandFlag;
+import at.xirado.bean.command.GenericCommand;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
-public abstract class SlashCommand implements GenericCommand
+public abstract class UserContextCommand implements GenericCommand
 {
-
-    private SlashCommandData commandData;
+    private CommandData commandData;
     private final List<Permission> requiredUserPermissions;
     private final List<Permission> requiredBotPermissions;
     private boolean isGlobal;
     private final List<Long> enabledGuilds;
-    private boolean runnableInDM;
     private final Set<CommandFlag> commandFlags;
-
-    public boolean isRunnableInDM()
-    {
-        return runnableInDM;
-    }
-
-    public void setRunnableInDM(boolean runnableInDM)
-    {
-        this.runnableInDM = runnableInDM;
-    }
 
     public String getCommandName()
     {
         return commandData.getName();
     }
 
-    public String getCommandDescription()
-    {
-        return commandData.getDescription();
-    }
-
-    public List<OptionData> getOptions()
-    {
-        return commandData.getOptions();
-    }
-
     @Override
-    public SlashCommandData getData()
+    public CommandData getData()
     {
         return commandData;
     }
 
-    public void setCommandData(SlashCommandData commandData)
+    public void setCommandData(CommandData commandData)
     {
+        if (commandData.getType() != Command.Type.USER)
+            throw new IllegalArgumentException("Only CommandData of type USER is allowed!");
         this.commandData = commandData;
     }
 
@@ -110,26 +89,20 @@ public abstract class SlashCommand implements GenericCommand
         commandFlags.addAll(Set.of(flags));
     }
 
-    public SlashCommand()
+    public UserContextCommand()
     {
         this.requiredBotPermissions = new ArrayList<>();
         this.requiredUserPermissions = new ArrayList<>();
         this.commandData = null;
         this.isGlobal = true;
         this.enabledGuilds = new ArrayList<>();
-        this.runnableInDM = false;
         this.commandFlags = new HashSet<>();
     }
 
     /**
-     * Executes requested slash command
+     * Executes requested context-menu command
      *
-     * @param event  The SlashCommandInteractionEvent
-     * @param sender The member who sent the command (null if sent via DM)
-     * @param ctx    Helpful methods in context of the event
+     * @param event  The UserContextInteractionEvent
      */
-    public abstract void executeCommand(@Nonnull SlashCommandInteractionEvent event, @Nullable Member sender, @Nonnull SlashCommandContext ctx);
-
-    public void handleAutocomplete(@Nonnull CommandAutoCompleteInteractionEvent event) throws Exception {};
-
+    public abstract void executeCommand(@Nonnull UserContextInteractionEvent event);
 }
