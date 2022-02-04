@@ -5,6 +5,7 @@ import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -39,6 +40,7 @@ public class MockContextMenuCommand extends MessageContextCommand
         }
         event.reply("<:mock:773566020588666961> " + sensitive + " <:mock:773566020588666961>")
                 .allowedMentions(Collections.emptyList())
+                .addActionRow(Button.link(target.getJumpUrl(), "Jump to message"))
                 .queue();
     }
 }
