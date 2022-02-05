@@ -42,7 +42,8 @@ public class SlapContextMenuCommand extends UserContextCommand
             if (reversed)
                 action.setContent("Lol, better luck next time.");
             action.queue();
-        } catch (IOException ex)
+        }
+        catch (IOException ex)
         {
             LoggerFactory.getLogger(SlapCommand.class).error("Could not generate image!", ex);
             event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred!")).setEphemeral(true).queue();

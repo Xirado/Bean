@@ -41,7 +41,8 @@ public class Shell
             try
             {
                 terminal = builder.build();
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 logger.error("Could not build Terminal!", e);
             }
@@ -72,10 +73,12 @@ public class Shell
                     String[] argv = pl.words().subList(1, pl.words().size()).toArray(new String[0]);
                     Bean.getInstance().getConsoleCommandManager().handleConsoleCommand(pl.word(), argv);
 
-                } catch (UserInterruptException e)
+                }
+                catch (UserInterruptException e)
                 {
                     System.exit(0);
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     logger.error("An error occured", e);
                 }

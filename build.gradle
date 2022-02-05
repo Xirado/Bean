@@ -65,7 +65,7 @@ dependencies {
 processResources {
     filesMatching("**/app.properties") {
         filter ReplaceTokens, tokens: [
-                "app-version" : version,
+                "app-version": version,
                 "build-time" : Instant.now().toEpochMilli() + ''
         ]
     }

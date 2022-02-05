@@ -24,7 +24,8 @@ public class InfoCommand extends SlashCommand
     public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
     {
         long currentTime = System.currentTimeMillis() / 1000;
-        event.getJDA().getRestPing().queue(restPing -> {
+        event.getJDA().getRestPing().queue(restPing ->
+        {
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(EmbedUtil.DEFAULT_COLOR)
                     .addField("Uptime", ctx.parseDuration(currentTime - Bean.START_TIME, " "), true)

@@ -33,8 +33,10 @@ public class MessageCreateListener extends ListenerAdapter
         if (args.length == 1 && event.getMessage().getMentionedUsers().contains(event.getJDA().getSelfUser()) && event.getMessage().getReferencedMessage() == null)
         {
             event.getMessage().reply("<a:ping:818580038949273621>")
-                    .mentionRepliedUser(false).queue(s -> {
-                    }, e -> {
+                    .mentionRepliedUser(false).queue(s ->
+                    {
+                    }, e ->
+                    {
                     });
             return;
         }

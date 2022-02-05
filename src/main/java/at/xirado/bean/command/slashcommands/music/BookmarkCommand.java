@@ -66,136 +66,139 @@ public class BookmarkCommand extends SlashCommand
         long userId = event.getUser().getIdLong();
         switch (event.getSubcommandName().toLowerCase(Locale.ROOT))
         {
-            case "add" -> {
-                String url = event.getOption("url").getAsString();
-                LavalinkSocket socket = ctx.getAvailableNode();
-                if (isDuplicate(userId, url))
-                {
-                    event.replyEmbeds(EmbedUtil.errorEmbed("You already have a bookmark for that URL!")).queue();
-                    return;
-                }
-                event.deferReply().setEphemeral(true).queue();
-                socket.getRestClient().loadItem(url, new AudioLoadResultHandler()
-                {
-                    @Override
-                    public void trackLoaded(AudioTrack track)
-                    {
-                        Bookmark entry = new Bookmark(track.getInfo().title, url, false);
-                        addBookmark(userId, entry);
-                        event.getHook().sendMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + track.getInfo().title + "**")).queue();
-                    }
-
-                    @Override
-                    public void playlistLoaded(AudioPlaylist playlist)
-                    {
-                        Bookmark entry = new Bookmark(playlist.getName(), url, true);
-                        addBookmark(userId, entry);
-                        event.getHook().sendMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + playlist.getName() + "**")).queue();
-                    }
-
-                    @Override
-                    public void noMatches()
-                    {
-                        event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Sorry, that is not a valid track i can play!")).queue();
-                    }
-
-                    @Override
-                    public void loadFailed(FriendlyException exception)
-                    {
-                        event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Sorry, that is not a valid track i can play!\n" + exception.getLocalizedMessage())).queue();
-                    }
-                });
+        case "add" -> {
+            String url = event.getOption("url").getAsString();
+            LavalinkSocket socket = ctx.getAvailableNode();
+            if (isDuplicate(userId, url))
+            {
+                event.replyEmbeds(EmbedUtil.errorEmbed("You already have a bookmark for that URL!")).queue();
+                return;
             }
-
-            case "remove" -> {
-                String bookmarkUrl = event.getOption("bookmark").getAsString();
-                Bookmark bookmark = getBookmark(userId, bookmarkUrl);
-                if (bookmark == null)
+            event.deferReply().setEphemeral(true).queue();
+            socket.getRestClient().loadItem(url, new AudioLoadResultHandler()
+            {
+                @Override
+                public void trackLoaded(AudioTrack track)
                 {
-                    event.replyEmbeds(EmbedUtil.errorEmbed("Could not find a bookmark with a matching URL!")).queue();
-                    return;
-                }
-                deleteBookmark(userId, bookmark);
-                event.replyEmbeds(EmbedUtil.defaultEmbed("Removed bookmark **" + bookmark.getName() + "**!")).queue();
-            }
-
-            case "add_current" -> {
-                JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
-                AudioTrack currentTrack = link.getPlayer().getPlayingTrack();
-                if (currentTrack == null)
-                {
-                    event.replyEmbeds(EmbedUtil.errorEmbed("There is nothing playing!")).queue();
-                    return;
-                }
-                TrackInfo currentTrackInfo = currentTrack.getUserData(TrackInfo.class);
-                if (!currentTrackInfo.isFromPlaylist())
-                {
-                    if (getBookmark(userId, currentTrackInfo.getTrackUrl()) != null)
-                    {
-                        event.replyEmbeds(EmbedUtil.errorEmbed("You already have this track bookmarked!")).queue();
-                        return;
-                    }
-                    Bookmark entry = new Bookmark(currentTrack.getInfo().title, currentTrackInfo.getTrackUrl(), false);
+                    Bookmark entry = new Bookmark(track.getInfo().title, url, false);
                     addBookmark(userId, entry);
-                    event.replyEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + currentTrack.getInfo().title + "**")).queue();
+                    event.getHook().sendMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + track.getInfo().title + "**")).queue();
+                }
+
+                @Override
+                public void playlistLoaded(AudioPlaylist playlist)
+                {
+                    Bookmark entry = new Bookmark(playlist.getName(), url, true);
+                    addBookmark(userId, entry);
+                    event.getHook().sendMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + playlist.getName() + "**")).queue();
+                }
+
+                @Override
+                public void noMatches()
+                {
+                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Sorry, that is not a valid track i can play!")).queue();
+                }
+
+                @Override
+                public void loadFailed(FriendlyException exception)
+                {
+                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Sorry, that is not a valid track i can play!\n" + exception.getLocalizedMessage())).queue();
+                }
+            });
+        }
+
+        case "remove" -> {
+            String bookmarkUrl = event.getOption("bookmark").getAsString();
+            Bookmark bookmark = getBookmark(userId, bookmarkUrl);
+            if (bookmark == null)
+            {
+                event.replyEmbeds(EmbedUtil.errorEmbed("Could not find a bookmark with a matching URL!")).queue();
+                return;
+            }
+            deleteBookmark(userId, bookmark);
+            event.replyEmbeds(EmbedUtil.defaultEmbed("Removed bookmark **" + bookmark.getName() + "**!")).queue();
+        }
+
+        case "add_current" -> {
+            JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
+            AudioTrack currentTrack = link.getPlayer().getPlayingTrack();
+            if (currentTrack == null)
+            {
+                event.replyEmbeds(EmbedUtil.errorEmbed("There is nothing playing!")).queue();
+                return;
+            }
+            TrackInfo currentTrackInfo = currentTrack.getUserData(TrackInfo.class);
+            if (!currentTrackInfo.isFromPlaylist())
+            {
+                if (getBookmark(userId, currentTrackInfo.getTrackUrl()) != null)
+                {
+                    event.replyEmbeds(EmbedUtil.errorEmbed("You already have this track bookmarked!")).queue();
                     return;
                 }
-                String trackUrl = currentTrackInfo.getTrackUrl();
-                String playlistUrl = currentTrackInfo.getPlaylistUrl();
-                String name = currentTrack.getInfo().title;
-                String playlistName = currentTrackInfo.getPlaylistName();
-                String interactionId = event.getInteraction().getId();
-                Button singleTrack = Button.primary(interactionId + ":single", "Single Track");
-                Button wholePlaylist = Button.primary(interactionId + ":playlist", "Playlist");
-                event.replyEmbeds(SINGLE_OR_PLAYLIST_EMBED)
-                        .addActionRow(singleTrack, wholePlaylist)
-                        .setEphemeral(true)
-                        .queue((hook) -> Bean.getInstance().getEventWaiter().waitForEvent(
-                                ButtonInteractionEvent.class,
-                                (e) -> {
-                                    if (!e.getComponentId().startsWith(interactionId))
-                                        return false;
-                                    return e.getComponentId().contains(":");
-                                },
-                                (e) -> {
-                                    int colonIndex = e.getComponentId().indexOf(":");
-                                    String mode = e.getComponentId().substring(colonIndex + 1);
-                                    switch (mode)
-                                    {
-                                        case "single" -> {
-                                            if (getBookmark(userId, trackUrl) != null)
-                                            {
-                                                e.editMessageEmbeds(EmbedUtil.errorEmbed("You already have this track bookmarked!"))
-                                                        .setActionRows(Collections.emptyList())
-                                                        .queue();
-                                                return;
-                                            }
-                                            Bookmark entry = new Bookmark(name, trackUrl, false);
-                                            addBookmark(userId, entry);
-                                            e.editMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + name + "**"))
-                                                    .setActionRows(Collections.emptyList())
-                                                    .queue();
-                                        }
-                                        case "playlist" -> {
-                                            if (getBookmark(userId, playlistUrl) != null)
-                                            {
-                                                e.editMessageEmbeds(EmbedUtil.errorEmbed("You already have this playlist bookmarked!"))
-                                                        .setActionRows(Collections.emptyList())
-                                                        .queue();
-                                                return;
-                                            }
-                                            Bookmark entry = new Bookmark(playlistName, playlistUrl, true);
-                                            addBookmark(userId, entry);
-                                            e.editMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + playlistName + "**"))
-                                                    .setActionRows(Collections.emptyList())
-                                                    .queue();
-                                        }
-                                    }
-                                },
-                                30, TimeUnit.SECONDS, () -> {
-                                }
-                        ));
+                Bookmark entry = new Bookmark(currentTrack.getInfo().title, currentTrackInfo.getTrackUrl(), false);
+                addBookmark(userId, entry);
+                event.replyEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + currentTrack.getInfo().title + "**")).queue();
+                return;
             }
+            String trackUrl = currentTrackInfo.getTrackUrl();
+            String playlistUrl = currentTrackInfo.getPlaylistUrl();
+            String name = currentTrack.getInfo().title;
+            String playlistName = currentTrackInfo.getPlaylistName();
+            String interactionId = event.getInteraction().getId();
+            Button singleTrack = Button.primary(interactionId + ":single", "Single Track");
+            Button wholePlaylist = Button.primary(interactionId + ":playlist", "Playlist");
+            event.replyEmbeds(SINGLE_OR_PLAYLIST_EMBED)
+                    .addActionRow(singleTrack, wholePlaylist)
+                    .setEphemeral(true)
+                    .queue((hook) -> Bean.getInstance().getEventWaiter().waitForEvent(
+                            ButtonInteractionEvent.class,
+                            (e) ->
+                            {
+                                if (!e.getComponentId().startsWith(interactionId))
+                                    return false;
+                                return e.getComponentId().contains(":");
+                            },
+                            (e) ->
+                            {
+                                int colonIndex = e.getComponentId().indexOf(":");
+                                String mode = e.getComponentId().substring(colonIndex + 1);
+                                switch (mode)
+                                {
+                                case "single" -> {
+                                    if (getBookmark(userId, trackUrl) != null)
+                                    {
+                                        e.editMessageEmbeds(EmbedUtil.errorEmbed("You already have this track bookmarked!"))
+                                                .setActionRows(Collections.emptyList())
+                                                .queue();
+                                        return;
+                                    }
+                                    Bookmark entry = new Bookmark(name, trackUrl, false);
+                                    addBookmark(userId, entry);
+                                    e.editMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + name + "**"))
+                                            .setActionRows(Collections.emptyList())
+                                            .queue();
+                                }
+                                case "playlist" -> {
+                                    if (getBookmark(userId, playlistUrl) != null)
+                                    {
+                                        e.editMessageEmbeds(EmbedUtil.errorEmbed("You already have this playlist bookmarked!"))
+                                                .setActionRows(Collections.emptyList())
+                                                .queue();
+                                        return;
+                                    }
+                                    Bookmark entry = new Bookmark(playlistName, playlistUrl, true);
+                                    addBookmark(userId, entry);
+                                    e.editMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + playlistName + "**"))
+                                            .setActionRows(Collections.emptyList())
+                                            .queue();
+                                }
+                                }
+                            },
+                            30, TimeUnit.SECONDS, () ->
+                            {
+                            }
+                    ));
+        }
         }
     }
 
@@ -234,7 +237,8 @@ public class BookmarkCommand extends SlashCommand
             if (rs.next())
                 return new Bookmark(rs.getString("name"), rs.getString("value"), rs.getBoolean("playlist"));
             return null;
-        } catch (SQLException throwables)
+        }
+        catch (SQLException throwables)
         {
             LOGGER.error("Could not get bookmark {} from user {}!", url, userId);
             return null;
@@ -250,7 +254,8 @@ public class BookmarkCommand extends SlashCommand
                 entries.add(new Bookmark(rs.getString("name"), rs.getString("value"), rs.getBoolean("playlist")));
             Collections.reverse(entries);
             return entries;
-        } catch (SQLException throwables)
+        }
+        catch (SQLException throwables)
         {
             LOGGER.warn("Could not get bookmarks from " + userId + "!", throwables);
             return Collections.emptyList();
@@ -265,7 +270,8 @@ public class BookmarkCommand extends SlashCommand
             while (rs.next())
                 entries.add(new Bookmark(rs.getString("name"), rs.getString("value"), rs.getBoolean("playlist")));
             return entries;
-        } catch (SQLException throwables)
+        }
+        catch (SQLException throwables)
         {
             LOGGER.warn("Could not get bookmarks from " + userId + "!", throwables);
             return Collections.emptyList();
@@ -278,7 +284,8 @@ public class BookmarkCommand extends SlashCommand
         {
             new SQLBuilder("DELETE FROM bookmarks WHERE user_id = ? AND value = ?", userId, bookmark.getValue())
                     .execute();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not remove bookmark!");
         }
@@ -289,7 +296,8 @@ public class BookmarkCommand extends SlashCommand
         try (ResultSet rs = new SQLBuilder("SELECT 1 FROM bookmarks WHERE user_id = ? AND value = ?", userId, name).executeQuery())
         {
             return rs.next();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not check if duplicate exists! (User: " + userId + ", Term: " + name + ")", ex);
             return true;
@@ -301,7 +309,8 @@ public class BookmarkCommand extends SlashCommand
         try (ResultSet rs = new SQLBuilder("SELECT 1 FROM bookmarks WHERE user_id = ?").addParameters(userId).executeQuery())
         {
             return rs.next();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not check if user " + userId + " has bookmarks!", ex);
             return false;
@@ -315,7 +324,8 @@ public class BookmarkCommand extends SlashCommand
             new SQLBuilder("INSERT INTO bookmarks (user_id, added_at, name, value, playlist) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE name = ?")
                     .addParameters(userId, System.currentTimeMillis(), entry.getName(), entry.getValue(), entry.isPlaylist(), entry.getName())
                     .execute();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not add bookmark for user " + userId + "!", ex);
         }

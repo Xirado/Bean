@@ -38,11 +38,13 @@ public class SlashCommandContext
             if (LocaleLoader.getForLanguage(serverLocale.toLanguageTag()) == null)
             {
                 this.language = "en_US";
-            } else
+            }
+            else
             {
                 this.language = serverLocale.toLanguageTag();
             }
-        } else
+        }
+        else
         {
             language = "en_US";
         }

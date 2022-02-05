@@ -46,7 +46,8 @@ public class RankCommand extends SlashCommand
                 return;
             }
             commandHook.sendFile(rankCard, "card.png").queue();
-        } else
+        }
+        else
         {
             User user = optionData.getAsUser();
             long xp = RankingSystem.getTotalXP(event.getGuild().getIdLong(), user.getIdLong());

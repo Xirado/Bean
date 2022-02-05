@@ -62,7 +62,8 @@ public class Util
                 try
                 {
                     c.close();
-                } catch (Exception ignored)
+                }
+                catch (Exception ignored)
                 {
                 }
             }
@@ -88,8 +89,10 @@ public class Util
     {
         firstShard().openPrivateChannelById(userId)
                 .flatMap(channel -> channel.sendMessage(sequence))
-                .queue(s -> {
-                }, e -> {
+                .queue(s ->
+                {
+                }, e ->
+                {
                 });
     }
 
@@ -99,8 +102,10 @@ public class Util
         Checks.noneNull(embeds, "Embeds");
         firstShard().openPrivateChannelById(userId)
                 .flatMap(channel -> channel.sendMessageEmbeds(embed, embeds))
-                .queue(s -> {
-                }, e -> {
+                .queue(s ->
+                {
+                }, e ->
+                {
                 });
 
     }
@@ -109,8 +114,10 @@ public class Util
     {
         firstShard().openPrivateChannelById(Bean.OWNER_ID)
                 .flatMap(channel -> channel.sendMessage(sequence))
-                .queue(s -> {
-                }, e -> {
+                .queue(s ->
+                {
+                }, e ->
+                {
                 });
     }
 
@@ -120,8 +127,10 @@ public class Util
         Checks.noneNull(embeds, "Embeds");
         firstShard().openPrivateChannelById(Bean.OWNER_ID)
                 .flatMap(channel -> channel.sendMessageEmbeds(embed, embeds))
-                .queue(s -> {
-                }, e -> {
+                .queue(s ->
+                {
+                }, e ->
+                {
                 });
     }
 
@@ -154,7 +163,8 @@ public class Util
             CodeSource codeSource = Bean.class.getProtectionDomain().getCodeSource();
             File jarFile = new File(codeSource.getLocation().toURI().getPath());
             return (jarFile.getParentFile().getPath());
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             LOGGER.error("Could not get path of jar!", e);
             return null;

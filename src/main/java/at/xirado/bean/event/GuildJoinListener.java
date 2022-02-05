@@ -59,7 +59,8 @@ public class GuildJoinListener extends ListenerAdapter
         try (var rs = new SQLBuilder("SELECT 1 from banned_guilds WHERE guild_id = ?", guildId).executeQuery())
         {
             return rs.next();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             log.error("Could not check if guild " + guildId + " is banned", ex);
             return false;
@@ -71,7 +72,8 @@ public class GuildJoinListener extends ListenerAdapter
         try
         {
             new SQLBuilder("INSERT INTO banned_guilds (guild_id, reason) values (?,?) ON DUPLICATE KEY UPDATE reason = ?", guildId, reason, reason).execute();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             log.error("Could not ban guild " + guildId, ex);
         }
@@ -82,7 +84,8 @@ public class GuildJoinListener extends ListenerAdapter
         try
         {
             new SQLBuilder("DELETE FROM banned_guilds WHERE guild_id = ?", guildId).execute();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             log.error("Could not unban guild " + guildId, ex);
         }

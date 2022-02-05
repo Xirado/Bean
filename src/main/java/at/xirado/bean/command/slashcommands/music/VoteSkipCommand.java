@@ -77,7 +77,8 @@ public class VoteSkipCommand extends SlashCommand
                 return;
             }
             ctx.sendSimpleEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
-        } else
+        }
+        else
         {
             ctx.sendSimpleEmbed("Voted to skip: **" + (required - skippers) + "** more votes needed");
 

@@ -90,7 +90,8 @@ public class PlayCommand extends SlashCommand
             try
             {
                 link.connect(voiceState.getChannel());
-            } catch (PermissionException exception)
+            }
+            catch (PermissionException exception)
             {
                 event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
                 return;
@@ -221,8 +222,10 @@ public class PlayCommand extends SlashCommand
                 {
                     event.replyChoices(
                             result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
-                    ).queue(s -> {
-                    }, e -> {
+                    ).queue(s ->
+                    {
+                    }, e ->
+                    {
                     });
                     return;
                 }
@@ -235,8 +238,10 @@ public class PlayCommand extends SlashCommand
                         .forEachOrdered(result::add);
                 event.replyChoices(
                         result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
-                ).queue(s -> {
-                }, e -> {
+                ).queue(s ->
+                {
+                }, e ->
+                {
                 });
                 return;
             }
@@ -255,7 +260,8 @@ public class PlayCommand extends SlashCommand
                         .filter(x -> !valueList.contains(x.getValue()))
                         .filter(choice -> StringUtils.startsWithIgnoreCase(choice.getName(), query.getValue()))
                         .limit(Util.zeroIfNegative(25 - result.size()))
-                        .forEachOrdered(entry -> {
+                        .forEachOrdered(entry ->
+                        {
                             result.add(entry);
                             alreadyAdded.add(entry.getName().toLowerCase(Locale.ROOT));
                         });
@@ -269,8 +275,10 @@ public class PlayCommand extends SlashCommand
                 result.add(new BasicAutocompletionChoice(query.getValue(), query.getValue()));
             event.replyChoices(
                     result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
-            ).queue(s -> {
-            }, e -> {
+            ).queue(s ->
+            {
+            }, e ->
+            {
             });
         }
     }
@@ -283,7 +291,8 @@ public class PlayCommand extends SlashCommand
             while (rs.next())
                 entries.add(new SearchEntry(rs.getString("name"), rs.getString("value"), rs.getBoolean("playlist")));
             return entries;
-        } catch (SQLException throwables)
+        }
+        catch (SQLException throwables)
         {
             LOGGER.warn("Could not get search history from " + userId + "!", throwables);
             return Collections.emptyList();
@@ -298,7 +307,8 @@ public class PlayCommand extends SlashCommand
             while (rs.next())
                 entries.add(new SearchEntry(rs.getString("name"), rs.getString("value"), rs.getBoolean("playlist")));
             return entries;
-        } catch (SQLException throwables)
+        }
+        catch (SQLException throwables)
         {
             LOGGER.warn("Could not get search history from " + userId + "!", throwables);
             return Collections.emptyList();
@@ -310,7 +320,8 @@ public class PlayCommand extends SlashCommand
         try (ResultSet rs = new SQLBuilder("SELECT 1 FROM searchqueries WHERE user_id = ? AND name = ?").addParameters(userId, name).executeQuery())
         {
             return rs.next();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not check if duplicate exists! (User: " + userId + ", Term: " + name + ")", ex);
             return true;
@@ -322,7 +333,8 @@ public class PlayCommand extends SlashCommand
         try (ResultSet rs = new SQLBuilder("SELECT 1 FROM searchqueries WHERE user_id = ?").addParameters(userId).executeQuery())
         {
             return rs.next();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not check if user " + userId + " has search entries!", ex);
             return false;
@@ -336,7 +348,8 @@ public class PlayCommand extends SlashCommand
             new SQLBuilder("INSERT INTO searchqueries (user_id, searched_at, name, value, playlist) values (?,?,?,?,?)")
                     .addParameters(userId, System.currentTimeMillis(), entry.getName(), entry.getValue(), entry.isPlaylist())
                     .execute();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not add search entry for user " + userId + "!", ex);
 
@@ -381,12 +394,14 @@ public class PlayCommand extends SlashCommand
             DataObject renderer = optContents.get().getObject(0).getObject("searchSuggestionsSectionRenderer");
             DataArray contents = renderer.optArray("contents").orElse(DataArray.empty());
             List<String> results = new ArrayList<>();
-            contents.stream(DataArray::getObject).forEach(content -> {
+            contents.stream(DataArray::getObject).forEach(content ->
+            {
                 String result = content.getObject("searchSuggestionRenderer").getObject("navigationEndpoint").getObject("searchEndpoint").getString("query");
                 results.add(result);
             });
             return results;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             LOGGER.warn("Innertube API is broken!", e);
         }

@@ -38,7 +38,8 @@ public class InviteURLRoute implements Route
                     .addParameter("scope", "bot applications.commands")
                     .addParameter("permissions", "2080899263");
             return builder.build().toString();
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             return null;
         }

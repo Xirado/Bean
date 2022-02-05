@@ -35,15 +35,16 @@ public class WebServer
         ipAddress("127.0.0.1");
         port(port);
         enableCORS("*", "*", "*");
-        before(((request, response) -> {
+        before(((request, response) ->
+        {
             switch (request.raw().getMethod())
             {
-                case "GET" -> Metrics.REQUESTS.labels("get").inc();
-                case "POST" -> Metrics.REQUESTS.labels("post").inc();
-                case "PUT" -> Metrics.REQUESTS.labels("put").inc();
-                case "DELETE" -> Metrics.REQUESTS.labels("delete").inc();
-                case "PATCH" -> Metrics.REQUESTS.labels("patch").inc();
-                default -> Metrics.REQUESTS.labels("other").inc();
+            case "GET" -> Metrics.REQUESTS.labels("get").inc();
+            case "POST" -> Metrics.REQUESTS.labels("post").inc();
+            case "PUT" -> Metrics.REQUESTS.labels("put").inc();
+            case "DELETE" -> Metrics.REQUESTS.labels("delete").inc();
+            case "PATCH" -> Metrics.REQUESTS.labels("patch").inc();
+            default -> Metrics.REQUESTS.labels("other").inc();
             }
         }));
         get("/guilds", new GuildsRoute());
@@ -55,7 +56,8 @@ public class WebServer
         post("/modifyguild", new GuildDataRoute());
         get("/commands", new CommandsRoute());
         get("/guilds/:guild/levels", new LeaderboardRoute());
-        get("/*", (req, res) -> {
+        get("/*", (req, res) ->
+        {
             res.status(404);
             return DataObject.empty()
                     .put("code", 404)
@@ -135,7 +137,8 @@ public class WebServer
     private static void enableCORS(final String origin, final String methods, final String headers)
     {
 
-        options("/*", (request, response) -> {
+        options("/*", (request, response) ->
+        {
 
             String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
             if (accessControlRequestHeaders != null)
@@ -151,7 +154,8 @@ public class WebServer
             return "OK";
         });
 
-        before((request, response) -> {
+        before((request, response) ->
+        {
             response.header("Access-Control-Allow-Origin", origin);
             response.header("Access-Control-Request-Method", methods);
             response.header("Access-Control-Allow-Headers", "authorization, *, Authorization");

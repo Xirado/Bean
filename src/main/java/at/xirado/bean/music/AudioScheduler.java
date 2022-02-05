@@ -99,7 +99,8 @@ public class AudioScheduler extends PlayerEventListenerAdapter
             if (stageChannel.getStageInstance() == null)
             {
                 stageChannel.createStageInstance(MusicUtil.getStageTopicString(track)).queue();
-            } else
+            }
+            else
             {
                 stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(track)).queue();
             }

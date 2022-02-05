@@ -72,7 +72,8 @@ public class XPMessageListener extends ListenerAdapter
                             try
                             {
                                 XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
-                            } catch (InsufficientPermissionException ignored)
+                            }
+                            catch (InsufficientPermissionException ignored)
                             {
                             }
                             if (data.hasRoleReward(level + 1))
@@ -81,8 +82,10 @@ public class XPMessageListener extends ListenerAdapter
                                 Role role = event.getGuild().getRoleById(reward.getRoleId());
                                 if (role != null)
                                 {
-                                    event.getGuild().addRoleToMember(userID, role).queue(s -> {
-                                    }, e -> {
+                                    event.getGuild().addRoleToMember(userID, role).queue(s ->
+                                    {
+                                    }, e ->
+                                    {
                                     });
                                     RoleReward oldReward = data.getLastRoleReward(level);
                                     if (oldReward != null)
@@ -92,8 +95,10 @@ public class XPMessageListener extends ListenerAdapter
                                             Role oldRole = event.getGuild().getRoleById(oldReward.getRoleId());
                                             if (oldRole != null)
                                             {
-                                                event.getGuild().removeRoleFromMember(userID, oldRole).queue(s -> {
-                                                }, e -> {
+                                                event.getGuild().removeRoleFromMember(userID, oldRole).queue(s ->
+                                                {
+                                                }, e ->
+                                                {
                                                 });
                                             }
                                         }
@@ -102,12 +107,14 @@ public class XPMessageListener extends ListenerAdapter
                             }
                         }
                         timeout.put(userID, System.currentTimeMillis());
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         LOGGER.error("Could not update XP!", ex);
                     }
                 }
-            } else
+            }
+            else
             {
                 try (Connection connection = Database.getConnectionFromPool())
                 {
@@ -124,7 +131,8 @@ public class XPMessageListener extends ListenerAdapter
                         try
                         {
                             XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
-                        } catch (InsufficientPermissionException ignored)
+                        }
+                        catch (InsufficientPermissionException ignored)
                         {
                         }
                         if (data.hasRoleReward(level + 1))
@@ -133,8 +141,10 @@ public class XPMessageListener extends ListenerAdapter
                             Role role = event.getGuild().getRoleById(reward.getRoleId());
                             if (role != null)
                             {
-                                event.getGuild().addRoleToMember(userID, role).queue(s -> {
-                                }, e -> {
+                                event.getGuild().addRoleToMember(userID, role).queue(s ->
+                                {
+                                }, e ->
+                                {
                                 });
                                 RoleReward oldReward = data.getLastRoleReward(level);
                                 if (oldReward != null)
@@ -144,8 +154,10 @@ public class XPMessageListener extends ListenerAdapter
                                         Role oldRole = event.getGuild().getRoleById(oldReward.getRoleId());
                                         if (oldRole != null)
                                         {
-                                            event.getGuild().removeRoleFromMember(userID, oldRole).queue(s -> {
-                                            }, e -> {
+                                            event.getGuild().removeRoleFromMember(userID, oldRole).queue(s ->
+                                            {
+                                            }, e ->
+                                            {
                                             });
                                         }
                                     }
@@ -154,7 +166,8 @@ public class XPMessageListener extends ListenerAdapter
                         }
                     }
                     timeout.put(userID, System.currentTimeMillis());
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     LOGGER.error("Could not update XP!", ex);
                 }

@@ -17,7 +17,8 @@ public class AudioManager
     {
         this.playerManager = new DefaultAudioPlayerManager();
         this.audioPlayers = new ConcurrentHashMap<>();
-        Thread t = new Thread(() -> {
+        Thread t = new Thread(() ->
+        {
             while (true)
             {
                 int playingAudioPlayers = getAudioPlayers().stream()
@@ -27,7 +28,8 @@ public class AudioManager
                 try
                 {
                     Thread.sleep(15000);
-                } catch (InterruptedException ignored)
+                }
+                catch (InterruptedException ignored)
                 {
                 }
             }

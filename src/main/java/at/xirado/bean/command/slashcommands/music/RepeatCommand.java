@@ -32,7 +32,8 @@ public class RepeatCommand extends SlashCommand
         {
             player.getScheduler().setRepeat(true);
             ctx.sendSimpleEmbed("\uD83D\uDD01 Repeat mode turned **ON**\nUse this command again to turn it off.");
-        } else
+        }
+        else
         {
             player.getScheduler().setRepeat(false);
             ctx.sendSimpleEmbed("\uD83D\uDD01 Repeat mode turned **OFF**");

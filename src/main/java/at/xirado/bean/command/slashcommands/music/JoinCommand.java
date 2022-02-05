@@ -53,7 +53,8 @@ public class JoinCommand extends SlashCommand
         try
         {
             audioPlayer.getLink().connect(voiceState.getChannel());
-        } catch (PermissionException exception)
+        }
+        catch (PermissionException exception)
         {
             event.replyEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
             return;

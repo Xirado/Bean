@@ -53,7 +53,8 @@ public class RankingSystem
         {
             FONT = Font.createFont(Font.TRUETYPE_FONT, RankingSystem.class.getResourceAsStream("/assets/fonts/NotoSans.ttf"));
             colorData = LinkedDataObject.parse(RankingSystem.class.getResourceAsStream("/assets/wildcards/ColorInfo.json"));
-        } catch (FontFormatException | IOException e)
+        }
+        catch (FontFormatException | IOException e)
         {
             LOGGER.error("Couldn't load font from resources", e);
         }
@@ -118,7 +119,8 @@ public class RankingSystem
             if (result.next())
                 return result.getLong("totalXP");
             return 0L;
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             LOGGER.error("Could not get total xp! (guild " + guildID + ", user " + userID + ")", ex);
             return -1L;
@@ -134,7 +136,8 @@ public class RankingSystem
             if (result.next())
                 return result.getLong("totalXP");
             return 0L;
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             LOGGER.error("Could not get total xp! (guild " + guildID + ", user " + userID + ")", ex);
             return -1L;
@@ -157,10 +160,12 @@ public class RankingSystem
         try
         {
             query.execute();
-        } catch (SQLException e)
+        }
+        catch (SQLException e)
         {
             LOGGER.error("Could not add XP!", e);
-        } finally
+        }
+        finally
         {
             Util.closeQuietly(connection);
         }
@@ -176,7 +181,8 @@ public class RankingSystem
         try
         {
             query.execute();
-        } catch (SQLException e)
+        }
+        catch (SQLException e)
         {
             LOGGER.error("Could not add XP!", e);
         }
@@ -190,7 +196,8 @@ public class RankingSystem
         try
         {
             query.execute();
-        } catch (SQLException e)
+        }
+        catch (SQLException e)
         {
             LOGGER.error("Could not add XP!", e);
         }
@@ -205,7 +212,8 @@ public class RankingSystem
         try
         {
             query.execute();
-        } catch (SQLException e)
+        }
+        catch (SQLException e)
         {
             LOGGER.error("Could not add XP!", e);
         }
@@ -218,7 +226,8 @@ public class RankingSystem
         try (var rs = query.executeQuery())
         {
             return rs.next() ? rs.getString("card") : "card1";
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not get user preferred wildcard background (user " + user.getIdLong() + ")", ex);
             return "card1";
@@ -233,7 +242,8 @@ public class RankingSystem
         try
         {
             query.execute();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not set user preferred wildcard background (user " + user.getIdLong() + ")", ex);
         }
@@ -247,7 +257,8 @@ public class RankingSystem
         try (var rs = query.executeQuery())
         {
             return rs.next() ? rs.getString("card") : "card1";
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not get user preferred wildcard background (user " + user.getIdLong() + ")", ex);
             return "card1";
@@ -263,7 +274,8 @@ public class RankingSystem
         try
         {
             query.execute();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not set user preferred wildcard background (user " + user.getIdLong() + ")", ex);
         }
@@ -314,7 +326,8 @@ public class RankingSystem
                 {
                     drawWidth = width;
                     drawHeight = width / CARD_RATIO;
-                } else
+                }
+                else
                 {
                     drawHeight = height;
                     drawWidth = height * CARD_RATIO;
@@ -381,7 +394,8 @@ public class RankingSystem
             var baos = new ByteArrayOutputStream();
             ImageIO.write(rankCard, "png", baos);
             return baos.toByteArray();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             LOGGER.error("Error while generating level cards", e);
         }
@@ -477,7 +491,8 @@ public class RankingSystem
         {
             if (rs.next()) return rs.getInt("rank");
             return -1;
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not get rank of member! Guild: {} User: {}", guildID, userID);
             return -1;

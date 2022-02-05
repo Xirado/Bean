@@ -44,7 +44,8 @@ public class MessageReactionAddListener extends ListenerAdapter
                     {
                     });
             }
-        } catch (Exception e2)
+        }
+        catch (Exception e2)
         {
             LOGGER.error("An error occured whilst executing reaction role event!", e2);
         }

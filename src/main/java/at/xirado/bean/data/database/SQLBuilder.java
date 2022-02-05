@@ -70,7 +70,8 @@ public class SQLBuilder
                 }
             }
             return ps.executeQuery();
-        } finally
+        }
+        finally
         {
             if (closeConnection)
                 Util.closeQuietly(connection);
@@ -94,7 +95,8 @@ public class SQLBuilder
                 }
             }
             return ps.execute();
-        } finally
+        }
+        finally
         {
             if (closeConnection)
                 Util.closeQuietly(connection);

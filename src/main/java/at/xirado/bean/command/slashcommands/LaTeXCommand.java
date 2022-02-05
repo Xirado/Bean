@@ -42,7 +42,8 @@ public class LaTeXCommand extends SlashCommand
         try
         {
             tf = new TeXFormula(formula);
-        } catch (ParseException exception)
+        }
+        catch (ParseException exception)
         {
             hook.sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred while parsing LaTeX formula!\n```\n" + exception.getMessage() + "\n```")).queue();
             return;
@@ -59,7 +60,8 @@ public class LaTeXCommand extends SlashCommand
         try
         {
             ImageIO.write(bimg, "png", baos);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             hook.sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred!")).queue();
             return;

@@ -39,10 +39,13 @@ public class VoiceUpdateListener extends ListenerAdapter
             if (!event.getGuild().getSelfMember().getVoiceState().isGuildDeafened())
                 try
                 {
-                    event.getGuild().deafen(event.getGuild().getSelfMember(), true).queue(s -> {
-                    }, e -> {
+                    event.getGuild().deafen(event.getGuild().getSelfMember(), true).queue(s ->
+                    {
+                    }, e ->
+                    {
                     });
-                } catch (InsufficientPermissionException ignored)
+                }
+                catch (InsufficientPermissionException ignored)
                 {
                 }
             if (event.getChannelJoined() instanceof StageChannel stageChannel)
@@ -52,7 +55,8 @@ public class VoiceUpdateListener extends ListenerAdapter
                 {
                     if (audioPlayer.getPlayer().getPlayingTrack() != null)
                         stageChannel.createStageInstance(MusicUtil.getStageTopicString(audioPlayer.getPlayer().getPlayingTrack())).queue();
-                } else
+                }
+                else
                 {
                     if (audioPlayer.getPlayer().getPlayingTrack() != null)
                         stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(audioPlayer.getPlayer().getPlayingTrack())).queue();
@@ -80,8 +84,10 @@ public class VoiceUpdateListener extends ListenerAdapter
             {
                 if (stageChannel.getStageInstance().getTopic().startsWith("Playing "))
                 {
-                    stageChannel.getStageInstance().delete().queue(s -> {
-                    }, e -> {
+                    stageChannel.getStageInstance().delete().queue(s ->
+                    {
+                    }, e ->
+                    {
                     });
                 }
             }
@@ -170,7 +176,8 @@ public class VoiceUpdateListener extends ListenerAdapter
                     if (player.getPlayingTrack() != null)
                     {
                         player.setPaused(true);
-                    } else
+                    }
+                    else
                     {
                         audioPlayer.destroy();
                         return;

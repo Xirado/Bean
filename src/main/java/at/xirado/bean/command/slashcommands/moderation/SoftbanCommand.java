@@ -86,7 +86,8 @@ public class SoftbanCommand extends SlashCommand
                 .mapToResult()
                 .flatMap(message -> guild.ban(member, 7))
                 .flatMap(x -> guild.unban(member.getId()))
-                .queue(x -> {
+                .queue(x ->
+                {
                     ModCase.createModCase(CaseType.SOFTBAN, guild.getIdLong(), member.getIdLong(), sender.getIdLong(), reason);
                     MessageEmbed confirmationEmbed = new EmbedBuilder()
                             .setColor(EmbedUtil.SUCCESS_COLOR)
@@ -104,8 +105,10 @@ public class SoftbanCommand extends SlashCommand
                                 .addField("Moderator", sender.getAsMention() + " (" + sender.getUser().getAsTag() + ")", true)
                                 .setFooter(ctx.getLocalized("commands.user_id", member.getIdLong()))
                                 .build();
-                        logChannel.sendMessageEmbeds(logEmbed).queue(s -> {
-                        }, e -> {
+                        logChannel.sendMessageEmbeds(logEmbed).queue(s ->
+                        {
+                        }, e ->
+                        {
                         });
                     }
                 }, e -> event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).setEphemeral(true).queue());

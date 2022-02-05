@@ -31,7 +31,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().write(b);
                     }
@@ -50,7 +51,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         String text = new String(buf, StandardCharsets.UTF_8);
                         char[] chars = text.toCharArray();
@@ -69,7 +71,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().print(b);
                     }
@@ -86,7 +89,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().print(c);
                     }
@@ -102,7 +106,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().print(i);
                     }
@@ -118,7 +123,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().print(l);
                     }
@@ -134,7 +140,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().print(f);
                     }
@@ -150,7 +157,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().print(d);
                     }
@@ -166,7 +174,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().print(s);
                     }
@@ -182,7 +191,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().print(s);
                     }
@@ -198,7 +208,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().print(obj);
                     }
@@ -214,7 +225,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().println();
                     }
@@ -230,7 +242,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().println(x);
                     }
@@ -247,7 +260,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().println(x);
                     }
@@ -264,7 +278,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().println(x);
                     }
@@ -280,7 +295,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().println(x);
                     }
@@ -296,7 +312,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().println(x);
                     }
@@ -312,7 +329,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().println(x);
                     }
@@ -328,7 +346,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().println(x);
                     }
@@ -345,7 +364,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().println(x);
                     }
@@ -361,7 +381,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         Shell.reader.getTerminal().writer().println(x);
                     }
@@ -378,7 +399,8 @@ public class CustomPrintStream
                         Shell.reader.callWidget(LineReader.REDRAW_LINE);
                         Shell.reader.callWidget(LineReader.REDISPLAY);
                         Shell.reader.getTerminal().writer().flush();
-                    } else
+                    }
+                    else
                     {
                         ps = Shell.reader.getTerminal().writer().printf(format, args);
                     }

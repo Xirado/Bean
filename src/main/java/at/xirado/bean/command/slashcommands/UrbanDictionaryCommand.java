@@ -55,7 +55,8 @@ public class UrbanDictionaryCommand extends SlashCommand
                     .newCall(new Request.Builder().url(url).build()).execute();
             dataObject = LinkedDataObject.parse(response.body().byteStream());
             response.close();
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             LOGGER.error("Could not get data from API!", ex);
             event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred, please try again later.")).queue();

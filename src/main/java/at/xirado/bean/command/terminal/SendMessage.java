@@ -53,7 +53,8 @@ public class SendMessage extends ConsoleCommand
                         System.out.println(ConsoleUtils.error("Could not send message!\n" + error.getMessage()));
                     }
             );
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             System.out.println(ConsoleUtils.error("Could not send message: " + ExceptionUtils.getStackTrace(ex)));
         }

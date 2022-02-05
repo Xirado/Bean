@@ -130,6 +130,10 @@ public abstract class SlashCommand implements GenericCommand
      */
     public abstract void executeCommand(@Nonnull SlashCommandInteractionEvent event, @Nullable Member sender, @Nonnull SlashCommandContext ctx);
 
-    public void handleAutocomplete(@Nonnull CommandAutoCompleteInteractionEvent event) throws Exception {};
+    public void handleAutocomplete(@Nonnull CommandAutoCompleteInteractionEvent event) throws Exception
+    {
+    }
+
+    ;
 
 }

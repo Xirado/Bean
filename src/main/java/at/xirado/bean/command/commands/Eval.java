@@ -110,7 +110,8 @@ public class Eval extends Command
                     .allowedMentions(EnumSet.of(Message.MentionType.USER, Message.MentionType.EMOTE))
                     .queue();
 
-        } catch (ScriptException ex)
+        }
+        catch (ScriptException ex)
         {
             String formatted = "```\n" + ex.getMessage() + "\n```";
             event.getMessage().reply(formatted)

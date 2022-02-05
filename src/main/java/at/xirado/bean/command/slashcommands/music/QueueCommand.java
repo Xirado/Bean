@@ -49,7 +49,8 @@ public class QueueCommand extends SlashCommand
                     ctx.sendSimpleEmbed("\uD83D\uDD01 **Currently playing** " + Util.titleMarkdown(guildAudioPlayer.getPlayer().getPlayingTrack()));
                 else
                     ctx.sendSimpleEmbed("**Currently playing** " + Util.titleMarkdown(guildAudioPlayer.getPlayer().getPlayingTrack()));
-            } else
+            }
+            else
                 ctx.replyError("There is no music playing!").queue();
             return;
         }

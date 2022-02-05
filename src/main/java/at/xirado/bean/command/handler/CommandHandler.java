@@ -127,8 +127,10 @@ public class CommandHandler
                     if (!guildData.isModerator(event.getMember()))
                     {
                         event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class))
-                                .mentionRepliedUser(false).queue(message -> {
-                                }, ex -> {
+                                .mentionRepliedUser(false).queue(message ->
+                                {
+                                }, ex ->
+                                {
                                 });
                         return;
                     }
@@ -137,8 +139,10 @@ public class CommandHandler
                 if (!event.getMember().hasPermission(command.getRequiredPermissions()))
                 {
                     event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class))
-                            .mentionRepliedUser(false).queue(message -> {
-                            }, ex -> {
+                            .mentionRepliedUser(false).queue(message ->
+                            {
+                            }, ex ->
+                            {
                             });
                     return;
                 }
@@ -174,12 +178,15 @@ public class CommandHandler
 
                 CommandContext context = new CommandContext(event, arguments, command, event.getMember());
                 command.executeCommand(event, context);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 LOGGER.error("An error occurred whilst executing command", ex);
                 event.getChannel().sendMessage(CommandContext.ERROR_EMOTE + " " + LocaleLoader.ofGuild(event.getGuild()).get("general.unknown_error_occured", String.class))
-                        .queue(message -> {
-                        }, exception -> {
+                        .queue(message ->
+                        {
+                        }, exception ->
+                        {
                         });
             }
         });

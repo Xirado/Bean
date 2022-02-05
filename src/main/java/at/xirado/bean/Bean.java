@@ -4,7 +4,6 @@ import at.xirado.bean.backend.Authenticator;
 import at.xirado.bean.backend.WebServer;
 import at.xirado.bean.command.ConsoleCommandManager;
 import at.xirado.bean.command.GenericCommand;
-import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.handler.CommandHandler;
 import at.xirado.bean.command.handler.InteractionCommandHandler;
 import at.xirado.bean.data.database.Database;
@@ -25,8 +24,6 @@ import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -166,7 +163,8 @@ public class Bean
             Shell.startShell();
             Shell.awaitReady();
             new Bean();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             if (e instanceof LoginException ex)
             {
@@ -185,7 +183,8 @@ public class Bean
             properties.load(Bean.class.getClassLoader().getResourceAsStream("app.properties"));
             VERSION = properties.getProperty("app-version");
             BUILD_TIME = Long.parseLong(properties.getProperty("build-time"));
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             LOGGER.error("An error occurred while reading app.properties file!", e);
             VERSION = "0.0.0";
@@ -318,7 +317,8 @@ public class Bean
             try
             {
                 Files.copy(inputStream, path);
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 LOGGER.error("Could not copy config file!", e);
             }
@@ -326,7 +326,8 @@ public class Bean
         try
         {
             return DataObject.fromJson(new FileInputStream(configFile));
-        } catch (FileNotFoundException ignored)
+        }
+        catch (FileNotFoundException ignored)
         {
         }
         return DataObject.empty();
@@ -345,7 +346,8 @@ public class Bean
     public void initCommandCheck()
     {
         LOGGER.info("Checking for outdated command cache...");
-        getCommandExecutor().submit(() -> {
+        getCommandExecutor().submit(() ->
+        {
             if (getInstance().isDebug())
             {
                 Guild guild = getInstance().getShardManager().getGuildById(815597207617142814L);
@@ -355,7 +357,8 @@ public class Bean
                     return;
                 }
 
-                guild.retrieveCommands().queue(discordCommands -> {
+                guild.retrieveCommands().queue(discordCommands ->
+                {
                     List<GenericCommand> localCommands = getInstance().getInteractionCommandHandler()
                             .getRegisteredGuildCommands()
                             .get(guild.getIdLong());
@@ -364,7 +367,8 @@ public class Bean
                 return;
             }
 
-            getInstance().getShardManager().getShards().get(0).retrieveCommands().queue((discordCommands) -> {
+            getInstance().getShardManager().getShards().get(0).retrieveCommands().queue((discordCommands) ->
+            {
                 List<GenericCommand> localCommands = getInstance().getInteractionCommandHandler().getRegisteredCommands()
                         .stream()
                         .filter(GenericCommand::isGlobal)
@@ -382,12 +386,14 @@ public class Bean
             if (localCommands.size() > discordCommands.size())
             {
                 LOGGER.warn("New command(s) has/have been added! Updating Discords cache...");
-            } else
+            }
+            else
             {
                 LOGGER.warn("Command(s) has/have been removed! Updating Discords cache...");
             }
 
-            getInstance().getInteractionCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e -> {
+            getInstance().getInteractionCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e ->
+            {
             });
             return;
         }
@@ -410,7 +416,8 @@ public class Bean
 
         if (outdated)
         {
-            getInstance().getInteractionCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e -> {
+            getInstance().getInteractionCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e ->
+            {
             });
         }
         else

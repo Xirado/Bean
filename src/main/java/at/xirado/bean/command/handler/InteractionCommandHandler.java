@@ -20,7 +20,10 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -128,7 +131,8 @@ public class InteractionCommandHandler
                 }
                 if (slashCommands.size() > 0) guildCommandUpdateAction.queue();
             }
-        } else
+        }
+        else
         {
             List<GenericCommand> commands = registeredGuildCommands.get(Bean.TEST_SERVER_ID);
             if (commands != null && !commands.isEmpty())
@@ -212,11 +216,14 @@ public class InteractionCommandHandler
                 }
                 if (command != null)
                     command.handleAutocomplete(event);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 LOGGER.warn("An error occurred while handling autocomplete!", ex);
-                event.replyChoices(Collections.emptyList()).queue(s -> {
-                }, e -> {
+                event.replyChoices(Collections.emptyList()).queue(s ->
+                {
+                }, e ->
+                {
                 });
             }
         };
@@ -313,12 +320,16 @@ public class InteractionCommandHandler
                 Metrics.COMMANDS.labels("failed").inc();
                 LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
                 if (event.isAcknowledged())
-                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {
-                    }, ex -> {
+                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s ->
+                    {
+                    }, ex ->
+                    {
                     });
                 else
-                    event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {
-                    }, ex -> {
+                    event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s ->
+                    {
+                    }, ex ->
+                    {
                     });
                 LOGGER.error("Could not execute message-context-menu-command", e);
                 EmbedBuilder builder = new EmbedBuilder()
@@ -426,12 +437,16 @@ public class InteractionCommandHandler
                 Metrics.COMMANDS.labels("failed").inc();
                 LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
                 if (event.isAcknowledged())
-                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {
-                    }, ex -> {
+                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s ->
+                    {
+                    }, ex ->
+                    {
                     });
                 else
-                    event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {
-                    }, ex -> {
+                    event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s ->
+                    {
+                    }, ex ->
+                    {
                     });
                 LOGGER.error("Could not execute user-context-menu-command", e);
                 EmbedBuilder builder = new EmbedBuilder()
@@ -553,17 +568,22 @@ public class InteractionCommandHandler
                     Metrics.COMMANDS.labels("success").inc();
                 }
 
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Metrics.COMMANDS.labels("failed").inc();
                 LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
                 if (event.isAcknowledged())
-                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {
-                    }, ex -> {
+                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s ->
+                    {
+                    }, ex ->
+                    {
                     });
                 else
-                    event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s -> {
-                    }, ex -> {
+                    event.replyEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s ->
+                    {
+                    }, ex ->
+                    {
                     });
                 LOGGER.error("Could not execute slash-command", e);
                 StringBuilder path = new StringBuilder("/" + event.getCommandPath().replace("/", " "));

@@ -84,7 +84,8 @@ public class RedditCommand extends SlashCommand
                     .setFooter("r/" + object.getString("subreddit"))
                     .setColor(0x152238);
             hook.sendMessageEmbeds(builder.build()).queue();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             hook.sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).queue();
         }

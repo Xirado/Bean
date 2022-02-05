@@ -67,7 +67,8 @@ public class ReactionRoleCommand extends SlashCommand
             try
             {
                 messageID = Long.parseLong(event.getOption("message_id").getAsString());
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("commands.message_invalid")).setEphemeral(true).queue();
                 return;
@@ -90,7 +91,8 @@ public class ReactionRoleCommand extends SlashCommand
                                 LOGGER.error("An error occurred while trying to remove reaction roles!", err);
                             })
             );
-        } else if (subcommand.equalsIgnoreCase("create"))
+        }
+        else if (subcommand.equalsIgnoreCase("create"))
         {
             TextChannel channel = (TextChannel) event.getOption("channel").getAsGuildChannel();
             if (channel == null)
@@ -102,7 +104,8 @@ public class ReactionRoleCommand extends SlashCommand
             try
             {
                 messageID = Long.parseLong(event.getOption("message_id").getAsString());
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("commands.message_invalid")).setEphemeral(true).queue();
                 return;

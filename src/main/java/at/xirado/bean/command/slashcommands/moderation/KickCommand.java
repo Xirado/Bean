@@ -78,7 +78,8 @@ public class KickCommand extends SlashCommand
                 .flatMap(channel -> channel.sendMessageEmbeds(dmEmbed.build()))
                 .flatMap(hook -> guild.kick(member, reason))
                 .flatMap(x -> event.getHook().sendMessageEmbeds(confirmationEmbed))
-                .queue(x -> {
+                .queue(x ->
+                {
                     ModCase.createModCase(CaseType.KICK, guild.getIdLong(), member.getIdLong(), sender.getIdLong(), reason);
                     if (ctx.getGuildData().getLogChannel() != null)
                     {
@@ -90,8 +91,10 @@ public class KickCommand extends SlashCommand
                                 .addField("Moderator", sender.getAsMention() + " (" + sender.getUser().getAsTag() + ")", true)
                                 .setFooter(ctx.getLocalized("commands.user_id", member.getIdLong()))
                                 .build();
-                        logChannel.sendMessageEmbeds(logEmbed).queue(s -> {
-                        }, e -> {
+                        logChannel.sendMessageEmbeds(logEmbed).queue(s ->
+                        {
+                        }, e ->
+                        {
                         });
                     }
                 }, e -> event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).setEphemeral(true).queue());

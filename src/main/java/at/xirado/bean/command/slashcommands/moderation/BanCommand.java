@@ -105,8 +105,10 @@ public class BanCommand extends SlashCommand
                                 .addField(ctx.getLocalized("commands.duration"), "∞", true)
                                 .setFooter(ctx.getLocalized("commands.user_id", targetUser.getIdLong()))
                                 .build();
-                        logChannel.sendMessageEmbeds(logEmbed).queue(s -> {
-                        }, e -> {
+                        logChannel.sendMessageEmbeds(logEmbed).queue(s ->
+                        {
+                        }, e ->
+                        {
                         });
                     }
                 }, e -> event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).setEphemeral(true).queue());

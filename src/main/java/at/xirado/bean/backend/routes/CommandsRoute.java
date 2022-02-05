@@ -22,7 +22,7 @@ public class CommandsRoute implements Route
     {
         List<SlashCommand> commands = Bean.getInstance().isDebug()
                 ? Bean.getInstance().getInteractionCommandHandler().getRegisteredGuildCommands().get(DEV_GUILD_ID)
-                    .stream().filter(cmd -> cmd instanceof SlashCommand).map(cmd -> (SlashCommand) cmd).toList()
+                .stream().filter(cmd -> cmd instanceof SlashCommand).map(cmd -> (SlashCommand) cmd).toList()
                 : Bean.getInstance().getInteractionCommandHandler().getRegisteredSlashCommands();
         DataArray commandArray = DataArray.empty();
         for (SlashCommand command : commands)

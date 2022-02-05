@@ -64,7 +64,8 @@ public class TokenRoute implements Route
             String token = new String(tokenBytes, StandardCharsets.UTF_8);
             response.header("authorization", "Token " + token);
             return userObject.toString();
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             response.status(500);
             return DataObject.empty()

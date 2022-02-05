@@ -59,7 +59,8 @@ public class Database
         try
         {
             return ds.getConnection();
-        } catch (SQLException throwables)
+        }
+        catch (SQLException throwables)
         {
             LOGGER.error("Could not get Connection from SQL-Pool!", throwables);
             return null;
@@ -108,7 +109,8 @@ public class Database
                 ps.execute();
                 ps.close();
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             LOGGER.error("Could not run command", e);
         }

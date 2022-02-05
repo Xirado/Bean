@@ -33,7 +33,8 @@ public class JDAReadyListener extends ListenerAdapter
         if (ready)
             return;
         ready = true;
-        Bean.getInstance().getExecutor().submit(() -> {
+        Bean.getInstance().getExecutor().submit(() ->
+        {
             LOGGER.info("Successfully started " + Bean.getInstance().getShardManager().getShards().size() + " shards!");
             Bean.getInstance().getInteractionCommandHandler().initialize();
             if (Bean.getInstance().isDebug())
@@ -44,13 +45,15 @@ public class JDAReadyListener extends ListenerAdapter
             lavalink.setUserId(event.getJDA().getSelfUser().getId());
             DataObject config = Bean.getInstance().getConfig();
             DataArray nodes = config.optArray("lavalink_nodes").orElse(DataArray.empty());
-            nodes.stream(DataArray::getObject).forEach(node -> {
+            nodes.stream(DataArray::getObject).forEach(node ->
+            {
                 String url = node.getString("url");
                 String password = node.getString("password");
                 try
                 {
                     lavalink.addNode(new URI(url), password);
-                } catch (URISyntaxException e)
+                }
+                catch (URISyntaxException e)
                 {
                     LOGGER.error("Could not add Lavalink node!", e);
                 }

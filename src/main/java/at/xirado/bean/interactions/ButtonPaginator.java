@@ -122,8 +122,10 @@ public class ButtonPaginator
                     {
                         if (!allowedUsers.contains(event.getUser().getIdLong()))
                         {
-                            event.deferEdit().queue(s -> {
-                            }, e -> {
+                            event.deferEdit().queue(s ->
+                            {
+                            }, e ->
+                            {
                             });
                             return false;
                         }
@@ -134,37 +136,39 @@ public class ButtonPaginator
                 {
                     switch (event.getComponentId())
                     {
-                        case "previous" -> {
-                            page--;
-                            if (page < 1) page = 1;
-                            event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
-                            waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
-                        }
-                        case "next" -> {
-                            page++;
-                            if (page > pages) page = pages;
-                            event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
-                            waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
-                        }
-                        case "stop" -> {
-                            interactionStopped = true;
-                            if (!event.getMessage().isEphemeral())
-                                event.getMessage().delete().queue(s -> {
-                                }, e -> {
-                                });
-                            else
-                                event.editMessageEmbeds(getEmbed(page)).setActionRows(Collections.emptyList()).queue();
-                        }
-                        case "first" -> {
-                            page = 1;
-                            event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
-                            waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
-                        }
-                        case "last" -> {
-                            page = pages;
-                            event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
-                            waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
-                        }
+                    case "previous" -> {
+                        page--;
+                        if (page < 1) page = 1;
+                        event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
+                        waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
+                    }
+                    case "next" -> {
+                        page++;
+                        if (page > pages) page = pages;
+                        event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
+                        waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
+                    }
+                    case "stop" -> {
+                        interactionStopped = true;
+                        if (!event.getMessage().isEphemeral())
+                            event.getMessage().delete().queue(s ->
+                            {
+                            }, e ->
+                            {
+                            });
+                        else
+                            event.editMessageEmbeds(getEmbed(page)).setActionRows(Collections.emptyList()).queue();
+                    }
+                    case "first" -> {
+                        page = 1;
+                        event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
+                        waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
+                    }
+                    case "last" -> {
+                        page = pages;
+                        event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
+                        waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
+                    }
                     }
                 },
                 timeout,
@@ -176,8 +180,10 @@ public class ButtonPaginator
                     if (channel == null) return;
                     channel.retrieveMessageById(messageId)
                             .flatMap(m -> m.editMessageComponents(Collections.emptyList()))
-                            .queue(s -> {
-                            }, e -> {
+                            .queue(s ->
+                            {
+                            }, e ->
+                            {
                             });
                 }
         );

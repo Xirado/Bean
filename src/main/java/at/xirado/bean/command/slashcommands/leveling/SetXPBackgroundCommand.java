@@ -33,7 +33,8 @@ public class SetXPBackgroundCommand extends SlashCommand
         {
             RankingSystem.setPreferredCard(event.getUser(), event.getOption("background").getAsString());
             ctx.reply("Your background has been updated!").setEphemeral(true).queue();
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             ctx.replyError("Could not update background!").setEphemeral(true).queue();
             ex.printStackTrace();

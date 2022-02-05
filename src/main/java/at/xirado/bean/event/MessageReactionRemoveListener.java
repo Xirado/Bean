@@ -28,7 +28,8 @@ public class MessageReactionRemoveListener extends ListenerAdapter
             long messageId = e.getMessageIdLong();
             GuildData data = GuildManager.getGuildData(e.getGuild());
             data.removeReactionRoles(messageId).update();
-        } catch (Exception exception)
+        }
+        catch (Exception exception)
         {
             LOGGER.error("An error occured while executing GuildMessageReactionRemoveAllEvent!", exception);
         }

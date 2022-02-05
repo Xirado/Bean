@@ -29,7 +29,8 @@ public class RandomFactCommand extends SlashCommand
             if (ctx.getLanguage().toString().equals("de.json"))
             {
                 requestURL = "https://uselessfacts.jsph.pl/random.json?language=de";
-            } else
+            }
+            else
             {
                 requestURL = "https://uselessfacts.jsph.pl/random.json?language=en";
             }
@@ -46,7 +47,8 @@ public class RandomFactCommand extends SlashCommand
                     .setColor(0x152238);
             ctx.reply(builder.build()).queue();
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             ctx.replyError(ctx.getLocalized("general.unknown_error_occured")).queue();
         }

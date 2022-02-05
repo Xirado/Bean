@@ -30,7 +30,8 @@ public class FormatUtil
             if (i == (int) (percent * 12.0))
             {
                 str += "\ud83d\udd18";
-            } else
+            }
+            else
             {
                 str += "\u25ac";
             }

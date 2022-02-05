@@ -34,7 +34,8 @@ public class LocaleLoader
                 var language = lang.trim();
                 LANGUAGES.add(language);
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             log.error("Could not initialize locale loader!");
             throw new ExceptionInInitializerError(e);
@@ -50,7 +51,8 @@ public class LocaleLoader
                 if (json == null) continue;
                 m.put(name, json.setMetadata(new String[]{name}));
                 log.info("Successfully loaded locale {}", lang);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 log.error("Could not load locale '" + lang + "'!", e);
             }
@@ -82,7 +84,8 @@ public class LocaleLoader
         if (LANGUAGE_MAP.containsKey(tag))
         {
             return LANGUAGE_MAP.get(tag);
-        } else
+        }
+        else
         {
             return LANGUAGE_MAP.get("en_US");
         }
@@ -110,7 +113,8 @@ public class LocaleLoader
             if (days == 1)
             {
                 ges.append(days).append(" ").append(languageJSON.getString("time.day")).append(delimiter);
-            } else
+            }
+            else
             {
                 ges.append(days).append(" ").append(languageJSON.getString("time.days")).append(delimiter);
             }
@@ -120,7 +124,8 @@ public class LocaleLoader
             if (hours == 1)
             {
                 ges.append(hours).append(" ").append(languageJSON.getString("time.hour")).append(delimiter);
-            } else
+            }
+            else
             {
                 ges.append(hours).append(" ").append(languageJSON.getString("time.hours")).append(delimiter);
             }
@@ -130,7 +135,8 @@ public class LocaleLoader
             if (minutes == 1)
             {
                 ges.append(minutes).append(" ").append(languageJSON.getString("time.minute")).append(delimiter);
-            } else
+            }
+            else
             {
                 ges.append(minutes).append(" ").append(languageJSON.getString("time.minutes")).append(delimiter);
             }
@@ -140,7 +146,8 @@ public class LocaleLoader
             if (seconds1 == 1)
             {
                 ges.append(seconds1).append(" ").append(languageJSON.getString("time.second")).append(delimiter);
-            } else
+            }
+            else
             {
                 ges.append(seconds1).append(" ").append(languageJSON.getString("time.seconds")).append(delimiter);
             }

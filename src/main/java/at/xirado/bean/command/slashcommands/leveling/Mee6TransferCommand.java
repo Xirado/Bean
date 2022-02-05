@@ -116,7 +116,8 @@ public class Mee6TransferCommand extends SlashCommand
                                                                 .setColor(Color.green)
                                                                 .setDescription("✅ XP has been successfully transferred for **" + transferredPlayers + "** users!");
                                                         hook2.editOriginalEmbeds(builder1.build()).queue();
-                                                    } catch (Exception ex)
+                                                    }
+                                                    catch (Exception ex)
                                                     {
                                                         if (ex instanceof FileNotFoundException)
                                                         {
@@ -124,7 +125,8 @@ public class Mee6TransferCommand extends SlashCommand
                                                                     .setColor(Color.RED)
                                                                     .setDescription("Could not find any data for this guild! (Can you access the leaderboard?)");
                                                             hook2.editOriginalEmbeds(embedBuilder1.build()).queue();
-                                                        } else
+                                                        }
+                                                        else
                                                         {
                                                             EmbedBuilder embedBuilder1 = new EmbedBuilder()
                                                                     .setColor(Color.RED)

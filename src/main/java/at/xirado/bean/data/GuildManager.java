@@ -62,7 +62,8 @@ public class GuildManager
         {
             if (rs.next()) return new GuildData(guildID, DataObject.fromJson(rs.getString("data")));
             return null;
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not retrieve guild data!", ex);
             return null;
@@ -78,7 +79,8 @@ public class GuildManager
             var query = new SQLBuilder(sql)
                     .addParameters(guildID, jsonString, jsonString);
             query.execute();
-        } catch (SQLException exception)
+        }
+        catch (SQLException exception)
         {
             LOGGER.error("Could not update guild data!", exception);
         }

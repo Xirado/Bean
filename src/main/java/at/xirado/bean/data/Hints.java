@@ -36,7 +36,8 @@ public class Hints
         try (ResultSet rs = new SQLBuilder("SELECT 1 FROM acknowledged_hints WHERE user_id = ? AND hint = ?", userId, hint).executeQuery())
         {
             return rs.next();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.warn("Could not check if user {} acknowledged hint {}", userId, hint);
             return true;
@@ -48,7 +49,8 @@ public class Hints
         try (ResultSet rs = new SQLBuilder("SELECT 1 FROM acknowledged_hints WHERE user_id = ? AND hint = ?", userId, hint).executeQuery())
         {
             return rs.next();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.warn("Could not check if user {} acknowledged hint {}", userId, hint);
             return true;
@@ -78,7 +80,8 @@ public class Hints
         {
             new SQLBuilder("INSERT INTO acknowledged_hints (user_id, hint) values (?,?)", userId, hint)
                     .execute();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.warn("Could not acknowledge hint {} for user {}", hint, userId);
         }
