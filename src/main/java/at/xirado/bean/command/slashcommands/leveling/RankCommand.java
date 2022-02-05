@@ -42,7 +42,7 @@ public class RankCommand extends SlashCommand
             byte[] rankCard = RankingSystem.generateLevelCard(user, event.getGuild());
             if (rankCard == null)
             {
-                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Could not load rank card! Please try again later!")).queue();
+                commandHook.sendMessageEmbeds(EmbedUtil.errorEmbed("Could not load rank card! Please try again later!")).queue();
                 return;
             }
             commandHook.sendFile(rankCard, "card.png").queue();
@@ -58,7 +58,7 @@ public class RankCommand extends SlashCommand
             byte[] rankCard = RankingSystem.generateLevelCard(user, event.getGuild());
             if (rankCard == null)
             {
-                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Could not load rank card for " + user.getAsTag() + "! Please try again later!")).queue();
+                commandHook.sendMessageEmbeds(EmbedUtil.errorEmbed("Could not load rank card for " + user.getAsTag() + "! Please try again later!")).queue();
                 return;
             }
             commandHook.sendFile(rankCard, "card.png").queue();
