@@ -28,7 +28,7 @@ public class ClearCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         GuildVoiceState state = event.getGuild().getSelfMember().getVoiceState();
         if (state.getChannel() == null)

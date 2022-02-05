@@ -19,7 +19,7 @@ public class LeaderboardCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         event.reply("**Visit the leaderboard here:**")
                 .addActionRow(Button.link("https://bean.bz/leaderboard?id=" + event.getGuild().getIdLong(), "Leaderboard"))

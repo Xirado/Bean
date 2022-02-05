@@ -35,7 +35,7 @@ public class Mee6TransferCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(Color.RED)

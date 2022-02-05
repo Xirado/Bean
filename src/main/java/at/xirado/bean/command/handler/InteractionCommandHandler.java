@@ -564,7 +564,7 @@ public class InteractionCommandHandler
                             return;
                         }
                     }
-                    command.executeCommand(event, member, ctx);
+                    command.executeCommand(event, ctx);
                     Metrics.COMMANDS.labels("success").inc();
                 }
 

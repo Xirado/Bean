@@ -38,7 +38,7 @@ public class SlapCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         User author = event.getUser();
         User target = event.getOption("user").getAsUser();

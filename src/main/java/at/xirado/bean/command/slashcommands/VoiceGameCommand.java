@@ -48,7 +48,7 @@ public class VoiceGameCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         long appId = Long.parseUnsignedLong(event.getOption("application").getAsString());
         boolean ephemeral = event.getOption("hide") != null && event.getOption("hide").getAsBoolean();

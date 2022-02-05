@@ -125,15 +125,10 @@ public abstract class SlashCommand implements GenericCommand
      * Executes requested slash command
      *
      * @param event  The SlashCommandInteractionEvent
-     * @param sender The member who sent the command (null if sent via DM)
      * @param ctx    Helpful methods in context of the event
      */
-    public abstract void executeCommand(@Nonnull SlashCommandInteractionEvent event, @Nullable Member sender, @Nonnull SlashCommandContext ctx);
+    public abstract void executeCommand(@Nonnull SlashCommandInteractionEvent event, @Nonnull SlashCommandContext ctx);
 
-    public void handleAutocomplete(@Nonnull CommandAutoCompleteInteractionEvent event) throws Exception
-    {
-    }
-
-    ;
+    public void handleAutocomplete(@Nonnull CommandAutoCompleteInteractionEvent event) throws Exception {};
 
 }

@@ -21,7 +21,7 @@ public class InfoCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         long currentTime = System.currentTimeMillis() / 1000;
         event.getJDA().getRestPing().queue(restPing ->

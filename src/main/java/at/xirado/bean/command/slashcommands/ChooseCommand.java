@@ -34,7 +34,7 @@ public class ChooseCommand extends SlashCommand
 
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         List<OptionMapping> chooseOptions = event.getOptions();
         int i = ThreadLocalRandom.current().nextInt(event.getOptions().size());

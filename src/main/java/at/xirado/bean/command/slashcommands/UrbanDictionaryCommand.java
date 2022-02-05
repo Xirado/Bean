@@ -41,7 +41,7 @@ public class UrbanDictionaryCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         String phrase = event.getOption("phrase").getAsString();
         int index = event.getOption("definition") != null ? (int) event.getOption("definition").getAsLong() : 1;
