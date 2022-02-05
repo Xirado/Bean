@@ -38,44 +38,50 @@ public class XPAlertCommand extends SlashCommand
     public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         Guild guild = event.getGuild();
+
         switch (event.getSubcommandName())
         {
-        case "none":
-            boolean a = setXPAlert(guild, "none");
-            if (a)
+
+        case "none" -> {
+            boolean success = setXPAlert(guild, "none");
+            if (success)
                 ctx.reply("XP alerts have been successfully disabled!").setEphemeral(true).queue();
             else
                 ctx.replyError("Could not disable XP alerts!").setEphemeral(true).queue();
-            return;
-        case "dm":
-            boolean b = setXPAlert(guild, "dm");
-            if (b)
+        }
+
+        case "dm" -> {
+            boolean success = setXPAlert(guild, "dm");
+            if (success)
                 ctx.reply("XP alerts have been set to **DM**").setEphemeral(true).queue();
             else
                 ctx.replyError("Could not set XP alert mode!").setEphemeral(true).queue();
-            return;
-        case "current":
-            boolean c = setXPAlert(guild, "current");
-            if (c)
+        }
+
+        case "current" -> {
+            boolean success = setXPAlert(guild, "current");
+            if (success)
                 ctx.reply("XP alerts have been set to **current channel**").setEphemeral(true).queue();
             else
                 ctx.replyError("Could not set XP alert mode!").setEphemeral(true).queue();
-            return;
-        case "channel":
+        }
+
+        case "channel" -> {
             GuildChannel channel = event.getOption("targetchannel").getAsGuildChannel();
             if (channel.getType() != ChannelType.TEXT)
             {
                 ctx.replyError("Can only use text-channels as XP alert target!").setEphemeral(true).queue();
                 return;
             }
-            boolean d = setXPAlert(guild, channel.getId());
-            if (d)
+            boolean success = setXPAlert(guild, channel.getId());
+            if (success)
                 ctx.reply("XP alerts are now sent in **" + channel.getName() + "**").setEphemeral(true).queue();
             else
                 ctx.reply("Could not set XP alert mode!").setEphemeral(true).queue();
-            return;
-        default:
-            ctx.replyError("Unknown target!").setEphemeral(true).queue();
+        }
+
+        default -> ctx.replyError("Unknown target!").setEphemeral(true).queue();
+
         }
     }
 

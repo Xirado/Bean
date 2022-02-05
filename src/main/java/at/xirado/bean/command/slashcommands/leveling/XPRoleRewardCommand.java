@@ -46,6 +46,7 @@ public class XPRoleRewardCommand extends SlashCommand
         GuildData guildData = ctx.getGuildData();
         switch (event.getSubcommandName())
         {
+
         case "create" -> {
             long level = event.getOption("level").getAsLong();
             Role role = event.getOption("role").getAsRole();
@@ -70,6 +71,7 @@ public class XPRoleRewardCommand extends SlashCommand
             guildData.addRoleReward((int) level, role.getIdLong(), persist, removeOnNextReward).update();
             event.replyEmbeds(EmbedUtil.successEmbed("Role reward has been successfully created!")).setEphemeral(true).queue();
         }
+
         case "remove" -> {
             long level = event.getOption("level").getAsLong();
             if (!guildData.hasRoleReward((int) level))
@@ -80,6 +82,7 @@ public class XPRoleRewardCommand extends SlashCommand
             guildData.removeRoleReward((int) level).update();
             event.replyEmbeds(EmbedUtil.successEmbed("Role reward has been successfully removed!")).setEphemeral(true).queue();
         }
+
         case "list" -> {
             List<RoleReward> rewards = new ArrayList<>(guildData.getRoleRewards());
             if (rewards.isEmpty())

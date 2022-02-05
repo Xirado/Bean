@@ -234,19 +234,13 @@ public class RankingSystem
         }
     }
 
-    public static void setPreferredCard(@Nonnull User user, @Nonnull String card)
+    public static void setPreferredCard(@Nonnull User user, @Nonnull String card) throws SQLException
     {
         String qry = "INSERT INTO wildcardSettings (userID, card) VALUES (?,?) ON DUPLICATE KEY UPDATE card = ?";
-        var query = new SQLBuilder(qry)
-                .addParameters(user.getIdLong(), card, card);
-        try
-        {
-            query.execute();
-        }
-        catch (SQLException ex)
-        {
-            LOGGER.error("Could not set user preferred wildcard background (user " + user.getIdLong() + ")", ex);
-        }
+
+        var query = new SQLBuilder(qry, user.getIdLong(), card, card);
+
+        query.execute();
     }
 
     public static String getPreferredCard(@Nonnull Connection connection, @Nonnull User user)
