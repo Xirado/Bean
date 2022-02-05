@@ -4,7 +4,10 @@
 name: Commit Validation
 
 on:
-  push
+  push:
+    branches:
+      - master
+      - development
 
 jobs:
   build:
