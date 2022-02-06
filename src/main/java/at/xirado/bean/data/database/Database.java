@@ -3,6 +3,7 @@ package at.xirado.bean.data.database;
 import at.xirado.bean.Bean;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,7 @@ public class Database
                 config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
                 config.addDataSourceProperty("characterEncoding", "utf8");
                 config.addDataSourceProperty("useUnicode", "true");
+                config.setMetricsTrackerFactory(new PrometheusMetricsTrackerFactory());
                 ds = new HikariDataSource(config);
                 executeQueries();
             }
