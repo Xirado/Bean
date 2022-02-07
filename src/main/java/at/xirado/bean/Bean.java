@@ -129,7 +129,8 @@ public class Bean
                 .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS)
                 .addEventListeners(new JDAReadyListener(), new SlashCommandListener(), new MessageCreateListener(),
                         new XPMessageListener(), new MessageReactionAddListener(), new MessageReactionRemoveListener(), new VoiceUpdateListener(),
-                        eventWaiter, new GuildMemberJoinListener(), lavalink, new HintAcknowledgeListener(), new GuildJoinListener())
+                        eventWaiter, new GuildMemberJoinListener(), lavalink, new HintAcknowledgeListener(), new GuildJoinListener(),
+                        new MusicPlayerButtonListener())
                 .build();
         audioManager = new AudioManager();
         authenticator = new Authenticator();

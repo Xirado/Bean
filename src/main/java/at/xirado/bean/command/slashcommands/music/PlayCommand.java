@@ -42,7 +42,6 @@ import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,6 +114,7 @@ public class PlayCommand extends SlashCommand
             query = provider + query;
         }
         long userId = event.getUser().getIdLong();
+        long guildId = event.getGuild().getIdLong();
         long channelId = event.getChannel().getIdLong();
         String rawQuery = event.getOption("query").getAsString();
         link.getRestClient().loadItem(query, new AudioLoadResultHandler()
@@ -122,7 +122,7 @@ public class PlayCommand extends SlashCommand
             @Override
             public void trackLoaded(AudioTrack track)
             {
-                TrackInfo trackInfo = new TrackInfo(userId, channelId)
+                TrackInfo trackInfo = new TrackInfo(userId, guildId, channelId)
                         .setTrackUrl(track.getInfo().uri);
                 track.setUserData(trackInfo);
                 event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, track)).queue();
@@ -147,7 +147,7 @@ public class PlayCommand extends SlashCommand
                 if (playlist.isSearchResult())
                 {
                     AudioTrack single = (playlist.getSelectedTrack() == null) ? playlist.getTracks().get(0) : playlist.getSelectedTrack();
-                    TrackInfo trackInfo = new TrackInfo(userId, channelId)
+                    TrackInfo trackInfo = new TrackInfo(userId, guildId, channelId)
                             .setTrackUrl(single.getInfo().uri);
                     single.setUserData(trackInfo);
                     event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, single)).queue();
@@ -180,7 +180,7 @@ public class PlayCommand extends SlashCommand
                 }
                 playlist.getTracks().forEach(track ->
                 {
-                    TrackInfo trackInfo = new TrackInfo(userId, channelId)
+                    TrackInfo trackInfo = new TrackInfo(userId, guildId, channelId)
                             .setTrackUrl(track.getInfo().uri)
                             .setPlaylistName(playlist.getName())
                             .setPlaylistUrl(rawQuery);

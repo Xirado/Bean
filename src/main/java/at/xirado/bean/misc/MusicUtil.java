@@ -1,15 +1,26 @@
 package at.xirado.bean.misc;
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.lavaplayer.SpotifyTrack;
+import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class MusicUtil
 {
+
+    private static final Button REWIND = Button.secondary("previous", Emoji.fromEmote("previous", 940204537371840522L, false));
+    private static final Button PAUSE = Button.secondary("play", Emoji.fromEmote("pause", 940204537329877032L, false));
+    private static final Button PLAY = Button.secondary("play", Emoji.fromEmote("play", 940204537023725579L, false));
+    private static final Button SKIP = Button.secondary("next", Emoji.fromEmote("next", 940204536713314324L, false));
+    private static final Button REPEAT = Button.secondary("repeat", Emoji.fromEmote("repeat", 940204537355063346L, false));
 
     public static String getStageTopicString(AudioTrack track)
     {
@@ -36,5 +47,92 @@ public class MusicUtil
         else if (track instanceof SpotifyTrack spotifyTrack)
             builder.setThumbnail(spotifyTrack.getArtworkURL());
         return builder.build();
+    }
+
+    public static MessageEmbed getPlayerEmbed(AudioTrack track)
+    {
+        TrackInfo info = track.getUserData(TrackInfo.class);
+        long position = Bean.getInstance().getLavalink().getExistingLink(info.getGuild()).getPlayer().getTrackPosition();
+        int percentage = (int) ((double)position / (double) track.getDuration() * 100);
+
+        EmbedBuilder builder = new EmbedBuilder()
+                .setTitle(track.getInfo().title + " - " + track.getInfo().author, track.getInfo().uri)
+                .setColor(EmbedUtil.DEFAULT_COLOR)
+                .setDescription(FormatUtil.formatTime(position)+ " " + getProgressBar(percentage)+ " " + FormatUtil.formatTime(track.getDuration()));
+
+        if (track instanceof SpotifyTrack spotifyTrack)
+            builder.setThumbnail(spotifyTrack.getArtworkURL());
+        else if (track instanceof YoutubeAudioTrack)
+            builder.setThumbnail("https://img.youtube.com/vi/" + track.getIdentifier() + "/mqdefault.jpg");
+
+        return builder.build();
+    }
+
+    private static final String BAR = "<:bar_full:940243281604911174>";
+    private static final String KNOB_BEGINNING = "<:bar_first:940243281630101574>";
+    private static final String KNOB_BEGINNING_SPLIT = "<:bar_first_split:940244099439689828>";
+    private static final String KNOB_MIDDLE = "<:bar_middle:940243281592348682>";
+    private static final String KNOB_END = "<:bar_last:940243281592324126>";
+    private static final String KNOB_END_SPLIT = "<:bar_last_split:940244099112505375>";
+
+    // Ok look I know this looks ugly, but I was told I should do it like that so pls don't judge q_q
+    private static final String[] PROGRESS_BARS = {
+            KNOB_BEGINNING       + BAR.repeat(11),
+            KNOB_MIDDLE          + BAR.repeat(11),
+            KNOB_END             + BAR.repeat(11),
+            KNOB_END_SPLIT       + KNOB_BEGINNING_SPLIT + BAR.repeat(10),
+            BAR                  + KNOB_BEGINNING       + BAR.repeat(10),
+            BAR                  + KNOB_MIDDLE          + BAR.repeat(10),
+            BAR                  + KNOB_END             + BAR.repeat(10),
+            BAR                  + KNOB_END_SPLIT       + KNOB_BEGINNING_SPLIT + BAR.repeat(9),
+            BAR.repeat(2)        + KNOB_BEGINNING       + BAR.repeat(9),
+            BAR.repeat(2)        + KNOB_MIDDLE          + BAR.repeat(9),
+            BAR.repeat(2)        + KNOB_END             + BAR.repeat(9),
+            BAR.repeat(2)        + KNOB_END_SPLIT       + KNOB_BEGINNING_SPLIT + BAR.repeat(8),
+            BAR.repeat(3)        + KNOB_BEGINNING       + BAR.repeat(8),
+            BAR.repeat(3)        + KNOB_MIDDLE          + BAR.repeat(8),
+            BAR.repeat(3)        + KNOB_END             + BAR.repeat(8),
+            BAR.repeat(3)        + KNOB_END_SPLIT       + KNOB_BEGINNING_SPLIT + BAR.repeat(7),
+            BAR.repeat(4)        + KNOB_BEGINNING       + BAR.repeat(7),
+            BAR.repeat(4)        + KNOB_MIDDLE          + BAR.repeat(7),
+            BAR.repeat(4)        + KNOB_END             + BAR.repeat(7),
+            BAR.repeat(4)        + KNOB_END_SPLIT       + KNOB_BEGINNING_SPLIT + BAR.repeat(6),
+            BAR.repeat(5)        + KNOB_BEGINNING       + BAR.repeat(6),
+            BAR.repeat(5)        + KNOB_MIDDLE          + BAR.repeat(6),
+            BAR.repeat(5)        + KNOB_END             + BAR.repeat(6),
+            BAR.repeat(5)        + KNOB_END_SPLIT       + KNOB_BEGINNING_SPLIT + BAR.repeat(5),
+            BAR.repeat(6)        + KNOB_BEGINNING       + BAR.repeat(5),
+            BAR.repeat(6)        + KNOB_MIDDLE          + BAR.repeat(5),
+            BAR.repeat(6)        + KNOB_END             + BAR.repeat(5),
+            BAR.repeat(6)        + KNOB_END_SPLIT       + KNOB_BEGINNING_SPLIT + BAR.repeat(4),
+            BAR.repeat(7)        + KNOB_BEGINNING       + BAR.repeat(4),
+            BAR.repeat(7)        + KNOB_MIDDLE          + BAR.repeat(4),
+            BAR.repeat(7)        + KNOB_END             + BAR.repeat(4),
+            BAR.repeat(7)        + KNOB_END_SPLIT       + KNOB_BEGINNING_SPLIT + BAR.repeat(3),
+            BAR.repeat(8)        + KNOB_BEGINNING       + BAR.repeat(3),
+            BAR.repeat(8)        + KNOB_MIDDLE          + BAR.repeat(3),
+            BAR.repeat(8)        + KNOB_END             + BAR.repeat(3),
+            BAR.repeat(8)        + KNOB_END_SPLIT       + KNOB_BEGINNING_SPLIT + BAR.repeat(2),
+            BAR.repeat(9)        + KNOB_BEGINNING       + BAR.repeat(2),
+            BAR.repeat(9)        + KNOB_MIDDLE          + BAR.repeat(2),
+            BAR.repeat(9)        + KNOB_END             + BAR.repeat(2),
+            BAR.repeat(9)        + KNOB_END_SPLIT       + KNOB_BEGINNING_SPLIT + BAR,
+            BAR.repeat(10)       + KNOB_BEGINNING       + BAR,
+            BAR.repeat(10)       + KNOB_MIDDLE          + BAR,
+            BAR.repeat(10)       + KNOB_END             + BAR,
+            BAR.repeat(10)       + KNOB_END_SPLIT       + KNOB_BEGINNING_SPLIT,
+            BAR.repeat(11)       + KNOB_BEGINNING,
+            BAR.repeat(11)       + KNOB_MIDDLE,
+            BAR.repeat(11)       + KNOB_END
+    };
+
+    public static String getProgressBar(int percentage) // from 0 to 100
+    {
+        return PROGRESS_BARS[(int) Math.min(PROGRESS_BARS.length-1, ((percentage/100d) * PROGRESS_BARS.length))];
+    }
+
+    public static ActionRow getPlayerButtons(boolean isPaused, boolean isRepeat)
+    {
+        return ActionRow.of(REWIND, isPaused ? PLAY : PAUSE, SKIP, isRepeat ? Util.getEnabledButton(REPEAT) : REPEAT);
     }
 }

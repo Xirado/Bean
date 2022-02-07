@@ -1,17 +1,15 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.lavaplayer.SpotifyTrack;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.MusicUtil;
+import at.xirado.bean.misc.objects.CachedMessage;
 import at.xirado.bean.misc.objects.TrackInfo;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavalinkPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.StageChannel;
@@ -110,17 +108,17 @@ public class AudioScheduler extends PlayerEventListenerAdapter
                 stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(track)).queue();
             }
         }
-        if (guildAudioPlayer.getOpenPlayers().size() > 0)
+        if (guildAudioPlayer.getOpenPlayer() != null)
         {
-            guildAudioPlayer.getOpenPlayers().forEach(hook -> {
-                EmbedBuilder builder = new EmbedBuilder()
-                        .setTitle(track.getInfo().title);
-                if (track instanceof SpotifyTrack spotifyTrack)
-                    builder.setThumbnail(spotifyTrack.getArtworkURL());
-                else if (track instanceof YoutubeAudioTrack)
-                    builder.setThumbnail("https://img.youtube.com/vi/" + track.getIdentifier() + "/mqdefault.jpg");
-                hook.editOriginalEmbeds(builder.build()).queue(null, (e) -> guildAudioPlayer.getOpenPlayers().remove(hook));
-            });
+            CachedMessage message = guildAudioPlayer.getOpenPlayer();
+            TextChannel channel = message.getChannel();
+            if (channel == null)
+            {
+                guildAudioPlayer.setOpenPlayer(null);
+                return;
+            }
+
+            channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(track)).queue(null, (e) -> guildAudioPlayer.setOpenPlayer(null));
         }
 
     }

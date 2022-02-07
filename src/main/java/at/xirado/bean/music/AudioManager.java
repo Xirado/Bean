@@ -1,8 +1,11 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.misc.Metrics;
+import at.xirado.bean.misc.MusicUtil;
+import at.xirado.bean.misc.objects.CachedMessage;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.Map;
 import java.util.Set;
@@ -21,13 +24,28 @@ public class AudioManager
         {
             while (true)
             {
+                for (GuildAudioPlayer guildAudioPlayer : getAudioPlayers())
+                {
+                    CachedMessage message = guildAudioPlayer.getOpenPlayer();
+                    if (message != null)
+                    {
+                        if (guildAudioPlayer.getPlayer().isPaused()) continue;
+                        TextChannel channel = message.getChannel();
+                        if (channel == null)
+                        {
+                            guildAudioPlayer.setOpenPlayer(null);
+                            continue;
+                        }
+                        channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(guildAudioPlayer.getPlayer().getPlayingTrack())).queue(null, e -> guildAudioPlayer.setOpenPlayer(null));
+                    }
+                }
                 int playingAudioPlayers = getAudioPlayers().stream()
                         .mapToInt(pl -> pl.getPlayer().getPlayingTrack() == null ? 0 : 1)
                         .sum();
                 Metrics.PLAYING_MUSIC_PLAYERS.set(playingAudioPlayers);
                 try
                 {
-                    Thread.sleep(15000);
+                    Thread.sleep(5000);
                 }
                 catch (InterruptedException ignored)
                 {

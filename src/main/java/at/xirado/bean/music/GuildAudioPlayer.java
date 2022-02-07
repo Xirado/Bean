@@ -1,13 +1,10 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.misc.objects.CachedMessage;
 import lavalink.client.io.jda.JdaLink;
 import lavalink.client.player.LavalinkPlayer;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class GuildAudioPlayer
 {
@@ -15,7 +12,8 @@ public class GuildAudioPlayer
     private final AudioScheduler scheduler;
     private final long guildId;
     private final JdaLink link;
-    private final List<InteractionHook> openPlayers;
+
+    private CachedMessage openPlayer;
 
     public GuildAudioPlayer(long guildId)
     {
@@ -24,7 +22,7 @@ public class GuildAudioPlayer
         player = link.getPlayer();
         scheduler = new AudioScheduler(player, guildId, this);
         player.addListener(scheduler);
-        openPlayers = Collections.synchronizedList(new ArrayList<>());
+        openPlayer = null;
     }
 
     public AudioScheduler getScheduler()
@@ -47,9 +45,20 @@ public class GuildAudioPlayer
         return link;
     }
 
-    public List<InteractionHook> getOpenPlayers()
+    public CachedMessage getOpenPlayer()
     {
-        return openPlayers;
+        return openPlayer;
+    }
+
+    public void setOpenPlayer(CachedMessage openPlayer)
+    {
+        if (this.openPlayer != null)
+        {
+            TextChannel channel = this.openPlayer.getChannel();
+            if (channel != null)
+                channel.deleteMessageById(this.openPlayer.getMessageId()).queue(s -> {}, e -> {});
+        }
+        this.openPlayer = openPlayer;
     }
 
     public void destroy()
