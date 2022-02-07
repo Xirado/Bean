@@ -1,6 +1,7 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.lavaplayer.SpotifyTrack;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.MusicUtil;
 import at.xirado.bean.misc.objects.TrackInfo;
@@ -12,7 +13,9 @@ import lavalink.client.player.LavalinkPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.AudioChannel;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.StageChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
