@@ -3,15 +3,17 @@ package at.xirado.bean;
 import at.xirado.bean.backend.Authenticator;
 import at.xirado.bean.backend.WebServer;
 import at.xirado.bean.command.ConsoleCommandManager;
-import at.xirado.bean.command.SlashCommand;
+import at.xirado.bean.command.GenericCommand;
 import at.xirado.bean.command.handler.CommandHandler;
-import at.xirado.bean.command.handler.SlashCommandHandler;
+import at.xirado.bean.command.handler.InteractionCommandHandler;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.event.*;
 import at.xirado.bean.lavaplayer.SpotifyAudioSource;
 import at.xirado.bean.log.Shell;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.AudioManager;
+import at.xirado.bean.prometheus.MetricsJob;
+import at.xirado.bean.prometheus.Prometheus;
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.WebhookClientBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -21,7 +23,7 @@ import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -30,6 +32,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import okhttp3.OkHttpClient;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +42,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class Bean
 {
     public static final long OWNER_ID = 184654964122058752L;
+    public static final Long TEST_SERVER_ID = 815597207617142814L;
     public static final Set<Long> WHITELISTED_USERS = Set.of(184654964122058752L, 398610798315962408L);
     public static final String SUPPORT_GUILD_INVITE = "https://discord.com/invite/7WEjttJtKa";
     public static final long START_TIME = System.currentTimeMillis() / 1000;
@@ -55,14 +60,28 @@ public class Bean
     private static Bean instance;
     private final ShardManager shardManager;
     private final boolean debug;
-    private final ScheduledExecutorService scheduledExecutorService =
-            Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(),
+
+    private final ExecutorService commandExecutor =
+            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(),
                     new ThreadFactoryBuilder()
-                            .setNameFormat("Bean Thread %d")
-                            .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the Threadpool! (Thread " + t.getName() + ")", e))
+                            .setNameFormat("Bean Command Thread %d")
+                            .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the command thread-pool! (Thread " + t.getName() + ")", e))
                             .build());
+
+    private final ScheduledExecutorService scheduledExecutor =
+            Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder()
+                    .setNameFormat("Bean Scheduled Executor Thread")
+                    .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the scheduled executor!", e))
+                    .build());
+
+    private final ExecutorService executor =
+            Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
+                    .setNameFormat("Bean Executor Thread")
+                    .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the executor!", e))
+                    .build());
+
     private final ConsoleCommandManager consoleCommandManager;
-    private final SlashCommandHandler slashCommandHandler;
+    private final InteractionCommandHandler interactionCommandHandler;
     private final CommandHandler commandHandler;
     private final AudioManager audioManager;
     private final EventWaiter eventWaiter;
@@ -83,7 +102,7 @@ public class Bean
         consoleCommandManager = new ConsoleCommandManager();
         consoleCommandManager.registerAllCommands();
         debug = !config.isNull("debug") && config.getBoolean("debug");
-        slashCommandHandler = new SlashCommandHandler();
+        interactionCommandHandler = new InteractionCommandHandler();
         commandHandler = new CommandHandler();
         eventWaiter = new EventWaiter();
         Class.forName("at.xirado.bean.translation.LocaleLoader");
@@ -115,6 +134,8 @@ public class Bean
         audioManager = new AudioManager();
         authenticator = new Authenticator();
         webServer = new WebServer(8887);
+        new Prometheus();
+        new MetricsJob().start();
     }
 
     public static Bean getInstance()
@@ -142,7 +163,8 @@ public class Bean
             Shell.startShell();
             Shell.awaitReady();
             new Bean();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             if (e instanceof LoginException ex)
             {
@@ -161,7 +183,8 @@ public class Bean
             properties.load(Bean.class.getClassLoader().getResourceAsStream("app.properties"));
             VERSION = properties.getProperty("app-version");
             BUILD_TIME = Long.parseLong(properties.getProperty("build-time"));
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             LOGGER.error("An error occurred while reading app.properties file!", e);
             VERSION = "0.0.0";
@@ -219,9 +242,19 @@ public class Bean
         this.config = loadConfig();
     }
 
-    public ScheduledExecutorService getExecutor()
+    public ExecutorService getCommandExecutor()
     {
-        return scheduledExecutorService;
+        return commandExecutor;
+    }
+
+    public ScheduledExecutorService getScheduledExecutor()
+    {
+        return scheduledExecutor;
+    }
+
+    public ExecutorService getExecutor()
+    {
+        return executor;
     }
 
     public boolean isDebug()
@@ -239,9 +272,9 @@ public class Bean
         return consoleCommandManager;
     }
 
-    public SlashCommandHandler getSlashCommandHandler()
+    public InteractionCommandHandler getInteractionCommandHandler()
     {
-        return slashCommandHandler;
+        return interactionCommandHandler;
     }
 
     public CommandHandler getCommandHandler()
@@ -284,7 +317,8 @@ public class Bean
             try
             {
                 Files.copy(inputStream, path);
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 LOGGER.error("Could not copy config file!", e);
             }
@@ -292,7 +326,8 @@ public class Bean
         try
         {
             return DataObject.fromJson(new FileInputStream(configFile));
-        } catch (FileNotFoundException ignored)
+        }
+        catch (FileNotFoundException ignored)
         {
         }
         return DataObject.empty();
@@ -311,123 +346,83 @@ public class Bean
     public void initCommandCheck()
     {
         LOGGER.info("Checking for outdated command cache...");
-        getExecutor().submit(() -> {
-            if (Bean.getInstance().isDebug())
+        getCommandExecutor().submit(() ->
+        {
+            if (getInstance().isDebug())
             {
-                Guild guild = Bean.getInstance().getShardManager().getGuildById(815597207617142814L);
+                Guild guild = getInstance().getShardManager().getGuildById(815597207617142814L);
                 if (guild == null)
                 {
                     LOGGER.error("Debug guild does not exist!");
                     return;
                 }
-                guild.retrieveCommands().queue(list -> {
-                    List<SlashCommand> commandList = Bean.getInstance().getSlashCommandHandler().getRegisteredGuildCommands().get(guild.getIdLong());
-                    boolean commandRemovedOrAdded = commandList.size() != list.size();
-                    if (commandRemovedOrAdded)
-                    {
-                        if (commandList.size() > list.size())
-                            LOGGER.warn("New command(s) has/have been added! Updating Discords cache...");
-                        else
-                            LOGGER.warn("Command(s) has/have been removed! Updating Discords cache...");
-                        Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {
-                        });
-                        return;
-                    }
-                    boolean outdated = false;
-                    for (SlashCommand slashCommand : commandList)
-                    {
-                        Command discordCommand = list.stream()
-                                .filter(x -> x.getName().equalsIgnoreCase(slashCommand.getCommandData().getName()))
-                                .findFirst().orElse(null);
-                        // Discord doesn't have this command yet!
-                        if (discordCommand == null)
-                        {
-                            outdated = true;
-                            break;
-                        }
-                        // Option size doesn't match!
-                        if (discordCommand.getOptions().size() != slashCommand.getCommandData().getOptions().size())
-                        {
-                            outdated = true;
-                            break;
-                        }
-                        String[] optionNames = slashCommand.getCommandData().getOptions().stream().map(OptionData::getName).toArray(String[]::new);
-                        String[] discordOptionNames = discordCommand.getOptions().stream().map(Command.Option::getName).toArray(String[]::new);
-                        // Option names don't match!
-                        if (!Arrays.equals(optionNames, discordOptionNames))
-                        {
-                            outdated = true;
-                            break;
-                        }
-                        String[] optionDescriptions = slashCommand.getCommandData().getOptions().stream().map(OptionData::getDescription).toArray(String[]::new);
-                        String[] discordOptionDescriptions = discordCommand.getOptions().stream().map(Command.Option::getDescription).toArray(String[]::new);
-                        // Option descriptions don't match!
-                        if (!Arrays.equals(optionDescriptions, discordOptionDescriptions))
-                        {
-                            outdated = true;
-                            break;
-                        }
-                    }
-                    if (outdated)
-                        Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {
-                        });
+
+                guild.retrieveCommands().queue(discordCommands ->
+                {
+                    List<GenericCommand> localCommands = getInstance().getInteractionCommandHandler()
+                            .getRegisteredGuildCommands()
+                            .get(guild.getIdLong());
+                    handleCommandUpdates(discordCommands, localCommands);
                 });
+                return;
             }
-            Bean.getInstance().getShardManager().getShards().get(0).retrieveCommands().queue((list) -> {
-                List<SlashCommand> commandList = Bean.getInstance().getSlashCommandHandler().getRegisteredCommands()
+
+            getInstance().getShardManager().getShards().get(0).retrieveCommands().queue((discordCommands) ->
+            {
+                List<GenericCommand> localCommands = getInstance().getInteractionCommandHandler().getRegisteredCommands()
                         .stream()
-                        .filter(SlashCommand::isGlobal)
+                        .filter(GenericCommand::isGlobal)
                         .toList();
-                boolean commandRemovedOrAdded = commandList.size() != list.size();
-                if (commandRemovedOrAdded)
-                {
-                    if (commandList.size() > list.size())
-                        LOGGER.warn("New command(s) has/have been added! Updating Discords cache...");
-                    else
-                        LOGGER.warn("Command(s) has/have been removed! Updating Discords cache...");
-                    Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {
-                    });
-                    return;
-                }
-                boolean outdated = false;
-                for (SlashCommand slashCommand : commandList)
-                {
-                    Command discordCommand = list.stream()
-                            .filter(x -> x.getName().equalsIgnoreCase(slashCommand.getCommandData().getName()))
-                            .findFirst().orElse(null);
-                    // Discord doesn't have this command yet!
-                    if (discordCommand == null)
-                    {
-                        outdated = true;
-                        break;
-                    }
-                    // Option size doesn't match!
-                    if (discordCommand.getOptions().size() != slashCommand.getCommandData().getOptions().size())
-                    {
-                        outdated = true;
-                        break;
-                    }
-                    String[] optionNames = slashCommand.getCommandData().getOptions().stream().map(OptionData::getName).toArray(String[]::new);
-                    String[] discordOptionNames = discordCommand.getOptions().stream().map(Command.Option::getName).toArray(String[]::new);
-                    // Option names don't match!
-                    if (!Arrays.equals(optionNames, discordOptionNames))
-                    {
-                        outdated = true;
-                        break;
-                    }
-                    String[] optionDescriptions = slashCommand.getCommandData().getOptions().stream().map(OptionData::getDescription).toArray(String[]::new);
-                    String[] discordOptionDescriptions = discordCommand.getOptions().stream().map(Command.Option::getDescription).toArray(String[]::new);
-                    // Option descriptions don't match!
-                    if (!Arrays.equals(optionDescriptions, discordOptionDescriptions))
-                    {
-                        outdated = true;
-                        break;
-                    }
-                }
-                if (outdated)
-                    Bean.getInstance().getSlashCommandHandler().updateCommands(s -> LOGGER.info("Updated {} commands!", s.size()), e -> {
-                    });
+                handleCommandUpdates(discordCommands, localCommands);
             });
         });
+    }
+
+    private static void handleCommandUpdates(@NotNull Collection<? extends Command> discordCommands, @NotNull Collection<? extends GenericCommand> localCommands)
+    {
+        boolean commandRemovedOrAdded = localCommands.size() != discordCommands.size();
+        if (commandRemovedOrAdded)
+        {
+            if (localCommands.size() > discordCommands.size())
+            {
+                LOGGER.warn("New command(s) has/have been added! Updating Discords cache...");
+            }
+            else
+            {
+                LOGGER.warn("Command(s) has/have been removed! Updating Discords cache...");
+            }
+
+            getInstance().getInteractionCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e ->
+            {
+            });
+            return;
+        }
+
+        boolean outdated = false;
+        for (GenericCommand localCommand : localCommands)
+        {
+            Command discordCommand = discordCommands.stream()
+                    .filter(x -> x.getName().equalsIgnoreCase(localCommand.getData().getName()))
+                    .findFirst().orElse(null);
+
+            CommandData localCommandData = localCommand.getData();
+            CommandData discordCommandData = CommandData.fromCommand(discordCommand);
+            if (!localCommandData.equals(discordCommandData))
+            {
+                outdated = true;
+                break;
+            }
+        }
+
+        if (outdated)
+        {
+            getInstance().getInteractionCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e ->
+            {
+            });
+        }
+        else
+        {
+            LOGGER.info("No outdated commands found!");
+        }
     }
 }

@@ -3,6 +3,7 @@ package at.xirado.bean.data.database;
 import at.xirado.bean.Bean;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,10 @@ public class Database
             if (!isConnected())
             {
                 DataObject dbConfig = Bean.getInstance().getConfig().optObject("database").orElse(DataObject.empty());
-                if (dbConfig.anyNull("host", "database", "username", "password", "port"))
+                if (
+                        dbConfig.isNull("host") || dbConfig.isNull("database") || dbConfig.isNull("username")
+                                || dbConfig.isNull("password") || dbConfig.isNull("port")
+                )
                     throw new IllegalStateException("Missing database configuration!");
                 String host = dbConfig.getString("host");
                 String database = dbConfig.getString("database");
@@ -38,12 +42,13 @@ public class Database
                 config.setPassword(password);
                 config.setMaximumPoolSize(10);
                 config.setDriverClassName("org.mariadb.jdbc.Driver");
-                config.setScheduledExecutor(Bean.getInstance().getExecutor());
+                config.setScheduledExecutor(Bean.getInstance().getScheduledExecutor());
                 config.addDataSourceProperty("cachePrepStmts", "true");
                 config.addDataSourceProperty("prepStmtCacheSize", "250");
                 config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
                 config.addDataSourceProperty("characterEncoding", "utf8");
                 config.addDataSourceProperty("useUnicode", "true");
+                config.setMetricsTrackerFactory(new PrometheusMetricsTrackerFactory());
                 ds = new HikariDataSource(config);
                 executeQueries();
             }
@@ -56,7 +61,8 @@ public class Database
         try
         {
             return ds.getConnection();
-        } catch (SQLException throwables)
+        }
+        catch (SQLException throwables)
         {
             LOGGER.error("Could not get Connection from SQL-Pool!", throwables);
             return null;
@@ -105,7 +111,8 @@ public class Database
                 ps.execute();
                 ps.close();
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             LOGGER.error("Could not run command", e);
         }

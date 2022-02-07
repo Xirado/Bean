@@ -53,7 +53,8 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
                 try
                 {
                     Thread.sleep(100);
-                } catch (InterruptedException ignored)
+                }
+                catch (InterruptedException ignored)
                 {
                 }
             }

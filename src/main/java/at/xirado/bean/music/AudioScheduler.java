@@ -1,7 +1,6 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.lavaplayer.SpotifyTrack;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.MusicUtil;
 import at.xirado.bean.misc.objects.TrackInfo;
@@ -12,16 +11,13 @@ import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavalinkPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.StageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.AudioChannel;
+import net.dv8tion.jda.api.entities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 public class AudioScheduler extends PlayerEventListenerAdapter
 {
@@ -61,7 +57,7 @@ public class AudioScheduler extends PlayerEventListenerAdapter
         AudioTrack track = queue.poll();
         if (track == null)
         {
-            VoiceChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getSelfMember().getVoiceState().getChannel();
+            AudioChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getSelfMember().getVoiceState().getChannel();
             if (current instanceof StageChannel stageChannel)
             {
                 if (stageChannel.getStageInstance() != null)
@@ -99,13 +95,14 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     public void onTrackStart(IPlayer player, AudioTrack track)
     {
         lastTrack = track;
-        VoiceChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getSelfMember().getVoiceState().getChannel();
+        AudioChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getSelfMember().getVoiceState().getChannel();
         if (current instanceof StageChannel stageChannel)
         {
             if (stageChannel.getStageInstance() == null)
             {
                 stageChannel.createStageInstance(MusicUtil.getStageTopicString(track)).queue();
-            } else
+            }
+            else
             {
                 stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(track)).queue();
             }

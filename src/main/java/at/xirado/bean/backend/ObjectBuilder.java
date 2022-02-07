@@ -2,6 +2,7 @@ package at.xirado.bean.backend;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.IPositionableChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -35,10 +36,12 @@ public class ObjectBuilder
         DataArray channels = DataArray.empty();
         for (GuildChannel channel : guild.getChannels())
         {
+            if (!(channel instanceof IPositionableChannel positionableChannel))
+                continue;
             DataObject channelObject = DataObject.empty()
                     .put("id", channel.getIdLong())
                     .put("type", channel.getType().getId())
-                    .put("position", channel.getPosition())
+                    .put("position", positionableChannel.getPosition())
                     .put("name", channel.getName());
             channels.add(channelObject);
         }

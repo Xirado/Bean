@@ -2,8 +2,8 @@ package at.xirado.bean.backend.routes;
 
 import at.xirado.bean.Bean;
 import at.xirado.bean.command.SlashCommand;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -21,18 +21,18 @@ public class CommandsRoute implements Route
     public Object handle(Request request, Response response) throws Exception
     {
         List<SlashCommand> commands = Bean.getInstance().isDebug()
-                ? Bean.getInstance().getSlashCommandHandler().getRegisteredGuildCommands().get(DEV_GUILD_ID)
-                : Bean.getInstance().getSlashCommandHandler().getRegisteredCommands();
+                ? Bean.getInstance().getInteractionCommandHandler().getRegisteredGuildCommands().get(DEV_GUILD_ID)
+                .stream().filter(cmd -> cmd instanceof SlashCommand).map(cmd -> (SlashCommand) cmd).toList()
+                : Bean.getInstance().getInteractionCommandHandler().getRegisteredSlashCommands();
         DataArray commandArray = DataArray.empty();
         for (SlashCommand command : commands)
         {
-            CommandData commandData = command.getCommandData();
             DataObject commandObject = DataObject.empty();
-
+            SlashCommandData slashCommandData = command.getData();
             DataArray options = DataArray.empty();
             DataArray subCommands = DataArray.empty();
 
-            for (OptionData option : commandData.getOptions())
+            for (OptionData option : slashCommandData.getOptions())
             {
                 DataObject optionObject = DataObject.empty()
                         .put("name", option.getName())
@@ -41,7 +41,7 @@ public class CommandsRoute implements Route
                         .put("required", option.isRequired());
                 options.add(optionObject);
             }
-            for (SubcommandData subcommandData : commandData.getSubcommands())
+            for (SubcommandData subcommandData : slashCommandData.getSubcommands())
             {
                 DataObject subCommandObject = DataObject.empty();
                 DataArray subCommandOptions = DataArray.empty();
@@ -59,8 +59,8 @@ public class CommandsRoute implements Route
                 subCommandObject.put("options", subCommandOptions);
                 subCommands.add(subCommandObject);
             }
-            commandObject.put("name", commandData.getName())
-                    .put("description", commandData.getDescription())
+            commandObject.put("name", slashCommandData.getName())
+                    .put("description", slashCommandData.getDescription())
                     .put("options", options)
                     .put("sub_commands", subCommands);
             commandArray.add(commandObject);

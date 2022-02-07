@@ -9,9 +9,9 @@ import at.xirado.bean.moderation.ModCase;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,7 @@ public class BanCommand extends SlashCommand
 
     public BanCommand()
     {
-        setCommandData(new CommandData("ban", "Permanently bans a user from a server.")
+        setCommandData(Commands.slash("ban", "Permanently bans a user from a server.")
                 .addOptions(new OptionData(OptionType.USER, "user", "User to ban.")
                         .setRequired(true)
                 )
@@ -37,8 +37,9 @@ public class BanCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
+        Member sender = event.getMember();
         Guild guild = event.getGuild();
         if (guild == null)
         {
@@ -105,7 +106,11 @@ public class BanCommand extends SlashCommand
                                 .addField(ctx.getLocalized("commands.duration"), "∞", true)
                                 .setFooter(ctx.getLocalized("commands.user_id", targetUser.getIdLong()))
                                 .build();
-                        logChannel.sendMessageEmbeds(logEmbed).queue(s -> {}, e -> {});
+                        logChannel.sendMessageEmbeds(logEmbed).queue(s ->
+                        {
+                        }, e ->
+                        {
+                        });
                     }
                 }, e -> event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).setEphemeral(true).queue());
     }

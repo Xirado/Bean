@@ -5,10 +5,10 @@ import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.ReactionRole;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.ErrorResponse;
@@ -27,7 +27,7 @@ public class ReactionRoleCommand extends SlashCommand
 
     public ReactionRoleCommand()
     {
-        setCommandData(new CommandData("reactionrole", "Sets up reaction roles.")
+        setCommandData(Commands.slash("reactionrole", "Sets up reaction roles.")
                 .addSubcommands(new SubcommandData("create", "Creates reaction roles.")
                         .addOptions(new OptionData(OptionType.CHANNEL, "channel", "Channel which contains the message.", true).setChannelTypes(ChannelType.TEXT))
                         .addOption(OptionType.STRING, "message_id", "ID of the message you want to have the reaction role on.", true)
@@ -44,7 +44,7 @@ public class ReactionRoleCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
 
         Guild guild = event.getGuild();
@@ -67,7 +67,8 @@ public class ReactionRoleCommand extends SlashCommand
             try
             {
                 messageID = Long.parseLong(event.getOption("message_id").getAsString());
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("commands.message_invalid")).setEphemeral(true).queue();
                 return;
@@ -90,7 +91,8 @@ public class ReactionRoleCommand extends SlashCommand
                                 LOGGER.error("An error occurred while trying to remove reaction roles!", err);
                             })
             );
-        } else if (subcommand.equalsIgnoreCase("create"))
+        }
+        else if (subcommand.equalsIgnoreCase("create"))
         {
             TextChannel channel = (TextChannel) event.getOption("channel").getAsGuildChannel();
             if (channel == null)
@@ -102,7 +104,8 @@ public class ReactionRoleCommand extends SlashCommand
             try
             {
                 messageID = Long.parseLong(event.getOption("message_id").getAsString());
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("commands.message_invalid")).setEphemeral(true).queue();
                 return;

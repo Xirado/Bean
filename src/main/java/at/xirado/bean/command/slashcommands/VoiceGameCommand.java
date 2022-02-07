@@ -5,12 +5,12 @@ import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -25,7 +25,7 @@ public class VoiceGameCommand extends SlashCommand
 
     public VoiceGameCommand()
     {
-        setCommandData(new CommandData("voicegame", "Creates voice games.")
+        setCommandData(Commands.slash("voicegame", "Creates voice games.")
                 .addOptions(new OptionData(OptionType.STRING, "application", "Application to create.")
                         .addChoice("Youtube Together", "755600276941176913")
                         .addChoice("Poker", "755827207812677713")
@@ -48,19 +48,19 @@ public class VoiceGameCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         long appId = Long.parseUnsignedLong(event.getOption("application").getAsString());
         boolean ephemeral = event.getOption("hide") != null && event.getOption("hide").getAsBoolean();
         GuildVoiceState voiceState = event.getMember().getVoiceState();
-        VoiceChannel voiceChannel = voiceState.getChannel();
-        if (voiceChannel == null)
+        AudioChannel audioChannel = voiceState.getChannel();
+        if (audioChannel == null)
         {
-            event.replyEmbeds(EmbedUtil.errorEmbed("You must be in a VoiceChannel to do this!")).setEphemeral(true).queue();
+            event.replyEmbeds(EmbedUtil.errorEmbed("You must be in a audio-channel to do this!")).setEphemeral(true).queue();
             return;
         }
         event.deferReply(ephemeral)
-                .flatMap(hook -> createInvite(3600, 0, voiceChannel, appId))
+                .flatMap(hook -> createInvite(3600, 0, audioChannel, appId))
                 .flatMap(url -> event.getHook().sendMessage(url))
                 .queue();
     }
@@ -70,11 +70,11 @@ public class VoiceGameCommand extends SlashCommand
      *
      * @param maxAgeInSecs  the max age of the invite in seconds (0 -> infinite)
      * @param maxUses       how often this invite can be used (0 -> infinite)
-     * @param voiceChannel  The VoiceChannel the invite should be created on
+     * @param audioChannel  The AudioChannel the invite should be created on
      * @param applicationId The Application-ID to use
      * @return RestAction
      */
-    public static RestAction<String> createInvite(int maxAgeInSecs, int maxUses, VoiceChannel voiceChannel, long applicationId)
+    public static RestAction<String> createInvite(int maxAgeInSecs, int maxUses, AudioChannel audioChannel, long applicationId)
     {
         DataObject requestBody = DataObject.empty()
                 .put("max_age", maxAgeInSecs)
@@ -84,8 +84,8 @@ public class VoiceGameCommand extends SlashCommand
                 .put("target_application_id", applicationId);
 
         return new RestActionImpl<>(
-                voiceChannel.getJDA(),
-                ROUTE.compile(voiceChannel.getId()),
+                audioChannel.getJDA(),
+                ROUTE.compile(audioChannel.getId()),
                 requestBody,
                 (response, request) -> "https://discord.gg/" + response.getObject().getString("code"));
     }

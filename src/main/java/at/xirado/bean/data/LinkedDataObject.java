@@ -39,7 +39,8 @@ public class LinkedDataObject
         {
             Map<String, Object> map = (Map<String, Object>) MAPPER.readValue(jsonString, LinkedHashMap.class);
             return new LinkedDataObject(map);
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             ex.printStackTrace();
             return null;
@@ -59,7 +60,8 @@ public class LinkedDataObject
         {
             Map<String, Object> map = (Map<String, Object>) MAPPER.readValue(url, LinkedHashMap.class);
             return new LinkedDataObject(map);
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             ex.printStackTrace();
             return null;
@@ -74,7 +76,8 @@ public class LinkedDataObject
             if (!file.exists()) return null;
             Map<String, Object> map = (Map<String, Object>) MAPPER.readValue(file, LinkedHashMap.class);
             return new LinkedDataObject(map);
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             ex.printStackTrace();
             return null;
@@ -89,7 +92,8 @@ public class LinkedDataObject
         {
             Map<String, Object> map = (Map<String, Object>) MAPPER.readValue(is, LinkedHashMap.class);
             return new LinkedDataObject(map);
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             ex.printStackTrace();
             return null;
@@ -118,7 +122,8 @@ public class LinkedDataObject
         try
         {
             return MAPPER.writeValueAsString(map);
-        } catch (JsonProcessingException e)
+        }
+        catch (JsonProcessingException e)
         {
             return null;
         }
@@ -146,7 +151,8 @@ public class LinkedDataObject
             {
                 map = (Map<String, Object>) maybeMap;
                 index++;
-            } else
+            }
+            else
             {
                 return null;
             }
@@ -171,7 +177,8 @@ public class LinkedDataObject
         if (root == null || root.equals(""))
         {
             actualQuery = query;
-        } else
+        }
+        else
         {
             actualQuery = root + "." + query;
         }
@@ -187,7 +194,8 @@ public class LinkedDataObject
         if (root == null || root.equals(""))
         {
             actualQuery = query;
-        } else
+        }
+        else
         {
             actualQuery = root + "." + query;
         }
@@ -203,7 +211,8 @@ public class LinkedDataObject
         if (root == null || root.equals(""))
         {
             actualQuery = query;
-        } else
+        }
+        else
         {
             actualQuery = root + "." + query;
         }
@@ -219,7 +228,8 @@ public class LinkedDataObject
         if (root == null || root.equals(""))
         {
             actualQuery = query;
-        } else
+        }
+        else
         {
             actualQuery = root + "." + query;
         }
@@ -235,7 +245,8 @@ public class LinkedDataObject
         if (root == null || root.equals(""))
         {
             actualQuery = query;
-        } else
+        }
+        else
         {
             actualQuery = root + "." + query;
         }
@@ -251,7 +262,8 @@ public class LinkedDataObject
         if (root == null || root.equals(""))
         {
             actualQuery = query;
-        } else
+        }
+        else
         {
             actualQuery = root + "." + query;
         }
@@ -267,7 +279,8 @@ public class LinkedDataObject
         if (root == null || root.equals(""))
         {
             actualQuery = query;
-        } else
+        }
+        else
         {
             actualQuery = root + "." + query;
         }

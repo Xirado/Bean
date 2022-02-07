@@ -23,7 +23,8 @@ public class Authenticator
 
     public Authenticator()
     {
-        Bean.getInstance().getExecutor().scheduleAtFixedRate(() -> {
+        Bean.getInstance().getScheduledExecutor().scheduleAtFixedRate(() ->
+        {
             for (Map.Entry<ByteBuffer, DataObject> entries : users.entrySet())
             {
                 ByteBuffer token = entries.getKey();

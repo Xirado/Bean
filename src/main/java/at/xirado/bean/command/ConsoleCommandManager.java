@@ -35,7 +35,8 @@ public class ConsoleCommandManager
                 }
                 if (!foundCommand)
                     System.out.println(new AttributedStringBuilder().style(AttributedStyle.DEFAULT.foreground(0xFF0000)).append("Befehl \"").append(invoke).append("\" wurde nicht gefunden!"));
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 LOGGER.error("Could not execute console-command", e);
             }

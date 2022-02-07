@@ -29,13 +29,15 @@ public class Request
 
     public void queue(Consumer<Response> success, Consumer<Exception> failure)
     {
-        Bean.getInstance().getExecutor().execute(() -> {
+        Bean.getInstance().getCommandExecutor().execute(() ->
+        {
             try
             {
                 Response response = client.newCall(request).execute();
                 success.accept(response);
                 response.close();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 failure.accept(ex);
             }
@@ -44,13 +46,15 @@ public class Request
 
     public void queue(Consumer<Response> success)
     {
-        Bean.getInstance().getExecutor().execute(() -> {
+        Bean.getInstance().getCommandExecutor().execute(() ->
+        {
             try
             {
                 Response response = client.newCall(request).execute();
                 success.accept(response);
                 response.close();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 LOGGER.error("Error occurred while executing Request!", ex);
             }

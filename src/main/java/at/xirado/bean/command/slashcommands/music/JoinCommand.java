@@ -7,12 +7,12 @@ import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.GuildAudioPlayer;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,12 +20,12 @@ public class JoinCommand extends SlashCommand
 {
     public JoinCommand()
     {
-        setCommandData(new CommandData("join", "Makes the bot join your current channel."));
+        setCommandData(Commands.slash("join", "Makes the bot join your current channel."));
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         Member member = event.getMember();
         GuildVoiceState voiceState = member.getVoiceState();
@@ -37,7 +37,7 @@ public class JoinCommand extends SlashCommand
         GuildVoiceState state = event.getGuild().getSelfMember().getVoiceState();
         if (state.getChannel() != null)
         {
-            VoiceChannel channel = state.getChannel();
+            AudioChannel channel = state.getChannel();
             if (voiceState.getChannel().getIdLong() == channel.getIdLong())
             {
                 event.replyEmbeds(EmbedUtil.errorEmbed("I already joined this channel!")).queue();
@@ -53,7 +53,8 @@ public class JoinCommand extends SlashCommand
         try
         {
             audioPlayer.getLink().connect(voiceState.getChannel());
-        } catch (PermissionException exception)
+        }
+        catch (PermissionException exception)
         {
             event.replyEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
             return;

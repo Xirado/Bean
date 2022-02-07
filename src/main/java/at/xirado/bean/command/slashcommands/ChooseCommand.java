@@ -3,10 +3,10 @@ package at.xirado.bean.command.slashcommands;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +17,7 @@ public class ChooseCommand extends SlashCommand
 {
     public ChooseCommand()
     {
-        setCommandData(new CommandData("choose", "Chooses between up to 10 things.")
+        setCommandData(Commands.slash("choose", "Chooses between up to 10 things.")
                 .addOption(OptionType.STRING, "1st", "First argument.", true)
                 .addOption(OptionType.STRING, "2nd", "Second argument.", true)
                 .addOption(OptionType.STRING, "3rd", "Third argument.")
@@ -34,7 +34,7 @@ public class ChooseCommand extends SlashCommand
 
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         List<OptionMapping> chooseOptions = event.getOptions();
         int i = ThreadLocalRandom.current().nextInt(event.getOptions().size());

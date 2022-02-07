@@ -114,7 +114,8 @@ public class GuildData
             new SQLBuilder(sql)
                     .addParameters(guildId, jsonString, jsonString)
                     .execute();
-        } catch (SQLException exception)
+        }
+        catch (SQLException exception)
         {
             LOGGER.error("Could not update guild data!", exception);
         }
@@ -257,7 +258,7 @@ public class GuildData
         if (getDJMembers().contains(member.getIdLong())) return true;
         GuildVoiceState guildVoiceState = member.getVoiceState();
         if (guildVoiceState == null || guildVoiceState.getChannel() == null) return false;
-        VoiceChannel channel = guildVoiceState.getChannel();
+        AudioChannel channel = guildVoiceState.getChannel();
         return channel.getMembers().size() == 2 && channel.getMembers().contains(member.getGuild().getSelfMember());
     }
 
@@ -415,7 +416,8 @@ public class GuildData
             if (rs.next())
                 return rs.getLong("balance");
             return 0;
-        } catch (SQLException throwables)
+        }
+        catch (SQLException throwables)
         {
             LOGGER.error("Could not get balance for user {} on guild {}!", userId, guildId);
             return 0;
@@ -430,7 +432,8 @@ public class GuildData
         {
             new SQLBuilder("INSERT INTO userbalance (guild_id, user_id, balance) values (?,?,?) ON DUPLICATE KEY UPDATE balance = ?").addParameters(guildId, userId, oldBalance + amount, oldBalance + amount).execute();
 
-        } catch (SQLException throwables)
+        }
+        catch (SQLException throwables)
         {
             LOGGER.error("Could not add balance amount {} to user {} on guild {}", amount, userId, guildId);
         }
@@ -442,7 +445,8 @@ public class GuildData
         {
             new SQLBuilder("INSERT INTO userbalance (guild_id, user_id, balance) values (?,?,?) ON DUPLICATE KEY UPDATE balance = ?").addParameters(guildId, userId, amount, amount).execute();
 
-        } catch (SQLException throwables)
+        }
+        catch (SQLException throwables)
         {
             LOGGER.error("Could not set balance amount {} to user {} on guild {}", amount, userId, guildId);
         }

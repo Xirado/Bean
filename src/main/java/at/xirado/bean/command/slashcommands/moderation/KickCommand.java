@@ -11,9 +11,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +21,7 @@ public class KickCommand extends SlashCommand
 {
     public KickCommand()
     {
-        setCommandData(new CommandData("kick", "Kicks a member from a server.")
+        setCommandData(Commands.slash("kick", "Kicks a member from a server.")
                 .addOption(OptionType.USER, "user", "User to kick.", true)
                 .addOption(OptionType.STRING, "reason", "Reason for this kick.")
         );
@@ -30,8 +30,9 @@ public class KickCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
+        Member sender = event.getMember();
         Guild guild = event.getGuild();
         if (guild == null) return;
         Member member = event.getOption("user").getAsMember();
@@ -78,7 +79,8 @@ public class KickCommand extends SlashCommand
                 .flatMap(channel -> channel.sendMessageEmbeds(dmEmbed.build()))
                 .flatMap(hook -> guild.kick(member, reason))
                 .flatMap(x -> event.getHook().sendMessageEmbeds(confirmationEmbed))
-                .queue(x -> {
+                .queue(x ->
+                {
                     ModCase.createModCase(CaseType.KICK, guild.getIdLong(), member.getIdLong(), sender.getIdLong(), reason);
                     if (ctx.getGuildData().getLogChannel() != null)
                     {
@@ -90,8 +92,10 @@ public class KickCommand extends SlashCommand
                                 .addField("Moderator", sender.getAsMention() + " (" + sender.getUser().getAsTag() + ")", true)
                                 .setFooter(ctx.getLocalized("commands.user_id", member.getIdLong()))
                                 .build();
-                        logChannel.sendMessageEmbeds(logEmbed).queue(s -> {
-                        }, e -> {
+                        logChannel.sendMessageEmbeds(logEmbed).queue(s ->
+                        {
+                        }, e ->
+                        {
                         });
                     }
                 }, e -> event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).setEphemeral(true).queue());

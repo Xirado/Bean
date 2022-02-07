@@ -10,9 +10,9 @@ import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,14 +24,14 @@ public class QueueCommand extends SlashCommand
 {
     public QueueCommand()
     {
-        setCommandData(new CommandData("queue", "Shows the current queue.")
+        setCommandData(Commands.slash("queue", "Shows the current queue.")
                 .addOption(OptionType.INTEGER, "page", "Page of the queue.", false)
         );
     }
 
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         ButtonPaginator.Builder builder = new ButtonPaginator.Builder(event.getJDA())
                 .setEventWaiter(Bean.getInstance().getEventWaiter())
@@ -49,7 +49,8 @@ public class QueueCommand extends SlashCommand
                     ctx.sendSimpleEmbed("\uD83D\uDD01 **Currently playing** " + Util.titleMarkdown(guildAudioPlayer.getPlayer().getPlayingTrack()));
                 else
                     ctx.sendSimpleEmbed("**Currently playing** " + Util.titleMarkdown(guildAudioPlayer.getPlayer().getPlayingTrack()));
-            } else
+            }
+            else
                 ctx.replyError("There is no music playing!").queue();
             return;
         }

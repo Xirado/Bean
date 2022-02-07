@@ -69,7 +69,8 @@ public class GuildDataRoute implements Route
         try
         {
             member = guild.retrieveMemberById(userId).complete();
-        } catch (ErrorResponseException ex)
+        }
+        catch (ErrorResponseException ex)
         {
             response.status(401);
             return DataObject.empty()

@@ -4,8 +4,8 @@ import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveAllEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -17,8 +17,10 @@ public class MessageReactionRemoveListener extends ListenerAdapter
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageReactionRemoveListener.class);
 
     @Override
-    public void onGuildMessageReactionRemoveAll(GuildMessageReactionRemoveAllEvent e)
+    public void onMessageReactionRemoveAll(MessageReactionRemoveAllEvent e)
     {
+        if (!e.isFromGuild())
+            return;
         if (GuildJoinListener.isGuildBanned(e.getGuild().getIdLong()))
             return;
         try
@@ -26,15 +28,18 @@ public class MessageReactionRemoveListener extends ListenerAdapter
             long messageId = e.getMessageIdLong();
             GuildData data = GuildManager.getGuildData(e.getGuild());
             data.removeReactionRoles(messageId).update();
-        } catch (Exception exception)
+        }
+        catch (Exception exception)
         {
             LOGGER.error("An error occured while executing GuildMessageReactionRemoveAllEvent!", exception);
         }
     }
 
     @Override
-    public void onGuildMessageReactionRemove(@NotNull GuildMessageReactionRemoveEvent e)
+    public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent e)
     {
+        if (!e.isFromGuild())
+            return;
         if (GuildJoinListener.isGuildBanned(e.getGuild().getIdLong()))
             return;
         ReactionEmote reactionemote = e.getReactionEmote();

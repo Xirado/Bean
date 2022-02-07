@@ -26,7 +26,8 @@ public class PrintGuildData extends ConsoleCommand
         try
         {
             guildID = Long.parseLong(guildIDString);
-        } catch (NumberFormatException exception)
+        }
+        catch (NumberFormatException exception)
         {
             Shell.printErr("Argument is not a valid guild id!");
             return;
@@ -35,7 +36,8 @@ public class PrintGuildData extends ConsoleCommand
         try
         {
             json = GuildManager.getGuildDataJSON(guildID);
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             System.out.println("An error occurred!");
             ex.printStackTrace();

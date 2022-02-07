@@ -9,9 +9,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,7 @@ public class XPRoleRewardCommand extends SlashCommand
 {
     public XPRoleRewardCommand()
     {
-        setCommandData(new CommandData("xprolereward", "Rewards a member with a role when they reach a certain level.")
+        setCommandData(Commands.slash("xprolereward", "Rewards a member with a role when they reach a certain level.")
                 .addSubcommands(new SubcommandData("create", "Creates a role reward.")
                         .addOption(OptionType.INTEGER, "level", "Level a member needs to reach to get the role.", true)
                         .addOption(OptionType.ROLE, "role", "Role to receive upon reaching specified level.", true)
@@ -41,81 +41,85 @@ public class XPRoleRewardCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandEvent event, @Nullable Member sender, @NotNull SlashCommandContext ctx)
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         GuildData guildData = ctx.getGuildData();
         switch (event.getSubcommandName())
         {
-            case "create" -> {
-                long level = event.getOption("level").getAsLong();
-                Role role = event.getOption("role").getAsRole();
-                boolean persist = event.getOption("persist") == null || event.getOption("persist").getAsBoolean();
-                boolean removeOnNextReward = event.getOption("remove_on_next_reward") != null && event.getOption("remove_on_next_reward").getAsBoolean();
-                if (level < 1)
-                {
-                    event.replyEmbeds(EmbedUtil.errorEmbed("Cannot create role wards on levels below 1!")).setEphemeral(true).queue();
-                    return;
-                }
-                if (level > 200)
-                {
-                    event.replyEmbeds(EmbedUtil.errorEmbed("Can only create role rewards on levels upto 200!")).setEphemeral(true).queue();
-                    return;
-                }
-                if (guildData.hasRoleReward((int) level))
-                {
-                    guildData.addRoleReward((int) level, role.getIdLong(), persist, removeOnNextReward).update();
-                    event.replyEmbeds(EmbedUtil.successEmbed("Role reward has been successfully updated!")).setEphemeral(true).queue();
-                    return;
-                }
-                guildData.addRoleReward((int) level, role.getIdLong(), persist, removeOnNextReward).update();
-                event.replyEmbeds(EmbedUtil.successEmbed("Role reward has been successfully created!")).setEphemeral(true).queue();
-            }
-            case "remove" -> {
-                long level = event.getOption("level").getAsLong();
-                if (!guildData.hasRoleReward((int) level))
-                {
-                    event.replyEmbeds(EmbedUtil.errorEmbed("I couldn't find a role reward with that level!")).setEphemeral(true).queue();
-                    return;
-                }
-                guildData.removeRoleReward((int) level).update();
-                event.replyEmbeds(EmbedUtil.successEmbed("Role reward has been successfully removed!")).setEphemeral(true).queue();
-            }
-            case "list" -> {
-                List<RoleReward> rewards = new ArrayList<>(guildData.getRoleRewards());
-                if (rewards.isEmpty())
-                {
-                    event.replyEmbeds(EmbedUtil.warningEmbed("Your server does not appear to have any role rewards!")).setEphemeral(true).queue();
-                    return;
-                }
-                rewards.sort(Comparator.comparingInt(RoleReward::getLevel));
-                Collections.reverse(rewards);
 
-                StringBuilder builder = new StringBuilder();
-                builder.append("`P - Persists on rejoin`\n`R - Gets removed on next reward`\n\n");
-                for (RoleReward reward : rewards)
-                {
-                    String properties = "";
-                    if (reward.isPersistant())
-                    {
-                        properties = " - P";
-                    }
-                    if (reward.doesRemoveOnNextReward())
-                    {
-                        if (properties.isEmpty())
-                        {
-                            properties = " - R";
-                        } else
-                        {
-                            properties += "R";
-                        }
-                    }
-                    builder.append("`Level ").append(reward.getLevel()).append("` - <@&").append(reward.getRoleId()).append(">").append(properties).append("\n");
-                }
-                event.replyEmbeds(new EmbedBuilder()
-                        .setColor(EmbedUtil.DEFAULT_COLOR)
-                        .setDescription(builder.toString().trim())
-                        .setTitle("Role rewards").build()).setEphemeral(true).queue();
+        case "create" -> {
+            long level = event.getOption("level").getAsLong();
+            Role role = event.getOption("role").getAsRole();
+            boolean persist = event.getOption("persist") == null || event.getOption("persist").getAsBoolean();
+            boolean removeOnNextReward = event.getOption("remove_on_next_reward") != null && event.getOption("remove_on_next_reward").getAsBoolean();
+            if (level < 1)
+            {
+                event.replyEmbeds(EmbedUtil.errorEmbed("Cannot create role wards on levels below 1!")).setEphemeral(true).queue();
+                return;
             }
+            if (level > 200)
+            {
+                event.replyEmbeds(EmbedUtil.errorEmbed("Can only create role rewards on levels upto 200!")).setEphemeral(true).queue();
+                return;
+            }
+            if (guildData.hasRoleReward((int) level))
+            {
+                guildData.addRoleReward((int) level, role.getIdLong(), persist, removeOnNextReward).update();
+                event.replyEmbeds(EmbedUtil.successEmbed("Role reward has been successfully updated!")).setEphemeral(true).queue();
+                return;
+            }
+            guildData.addRoleReward((int) level, role.getIdLong(), persist, removeOnNextReward).update();
+            event.replyEmbeds(EmbedUtil.successEmbed("Role reward has been successfully created!")).setEphemeral(true).queue();
+        }
+
+        case "remove" -> {
+            long level = event.getOption("level").getAsLong();
+            if (!guildData.hasRoleReward((int) level))
+            {
+                event.replyEmbeds(EmbedUtil.errorEmbed("I couldn't find a role reward with that level!")).setEphemeral(true).queue();
+                return;
+            }
+            guildData.removeRoleReward((int) level).update();
+            event.replyEmbeds(EmbedUtil.successEmbed("Role reward has been successfully removed!")).setEphemeral(true).queue();
+        }
+
+        case "list" -> {
+            List<RoleReward> rewards = new ArrayList<>(guildData.getRoleRewards());
+            if (rewards.isEmpty())
+            {
+                event.replyEmbeds(EmbedUtil.warningEmbed("Your server does not appear to have any role rewards!")).setEphemeral(true).queue();
+                return;
+            }
+            rewards.sort(Comparator.comparingInt(RoleReward::getLevel));
+            Collections.reverse(rewards);
+
+            StringBuilder builder = new StringBuilder();
+            builder.append("`P - Persists on rejoin`\n`R - Gets removed on next reward`\n\n");
+            for (RoleReward reward : rewards)
+            {
+                String properties = "";
+                if (reward.isPersistant())
+                {
+                    properties = " - P";
+                }
+                if (reward.doesRemoveOnNextReward())
+                {
+                    if (properties.isEmpty())
+                    {
+                        properties = " - R";
+                    }
+                    else
+                    {
+                        properties += "R";
+                    }
+                }
+                builder.append("`Level ").append(reward.getLevel()).append("` - <@&").append(reward.getRoleId()).append(">").append(properties).append("\n");
+            }
+            event.replyEmbeds(new EmbedBuilder()
+                    .setColor(EmbedUtil.DEFAULT_COLOR)
+                    .setDescription(builder.toString().trim())
+                    .setTitle("Role rewards").build()).setEphemeral(true).queue();
+        }
         }
     }
 }

@@ -12,7 +12,7 @@ import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,9 +87,9 @@ public class CommandHandler
     }
 
     @SuppressWarnings("ConstantConditions")
-    public void handleCommandFromGuild(@Nonnull GuildMessageReceivedEvent event)
+    public void handleCommandFromGuild(@Nonnull MessageReceivedEvent event)
     {
-        Bean.getInstance().getExecutor().submit(() ->
+        Bean.getInstance().getCommandExecutor().submit(() ->
         {
             try
             {
@@ -127,7 +127,11 @@ public class CommandHandler
                     if (!guildData.isModerator(event.getMember()))
                     {
                         event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class))
-                                .mentionRepliedUser(false).queue(message -> {}, ex -> {});
+                                .mentionRepliedUser(false).queue(message ->
+                                {
+                                }, ex ->
+                                {
+                                });
                         return;
                     }
                 }
@@ -135,7 +139,11 @@ public class CommandHandler
                 if (!event.getMember().hasPermission(command.getRequiredPermissions()))
                 {
                     event.getMessage().reply(LocaleLoader.ofGuild(event.getGuild()).get("general.no_perms", String.class))
-                            .mentionRepliedUser(false).queue(message -> {}, ex -> {});
+                            .mentionRepliedUser(false).queue(message ->
+                            {
+                            }, ex ->
+                            {
+                            });
                     return;
                 }
 
@@ -175,7 +183,11 @@ public class CommandHandler
             {
                 LOGGER.error("An error occurred whilst executing command", ex);
                 event.getChannel().sendMessage(CommandContext.ERROR_EMOTE + " " + LocaleLoader.ofGuild(event.getGuild()).get("general.unknown_error_occured", String.class))
-                        .queue(message -> {}, exception -> {});
+                        .queue(message ->
+                        {
+                        }, exception ->
+                        {
+                        });
             }
         });
     }

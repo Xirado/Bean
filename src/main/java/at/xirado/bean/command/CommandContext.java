@@ -6,7 +6,7 @@ import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 
@@ -23,13 +23,13 @@ public class CommandContext
     public static final String ERROR_EMOTE = "❌";
     public static final String SUCCESS_EMOTE = "✅";
 
-    private final GuildMessageReceivedEvent event;
+    private final MessageReceivedEvent event;
     private final Command command;
     private final Member member;
     private final CommandArgument commandArgument;
 
 
-    public CommandContext(GuildMessageReceivedEvent event, CommandArgument commandArgument, Command command, Member member)
+    public CommandContext(MessageReceivedEvent event, CommandArgument commandArgument, Command command, Member member)
     {
         this.event = event;
         this.commandArgument = commandArgument;
@@ -42,7 +42,7 @@ public class CommandContext
         return GuildManager.getGuildData(event.getGuild());
     }
 
-    public GuildMessageReceivedEvent getEvent()
+    public MessageReceivedEvent getEvent()
     {
         return event;
     }
@@ -134,13 +134,13 @@ public class CommandContext
             description += "\n" + LocaleLoader.ofGuild(event.getGuild()).get("general.aliases", String.class) + ": `" + aliasesstring + "`";
         }
         builder.setDescription(description);
-        event.getChannel().sendMessage(builder.build()).queue();
+        event.getChannel().sendMessageEmbeds(builder.build()).queue();
 
     }
 
     public void replyWarning(String message)
     {
-        this.event.getChannel().sendMessage(
+        this.event.getChannel().sendMessageEmbeds(
                 new EmbedBuilder()
                         .setColor(Color.yellow)
                         .setTimestamp(Instant.now())
@@ -151,7 +151,7 @@ public class CommandContext
 
     public void replySuccess(String message)
     {
-        this.event.getChannel().sendMessage(
+        this.event.getChannel().sendMessageEmbeds(
                 new EmbedBuilder()
                         .setColor(Color.green)
                         .setDescription(SUCCESS_EMOTE + " " + message)
@@ -191,7 +191,7 @@ public class CommandContext
 
     public void reply(MessageEmbed embed, Consumer<Message> success, Consumer<Throwable> failure)
     {
-        event.getChannel().sendMessage(embed).queue(success, failure);
+        event.getChannel().sendMessageEmbeds(embed).queue(success, failure);
     }
 
     public void reply(MessageEmbed embed, Consumer<Message> success)
@@ -201,7 +201,7 @@ public class CommandContext
 
     public void reply(MessageEmbed embed)
     {
-        event.getChannel().sendMessage(embed).queue();
+        event.getChannel().sendMessageEmbeds(embed).queue();
     }
 
     public void replyInDM(Message message, Consumer<Message> success, Consumer<Throwable> failure)

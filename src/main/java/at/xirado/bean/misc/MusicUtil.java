@@ -26,7 +26,8 @@ public class MusicUtil
         if (audioPlayer.getPlayingTrack() == null)
         {
             builder.setDescription("**Now playing** " + Util.titleMarkdown(track) + " (**" + FormatUtil.formatTime(track.getDuration()) + "**)");
-        } else
+        }
+        else
         {
             builder.setDescription("**Added** " + Util.titleMarkdown(track) + " **to the queue!** (**" + FormatUtil.formatTime(track.getDuration()) + "**)");
         }

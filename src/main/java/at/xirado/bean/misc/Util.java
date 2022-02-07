@@ -3,11 +3,11 @@ package at.xirado.bean.misc;
 import at.xirado.bean.Bean;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,8 @@ public class Util
                 try
                 {
                     c.close();
-                } catch (Exception ignored)
+                }
+                catch (Exception ignored)
                 {
                 }
             }
@@ -88,8 +89,10 @@ public class Util
     {
         firstShard().openPrivateChannelById(userId)
                 .flatMap(channel -> channel.sendMessage(sequence))
-                .queue(s -> {
-                }, e -> {
+                .queue(s ->
+                {
+                }, e ->
+                {
                 });
     }
 
@@ -99,8 +102,10 @@ public class Util
         Checks.noneNull(embeds, "Embeds");
         firstShard().openPrivateChannelById(userId)
                 .flatMap(channel -> channel.sendMessageEmbeds(embed, embeds))
-                .queue(s -> {
-                }, e -> {
+                .queue(s ->
+                {
+                }, e ->
+                {
                 });
 
     }
@@ -109,8 +114,10 @@ public class Util
     {
         firstShard().openPrivateChannelById(Bean.OWNER_ID)
                 .flatMap(channel -> channel.sendMessage(sequence))
-                .queue(s -> {
-                }, e -> {
+                .queue(s ->
+                {
+                }, e ->
+                {
                 });
     }
 
@@ -120,8 +127,10 @@ public class Util
         Checks.noneNull(embeds, "Embeds");
         firstShard().openPrivateChannelById(Bean.OWNER_ID)
                 .flatMap(channel -> channel.sendMessageEmbeds(embed, embeds))
-                .queue(s -> {
-                }, e -> {
+                .queue(s ->
+                {
+                }, e ->
+                {
                 });
     }
 
@@ -154,7 +163,8 @@ public class Util
             CodeSource codeSource = Bean.class.getProtectionDomain().getCodeSource();
             File jarFile = new File(codeSource.getLocation().toURI().getPath());
             return (jarFile.getParentFile().getPath());
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             LOGGER.error("Could not get path of jar!", e);
             return null;
@@ -208,7 +218,7 @@ public class Util
         return destination;
     }
 
-    public static int getListeningUsers(@Nonnull VoiceChannel channel)
+    public static int getListeningUsers(@Nonnull AudioChannel channel)
     {
         int nonBots = 0;
         for (Member member : channel.getMembers())

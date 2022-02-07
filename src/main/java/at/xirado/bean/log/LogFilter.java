@@ -51,7 +51,8 @@ public class LogFilter extends Filter<ILoggingEvent>
         try
         {
             FILTERED_CLASSES.add(Class.forName(exceptionClassName));
-        } catch (final ClassNotFoundException e)
+        }
+        catch (final ClassNotFoundException e)
         {
             throw new IllegalArgumentException("Class is unavailable: "
                     + exceptionClassName, e);

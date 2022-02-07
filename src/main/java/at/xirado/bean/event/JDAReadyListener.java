@@ -1,10 +1,9 @@
 package at.xirado.bean.event;
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.misc.Metrics;
 import lavalink.client.io.jda.JdaLavalink;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
 
 public class JDAReadyListener extends ListenerAdapter
 {
@@ -24,14 +22,21 @@ public class JDAReadyListener extends ListenerAdapter
     private boolean ready = false;
 
     @Override
+    public void onGenericEvent(@NotNull GenericEvent event)
+    {
+        Metrics.EVENTS.inc();
+    }
+
+    @Override
     public void onGuildReady(@NotNull GuildReadyEvent event)
     {
         if (ready)
             return;
         ready = true;
-        Bean.getInstance().getExecutor().submit(() -> {
+        Bean.getInstance().getExecutor().submit(() ->
+        {
             LOGGER.info("Successfully started " + Bean.getInstance().getShardManager().getShards().size() + " shards!");
-            Bean.getInstance().getSlashCommandHandler().initialize();
+            Bean.getInstance().getInteractionCommandHandler().initialize();
             if (Bean.getInstance().isDebug())
                 LOGGER.warn("Development mode enabled.");
             Bean.getInstance().initCommandCheck();
@@ -40,27 +45,19 @@ public class JDAReadyListener extends ListenerAdapter
             lavalink.setUserId(event.getJDA().getSelfUser().getId());
             DataObject config = Bean.getInstance().getConfig();
             DataArray nodes = config.optArray("lavalink_nodes").orElse(DataArray.empty());
-            nodes.stream(DataArray::getObject).forEach(node -> {
+            nodes.stream(DataArray::getObject).forEach(node ->
+            {
                 String url = node.getString("url");
                 String password = node.getString("password");
                 try
                 {
                     lavalink.addNode(new URI(url), password);
-                } catch (URISyntaxException e)
+                }
+                catch (URISyntaxException e)
                 {
                     LOGGER.error("Could not add Lavalink node!", e);
                 }
             });
         });
-        Bean.getInstance().getExecutor().scheduleAtFixedRate(() -> {
-            int memberCount = Bean.getInstance().getShardManager()
-                    .getGuildCache()
-                    .stream()
-                    .mapToInt(Guild::getMemberCount)
-                    .sum();
-            Bean.getInstance().getShardManager()
-                    .getShardCache()
-                    .forEach(shard -> shard.getPresence().setPresence(OnlineStatus.ONLINE, Activity.watching(memberCount + " users | bean.bz")));
-        }, 0, 1, TimeUnit.MINUTES);
     }
 }

@@ -68,7 +68,8 @@ public class ModCase
             ps.setLong(8, duration);
             ps.execute();
             return new ModCase(uuid, type, guildId, targetId, moderatorId, reason, creationTime, duration);
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             LOGGER.error("Could not create Mod-Case!", ex);
             return null;
@@ -85,7 +86,8 @@ public class ModCase
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return null;
             return new ModCase(uuid, CaseType.fromId(rs.getByte("caseType")), rs.getLong("guild"), rs.getLong("user"), rs.getLong("moderator"), rs.getString("reason"), rs.getLong("createdAt"), rs.getLong("duration"));
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             LOGGER.error("Could not retrieve Mod-Case!", ex);
             return null;
@@ -113,7 +115,8 @@ public class ModCase
             ps.setString(1, uuid.toString());
             ResultSet rs = ps.executeQuery();
             return rs.next();
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             LOGGER.error("Could not check if UUID already exists!", ex);
             return false;
