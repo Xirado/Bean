@@ -36,7 +36,7 @@ public class ResumeCommand extends SlashCommand
             return;
         }
         player.setPaused(false);
-        guildAudioPlayer.forcePlayerUpdate();
+        guildAudioPlayer.forcePlayerComponentsUpdate();
         ctx.sendSimpleEphemeralEmbed("Resumed!");
     }
 }

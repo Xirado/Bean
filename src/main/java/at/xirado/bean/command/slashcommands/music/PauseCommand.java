@@ -37,7 +37,7 @@ public class PauseCommand extends SlashCommand
             return;
         }
         player.setPaused(true);
-        guildAudioPlayer.forcePlayerUpdate();
+        guildAudioPlayer.forcePlayerComponentsUpdate();
         ctx.sendSimpleEphemeralEmbed("The player is now paused!");
     }
 }

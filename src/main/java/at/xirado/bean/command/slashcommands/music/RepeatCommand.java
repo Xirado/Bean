@@ -43,6 +43,6 @@ public class RepeatCommand extends SlashCommand
                     .queue();
         }
 
-        player.forcePlayerUpdate();
+        player.forcePlayerComponentsUpdate();
     }
 }

@@ -38,9 +38,8 @@ public class AudioManager
                     {
                         if (guildAudioPlayer.getPlayer().isPaused() || guildAudioPlayer.getPlayer().getPlayingTrack() == null) continue;
                         OffsetDateTime created = TimeUtil.getTimeCreated(message.getMessageId());
-                        if (OffsetDateTime.now().plusMinutes(55).isBefore(created))
+                        if (created.plusMinutes(10).isBefore(OffsetDateTime.now()))
                         {
-                            System.out.println("message is 55 minutes old! Making new one");
                             guildAudioPlayer.playerSetup(message.getChannel(), s -> {}, e -> {});
                             continue;
                         }

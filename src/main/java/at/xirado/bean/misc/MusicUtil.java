@@ -24,6 +24,7 @@ public class MusicUtil
     private static final Button PLAY = Button.secondary("play", Emoji.fromEmote("play", 940204537023725579L, false));
     private static final Button SKIP = Button.secondary("next", Emoji.fromEmote("next", 940204536713314324L, false));
     private static final Button REPEAT = Button.secondary("repeat", Emoji.fromEmote("repeat", 940204537355063346L, false));
+    private static final Button SHUFFLE = Button.secondary("shuffle", Emoji.fromEmote("shuffle", 940748348137304124L, false));
 
     public static String getStageTopicString(AudioTrack track)
     {
@@ -76,7 +77,7 @@ public class MusicUtil
                 .setColor(EmbedUtil.DEFAULT_COLOR);
 
         if (info.getVoteSkips().size() > 0)
-            builder.setFooter(info.getVoteSkips().size() + "votes to skip");
+            builder.setFooter(info.getVoteSkips().size() + " vote"+(info.getVoteSkips().size() == 1 ? "" : "s")+" to skip");
 
         String description = getProgressBar(percentage)+ "\n" + FormatUtil.formatTime(position) + " / " + FormatUtil.formatTime(track.getDuration());
         if (track.getDuration() == Long.MAX_VALUE)
@@ -175,8 +176,8 @@ public class MusicUtil
         return PROGRESS_BARS[(int) Math.min(PROGRESS_BARS.length-1, ((percentage/100d) * PROGRESS_BARS.length))];
     }
 
-    public static ActionRow getPlayerButtons(boolean isPaused, boolean isRepeat)
+    public static ActionRow getPlayerButtons(boolean isPaused, boolean isRepeat, boolean isShuffle)
     {
-        return ActionRow.of(REWIND, isPaused ? PLAY : PAUSE, SKIP, isRepeat ? Util.getEnabledButton(REPEAT) : REPEAT);
+        return ActionRow.of(REWIND, isPaused ? PLAY : PAUSE, SKIP, isRepeat ? Util.getEnabledButton(REPEAT) : REPEAT, isShuffle ? Util.getEnabledButton(SHUFFLE) : SHUFFLE);
     }
 }

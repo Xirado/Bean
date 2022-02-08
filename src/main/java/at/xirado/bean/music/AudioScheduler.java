@@ -30,6 +30,7 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     private final GuildAudioPlayer guildAudioPlayer;
     private final long guildId;
     private boolean repeat = false;
+    private boolean shuffle = false;
     private AudioTrack lastTrack;
 
     public AudioScheduler(LavalinkPlayer player, long guildId, GuildAudioPlayer guildAudioPlayer)
@@ -92,6 +93,16 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     public void setRepeat(boolean repeat)
     {
         this.repeat = repeat;
+    }
+
+    public boolean isShuffle()
+    {
+        return shuffle;
+    }
+
+    public void setShuffle(boolean shuffle)
+    {
+        this.shuffle = shuffle;
     }
 
     public BlockingQueue<AudioTrack> getQueue()

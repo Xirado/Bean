@@ -62,6 +62,7 @@ public class PlayCommand extends SlashCommand
                         .addChoice("Soundcloud", "scsearch:")
                         .addChoice("Youtube Music", "ytmsearch:")
                 )
+                .addOptions(new OptionData(OptionType.BOOLEAN, "shuffle", "Whether to enable shuffle."))
         );
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
@@ -98,6 +99,9 @@ public class PlayCommand extends SlashCommand
             }
         }
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
+        if (event.getOption("shuffle") != null)
+            guildAudioPlayer.getScheduler().setShuffle(event.getOption("shuffle").getAsBoolean());
+
         String query = event.getOption("query").getAsString();
         boolean isDirectUrl = query.startsWith("http://") || query.startsWith("https://");
         if (!isDirectUrl)
@@ -164,14 +168,17 @@ public class PlayCommand extends SlashCommand
                 }
                 boolean isBookmarked = BookmarkCommand.getBookmark(event.getUser().getIdLong(), rawQuery) != null;
                 String amount = "Added **" + playlist.getTracks().size() + "** tracks to the queue! (**" + FormatUtil.formatTime(playlist.getTracks().stream().map(AudioTrack::getDuration).reduce(0L, Long::sum)) + "**)";
+                List<AudioTrack> tracks = new ArrayList<>(playlist.getTracks());
+                if (guildAudioPlayer.getScheduler().isShuffle())
+                    Collections.shuffle(tracks);
                 if (guildAudioPlayer.getPlayer().getPlayingTrack() == null)
                 {
-                    amount += "\n**Now playing** " + Util.titleMarkdown(playlist.getTracks().get(0));
+                    amount += "\n**Now playing** " + Util.titleMarkdown(tracks.get(0));
                 }
                 EmbedBuilder embed = EmbedUtil.defaultEmbedBuilder(amount);
-                if (playlist.getTracks().get(0) instanceof YoutubeAudioTrack)
-                    embed.setThumbnail("https://img.youtube.com/vi/" + playlist.getTracks().get(0).getIdentifier() + "/mqdefault.jpg");
-                else if (playlist.getTracks().get(0) instanceof SpotifyTrack track)
+                if (tracks.get(0) instanceof YoutubeAudioTrack)
+                    embed.setThumbnail("https://img.youtube.com/vi/" + tracks.get(0).getIdentifier() + "/mqdefault.jpg");
+                else if (tracks.get(0) instanceof SpotifyTrack track)
                     embed.setThumbnail(track.getArtworkURL());
                 embed.setFooter(playlist.getName());
                 event.getHook().sendMessageEmbeds(embed.build()).queue();
@@ -183,7 +190,7 @@ public class PlayCommand extends SlashCommand
                             .queue();
                     Hints.sentUserHint(userId, "bookmark");
                 }
-                playlist.getTracks().forEach(track ->
+                tracks.forEach(track ->
                 {
                     TrackInfo trackInfo = new TrackInfo(userId, guildId, channelId)
                             .setTrackUrl(track.getInfo().uri)
@@ -193,7 +200,7 @@ public class PlayCommand extends SlashCommand
                     guildAudioPlayer.getScheduler().queue(track);
                 });
                 if (guildAudioPlayer.getOpenPlayer() == null)
-                    guildAudioPlayer.playerSetup((GuildMessageChannel) event.getChannel(), playlist.getTracks().get(0), (s) -> {}, e -> {});
+                    guildAudioPlayer.playerSetup((GuildMessageChannel) event.getChannel(), tracks.get(0), (s) -> {}, e -> {});
                 else
                     guildAudioPlayer.forcePlayerUpdate();
                 SearchEntry entry = new SearchEntry(playlist.getName(), event.getOption("query").getAsString(), true);

@@ -12,12 +12,16 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
+import java.util.stream.Collectors;
 
 public class MusicPlayerButtonListener extends ListenerAdapter
 {
 
-    public static final List<String> BUTTON_IDS = List.of("previous", "play", "next", "repeat");
+    public static final List<String> BUTTON_IDS = List.of("previous", "play", "next", "repeat", "shuffle");
 
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event)
@@ -71,8 +75,42 @@ public class MusicPlayerButtonListener extends ListenerAdapter
                 }
                 guildAudioPlayer.getScheduler().setRepeat(!guildAudioPlayer.getScheduler().isRepeat());
             }
+            case "shuffle" -> {
+                if (!guildData.isDJ(member))
+                {
+                    event.reply("You must be a DJ to do this!").setEphemeral(true).queue();
+                    return;
+                }
+
+                boolean isShuffle = guildAudioPlayer.getScheduler().isShuffle();
+
+                guildAudioPlayer.getScheduler().setShuffle(!isShuffle);
+
+                if (guildAudioPlayer.getScheduler().isShuffle())
+                {
+                    AudioTrack current = guildAudioPlayer.getPlayer().getPlayingTrack();
+                    if (current != null)
+                    {
+                        TrackInfo trackInfo = current.getUserData(TrackInfo.class);
+                        String playlistUrl = trackInfo.getPlaylistUrl();
+                        Queue<AudioTrack> queue = guildAudioPlayer.getScheduler().getQueue();
+                        List<AudioTrack> fromThisPlaylist = queue
+                                .stream().filter(track -> track.getUserData(TrackInfo.class).getPlaylistUrl().equals(playlistUrl))
+                                .collect(Collectors.toList());
+                        Collections.shuffle(fromThisPlaylist);
+
+                        List<AudioTrack> newQueue = new ArrayList<>(fromThisPlaylist);
+
+                        fromThisPlaylist.forEach(queue::remove);
+                        List<AudioTrack> rest = new ArrayList<>(queue);
+                        newQueue.addAll(rest);
+                        queue.clear();
+                        queue.addAll(newQueue);
+                    }
+                }
+            }
         }
-        event.deferEdit().setEmbeds(MusicUtil.getPlayerEmbed(guildAudioPlayer.getPlayer().getPlayingTrack())).setActionRows(MusicUtil.getPlayerButtons(guildAudioPlayer.getPlayer().isPaused(), guildAudioPlayer.getScheduler().isRepeat())).queue();
+        event.deferEdit().setEmbeds(MusicUtil.getPlayerEmbed(guildAudioPlayer.getPlayer().getPlayingTrack())).setActionRows(MusicUtil.getPlayerButtons(guildAudioPlayer.getPlayer().isPaused(), guildAudioPlayer.getScheduler().isRepeat(), guildAudioPlayer.getScheduler().isShuffle())).queue();
     }
 
     private boolean isRequester(Member member, AudioTrack track)
