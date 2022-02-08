@@ -8,11 +8,9 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 
 public class VoteSkipCommand extends SlashCommand
@@ -29,13 +27,13 @@ public class VoteSkipCommand extends SlashCommand
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         if (event.getMember().getVoiceState().isDeafened())
         {
-            ctx.sendSimpleEmbed("You can't do this since you're deafened!");
+            ctx.sendSimpleEphemeralEmbed("You can't do this since you're deafened!");
             return;
         }
         AudioTrack track = guildAudioPlayer.getPlayer().getPlayingTrack();
         if (track == null)
         {
-            ctx.sendSimpleEmbed("There is no music to skip!");
+            ctx.sendSimpleEphemeralEmbed("There is no music to skip!");
             return;
         }
         TrackInfo trackInfo = track.getUserData(TrackInfo.class);
@@ -48,17 +46,19 @@ public class VoteSkipCommand extends SlashCommand
             AudioTrack nextTrack = guildAudioPlayer.getPlayer().getPlayingTrack();
             if (nextTrack == null)
             {
-                ctx.sendSimpleEmbed("**Skipped!**");
+                ctx.sendSimpleEphemeralEmbed("**Skipped!**");
+                guildAudioPlayer.forcePlayerUpdate();
                 return;
             }
-            ctx.sendSimpleEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
+            ctx.sendSimpleEphemeralEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
+            guildAudioPlayer.forcePlayerUpdate();
             return;
         }
         int listeners = (int) event.getMember().getVoiceState().getChannel().getMembers().stream()
                 .filter(m -> !m.getUser().isBot() && !m.getVoiceState().isDeafened()).count();
         if (trackInfo.getVoteSkips().contains(event.getUser().getIdLong()))
         {
-            ctx.sendSimpleEmbed("You already voted to skip this song!");
+            ctx.sendSimpleEphemeralEmbed("You already voted to skip this song!");
             return;
         }
         trackInfo.addVoteSkip(event.getMember().getIdLong());
@@ -73,15 +73,17 @@ public class VoteSkipCommand extends SlashCommand
             AudioTrack nextTrack = guildAudioPlayer.getPlayer().getPlayingTrack();
             if (nextTrack == null)
             {
-                ctx.sendSimpleEmbed("**Skipped!**");
+                ctx.sendSimpleEphemeralEmbed("**Skipped!**");
+                guildAudioPlayer.forcePlayerUpdate();
                 return;
             }
-            ctx.sendSimpleEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
+            ctx.sendSimpleEphemeralEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
+            guildAudioPlayer.forcePlayerUpdate();
         }
         else
         {
-            ctx.sendSimpleEmbed("Voted to skip: **" + (required - skippers) + "** more votes needed");
-
+            ctx.sendSimpleEphemeralEmbed("Voted to skip: **" + (required - skippers) + "** more votes needed");
+            guildAudioPlayer.forcePlayerUpdate();
         }
 
     }

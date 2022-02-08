@@ -1,10 +1,10 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.MusicUtil;
 import at.xirado.bean.misc.objects.CachedMessage;
 import at.xirado.bean.misc.objects.TrackInfo;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lavalink.client.player.IPlayer;
@@ -64,6 +64,18 @@ public class AudioScheduler extends PlayerEventListenerAdapter
                 if (stageChannel.getStageInstance() != null)
                     stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(null)).queue();
             }
+        }
+        if (guildAudioPlayer.getOpenPlayer() != null && track == null)
+        {
+            CachedMessage message = guildAudioPlayer.getOpenPlayer();
+            TextChannel channel = message.getChannel();
+            if (channel == null)
+            {
+                guildAudioPlayer.setOpenPlayer(null);
+                return;
+            }
+
+            channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(null)).queue(null, (e) -> guildAudioPlayer.setOpenPlayer(null));
         }
         if (track != null)
             player.playTrack(track);
@@ -128,7 +140,24 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     {
         log.debug("Track " + track.getInfo().title + " stopped with reason " + endReason);
         if (endReason.mayStartNext)
+        {
             nextTrack();
+        }
+        if (endReason == AudioTrackEndReason.STOPPED || endReason == AudioTrackEndReason.LOAD_FAILED)
+        {
+            if (guildAudioPlayer.getOpenPlayer() != null)
+            {
+                CachedMessage message = guildAudioPlayer.getOpenPlayer();
+                TextChannel channel = message.getChannel();
+                if (channel == null)
+                {
+                    guildAudioPlayer.setOpenPlayer(null);
+                    return;
+                }
+
+                channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(null)).queue(null, (e) -> guildAudioPlayer.setOpenPlayer(null));
+            }
+        }
     }
 
     @Override
@@ -144,8 +173,17 @@ public class AudioScheduler extends PlayerEventListenerAdapter
         TextChannel channel = guild.getTextChannelById(info.getChannelId());
         if (channel == null)
             return;
-        channel.sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred while playing track **" + track.getInfo().title + "**!\n`" + exception.getCause().getMessage() + "`")).queue();
-        log.warn("(Guild: " + guildId + ") An error occurred while playing track \"" + track.getInfo().title + "\" by \"" + track.getInfo().author + "\"", exception);
+        if (exception instanceof FriendlyException friendlyException)
+        {
+            if (friendlyException.severity != FriendlyException.Severity.COMMON)
+            {
+                log.warn("(Guild: " + guildId + ") An error occurred while playing track \"" + track.getInfo().title + "\" by \"" + track.getInfo().author + "\"", exception);
+            }
+        }
+        else
+        {
+            log.warn("(Guild: " + guildId + ") An error occurred while playing track \"" + track.getInfo().title + "\" by \"" + track.getInfo().author + "\"", exception);
+        }
     }
 
     public long getGuildId()

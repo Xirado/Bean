@@ -23,10 +23,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.StageChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -80,7 +77,7 @@ public class PlayCommand extends SlashCommand
     public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
-        event.deferReply().queue();
+        event.deferReply(true).queue();
         Member member = event.getMember();
         GuildVoiceState voiceState = member.getVoiceState();
         AudioManager manager = event.getGuild().getAudioManager();
@@ -136,6 +133,10 @@ public class PlayCommand extends SlashCommand
                     Hints.sentUserHint(userId, "bookmark");
                 }
                 guildAudioPlayer.getScheduler().queue(track);
+                if (guildAudioPlayer.getOpenPlayer() == null)
+                    guildAudioPlayer.playerSetup((GuildMessageChannel) event.getChannel(), (s) -> {}, e -> {});
+                else
+                    guildAudioPlayer.forcePlayerUpdate();
                 SearchEntry entry = new SearchEntry(track.getInfo().title, rawQuery, false);
                 if (!isDuplicate(member.getIdLong(), entry.getName()) && !isBookmarked)
                     addSearchEntry(member.getIdLong(), entry);
@@ -152,6 +153,10 @@ public class PlayCommand extends SlashCommand
                     single.setUserData(trackInfo);
                     event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, single)).queue();
                     guildAudioPlayer.getScheduler().queue(single);
+                    if (guildAudioPlayer.getOpenPlayer() == null)
+                        guildAudioPlayer.playerSetup((GuildMessageChannel) event.getChannel(), (s) -> {}, e -> {});
+                    else
+                        guildAudioPlayer.forcePlayerUpdate();
                     SearchEntry entry = new SearchEntry(event.getOption("query").getAsString(), event.getOption("query").getAsString(), false);
                     if (!isDuplicate(member.getIdLong(), entry.getName()))
                         addSearchEntry(member.getIdLong(), entry);
@@ -187,6 +192,10 @@ public class PlayCommand extends SlashCommand
                     track.setUserData(trackInfo);
                     guildAudioPlayer.getScheduler().queue(track);
                 });
+                if (guildAudioPlayer.getOpenPlayer() == null)
+                    guildAudioPlayer.playerSetup((GuildMessageChannel) event.getChannel(), playlist.getTracks().get(0), (s) -> {}, e -> {});
+                else
+                    guildAudioPlayer.forcePlayerUpdate();
                 SearchEntry entry = new SearchEntry(playlist.getName(), event.getOption("query").getAsString(), true);
                 if (!isDuplicate(member.getIdLong(), entry.getName()) && !isBookmarked)
                     addSearchEntry(member.getIdLong(), entry);

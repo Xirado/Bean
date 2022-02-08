@@ -3,6 +3,7 @@ package at.xirado.bean.command.slashcommands.music;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.GuildData;
+import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.IMentionable;
@@ -13,7 +14,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -48,14 +48,14 @@ public class DJCommand extends SlashCommand
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(role.getColor())
                             .setDescription(role.getAsMention() + " is already a DJ!");
-                    ctx.reply(builder.build()).queue();
+                    ctx.reply(builder.build()).setEphemeral(true).queue();
                     return;
                 }
                 guildData.addDJRoles(role).update();
                 EmbedBuilder builder = new EmbedBuilder()
                         .setColor(role.getColor())
                         .setDescription(role.getAsMention() + " is now a DJ!");
-                ctx.reply(builder.build()).queue();
+                ctx.reply(builder.build()).setEphemeral(true).queue();
             }
             else if (mentionable instanceof Member member)
             {
@@ -64,18 +64,18 @@ public class DJCommand extends SlashCommand
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(member.getColor())
                             .setDescription(member.getAsMention() + " is already a DJ!");
-                    ctx.reply(builder.build()).queue();
+                    ctx.reply(builder.build()).setEphemeral(true).queue();
                     return;
                 }
                 guildData.addDJMembers(member).update();
                 EmbedBuilder builder = new EmbedBuilder()
                         .setColor(member.getColor())
                         .setDescription(member.getAsMention() + " is now a DJ!");
-                ctx.reply(builder.build()).queue();
+                ctx.reply(builder.build()).setEphemeral(true).queue();
             }
             else
             {
-                ctx.replyError("Invalid argument! Only roles and members are allowed!").queue();
+                ctx.replyError("Invalid argument! Only roles and members are allowed!").setEphemeral(true).queue();
             }
         }
         case "remove" -> {
@@ -87,14 +87,14 @@ public class DJCommand extends SlashCommand
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(role.getColor())
                             .setDescription(role.getAsMention() + " is already not a DJ!");
-                    ctx.reply(builder.build()).queue();
+                    ctx.reply(builder.build()).setEphemeral(true).queue();
                     return;
                 }
                 guildData.removeDJRoles(role).update();
                 EmbedBuilder builder = new EmbedBuilder()
                         .setColor(role.getColor())
                         .setDescription(role.getAsMention() + " is no longer a DJ!");
-                ctx.reply(builder.build()).queue();
+                ctx.reply(builder.build()).setEphemeral(true).queue();
             }
             else if (mentionable instanceof Member member)
             {
@@ -103,14 +103,14 @@ public class DJCommand extends SlashCommand
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(member.getColor())
                             .setDescription(member.getAsMention() + " is already not a DJ!");
-                    ctx.reply(builder.build()).queue();
+                    ctx.reply(builder.build()).setEphemeral(true).queue();
                     return;
                 }
                 guildData.removeDJMembers(member).update();
                 EmbedBuilder builder = new EmbedBuilder()
                         .setColor(member.getColor())
                         .setDescription(member.getAsMention() + " is no longer a DJ!");
-                ctx.reply(builder.build()).queue();
+                ctx.reply(builder.build()).setEphemeral(true).queue();
             }
             else
             {
@@ -122,7 +122,7 @@ public class DJCommand extends SlashCommand
             List<Long> djMembers = guildData.getDJMembers();
             if (djRoles.isEmpty() && djMembers.isEmpty())
             {
-                ctx.sendSimpleEmbed("There are no DJs!");
+                event.replyEmbeds(EmbedUtil.warningEmbed("There are no DJs!")).setEphemeral(true).queue();
                 return;
             }
             StringBuilder builder = new StringBuilder();
@@ -130,7 +130,7 @@ public class DJCommand extends SlashCommand
             djRoles.forEach(x -> builder.append(x.getAsMention()).append("\n"));
             builder.append("\n");
             djMembers.forEach(x -> builder.append("<@").append(x).append(">\n"));
-            ctx.sendSimpleEmbed(builder.toString().trim());
+            event.replyEmbeds(EmbedUtil.defaultEmbed(builder.toString().trim()));
         }
         }
     }

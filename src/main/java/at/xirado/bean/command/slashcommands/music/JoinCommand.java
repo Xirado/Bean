@@ -8,13 +8,13 @@ import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.GuildAudioPlayer;
 import net.dv8tion.jda.api.entities.AudioChannel;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class JoinCommand extends SlashCommand
 {
@@ -59,6 +59,11 @@ public class JoinCommand extends SlashCommand
             event.replyEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
             return;
         }
-        event.replyEmbeds(EmbedUtil.successEmbed("Joined <#" + voiceState.getChannel().getIdLong() + ">!")).queue();
+        event.replyEmbeds(EmbedUtil.successEmbed("Joined <#" + voiceState.getChannel().getIdLong() + ">!")).setEphemeral(true).queue();
+        audioPlayer.playerSetup(
+                (GuildMessageChannel) event.getChannel(),
+                (s) -> {}, e -> {}
+        );
+
     }
 }

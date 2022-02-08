@@ -13,7 +13,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.jda.JdaLink;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -24,7 +23,6 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +62,7 @@ public class BookmarkCommand extends SlashCommand
     public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         long userId = event.getUser().getIdLong();
+        event.deferReply(true).queue();
         switch (event.getSubcommandName().toLowerCase(Locale.ROOT))
         {
         case "add" -> {
@@ -71,10 +70,9 @@ public class BookmarkCommand extends SlashCommand
             LavalinkSocket socket = ctx.getAvailableNode();
             if (isDuplicate(userId, url))
             {
-                event.replyEmbeds(EmbedUtil.errorEmbed("You already have a bookmark for that URL!")).queue();
+                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("You already have a bookmark for that URL!")).queue();
                 return;
             }
-            event.deferReply().setEphemeral(true).queue();
             socket.getRestClient().loadItem(url, new AudioLoadResultHandler()
             {
                 @Override
@@ -112,11 +110,11 @@ public class BookmarkCommand extends SlashCommand
             Bookmark bookmark = getBookmark(userId, bookmarkUrl);
             if (bookmark == null)
             {
-                event.replyEmbeds(EmbedUtil.errorEmbed("Could not find a bookmark with a matching URL!")).queue();
+                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Could not find a bookmark with a matching URL!")).queue();
                 return;
             }
             deleteBookmark(userId, bookmark);
-            event.replyEmbeds(EmbedUtil.defaultEmbed("Removed bookmark **" + bookmark.getName() + "**!")).queue();
+            event.getHook().sendMessageEmbeds(EmbedUtil.defaultEmbed("Removed bookmark **" + bookmark.getName() + "**!")).queue();
         }
 
         case "add_current" -> {
@@ -124,7 +122,7 @@ public class BookmarkCommand extends SlashCommand
             AudioTrack currentTrack = link.getPlayer().getPlayingTrack();
             if (currentTrack == null)
             {
-                event.replyEmbeds(EmbedUtil.errorEmbed("There is nothing playing!")).queue();
+                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("There is nothing playing!")).queue();
                 return;
             }
             TrackInfo currentTrackInfo = currentTrack.getUserData(TrackInfo.class);
@@ -132,12 +130,12 @@ public class BookmarkCommand extends SlashCommand
             {
                 if (getBookmark(userId, currentTrackInfo.getTrackUrl()) != null)
                 {
-                    event.replyEmbeds(EmbedUtil.errorEmbed("You already have this track bookmarked!")).queue();
+                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("You already have this track bookmarked!")).queue();
                     return;
                 }
                 Bookmark entry = new Bookmark(currentTrack.getInfo().title, currentTrackInfo.getTrackUrl(), false);
                 addBookmark(userId, entry);
-                event.replyEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + currentTrack.getInfo().title + "**")).queue();
+                event.getHook().sendMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + currentTrack.getInfo().title + "**")).queue();
                 return;
             }
             String trackUrl = currentTrackInfo.getTrackUrl();
@@ -147,7 +145,7 @@ public class BookmarkCommand extends SlashCommand
             String interactionId = event.getInteraction().getId();
             Button singleTrack = Button.primary(interactionId + ":single", "Single Track");
             Button wholePlaylist = Button.primary(interactionId + ":playlist", "Playlist");
-            event.replyEmbeds(SINGLE_OR_PLAYLIST_EMBED)
+            event.getHook().sendMessageEmbeds(SINGLE_OR_PLAYLIST_EMBED)
                     .addActionRow(singleTrack, wholePlaylist)
                     .setEphemeral(true)
                     .queue((hook) -> Bean.getInstance().getEventWaiter().waitForEvent(

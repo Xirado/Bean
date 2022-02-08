@@ -9,11 +9,9 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class SkipCommand extends SlashCommand
 {
@@ -30,41 +28,35 @@ public class SkipCommand extends SlashCommand
         AudioTrack track = guildAudioPlayer.getPlayer().getPlayingTrack();
         if (track == null)
         {
-            ctx.sendSimpleEmbed("There is no music to skip!");
+            ctx.sendSimpleEphemeralEmbed("There is no music to skip!");
             return;
         }
         if (track.getUserData(TrackInfo.class).getRequesterIdLong() == event.getUser().getIdLong())
         {
-            if (guildAudioPlayer.getScheduler().isRepeat())
-            {
-                guildAudioPlayer.getScheduler().setRepeat(false);
-            }
             guildAudioPlayer.getScheduler().nextTrack();
             AudioTrack nextTrack = guildAudioPlayer.getPlayer().getPlayingTrack();
+            guildAudioPlayer.forcePlayerUpdate();
             if (nextTrack == null)
             {
-                ctx.sendSimpleEmbed("**Skipped!**");
+                ctx.sendSimpleEphemeralEmbed("**Skipped!**");
                 return;
             }
-            ctx.sendSimpleEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
+            ctx.sendSimpleEphemeralEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
             return;
         }
         if (!ctx.getGuildData().isDJ(event.getMember()))
         {
-            event.replyEmbeds(EmbedUtil.errorEmbed("You need to be a DJ to do this!")).queue();
+            event.replyEmbeds(EmbedUtil.errorEmbed("You need to be a DJ to do this!")).setEphemeral(true).queue();
             return;
         }
-        if (guildAudioPlayer.getScheduler().isRepeat())
-        {
-            guildAudioPlayer.getScheduler().setRepeat(false);
-        }
         guildAudioPlayer.getScheduler().nextTrack();
+        guildAudioPlayer.forcePlayerUpdate();
         AudioTrack nextTrack = guildAudioPlayer.getPlayer().getPlayingTrack();
         if (nextTrack == null)
         {
-            ctx.sendSimpleEmbed("**Skipped!**");
+            ctx.sendSimpleEphemeralEmbed("**Skipped!**");
             return;
         }
-        ctx.sendSimpleEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
+        ctx.sendSimpleEphemeralEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
     }
 }

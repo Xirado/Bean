@@ -13,6 +13,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class MusicUtil
 {
 
@@ -51,14 +54,55 @@ public class MusicUtil
 
     public static MessageEmbed getPlayerEmbed(AudioTrack track)
     {
+        if (track == null)
+        {
+            EmbedBuilder builder = new EmbedBuilder()
+                    .setTitle("No music playing", "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+                    .setColor(EmbedUtil.DEFAULT_COLOR)
+                    .setDescription(getProgressBar(0)+"\n--:-- / --:--")
+                    .setThumbnail("https://bean.bz/img/icons/android-chrome-512x512.png");
+            return builder.build();
+        }
         TrackInfo info = track.getUserData(TrackInfo.class);
         long position = Bean.getInstance().getLavalink().getExistingLink(info.getGuild()).getPlayer().getTrackPosition();
+        if (position < 0)
+            position = 0;
         int percentage = (int) ((double)position / (double) track.getDuration() * 100);
+
+        GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(info.getGuildId());
 
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle(track.getInfo().title + " - " + track.getInfo().author, track.getInfo().uri)
-                .setColor(EmbedUtil.DEFAULT_COLOR)
-                .setDescription(FormatUtil.formatTime(position)+ " " + getProgressBar(percentage)+ " " + FormatUtil.formatTime(track.getDuration()));
+                .setColor(EmbedUtil.DEFAULT_COLOR);
+
+        if (info.getVoteSkips().size() > 0)
+            builder.setFooter(info.getVoteSkips().size() + "votes to skip");
+
+        String description = getProgressBar(percentage)+ "\n" + FormatUtil.formatTime(position) + " / " + FormatUtil.formatTime(track.getDuration());
+        if (track.getDuration() == Long.MAX_VALUE)
+            description = "\uD83D\uDD34 Live";
+        Queue<AudioTrack> queue = guildAudioPlayer.getScheduler().getQueue();
+
+        AtomicInteger index = new AtomicInteger();
+        String[] tracks = queue.stream()
+                .limit(10)
+                .map(queuedTrack -> "`" + (index.get() < 9 ? " " : "") + index.incrementAndGet() + "` [" + queuedTrack.getInfo().title + " - " + queuedTrack.getInfo().author + "](" + queuedTrack.getInfo().uri + ")" ).toArray(String[]::new);
+
+        if (tracks.length > 0)
+        {
+            int length = 0;
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String s : tracks)
+            {
+                if (length + s.length()+1 <= MessageEmbed.VALUE_MAX_LENGTH)
+                    stringBuilder.append(s).append("\n");
+
+                length += s.length()+1;
+            }
+            builder.addField("Coming next", stringBuilder.toString(), false);
+        }
+
+        builder.setDescription(description);
 
         if (track instanceof SpotifyTrack spotifyTrack)
             builder.setThumbnail(spotifyTrack.getArtworkURL());

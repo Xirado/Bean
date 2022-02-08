@@ -6,7 +6,9 @@ import at.xirado.bean.misc.objects.CachedMessage;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.utils.TimeUtil;
 
+import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,10 +28,22 @@ public class AudioManager
             {
                 for (GuildAudioPlayer guildAudioPlayer : getAudioPlayers())
                 {
+                    if (guildAudioPlayer.getPlayer().getPlayingTrack() == null)
+                        continue;
+
+                    if (guildAudioPlayer.getPlayer().getPlayingTrack().getDuration() == Long.MAX_VALUE)
+                        continue;
                     CachedMessage message = guildAudioPlayer.getOpenPlayer();
                     if (message != null)
                     {
-                        if (guildAudioPlayer.getPlayer().isPaused()) continue;
+                        if (guildAudioPlayer.getPlayer().isPaused() || guildAudioPlayer.getPlayer().getPlayingTrack() == null) continue;
+                        OffsetDateTime created = TimeUtil.getTimeCreated(message.getMessageId());
+                        if (OffsetDateTime.now().plusMinutes(55).isBefore(created))
+                        {
+                            System.out.println("message is 55 minutes old! Making new one");
+                            guildAudioPlayer.playerSetup(message.getChannel(), s -> {}, e -> {});
+                            continue;
+                        }
                         TextChannel channel = message.getChannel();
                         if (channel == null)
                         {

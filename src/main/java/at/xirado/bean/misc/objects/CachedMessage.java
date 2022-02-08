@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -36,6 +37,15 @@ public class CachedMessage
         TextChannel channel = getChannel();
         Checks.check(channel != null, "Channel no longer exists!");
         return channel.retrieveMessageById(messageId);
+    }
+
+    @Nonnull
+    public RestAction<Void> delete()
+    {
+        if (getChannel() == null)
+            return new CompletedRestAction<>(jda, null);
+
+        return getChannel().deleteMessageById(messageId);
     }
 
     @Nullable

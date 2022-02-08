@@ -36,6 +36,7 @@ public class VoiceUpdateListener extends ListenerAdapter
             return;
         if (event.getMember().equals(event.getGuild().getSelfMember()))
         {
+            GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
             if (!event.getGuild().getSelfMember().getVoiceState().isGuildDeafened())
                 try
                 {
@@ -50,7 +51,6 @@ public class VoiceUpdateListener extends ListenerAdapter
                 }
             if (event.getChannelJoined() instanceof StageChannel stageChannel)
             {
-                GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
                 if (stageChannel.getStageInstance() == null)
                 {
                     if (audioPlayer.getPlayer().getPlayingTrack() != null)
@@ -78,6 +78,7 @@ public class VoiceUpdateListener extends ListenerAdapter
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
+        audioPlayer.setOpenPlayer(null);
         if (event.getChannelLeft() instanceof StageChannel stageChannel)
         {
             if (stageChannel.getStageInstance() != null)

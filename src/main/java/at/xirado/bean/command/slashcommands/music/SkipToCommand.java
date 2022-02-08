@@ -6,12 +6,10 @@ import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -32,18 +30,18 @@ public class SkipToCommand extends SlashCommand
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         if (guildAudioPlayer.getPlayer().getPlayingTrack() == null)
         {
-            ctx.sendSimpleEmbed("There is no music playing!");
+            ctx.sendSimpleEphemeralEmbed("There is no music playing!");
             return;
         }
         BlockingQueue<AudioTrack> queue = guildAudioPlayer.getScheduler().getQueue();
         if (queue.size() == 0)
         {
-            ctx.sendSimpleEmbed("There is nothing in the queue!");
+            ctx.sendSimpleEphemeralEmbed("There is nothing in the queue!");
             return;
         }
         if (index < 1 || index > queue.size())
         {
-            ctx.sendSimpleEmbed("Index must be a valid integer between 1 and " + queue.size() + "!");
+            ctx.sendSimpleEphemeralEmbed("Index must be a valid integer between 1 and " + queue.size() + "!");
             return;
         }
         for (int i = 0; i < index - 1; i++)
@@ -51,6 +49,7 @@ public class SkipToCommand extends SlashCommand
             queue.remove();
         }
         guildAudioPlayer.getScheduler().nextTrack();
+        guildAudioPlayer.forcePlayerUpdate();
         ctx.sendSimpleEmbed("**Skipped!** Now playing: `" + guildAudioPlayer.getPlayer().getPlayingTrack().getInfo().title + "`");
     }
 

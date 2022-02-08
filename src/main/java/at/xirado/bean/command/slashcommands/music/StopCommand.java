@@ -10,11 +10,9 @@ import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +40,7 @@ public class StopCommand extends SlashCommand
             String name = state.getChannel().getName();
             player.destroy();
             event.replyEmbeds(EmbedUtil.defaultEmbed("Disconnected from **" + name + "**!")).queue();
+            player.setOpenPlayer(null);
             return;
         }
         if (!ctx.getGuildData().isDJ(event.getMember()))
@@ -65,7 +64,7 @@ public class StopCommand extends SlashCommand
                 return;
             }
         }
-
+        player.setOpenPlayer(null);
         String name = state.getChannel().getName();
         player.destroy();
         event.replyEmbeds(EmbedUtil.defaultEmbed("Disconnected from **" + name + "**!")).queue();
