@@ -35,6 +35,9 @@ public class MusicPlayerButtonListener extends ListenerAdapter
         Member selfMember = event.getGuild().getSelfMember();
         Member member = event.getMember();
 
+        if (member.getVoiceState().getChannel() == null)
+            return;
+
         if (member.getVoiceState().getChannel().getIdLong() != selfMember.getVoiceState().getChannel().getIdLong())
             return;
 
