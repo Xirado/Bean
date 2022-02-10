@@ -77,7 +77,7 @@ public class GuildAudioPlayer
     public void playerSetup(GuildMessageChannel channel, AudioTrack track, Consumer<Message> onSuccess, Consumer<Throwable> onError)
     {
         channel.sendMessageEmbeds(MusicUtil.getPlayerEmbed(track == null ? player.getPlayingTrack() : track))
-                .setActionRows(MusicUtil.getPlayerButtons(player.isPaused(), getScheduler().isRepeat(), getScheduler().isShuffle()))
+                .setActionRows(MusicUtil.getPlayerButtons(this))
                 .queue(message -> {
                     setOpenPlayer(new CachedMessage(message));
                     onSuccess.accept(message);
@@ -92,7 +92,7 @@ public class GuildAudioPlayer
 
         TextChannel channel = message.getChannel();
         channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(player.getPlayingTrack()))
-                .setActionRows(MusicUtil.getPlayerButtons(player.isPaused(), scheduler.isRepeat(), scheduler.isShuffle())).queue(null, e -> setOpenPlayer(null));
+                .setActionRows(MusicUtil.getPlayerButtons(this)).queue(null, e -> setOpenPlayer(null));
 
     }
 
@@ -103,12 +103,13 @@ public class GuildAudioPlayer
             return;
 
         TextChannel channel = message.getChannel();
-        channel.editMessageComponentsById(message.getMessageId(), MusicUtil.getPlayerButtons(player.isPaused(), scheduler.isRepeat(), scheduler.isShuffle()))
+        channel.editMessageComponentsById(message.getMessageId(), MusicUtil.getPlayerButtons(this))
                 .queue(null, e -> setOpenPlayer(null));
     }
 
     public void destroy()
     {
+        setOpenPlayer(null);
         Bean.getInstance().getAudioManager().removePlayer(this);
         link.destroy();
         scheduler.destroy();

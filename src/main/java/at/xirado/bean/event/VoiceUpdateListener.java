@@ -78,7 +78,6 @@ public class VoiceUpdateListener extends ListenerAdapter
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        audioPlayer.setOpenPlayer(null);
         if (event.getChannelLeft() instanceof StageChannel stageChannel)
         {
             if (stageChannel.getStageInstance() != null)
@@ -126,7 +125,10 @@ public class VoiceUpdateListener extends ListenerAdapter
             GuildVoiceState voiceState = event.getGuild().getSelfMember().getVoiceState();
             final long channelId = event.getChannelJoined().getIdLong();
             if (player.getPlayingTrack() != null)
+            {
                 player.setPaused(true);
+                audioPlayer.forcePlayerUpdate();
+            }
             Bean.getInstance().getEventWaiter().waitForEvent(
                     GenericGuildVoiceUpdateEvent.class,
                     e ->
@@ -137,7 +139,10 @@ public class VoiceUpdateListener extends ListenerAdapter
                             return false;
                         return !e.getMember().equals(e.getGuild().getSelfMember());
                     },
-                    e -> player.setPaused(false),
+                    e -> {
+                        player.setPaused(false);
+                        audioPlayer.forcePlayerUpdate();
+                    },
                     TIME_UNTIL_AUTO_DISCONNECT,
                     TimeUnit.SECONDS,
                     () ->
@@ -177,6 +182,7 @@ public class VoiceUpdateListener extends ListenerAdapter
                     if (player.getPlayingTrack() != null)
                     {
                         player.setPaused(true);
+                        audioPlayer.forcePlayerUpdate();
                     }
                     else
                     {
@@ -197,6 +203,7 @@ public class VoiceUpdateListener extends ListenerAdapter
                             e ->
                             {
                                 player.setPaused(false);
+                                audioPlayer.forcePlayerUpdate();
                             },
                             TIME_UNTIL_AUTO_DISCONNECT,
                             TimeUnit.SECONDS,

@@ -1,7 +1,6 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.misc.Metrics;
-import at.xirado.bean.misc.MusicUtil;
 import at.xirado.bean.misc.objects.CachedMessage;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -49,7 +48,7 @@ public class AudioManager
                             guildAudioPlayer.setOpenPlayer(null);
                             continue;
                         }
-                        channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(guildAudioPlayer.getPlayer().getPlayingTrack())).queue(null, e -> guildAudioPlayer.setOpenPlayer(null));
+                        guildAudioPlayer.forcePlayerUpdate();
                     }
                 }
                 int playingAudioPlayers = getAudioPlayers().stream()

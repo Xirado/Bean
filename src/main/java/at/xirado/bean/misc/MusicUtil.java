@@ -8,6 +8,7 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -179,5 +180,15 @@ public class MusicUtil
     public static ActionRow getPlayerButtons(boolean isPaused, boolean isRepeat, boolean isShuffle)
     {
         return ActionRow.of(REWIND, isPaused ? PLAY : PAUSE, SKIP, isRepeat ? Util.getEnabledButton(REPEAT) : REPEAT, isShuffle ? Util.getEnabledButton(SHUFFLE) : SHUFFLE);
+    }
+
+    public static ActionRow getPlayerButtons(GuildAudioPlayer player)
+    {
+        ActionRow row = ActionRow.of(REWIND, player.getPlayer().isPaused() ? PLAY : PAUSE, SKIP, player.getScheduler().isRepeat() ? Util.getEnabledButton(REPEAT) : REPEAT, player.getScheduler().isShuffle() ? Util.getEnabledButton(SHUFFLE) : SHUFFLE);;
+        String channelId = player.getLink().getChannel();
+        AudioChannel channel = Bean.getInstance().getShardManager().getVoiceChannelById(channelId);
+        if (channel == null)
+            return row;
+        return Util.getListeningUsers(channel) == 0 ? row.asDisabled() : row;
     }
 }
