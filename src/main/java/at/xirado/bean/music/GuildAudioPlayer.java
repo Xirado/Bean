@@ -9,6 +9,8 @@ import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.exceptions.ErrorHandler;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.util.function.Consumer;
 
@@ -62,7 +64,7 @@ public class GuildAudioPlayer
         {
             TextChannel channel = this.openPlayer.getChannel();
             if (channel != null)
-                channel.deleteMessageById(this.openPlayer.getMessageId()).queue(s -> {}, e -> {});
+                channel.deleteMessageById(this.openPlayer.getMessageId()).queue(s -> {}, new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE));
         }
         this.openPlayer = openPlayer;
     }

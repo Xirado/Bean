@@ -64,7 +64,9 @@ public class MusicPlayerButtonListener extends ListenerAdapter
                 guildAudioPlayer.getPlayer().setPaused(!guildAudioPlayer.getPlayer().isPaused());
             }
             case "next" -> {
-                if (!guildData.isDJ(member) && !isRequester(member, guildAudioPlayer.getPlayer().getPlayingTrack()))
+                boolean isDj = guildData.isDJ(member);
+                boolean isRequester = isRequester(member, guildAudioPlayer.getPlayer().getPlayingTrack());
+                if (!isDj && !isRequester)
                     if (!processVoteSkip(event, guildAudioPlayer))
                         return;
 
