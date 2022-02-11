@@ -228,4 +228,18 @@ public class Util
         }
         return nonBots;
     }
+
+    public static Button getEnabledButton(Button button)
+    {
+        Emoji emoji = button.getEmoji();
+        String id = button.getId();
+        return Button.success(id, emoji);
+    }
+
+    public static Button getDisabledButton(Button button)
+    {
+        Emoji emoji = button.getEmoji();
+        String id = button.getId();
+        return Button.secondary(id, emoji);
+    }
 }

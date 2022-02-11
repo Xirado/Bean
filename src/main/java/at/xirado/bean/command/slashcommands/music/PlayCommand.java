@@ -23,10 +23,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.StageChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -42,7 +39,6 @@ import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +62,7 @@ public class PlayCommand extends SlashCommand
                         .addChoice("Soundcloud", "scsearch:")
                         .addChoice("Youtube Music", "ytmsearch:")
                 )
+                .addOptions(new OptionData(OptionType.BOOLEAN, "shuffle", "Whether to enable shuffle."))
         );
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
@@ -81,7 +78,7 @@ public class PlayCommand extends SlashCommand
     public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
         JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
-        event.deferReply().queue();
+        event.deferReply(true).queue();
         Member member = event.getMember();
         GuildVoiceState voiceState = member.getVoiceState();
         AudioManager manager = event.getGuild().getAudioManager();
@@ -102,6 +99,9 @@ public class PlayCommand extends SlashCommand
             }
         }
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
+        if (event.getOption("shuffle") != null)
+            guildAudioPlayer.getScheduler().setShuffle(event.getOption("shuffle").getAsBoolean());
+
         String query = event.getOption("query").getAsString();
         boolean isDirectUrl = query.startsWith("http://") || query.startsWith("https://");
         if (!isDirectUrl)
@@ -115,6 +115,7 @@ public class PlayCommand extends SlashCommand
             query = provider + query;
         }
         long userId = event.getUser().getIdLong();
+        long guildId = event.getGuild().getIdLong();
         long channelId = event.getChannel().getIdLong();
         String rawQuery = event.getOption("query").getAsString();
         link.getRestClient().loadItem(query, new AudioLoadResultHandler()
@@ -122,7 +123,7 @@ public class PlayCommand extends SlashCommand
             @Override
             public void trackLoaded(AudioTrack track)
             {
-                TrackInfo trackInfo = new TrackInfo(userId, channelId)
+                TrackInfo trackInfo = new TrackInfo(userId, guildId, channelId)
                         .setTrackUrl(track.getInfo().uri);
                 track.setUserData(trackInfo);
                 event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, track)).queue();
@@ -136,6 +137,10 @@ public class PlayCommand extends SlashCommand
                     Hints.sentUserHint(userId, "bookmark");
                 }
                 guildAudioPlayer.getScheduler().queue(track);
+                if (guildAudioPlayer.getOpenPlayer() == null)
+                    guildAudioPlayer.playerSetup((GuildMessageChannel) event.getChannel(), (s) -> {}, e -> {});
+                else
+                    guildAudioPlayer.forcePlayerUpdate();
                 SearchEntry entry = new SearchEntry(track.getInfo().title, rawQuery, false);
                 if (!isDuplicate(member.getIdLong(), entry.getName()) && !isBookmarked)
                     addSearchEntry(member.getIdLong(), entry);
@@ -147,11 +152,15 @@ public class PlayCommand extends SlashCommand
                 if (playlist.isSearchResult())
                 {
                     AudioTrack single = (playlist.getSelectedTrack() == null) ? playlist.getTracks().get(0) : playlist.getSelectedTrack();
-                    TrackInfo trackInfo = new TrackInfo(userId, channelId)
+                    TrackInfo trackInfo = new TrackInfo(userId, guildId, channelId)
                             .setTrackUrl(single.getInfo().uri);
                     single.setUserData(trackInfo);
                     event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, single)).queue();
                     guildAudioPlayer.getScheduler().queue(single);
+                    if (guildAudioPlayer.getOpenPlayer() == null)
+                        guildAudioPlayer.playerSetup((GuildMessageChannel) event.getChannel(), (s) -> {}, e -> {});
+                    else
+                        guildAudioPlayer.forcePlayerUpdate();
                     SearchEntry entry = new SearchEntry(event.getOption("query").getAsString(), event.getOption("query").getAsString(), false);
                     if (!isDuplicate(member.getIdLong(), entry.getName()))
                         addSearchEntry(member.getIdLong(), entry);
@@ -159,14 +168,17 @@ public class PlayCommand extends SlashCommand
                 }
                 boolean isBookmarked = BookmarkCommand.getBookmark(event.getUser().getIdLong(), rawQuery) != null;
                 String amount = "Added **" + playlist.getTracks().size() + "** tracks to the queue! (**" + FormatUtil.formatTime(playlist.getTracks().stream().map(AudioTrack::getDuration).reduce(0L, Long::sum)) + "**)";
+                List<AudioTrack> tracks = new ArrayList<>(playlist.getTracks());
+                if (guildAudioPlayer.getScheduler().isShuffle())
+                    Collections.shuffle(tracks);
                 if (guildAudioPlayer.getPlayer().getPlayingTrack() == null)
                 {
-                    amount += "\n**Now playing** " + Util.titleMarkdown(playlist.getTracks().get(0));
+                    amount += "\n**Now playing** " + Util.titleMarkdown(tracks.get(0));
                 }
                 EmbedBuilder embed = EmbedUtil.defaultEmbedBuilder(amount);
-                if (playlist.getTracks().get(0) instanceof YoutubeAudioTrack)
-                    embed.setThumbnail("https://img.youtube.com/vi/" + playlist.getTracks().get(0).getIdentifier() + "/mqdefault.jpg");
-                else if (playlist.getTracks().get(0) instanceof SpotifyTrack track)
+                if (tracks.get(0) instanceof YoutubeAudioTrack)
+                    embed.setThumbnail("https://img.youtube.com/vi/" + tracks.get(0).getIdentifier() + "/mqdefault.jpg");
+                else if (tracks.get(0) instanceof SpotifyTrack track)
                     embed.setThumbnail(track.getArtworkURL());
                 embed.setFooter(playlist.getName());
                 event.getHook().sendMessageEmbeds(embed.build()).queue();
@@ -178,15 +190,19 @@ public class PlayCommand extends SlashCommand
                             .queue();
                     Hints.sentUserHint(userId, "bookmark");
                 }
-                playlist.getTracks().forEach(track ->
+                tracks.forEach(track ->
                 {
-                    TrackInfo trackInfo = new TrackInfo(userId, channelId)
+                    TrackInfo trackInfo = new TrackInfo(userId, guildId, channelId)
                             .setTrackUrl(track.getInfo().uri)
                             .setPlaylistName(playlist.getName())
                             .setPlaylistUrl(rawQuery);
                     track.setUserData(trackInfo);
                     guildAudioPlayer.getScheduler().queue(track);
                 });
+                if (guildAudioPlayer.getOpenPlayer() == null)
+                    guildAudioPlayer.playerSetup((GuildMessageChannel) event.getChannel(), tracks.get(0), (s) -> {}, e -> {});
+                else
+                    guildAudioPlayer.forcePlayerUpdate();
                 SearchEntry entry = new SearchEntry(playlist.getName(), event.getOption("query").getAsString(), true);
                 if (!isDuplicate(member.getIdLong(), entry.getName()) && !isBookmarked)
                     addSearchEntry(member.getIdLong(), entry);

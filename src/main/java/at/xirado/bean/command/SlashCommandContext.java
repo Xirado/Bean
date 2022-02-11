@@ -96,6 +96,14 @@ public class SlashCommandContext
         event.replyEmbeds(builder.build()).queue();
     }
 
+    public void sendSimpleEphemeralEmbed(CharSequence content)
+    {
+        EmbedBuilder builder = new EmbedBuilder()
+                .setColor(0x452350)
+                .setDescription(content);
+        event.replyEmbeds(builder.build()).setEphemeral(true).queue();
+    }
+
     public MessageEmbed getSimpleEmbed(CharSequence content)
     {
         return new EmbedBuilder()

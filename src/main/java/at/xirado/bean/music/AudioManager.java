@@ -1,9 +1,13 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.misc.Metrics;
+import at.xirado.bean.misc.objects.CachedMessage;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.utils.TimeUtil;
 
+import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,13 +25,39 @@ public class AudioManager
         {
             while (true)
             {
+                for (GuildAudioPlayer guildAudioPlayer : getAudioPlayers())
+                {
+                    if (guildAudioPlayer.getPlayer().getPlayingTrack() == null)
+                        continue;
+
+                    if (guildAudioPlayer.getPlayer().getPlayingTrack().getDuration() == Long.MAX_VALUE)
+                        continue;
+                    CachedMessage message = guildAudioPlayer.getOpenPlayer();
+                    if (message != null)
+                    {
+                        if (guildAudioPlayer.getPlayer().isPaused() || guildAudioPlayer.getPlayer().getPlayingTrack() == null) continue;
+                        OffsetDateTime created = TimeUtil.getTimeCreated(message.getMessageId());
+                        if (created.plusMinutes(10).isBefore(OffsetDateTime.now()))
+                        {
+                            guildAudioPlayer.playerSetup(message.getChannel(), s -> {}, e -> {});
+                            continue;
+                        }
+                        TextChannel channel = message.getChannel();
+                        if (channel == null)
+                        {
+                            guildAudioPlayer.setOpenPlayer(null);
+                            continue;
+                        }
+                        guildAudioPlayer.forcePlayerUpdate();
+                    }
+                }
                 int playingAudioPlayers = getAudioPlayers().stream()
                         .mapToInt(pl -> pl.getPlayer().getPlayingTrack() == null ? 0 : 1)
                         .sum();
                 Metrics.PLAYING_MUSIC_PLAYERS.set(playingAudioPlayers);
                 try
                 {
-                    Thread.sleep(15000);
+                    Thread.sleep(5000);
                 }
                 catch (InterruptedException ignored)
                 {

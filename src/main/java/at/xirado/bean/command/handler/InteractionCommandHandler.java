@@ -85,6 +85,7 @@ public class InteractionCommandHandler
         registerCommand(new VolumeCommand());
         registerCommand(new SkipCommand());
         registerCommand(new QueueCommand());
+        registerCommand(new PlayerCommand());
         registerCommand(new StopCommand());
         registerCommand(new ClearCommand());
         registerCommand(new JoinCommand());

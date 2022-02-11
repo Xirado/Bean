@@ -10,11 +10,9 @@ import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,20 +31,21 @@ public class ClearCommand extends SlashCommand
         GuildVoiceState state = event.getGuild().getSelfMember().getVoiceState();
         if (state.getChannel() == null)
         {
-            event.replyEmbeds(EmbedUtil.warningEmbed("I am not connected to a voice channel!")).queue();
+            event.replyEmbeds(EmbedUtil.warningEmbed("I am not connected to a voice channel!")).setEphemeral(true).queue();
             return;
         }
         GuildAudioPlayer player = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         if (player.getScheduler().getQueue().isEmpty())
         {
-            event.replyEmbeds(EmbedUtil.warningEmbed("The queue is already empty!")).queue();
+            event.replyEmbeds(EmbedUtil.warningEmbed("The queue is already empty!")).setEphemeral(true).queue();
             return;
         }
 
         if (Util.getListeningUsers(state.getChannel()) == 1)
         {
             player.getScheduler().getQueue().clear();
-            event.replyEmbeds(EmbedUtil.defaultEmbed("Cleared the queue!")).queue();
+            event.replyEmbeds(EmbedUtil.defaultEmbed("Cleared the queue!")).setEphemeral(true).queue();
+            player.forcePlayerUpdate();
             return;
         }
 
@@ -66,12 +65,13 @@ public class ClearCommand extends SlashCommand
             }
             if (!allowedToStop)
             {
-                event.replyEmbeds(EmbedUtil.errorEmbed("You need to be a DJ to do this!")).queue();
+                event.replyEmbeds(EmbedUtil.errorEmbed("You need to be a DJ to do this!")).setEphemeral(true).queue();
                 return;
             }
         }
 
         player.getScheduler().getQueue().clear();
-        event.replyEmbeds(EmbedUtil.defaultEmbed("Cleared the queue!")).queue();
+        event.replyEmbeds(EmbedUtil.defaultEmbed("Cleared the queue!")).setEphemeral(true).queue();
+        player.forcePlayerUpdate();
     }
 }

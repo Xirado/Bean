@@ -36,6 +36,7 @@ public class VoiceUpdateListener extends ListenerAdapter
             return;
         if (event.getMember().equals(event.getGuild().getSelfMember()))
         {
+            GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
             if (!event.getGuild().getSelfMember().getVoiceState().isGuildDeafened())
                 try
                 {
@@ -50,7 +51,6 @@ public class VoiceUpdateListener extends ListenerAdapter
                 }
             if (event.getChannelJoined() instanceof StageChannel stageChannel)
             {
-                GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
                 if (stageChannel.getStageInstance() == null)
                 {
                     if (audioPlayer.getPlayer().getPlayingTrack() != null)
@@ -125,7 +125,10 @@ public class VoiceUpdateListener extends ListenerAdapter
             GuildVoiceState voiceState = event.getGuild().getSelfMember().getVoiceState();
             final long channelId = event.getChannelJoined().getIdLong();
             if (player.getPlayingTrack() != null)
+            {
                 player.setPaused(true);
+                audioPlayer.forcePlayerUpdate();
+            }
             Bean.getInstance().getEventWaiter().waitForEvent(
                     GenericGuildVoiceUpdateEvent.class,
                     e ->
@@ -136,7 +139,10 @@ public class VoiceUpdateListener extends ListenerAdapter
                             return false;
                         return !e.getMember().equals(e.getGuild().getSelfMember());
                     },
-                    e -> player.setPaused(false),
+                    e -> {
+                        player.setPaused(false);
+                        audioPlayer.forcePlayerUpdate();
+                    },
                     TIME_UNTIL_AUTO_DISCONNECT,
                     TimeUnit.SECONDS,
                     () ->
@@ -176,6 +182,7 @@ public class VoiceUpdateListener extends ListenerAdapter
                     if (player.getPlayingTrack() != null)
                     {
                         player.setPaused(true);
+                        audioPlayer.forcePlayerUpdate();
                     }
                     else
                     {
@@ -196,6 +203,7 @@ public class VoiceUpdateListener extends ListenerAdapter
                             e ->
                             {
                                 player.setPaused(false);
+                                audioPlayer.forcePlayerUpdate();
                             },
                             TIME_UNTIL_AUTO_DISCONNECT,
                             TimeUnit.SECONDS,

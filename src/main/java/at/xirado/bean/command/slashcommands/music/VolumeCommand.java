@@ -6,13 +6,11 @@ import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.music.GuildAudioPlayer;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class VolumeCommand extends SlashCommand
 {
@@ -27,7 +25,6 @@ public class VolumeCommand extends SlashCommand
     @Override
     public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
-        Member member = event.getMember();
         OptionMapping option = event.getOption("volume");
         GuildData guildData = ctx.getGuildData();
 
@@ -37,7 +34,7 @@ public class VolumeCommand extends SlashCommand
 
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         guildAudioPlayer.getPlayer().setVolume(volume);
-        ctx.sendSimpleEmbed("The volume has been adjusted to `" + volume + "%`!");
+        ctx.sendSimpleEphemeralEmbed("The volume has been adjusted to `" + volume + "%`!");
     }
 
 }

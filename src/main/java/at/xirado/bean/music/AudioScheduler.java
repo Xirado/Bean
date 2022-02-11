@@ -1,9 +1,10 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.MusicUtil;
+import at.xirado.bean.misc.objects.CachedMessage;
 import at.xirado.bean.misc.objects.TrackInfo;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lavalink.client.player.IPlayer;
@@ -26,15 +27,18 @@ public class AudioScheduler extends PlayerEventListenerAdapter
 
     private final LavalinkPlayer player;
     private final BlockingQueue<AudioTrack> queue;
+    private final GuildAudioPlayer guildAudioPlayer;
     private final long guildId;
     private boolean repeat = false;
+    private boolean shuffle = false;
     private AudioTrack lastTrack;
 
-    public AudioScheduler(LavalinkPlayer player, long guildId)
+    public AudioScheduler(LavalinkPlayer player, long guildId, GuildAudioPlayer guildAudioPlayer)
     {
         this.guildId = guildId;
         this.player = player;
         this.queue = new LinkedBlockingQueue<>();
+        this.guildAudioPlayer = guildAudioPlayer;
     }
 
     public void queue(AudioTrack track)
@@ -62,6 +66,18 @@ public class AudioScheduler extends PlayerEventListenerAdapter
                     stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(null)).queue();
             }
         }
+        if (guildAudioPlayer.getOpenPlayer() != null && track == null)
+        {
+            CachedMessage message = guildAudioPlayer.getOpenPlayer();
+            TextChannel channel = message.getChannel();
+            if (channel == null)
+            {
+                guildAudioPlayer.setOpenPlayer(null);
+                return;
+            }
+
+            channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(null)).queue(null, (e) -> guildAudioPlayer.setOpenPlayer(null));
+        }
         if (track != null)
             player.playTrack(track);
         else
@@ -77,6 +93,16 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     public void setRepeat(boolean repeat)
     {
         this.repeat = repeat;
+    }
+
+    public boolean isShuffle()
+    {
+        return shuffle;
+    }
+
+    public void setShuffle(boolean shuffle)
+    {
+        this.shuffle = shuffle;
     }
 
     public BlockingQueue<AudioTrack> getQueue()
@@ -105,6 +131,19 @@ public class AudioScheduler extends PlayerEventListenerAdapter
                 stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(track)).queue();
             }
         }
+        if (guildAudioPlayer.getOpenPlayer() != null)
+        {
+            CachedMessage message = guildAudioPlayer.getOpenPlayer();
+            TextChannel channel = message.getChannel();
+            if (channel == null)
+            {
+                guildAudioPlayer.setOpenPlayer(null);
+                return;
+            }
+
+            channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(track)).queue(null, (e) -> guildAudioPlayer.setOpenPlayer(null));
+        }
+
     }
 
     @Override
@@ -112,7 +151,24 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     {
         log.debug("Track " + track.getInfo().title + " stopped with reason " + endReason);
         if (endReason.mayStartNext)
+        {
             nextTrack();
+        }
+        if (endReason == AudioTrackEndReason.STOPPED || endReason == AudioTrackEndReason.LOAD_FAILED)
+        {
+            if (guildAudioPlayer.getOpenPlayer() != null)
+            {
+                CachedMessage message = guildAudioPlayer.getOpenPlayer();
+                TextChannel channel = message.getChannel();
+                if (channel == null)
+                {
+                    guildAudioPlayer.setOpenPlayer(null);
+                    return;
+                }
+
+                channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(null)).queue(null, (e) -> guildAudioPlayer.setOpenPlayer(null));
+            }
+        }
     }
 
     @Override
@@ -128,8 +184,17 @@ public class AudioScheduler extends PlayerEventListenerAdapter
         TextChannel channel = guild.getTextChannelById(info.getChannelId());
         if (channel == null)
             return;
-        channel.sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred while playing track **" + track.getInfo().title + "**!\n`" + exception.getCause().getMessage() + "`")).queue();
-        log.warn("(Guild: " + guildId + ") An error occurred while playing track \"" + track.getInfo().title + "\" by \"" + track.getInfo().author + "\"", exception);
+        if (exception instanceof FriendlyException friendlyException)
+        {
+            if (friendlyException.severity != FriendlyException.Severity.COMMON)
+            {
+                log.warn("(Guild: " + guildId + ") An error occurred while playing track \"" + track.getInfo().title + "\" by \"" + track.getInfo().author + "\"", exception);
+            }
+        }
+        else
+        {
+            log.warn("(Guild: " + guildId + ") An error occurred while playing track \"" + track.getInfo().title + "\" by \"" + track.getInfo().author + "\"", exception);
+        }
     }
 
     public long getGuildId()
