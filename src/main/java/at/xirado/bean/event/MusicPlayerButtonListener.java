@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class MusicPlayerButtonListener extends ListenerAdapter
 {
 
-    public static final List<String> BUTTON_IDS = List.of("previous", "play", "next", "repeat", "shuffle");
+    public static final List<String> BUTTON_IDS = List.of("player_previous", "player_play", "player_next", "player_repeat", "player_shuffle");
 
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event)
@@ -47,7 +47,7 @@ public class MusicPlayerButtonListener extends ListenerAdapter
 
         switch (event.getComponentId())
         {
-            case "previous" -> {
+            case "player_previous" -> {
                 if (!guildData.isDJ(member))
                 {
                     event.reply("You must be a DJ to do this!").setEphemeral(true).queue();
@@ -55,7 +55,7 @@ public class MusicPlayerButtonListener extends ListenerAdapter
                 }
                 Bean.getInstance().getLavalink().getExistingLink(event.getGuild()).getPlayer().seekTo(0L);
             }
-            case "play" -> {
+            case "player_play" -> {
                 if (!guildData.isDJ(member))
                 {
                     event.reply("You must be a DJ to do this!").setEphemeral(true).queue();
@@ -63,7 +63,7 @@ public class MusicPlayerButtonListener extends ListenerAdapter
                 }
                 guildAudioPlayer.getPlayer().setPaused(!guildAudioPlayer.getPlayer().isPaused());
             }
-            case "next" -> {
+            case "player_next" -> {
                 boolean isDj = guildData.isDJ(member);
                 boolean isRequester = isRequester(member, guildAudioPlayer.getPlayer().getPlayingTrack());
                 if (!isDj && !isRequester)
@@ -72,7 +72,7 @@ public class MusicPlayerButtonListener extends ListenerAdapter
 
                 guildAudioPlayer.getScheduler().nextTrack();
             }
-            case "repeat" -> {
+            case "player_repeat" -> {
                 if (!guildData.isDJ(member))
                 {
                     event.reply("You must be a DJ to do this!").setEphemeral(true).queue();
@@ -80,7 +80,7 @@ public class MusicPlayerButtonListener extends ListenerAdapter
                 }
                 guildAudioPlayer.getScheduler().setRepeat(!guildAudioPlayer.getScheduler().isRepeat());
             }
-            case "shuffle" -> {
+            case "player_shuffle" -> {
                 if (!guildData.isDJ(member))
                 {
                     event.reply("You must be a DJ to do this!").setEphemeral(true).queue();

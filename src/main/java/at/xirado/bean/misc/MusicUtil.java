@@ -20,12 +20,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MusicUtil
 {
 
-    private static final Button REWIND = Button.secondary("previous", Emoji.fromEmote("previous", 940204537371840522L, false));
-    private static final Button PAUSE = Button.secondary("play", Emoji.fromEmote("pause", 940204537329877032L, false));
-    private static final Button PLAY = Button.secondary("play", Emoji.fromEmote("play", 940204537023725579L, false));
-    private static final Button SKIP = Button.secondary("next", Emoji.fromEmote("next", 940204536713314324L, false));
-    private static final Button REPEAT = Button.secondary("repeat", Emoji.fromEmote("repeat", 940204537355063346L, false));
-    private static final Button SHUFFLE = Button.secondary("shuffle", Emoji.fromEmote("shuffle", 940748348137304124L, false));
+    private static final Button REWIND = Button.secondary("player_previous", Emoji.fromEmote("previous", 940204537371840522L, false));
+    private static final Button PAUSE = Button.secondary("player_play", Emoji.fromEmote("pause", 940204537329877032L, false));
+    private static final Button PLAY = Button.secondary("player_play", Emoji.fromEmote("play", 940204537023725579L, false));
+    private static final Button SKIP = Button.secondary("player_next", Emoji.fromEmote("next", 940204536713314324L, false));
+    private static final Button REPEAT = Button.secondary("player_repeat", Emoji.fromEmote("repeat", 940204537355063346L, false));
+    private static final Button SHUFFLE = Button.secondary("player_shuffle", Emoji.fromEmote("shuffle", 940748348137304124L, false));
 
     public static String getStageTopicString(AudioTrack track)
     {
