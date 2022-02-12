@@ -96,7 +96,6 @@ public class MEE6Queue extends Thread
     private void makeCall(MEE6Request request)
     {
         currentRequestGuildId = request.getGuildId();
-        String name = request.getGuildId() == 159962941502783488L ? "MEE6 Support" : "Test Guild";
         try
         {
             URI uri = new URIBuilder()
