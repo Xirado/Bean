@@ -186,6 +186,8 @@ public class MusicUtil
     {
         ActionRow row = ActionRow.of(REWIND, player.getPlayer().isPaused() ? PLAY : PAUSE, SKIP, player.getScheduler().isRepeat() ? Util.getEnabledButton(REPEAT) : REPEAT, player.getScheduler().isShuffle() ? Util.getEnabledButton(SHUFFLE) : SHUFFLE);;
         String channelId = player.getLink().getChannel();
+        if (channelId == null)
+            return row;
         AudioChannel channel = Bean.getInstance().getShardManager().getVoiceChannelById(channelId);
         if (channel == null)
             return row;
