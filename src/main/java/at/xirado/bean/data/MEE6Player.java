@@ -1,7 +1,11 @@
 package at.xirado.bean.data;
 
+import net.dv8tion.jda.api.utils.data.DataObject;
+
 public class MEE6Player
 {
+    private static final String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s";
+
     private String avatar;
     private long[] detailed_xp;
     private String discriminator;
@@ -12,6 +16,21 @@ public class MEE6Player
     private String username;
     private long xp;
 
+    public static MEE6Player fromData(DataObject object)
+    {
+        MEE6Player player = new MEE6Player();
+        player.setId(object.getString("id"));
+        player.setXp(object.getInt("xp"));
+        player.setDiscriminator(object.getString("discriminator"));
+        player.setUsername(object.getString("username"));
+        if (!object.isNull("avatar"))
+        {
+            String avatarId = object.getString("avatar");
+            String avatarUrl = String.format(AVATAR_URL, player.getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
+            player.setAvatar(avatarUrl);
+        }
+        return player;
+    }
 
     public void setXp(long xp)
     {

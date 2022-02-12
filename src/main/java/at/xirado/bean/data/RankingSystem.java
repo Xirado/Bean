@@ -219,6 +219,22 @@ public class RankingSystem
         }
     }
 
+    public static void setXP(@Nonnull Connection connection, long guildID, long userID, long setAmount, String name, String discriminator, String avatarUrl)
+    {
+        var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator, avatar) values (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?, avatar = ?";
+        var query = new SQLBuilder(sql)
+                .useConnection(connection)
+                .addParameters(guildID, userID, setAmount, name, discriminator, avatarUrl, setAmount, name, discriminator, avatarUrl);
+        try
+        {
+            query.execute();
+        }
+        catch (SQLException e)
+        {
+            LOGGER.error("Could not add XP!", e);
+        }
+    }
+
     public static String getPreferredCard(@Nonnull User user)
     {
         var query = new SQLBuilder("SELECT * FROM wildcardSettings WHERE userID = ?")

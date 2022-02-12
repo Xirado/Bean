@@ -10,6 +10,7 @@ import at.xirado.bean.data.database.Database;
 import at.xirado.bean.event.*;
 import at.xirado.bean.lavaplayer.SpotifyAudioSource;
 import at.xirado.bean.log.Shell;
+import at.xirado.bean.mee6.MEE6Queue;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.AudioManager;
 import at.xirado.bean.prometheus.MetricsJob;
@@ -89,6 +90,7 @@ public class Bean
     private final WebServer webServer;
     private final Authenticator authenticator;
     private final JdaLavalink lavalink;
+    private final MEE6Queue mee6Queue;
 
     private WebhookClient webhookClient = null;
     private DataObject config = loadConfig();
@@ -137,6 +139,8 @@ public class Bean
         webServer = new WebServer(8887);
         new Prometheus();
         new MetricsJob().start();
+        mee6Queue = new MEE6Queue();
+        mee6Queue.start();
     }
 
     public static Bean getInstance()
@@ -342,6 +346,11 @@ public class Bean
     public JdaLavalink getLavalink()
     {
         return lavalink;
+    }
+
+    public MEE6Queue getMEE6Queue()
+    {
+        return mee6Queue;
     }
 
     public void initCommandCheck()

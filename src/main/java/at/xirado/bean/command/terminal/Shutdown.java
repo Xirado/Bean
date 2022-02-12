@@ -22,7 +22,6 @@ public class Shutdown extends ConsoleCommand
         this.description = "Shuts down all JDA instances and all threadpools";
     }
 
-
     @Override
     public void executeCommand(String invoke, String[] args)
     {
@@ -32,11 +31,15 @@ public class Shutdown extends ConsoleCommand
             int playing = audioPlayers.stream()
                     .mapToInt(pl -> pl.getPlayer().getPlayingTrack() == null ? 0 : 1)
                     .sum();
+
+            int mee6QueueSize = Bean.getInstance().getMEE6Queue().getQueue().size();
+
             if (playing > 0)
-            {
                 Shell.println(MCColor.translate('&', "&eCareful: There are &2" + playing + "&e players running! Use shutdown -f to force-shutdown."));
+            if (mee6QueueSize > 0)
+                Shell.println(MCColor.translate('&', "&eCareful: There are &2" + mee6QueueSize + "&e pending MEE6 requests!"));
+            if (playing > 0 || mee6QueueSize > 0)
                 return;
-            }
         }
         logger.info("Shutting down...");
         logger.info("Deleting player messages...");
