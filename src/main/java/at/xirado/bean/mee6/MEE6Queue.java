@@ -135,6 +135,7 @@ public class MEE6Queue extends Thread
                 if (guild != null)
                     Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We tried to migrate MEE6 experience for your guild **" + guild.getName() + "**, but sadly we could not find anything!\n\nAdding MEE6 to your server again often fixes this issue!"));
                 response.close();
+                currentRequestGuildId = 0L;
                 return;
             }
 
@@ -142,8 +143,9 @@ public class MEE6Queue extends Thread
             {
                 Guild guild = Bean.getInstance().getShardManager().getGuildById(request.getGuildId());
                 if (guild != null)
-                    Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We tried to migrate MEE6 experience for your guild **" + guild.getName() + "**, but your servers MEE6 leaderboard is [set to private]](https://mee6.xyz/dashboard/" + guild.getIdLong() + "/leaderboard)!\n\nPlease set it to public and try again!"));
+                    Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We tried to migrate MEE6 experience for your guild **" + guild.getName() + "**, but your servers MEE6 leaderboard is [set to private](https://mee6.xyz/dashboard/" + guild.getIdLong() + "/leaderboard)!\n\nPlease set it to public and try again!"));
                 response.close();
+                currentRequestGuildId = 0L;
                 return;
             }
 
@@ -153,13 +155,15 @@ public class MEE6Queue extends Thread
                 if (guild != null)
                     Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We tried to migrate MEE6 experience for your guild **" + guild.getName() + "**, but the MEE6 server appears to be having issues!\n\nPlease try again later."));
                 response.close();
+                currentRequestGuildId = 0L;
                 return;
             }
 
             if (!response.isSuccessful())
             {
-                LOGGER.error("MEE6 returned error {}\n{}", response.code(), response.body().string());
+                LOGGER.error("MEE6 returned unhandled error {}\n{}", response.code(), response.body().string());
                 response.close();
+                currentRequestGuildId = 0L;
                 return;
             }
 
@@ -185,15 +189,18 @@ public class MEE6Queue extends Thread
             if (entries == 100)
             {
                 addRequest(new MEE6Request(request.getGuildId(), request.getAuthorId()).setPage(request.getPage() + 1));
+                currentRequestGuildId = 0L;
                 return;
             }
+            currentRequestGuildId = 0L;
             int entriesTotal = ((request.getPage() - 1) * 100) + entries;
             LOGGER.debug("Finished transferring xp for guild " + request.getGuildId() + "! Migrated " + entriesTotal + "users.");
             Guild guild = Bean.getInstance().getShardManager().getGuildById(request.getGuildId());
             if (guild != null && entriesTotal > 1)
-                Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We'd like you to know that we have finished migrating MEE6 xp for all users that have a Rank on your guild **" + guild.getName() + "**! (" + entriesTotal + " Users)"));
+                Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We'd like you to know that we have finished migrating MEE6 xp for all users on your guild **" + guild.getName() + "**! (" + entriesTotal + " Users)"));
             else if (guild != null && entriesTotal == 0)
-                Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We tried to migrate MEE6 xp for all users on your guild, but we couldn't find any!"));
+                Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We tried to migrate MEE6 xp for all users on your guild **" + guild.getName() + "**, but we couldn't find any!"));
+            currentRequestGuildId = 0L;
         }
         catch (URISyntaxException | IOException exception)
         {
