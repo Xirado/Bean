@@ -61,6 +61,7 @@ public class ConsoleCommandManager
         registerCommand(new BalanceCommand());
         registerCommand(new BanGuildCommand());
         registerCommand(new ReloadConfig());
+        registerCommand(new LogLevelCommand());
     }
 
     public ArrayList<ConsoleCommand> getCommands()

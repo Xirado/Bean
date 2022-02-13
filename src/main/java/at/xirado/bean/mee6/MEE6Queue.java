@@ -138,6 +138,15 @@ public class MEE6Queue extends Thread
                 return;
             }
 
+            if (response.code() == 401)
+            {
+                Guild guild = Bean.getInstance().getShardManager().getGuildById(request.getGuildId());
+                if (guild != null)
+                    Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We tried to migrate MEE6 experience for your guild **" + guild.getName() + "**, but your servers MEE6 leaderboard is [set to private]](https://mee6.xyz/dashboard/" + guild.getIdLong() + "/leaderboard)!\n\nPlease set it to public and try again!"));
+                response.close();
+                return;
+            }
+
             if (String.valueOf(response.code()).charAt(0) == '5')
             {
                 Guild guild = Bean.getInstance().getShardManager().getGuildById(request.getGuildId());
