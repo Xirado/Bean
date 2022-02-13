@@ -7,7 +7,7 @@ public class MEE6Request implements Comparable<MEE6Request>
     private final long guildId;
     private final long authorId;
 
-    private int page = 1;
+    private int page = 0;
 
     public MEE6Request(long guildId, long authorId)
     {

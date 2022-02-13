@@ -193,7 +193,7 @@ public class MEE6Queue extends Thread
                 return;
             }
             currentRequestGuildId = 0L;
-            int entriesTotal = ((request.getPage() - 1) * 100) + entries;
+            int entriesTotal = ((request.getPage()) * 100) + entries;
             LOGGER.debug("Finished transferring xp for guild " + request.getGuildId() + "! Migrated " + entriesTotal + "users.");
             Guild guild = Bean.getInstance().getShardManager().getGuildById(request.getGuildId());
             if (guild != null && entriesTotal > 1)
