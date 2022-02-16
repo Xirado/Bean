@@ -103,10 +103,9 @@ public class InteractionCommandHandler
         registerCommand(new RandomFactCommand());
         registerCommand(new MockCommand());
         registerCommand(new InfoCommand());
-        registerCommand(new TestCommand());
         registerCommand(new SlapCommand());
         registerCommand(new RedditCommand());
-
+        registerCommand(new TestCommandKt());
         // Context commands
         registerCommand(new MockContextMenuCommand());
         registerCommand(new SlapContextMenuCommand());

@@ -14,7 +14,7 @@ public class EmbedUtil
     public static final int WARNING_COLOR = 0xFFEA17;
 
     public static final String SUCCESS_UNICODE = "✅";
-    public static final String ERROR_UNICODE = "❌";
+    public static final String ERROR_UNICODE = "\\❌";
     public static final String WARNING_UNICODE = "⚠";
     public static final String NO_ENTRY_UNICODE = "⛔";
 

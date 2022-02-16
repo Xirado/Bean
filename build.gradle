@@ -7,6 +7,7 @@ plugins {
     id 'java'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.20-M1'
 }
 
 mainClassName = 'at.xirado.bean.Bean'
@@ -60,6 +61,7 @@ dependencies {
     implementation "io.prometheus:simpleclient:0.14.1"
     implementation "io.prometheus:simpleclient_hotspot:0.14.1"
     implementation "io.prometheus:simpleclient_httpserver:0.14.1"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
 processResources {
@@ -68,5 +70,15 @@ processResources {
                 "app-version": version,
                 "build-time" : Instant.now().toEpochMilli() + ''
         ]
+    }
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "16"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "16"
     }
 }
