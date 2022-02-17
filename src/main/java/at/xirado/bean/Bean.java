@@ -22,6 +22,7 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import lavalink.client.LavalinkUtil;
 import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.GatewayEncoding;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -123,6 +124,7 @@ public class Bean
         shardManager = DefaultShardManagerBuilder.create(config.getString("token"), getIntents())
                 .setShardsTotal(-1)
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
+                .setActivity(Activity.playing("bean.bz"))
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setBulkDeleteSplittingEnabled(false)
                 .setChunkingFilter(ChunkingFilter.NONE)

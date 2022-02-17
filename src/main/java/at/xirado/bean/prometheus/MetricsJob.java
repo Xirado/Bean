@@ -2,8 +2,6 @@ package at.xirado.bean.prometheus;
 
 import at.xirado.bean.Bean;
 import at.xirado.bean.misc.Metrics;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.concurrent.ThreadPoolExecutor;
@@ -46,8 +44,6 @@ public class MetricsJob extends Thread
                         .stream()
                         .mapToInt(Guild::getMemberCount)
                         .sum();
-
-                instance.getShardManager().setPresence(OnlineStatus.ONLINE, Activity.watching(userCount + " users | bean.bz"));
 
                 Metrics.USER_COUNT.set(userCount);
                 Metrics.GUILD_COUNT.set(guildCount);
