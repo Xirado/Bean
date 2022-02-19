@@ -53,7 +53,10 @@ public class MusicPlayerButtonListener extends ListenerAdapter
                     event.reply("You must be a DJ to do this!").setEphemeral(true).queue();
                     return;
                 }
-                Bean.getInstance().getLavalink().getExistingLink(event.getGuild()).getPlayer().seekTo(0L);
+                if (guildAudioPlayer.getPlayer().getPlayingTrack() != null && guildAudioPlayer.getPlayer().getTrackPosition() > 5000)
+                    Bean.getInstance().getLavalink().getExistingLink(event.getGuild()).getPlayer().seekTo(0L);
+                else
+                    guildAudioPlayer.getScheduler().prevTrack();
             }
             case "player_play" -> {
                 if (!guildData.isDJ(member))
