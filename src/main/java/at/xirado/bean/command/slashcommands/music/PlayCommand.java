@@ -246,7 +246,7 @@ public class PlayCommand extends SlashCommand
                     return;
                 }
                 List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), false);
-                List<String> valueList = result.stream().map(IAutocompleteChoice::getValue).collect(Collectors.toList());
+                List<String> valueList = result.stream().map(IAutocompleteChoice::getValue).toList();
                 searchEntries.stream()
                         .filter(x -> !valueList.contains(x.getValue()))
                         .limit(25 - result.size())
@@ -305,7 +305,11 @@ public class PlayCommand extends SlashCommand
         {
             List<SearchEntry> entries = new ArrayList<>();
             while (rs.next())
-                entries.add(new SearchEntry(rs.getString("name"), rs.getString("value"), rs.getBoolean("playlist")));
+            {
+                SearchEntry entry = new SearchEntry(rs.getString("name"), rs.getString("value"), rs.getBoolean("playlist"));
+                if (entry.getValue().length() <= 100)
+                    entries.add(entry);
+            }
             return entries;
         }
         catch (SQLException throwables)
@@ -413,7 +417,8 @@ public class PlayCommand extends SlashCommand
             contents.stream(DataArray::getObject).forEach(content ->
             {
                 String result = content.getObject("searchSuggestionRenderer").getObject("navigationEndpoint").getObject("searchEndpoint").getString("query");
-                results.add(result);
+                if (result.length() <= 100)
+                    results.add(result);
             });
             return results;
         }

@@ -249,7 +249,11 @@ public class BookmarkCommand extends SlashCommand
         {
             List<Bookmark> entries = new ArrayList<>();
             while (rs.next())
-                entries.add(new Bookmark(rs.getString("name"), rs.getString("value"), rs.getBoolean("playlist")));
+            {
+                Bookmark bookmark = new Bookmark(rs.getString("name"), rs.getString("value"), rs.getBoolean("playlist"));
+                if (bookmark.getValue().length() <= 100)
+                    entries.add(bookmark);
+            }
             Collections.reverse(entries);
             return entries;
         }
