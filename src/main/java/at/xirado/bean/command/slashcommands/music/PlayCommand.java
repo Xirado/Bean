@@ -287,7 +287,7 @@ public class PlayCommand extends SlashCommand
                     .filter(x -> !alreadyAdded.contains(x.toLowerCase(Locale.ROOT)))
                     .limit(Util.zeroIfNegative(25 - result.size() - alreadyAdded.size()))
                     .forEach(x -> result.add(new BasicAutocompletionChoice(x, x)));
-            if (result.size() == 0)
+            if (result.size() == 0 && query.getValue().length() <= 100)
                 result.add(new BasicAutocompletionChoice(query.getValue(), query.getValue()));
             event.replyChoices(
                     result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
