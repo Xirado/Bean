@@ -53,7 +53,6 @@ dependencies {
     implementation 'pw.chew:jda-chewtils:1.20.2'
     implementation 'org.scilab.forge:jlatexmath:1.0.7'
     implementation 'com.github.Xirado:Lavalink-Client:041082f'
-    implementation "se.michaelthelin.spotify:spotify-web-api-java:7.0.0"
     implementation "club.minnced:discord-webhooks:0.7.5"
 
     // Prometheus
