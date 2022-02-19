@@ -15,7 +15,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class KickCommand extends SlashCommand
 {
@@ -77,6 +76,7 @@ public class KickCommand extends SlashCommand
         event.deferReply(true)
                 .flatMap(hook -> member.getUser().openPrivateChannel())
                 .flatMap(channel -> channel.sendMessageEmbeds(dmEmbed.build()))
+                .mapToResult()
                 .flatMap(hook -> guild.kick(member, reason))
                 .flatMap(x -> event.getHook().sendMessageEmbeds(confirmationEmbed))
                 .queue(x ->
