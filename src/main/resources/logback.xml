@@ -5,6 +5,9 @@
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="at.xirado.bean.log.Layout"/>
         </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
     </appender>
 
     <appender name="FILE-AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -21,9 +24,6 @@
 
     <root level="debug">
         <appender-ref ref="FILE-AUDIT"/>
-    </root>
-
-    <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>
 
