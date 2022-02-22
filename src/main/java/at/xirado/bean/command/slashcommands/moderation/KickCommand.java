@@ -88,7 +88,7 @@ public class KickCommand extends SlashCommand
                         MessageEmbed logEmbed = new EmbedBuilder()
                                 .setColor(CaseType.KICK.getEmbedColor())
                                 .setAuthor("Kick • " + member.getUser().getAsTag(), null, member.getUser().getEffectiveAvatarUrl())
-                                .addField(ctx.getLocalized("commands.reason"), reason, true)
+                                .addField(ctx.getLocalized("commands.reason"), reason == null ? ctx.getLocalized("commands.noreason") : reason, true)
                                 .addField("Moderator", sender.getAsMention() + " (" + sender.getUser().getAsTag() + ")", true)
                                 .setFooter(ctx.getLocalized("commands.user_id", member.getIdLong()))
                                 .build();
