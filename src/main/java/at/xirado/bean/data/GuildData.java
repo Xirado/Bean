@@ -313,7 +313,7 @@ public class GuildData
         RoleReward roleReward = new RoleReward(level, roleId, persist, removeOnNextReward);
         List<RoleReward> currentRewards = new ArrayList<>(getRoleRewards());
         if (hasRoleReward(level))
-            currentRewards.remove(getRoleReward(level));
+            currentRewards.removeIf(reward -> reward.getLevel() == level);
         currentRewards.add(roleReward);
         DataArray array = DataArray.empty();
         for (RoleReward reward : currentRewards)
