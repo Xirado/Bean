@@ -4,13 +4,11 @@ import at.xirado.bean.Bean;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.RankingSystem;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;

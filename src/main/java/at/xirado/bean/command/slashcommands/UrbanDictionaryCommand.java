@@ -8,7 +8,6 @@ import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.urbandictionary.UrbanDefinition;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -16,7 +15,6 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

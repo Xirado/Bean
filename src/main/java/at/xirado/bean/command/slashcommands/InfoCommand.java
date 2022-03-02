@@ -7,11 +7,9 @@ import at.xirado.bean.command.terminal.Info;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class InfoCommand extends SlashCommand
 {
