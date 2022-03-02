@@ -35,7 +35,7 @@ public class JDAReadyListener extends ListenerAdapter
         ready = true;
         Bean.getInstance().getExecutor().submit(() ->
         {
-            LOGGER.info("Successfully started " + Bean.getInstance().getShardManager().getShards().size() + " shards!");
+            LOGGER.info("Successfully started {} shards!", Bean.getInstance().getShardManager().getShards().size());
             Bean.getInstance().getInteractionCommandHandler().initialize();
             if (Bean.getInstance().isDebug())
                 LOGGER.warn("Development mode enabled.");

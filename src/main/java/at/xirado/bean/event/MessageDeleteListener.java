@@ -33,7 +33,7 @@ public class MessageDeleteListener extends ListenerAdapter
             if (player.getOpenPlayer().getMessageId() == messageId)
             {
                 player.setOpenPlayer(null);
-                LOG.info("Player for guild " + event.getGuild().getName() + " has been deleted!");
+                LOG.info("Player for guild {} has been deleted!", event.getGuild().getName());
             }
         }
     }

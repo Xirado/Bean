@@ -149,7 +149,7 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     @Override
     public void onTrackEnd(IPlayer player, AudioTrack track, AudioTrackEndReason endReason)
     {
-        log.debug("Track " + track.getInfo().title + " stopped with reason " + endReason);
+        log.debug("Track {} stopped with reason {}", track.getInfo().title, endReason);
         if (endReason.mayStartNext)
         {
             nextTrack();
@@ -188,12 +188,12 @@ public class AudioScheduler extends PlayerEventListenerAdapter
         {
             if (friendlyException.severity != FriendlyException.Severity.COMMON)
             {
-                log.warn("(Guild: " + guildId + ") An error occurred while playing track \"" + track.getInfo().title + "\" by \"" + track.getInfo().author + "\"", exception);
+                log.warn("(Guild: {}) An error occurred while playing track \"{}\" by \"{}\"", guildId, track.getInfo().title, track.getInfo().author, exception);
             }
         }
         else
         {
-            log.warn("(Guild: " + guildId + ") An error occurred while playing track \"" + track.getInfo().title + "\" by \"" + track.getInfo().author + "\"", exception);
+            log.warn("(Guild: {}) An error occurred while playing track \"{}\" by \"{}\"", guildId, track.getInfo().title, track.getInfo().author, exception);
         }
     }
 

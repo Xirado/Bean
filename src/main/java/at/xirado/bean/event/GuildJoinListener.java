@@ -25,10 +25,10 @@ public class GuildJoinListener extends ListenerAdapter
         int memberCount = guild.getMemberCount();
         if (isGuildBanned(guild.getIdLong()))
         {
-            log.info("Joined banned guild " + name + " with " + memberCount + " members");
+            log.info("Joined banned guild {} with {} members", name, memberCount);
             return;
         }
-        log.info("Joined guild " + name + " with " + memberCount + " members");
+        log.info("Joined guild {} with {} members", name, memberCount);
     }
 
     @Override
@@ -39,10 +39,10 @@ public class GuildJoinListener extends ListenerAdapter
         int memberCount = guild.getMemberCount();
         if (isGuildBanned(guild.getIdLong()))
         {
-            log.info("Left banned guild " + name + " with " + memberCount + " members");
+            log.info("Left banned guild {} with {} members", name, memberCount);
             return;
         }
-        log.info("Left guild " + name + " with " + memberCount + " members");
+        log.info("Left guild {} with {} members", name, memberCount);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class GuildJoinListener extends ListenerAdapter
         }
         catch (SQLException ex)
         {
-            log.error("Could not check if guild " + guildId + " is banned", ex);
+            log.error("Could not check if guild {} is banned", guildId, ex);
             return false;
         }
     }
@@ -75,7 +75,7 @@ public class GuildJoinListener extends ListenerAdapter
         }
         catch (SQLException ex)
         {
-            log.error("Could not ban guild " + guildId, ex);
+            log.error("Could not ban guild {}", guildId, ex);
         }
     }
 
@@ -87,7 +87,7 @@ public class GuildJoinListener extends ListenerAdapter
         }
         catch (SQLException ex)
         {
-            log.error("Could not unban guild " + guildId, ex);
+            log.error("Could not unban guild {}", guildId, ex);
         }
     }
 }

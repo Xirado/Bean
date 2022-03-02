@@ -122,7 +122,7 @@ public class RankingSystem
         }
         catch (Exception ex)
         {
-            LOGGER.error("Could not get total xp! (guild " + guildID + ", user " + userID + ")", ex);
+            LOGGER.error("Could not get total xp! (guild {}, user {})", guildID, userID, ex);
             return -1L;
         }
     }
@@ -139,7 +139,7 @@ public class RankingSystem
         }
         catch (Exception ex)
         {
-            LOGGER.error("Could not get total xp! (guild " + guildID + ", user " + userID + ")", ex);
+            LOGGER.error("Could not get total xp! (guild {}, user {})", guildID, userID, ex);
             return -1L;
         }
     }
@@ -245,7 +245,7 @@ public class RankingSystem
         }
         catch (SQLException ex)
         {
-            LOGGER.error("Could not get user preferred wildcard background (user " + user.getIdLong() + ")", ex);
+            LOGGER.error("Could not get user preferred wildcard background (user {})", user.getIdLong(), ex);
             return "card1";
         }
     }
@@ -270,7 +270,7 @@ public class RankingSystem
         }
         catch (SQLException ex)
         {
-            LOGGER.error("Could not get user preferred wildcard background (user " + user.getIdLong() + ")", ex);
+            LOGGER.error("Could not get user preferred wildcard background (user {})", user.getIdLong(), ex);
             return "card1";
         }
     }
@@ -287,7 +287,7 @@ public class RankingSystem
         }
         catch (SQLException ex)
         {
-            LOGGER.error("Could not set user preferred wildcard background (user " + user.getIdLong() + ")", ex);
+            LOGGER.error("Could not set user preferred wildcard background (user {})", user.getIdLong(), ex);
         }
     }
 

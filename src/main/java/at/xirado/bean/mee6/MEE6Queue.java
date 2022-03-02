@@ -194,7 +194,7 @@ public class MEE6Queue extends Thread
             }
             currentRequestGuildId = 0L;
             int entriesTotal = ((request.getPage()) * 100) + entries;
-            LOGGER.debug("Finished transferring xp for guild " + request.getGuildId() + "! Migrated " + entriesTotal + "users.");
+            LOGGER.debug("Finished transferring xp for guild {}! Migrated {}users.", request.getGuildId(), entriesTotal);
             Guild guild = Bean.getInstance().getShardManager().getGuildById(request.getGuildId());
             if (guild != null && entriesTotal > 1)
                 Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We'd like you to know that we have finished migrating MEE6 xp for all users on your guild **" + guild.getName() + "**! (" + entriesTotal + " Users)"));

@@ -314,7 +314,7 @@ public class PlayCommand extends SlashCommand
         }
         catch (SQLException throwables)
         {
-            LOGGER.warn("Could not get search history from " + userId + "!", throwables);
+            LOGGER.warn("Could not get search history from {}!", userId, throwables);
             return Collections.emptyList();
         }
     }
@@ -330,7 +330,7 @@ public class PlayCommand extends SlashCommand
         }
         catch (SQLException throwables)
         {
-            LOGGER.warn("Could not get search history from " + userId + "!", throwables);
+            LOGGER.warn("Could not get search history from {}!", userId, throwables);
             return Collections.emptyList();
         }
     }
@@ -343,7 +343,7 @@ public class PlayCommand extends SlashCommand
         }
         catch (SQLException ex)
         {
-            LOGGER.error("Could not check if duplicate exists! (User: " + userId + ", Term: " + name + ")", ex);
+            LOGGER.error("Could not check if duplicate exists! (User: {}, Term: {})", userId, name, ex);
             return true;
         }
     }
@@ -356,7 +356,7 @@ public class PlayCommand extends SlashCommand
         }
         catch (SQLException ex)
         {
-            LOGGER.error("Could not check if user " + userId + " has search entries!", ex);
+            LOGGER.error("Could not check if user {} has search entries!", userId, ex);
             return false;
         }
     }
@@ -371,7 +371,7 @@ public class PlayCommand extends SlashCommand
         }
         catch (SQLException ex)
         {
-            LOGGER.error("Could not add search entry for user " + userId + "!", ex);
+            LOGGER.error("Could not add search entry for user {}!", userId, ex);
 
         }
     }
