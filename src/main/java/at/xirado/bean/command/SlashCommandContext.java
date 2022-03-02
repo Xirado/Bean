@@ -5,7 +5,7 @@ import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.misc.Util;
-import at.xirado.bean.translation.LocaleLoader;
+import at.xirado.bean.translation.LocalizationManager;
 import lavalink.client.io.LavalinkSocket;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -35,7 +35,7 @@ public class SlashCommandContext
         if (event.getGuild() != null)
         {
             Locale serverLocale = event.getGuild().getLocale();
-            if (LocaleLoader.getForLanguage(serverLocale.toLanguageTag()) == null)
+            if (LocalizationManager.getForLanguage(serverLocale.toLanguageTag()) == null)
             {
                 this.language = "en_US";
             }
@@ -81,11 +81,11 @@ public class SlashCommandContext
         Guild g = event.getGuild();
         if (g != null)
         {
-            String result = Util.format(LocaleLoader.ofGuild(g).get(query, String.class), objects);
+            String result = Util.format(LocalizationManager.ofGuild(g).get(query, String.class), objects);
             if (result != null)
                 return result;
         }
-        return Util.format(LocaleLoader.getForLanguage("en_US").get(query, String.class), objects);
+        return Util.format(LocalizationManager.getForLanguage("en_US").get(query, String.class), objects);
     }
 
     public void sendSimpleEmbed(CharSequence content)
@@ -116,8 +116,8 @@ public class SlashCommandContext
     {
         Guild g = event.getGuild();
         LinkedDataObject language;
-        if (g != null) language = LocaleLoader.ofGuild(g);
-        else language = LocaleLoader.getForLanguage("en_US");
+        if (g != null) language = LocalizationManager.ofGuild(g);
+        else language = LocalizationManager.getForLanguage("en_US");
         return language;
     }
 
@@ -163,7 +163,7 @@ public class SlashCommandContext
 
     public String parseDuration(long seconds, String delimiter)
     {
-        return LocaleLoader.parseDuration(seconds, getLanguage(), delimiter);
+        return LocalizationManager.parseDuration(seconds, getLanguage(), delimiter);
     }
 
 }

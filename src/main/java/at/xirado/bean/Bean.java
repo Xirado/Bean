@@ -108,7 +108,7 @@ public class Bean
         interactionCommandHandler = new InteractionCommandHandler();
         commandHandler = new CommandHandler();
         eventWaiter = new EventWaiter();
-        Class.forName("at.xirado.bean.translation.LocaleLoader");
+        Class.forName("at.xirado.bean.translation.LocalizationManager");
         okHttpClient = new OkHttpClient.Builder()
                 .build();
         if (!config.isNull("webhook_url"))

@@ -5,7 +5,7 @@ import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.misc.Util;
-import at.xirado.bean.translation.LocaleLoader;
+import at.xirado.bean.translation.LocalizationManager;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -108,7 +108,7 @@ public class XPAlertCommand extends SlashCommand
 
     public static void sendXPAlert(@Nonnull Member member, int level, MessageChannel current)
     {
-        LinkedDataObject json = LocaleLoader.ofGuild(member.getGuild());
+        LinkedDataObject json = LocalizationManager.ofGuild(member.getGuild());
         String mode = getXPAlert(member.getGuild());
         switch (mode)
         {

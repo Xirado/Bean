@@ -11,10 +11,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class LocaleLoader
+public class LocalizationManager
 {
 
-    private static final Logger log = LoggerFactory.getLogger(LocaleLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(LocalizationManager.class);
 
     public static final List<String> LANGUAGES = new ArrayList<>();
     private static final Map<String, LinkedDataObject> LANGUAGE_MAP;
@@ -23,7 +23,7 @@ public class LocaleLoader
     {
         Map<String, LinkedDataObject> m = new HashMap<>();
 
-        try (var is = LocaleLoader.class.getResourceAsStream("/assets/languages/list.txt"))
+        try (var is = LocalizationManager.class.getResourceAsStream("/assets/languages/list.txt"))
         {
             if (is == null)
             {
@@ -44,7 +44,7 @@ public class LocaleLoader
         for (String lang : LANGUAGES)
         {
 
-            try (var is = LocaleLoader.class.getResourceAsStream("/assets/languages/" + lang))
+            try (var is = LocalizationManager.class.getResourceAsStream("/assets/languages/" + lang))
             {
                 var name = lang.replace(".json", "");
                 LinkedDataObject json = LinkedDataObject.parse(is);

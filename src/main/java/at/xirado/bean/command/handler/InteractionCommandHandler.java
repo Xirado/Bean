@@ -17,7 +17,7 @@ import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Metrics;
 import at.xirado.bean.misc.Util;
-import at.xirado.bean.translation.LocaleLoader;
+import at.xirado.bean.translation.LocalizationManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -274,13 +274,13 @@ public class InteractionCommandHandler
         List<Permission> neededBotPermissions = command.getRequiredBotPermissions();
         if (neededPermissions != null && !member.hasPermission((GuildChannel) event.getChannel(), neededPermissions))
         {
-            event.reply(LocaleLoader.ofGuild(guild).get("general.no_perms", String.class)).queue();
+            event.reply(LocalizationManager.ofGuild(guild).get("general.no_perms", String.class)).queue();
             return;
         }
 
         if (neededBotPermissions != null && !event.getGuild().getSelfMember().hasPermission((GuildChannel) event.getChannel(), neededBotPermissions))
         {
-            event.reply(LocaleLoader.ofGuild(guild).get("general.no_bot_perms1", String.class)).queue();
+            event.reply(LocalizationManager.ofGuild(guild).get("general.no_bot_perms1", String.class)).queue();
             return;
         }
 
@@ -319,7 +319,7 @@ public class InteractionCommandHandler
             catch (Exception e)
             {
                 Metrics.COMMANDS.labels("failed").inc();
-                LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
+                LinkedDataObject translation = event.getGuild() == null ? LocalizationManager.getForLanguage("en_US") : LocalizationManager.ofGuild(event.getGuild());
                 if (event.isAcknowledged())
                     event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s ->
                     {
@@ -391,13 +391,13 @@ public class InteractionCommandHandler
         List<Permission> neededBotPermissions = command.getRequiredBotPermissions();
         if (neededPermissions != null && !member.hasPermission((GuildChannel) event.getChannel(), neededPermissions))
         {
-            event.reply(LocaleLoader.ofGuild(guild).get("general.no_perms", String.class)).queue();
+            event.reply(LocalizationManager.ofGuild(guild).get("general.no_perms", String.class)).queue();
             return;
         }
 
         if (neededBotPermissions != null && !event.getGuild().getSelfMember().hasPermission((GuildChannel) event.getChannel(), neededBotPermissions))
         {
-            event.reply(LocaleLoader.ofGuild(guild).get("general.no_bot_perms1", String.class)).queue();
+            event.reply(LocalizationManager.ofGuild(guild).get("general.no_bot_perms1", String.class)).queue();
             return;
         }
 
@@ -436,7 +436,7 @@ public class InteractionCommandHandler
             catch (Exception e)
             {
                 Metrics.COMMANDS.labels("failed").inc();
-                LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
+                LinkedDataObject translation = event.getGuild() == null ? LocalizationManager.getForLanguage("en_US") : LocalizationManager.ofGuild(event.getGuild());
                 if (event.isAcknowledged())
                     event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s ->
                     {
@@ -510,14 +510,14 @@ public class InteractionCommandHandler
                     List<Permission> neededBotPermissions = command.getRequiredBotPermissions();
                     if (neededPermissions != null && !member.hasPermission((GuildChannel) event.getChannel(), neededPermissions))
                     {
-                        event.reply(LocaleLoader.ofGuild(guild).get("general.no_perms", String.class))
+                        event.reply(LocalizationManager.ofGuild(guild).get("general.no_perms", String.class))
                                 .queue();
                         return;
                     }
 
                     if (neededBotPermissions != null && !event.getGuild().getSelfMember().hasPermission((GuildChannel) event.getChannel(), neededBotPermissions))
                     {
-                        event.reply(LocaleLoader.ofGuild(guild).get("general.no_bot_perms1", String.class))
+                        event.reply(LocalizationManager.ofGuild(guild).get("general.no_bot_perms1", String.class))
                                 .queue();
                         return;
                     }
@@ -573,7 +573,7 @@ public class InteractionCommandHandler
             catch (Exception e)
             {
                 Metrics.COMMANDS.labels("failed").inc();
-                LinkedDataObject translation = event.getGuild() == null ? LocaleLoader.getForLanguage("en_US") : LocaleLoader.ofGuild(event.getGuild());
+                LinkedDataObject translation = event.getGuild() == null ? LocalizationManager.getForLanguage("en_US") : LocalizationManager.ofGuild(event.getGuild());
                 if (event.isAcknowledged())
                     event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(translation.getString("general.unknown_error_occured"))).setEphemeral(true).queue(s ->
                     {

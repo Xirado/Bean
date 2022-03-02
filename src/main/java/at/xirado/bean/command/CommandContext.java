@@ -3,7 +3,7 @@ package at.xirado.bean.command;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.data.LinkedDataObject;
-import at.xirado.bean.translation.LocaleLoader;
+import at.xirado.bean.translation.LocalizationManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -114,7 +114,7 @@ public class CommandContext
     {
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(Color.red)
-                .setTitle(LocaleLoader.ofGuild(event.getGuild()).get("general.invalid_arguments", String.class))
+                .setTitle(LocalizationManager.ofGuild(event.getGuild()).get("general.invalid_arguments", String.class))
                 .setTimestamp(Instant.now());
         String usage = getGuildData().getPrefix() + getCommand().getUsage();
         List<String> aliases = this.getCommand().getAliases();
@@ -131,7 +131,7 @@ public class CommandContext
         String description = "`" + usage + "`\n" + this.getCommand().getDescription();
         if (aliases.size() > 0 && aliasesstring != null)
         {
-            description += "\n" + LocaleLoader.ofGuild(event.getGuild()).get("general.aliases", String.class) + ": `" + aliasesstring + "`";
+            description += "\n" + LocalizationManager.ofGuild(event.getGuild()).get("general.aliases", String.class) + ": `" + aliasesstring + "`";
         }
         builder.setDescription(description);
         event.getChannel().sendMessageEmbeds(builder.build()).queue();
@@ -288,7 +288,7 @@ public class CommandContext
     public LinkedDataObject getLanguage()
     {
         Guild g = event.getGuild();
-        return LocaleLoader.ofGuild(g);
+        return LocalizationManager.ofGuild(g);
     }
 
     public void replyInDM(String message, Consumer<Message> success)
@@ -305,12 +305,12 @@ public class CommandContext
 
     public String getLocalized(String query, Object... objects)
     {
-        return String.format(LocaleLoader.ofGuild(event.getGuild()).get(query, String.class), objects);
+        return String.format(LocalizationManager.ofGuild(event.getGuild()).get(query, String.class), objects);
     }
 
     public String parseDuration(long seconds, String delimiter)
     {
-        return LocaleLoader.parseDuration(seconds, getLanguage(), delimiter);
+        return LocalizationManager.parseDuration(seconds, getLanguage(), delimiter);
     }
 
     public void replyInDM(String message)
