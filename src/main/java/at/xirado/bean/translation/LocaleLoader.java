@@ -54,7 +54,7 @@ public class LocaleLoader
             }
             catch (Exception e)
             {
-                log.error("Could not load locale '" + lang + "'!", e);
+                log.error("Could not load locale '{}'!", lang, e);
             }
         }
 

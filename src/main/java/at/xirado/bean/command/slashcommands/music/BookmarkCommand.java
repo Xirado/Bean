@@ -259,7 +259,7 @@ public class BookmarkCommand extends SlashCommand
         }
         catch (SQLException throwables)
         {
-            LOGGER.warn("Could not get bookmarks from " + userId + "!", throwables);
+            LOGGER.warn("Could not get bookmarks from {}!", userId, throwables);
             return Collections.emptyList();
         }
     }
@@ -275,7 +275,7 @@ public class BookmarkCommand extends SlashCommand
         }
         catch (SQLException throwables)
         {
-            LOGGER.warn("Could not get bookmarks from " + userId + "!", throwables);
+            LOGGER.warn("Could not get bookmarks from {}!", userId, throwables);
             return Collections.emptyList();
         }
     }
@@ -301,7 +301,7 @@ public class BookmarkCommand extends SlashCommand
         }
         catch (SQLException ex)
         {
-            LOGGER.error("Could not check if duplicate exists! (User: " + userId + ", Term: " + name + ")", ex);
+            LOGGER.error("Could not check if duplicate exists! (User: {}, Term: {})", userId, name, ex);
             return true;
         }
     }
@@ -314,7 +314,7 @@ public class BookmarkCommand extends SlashCommand
         }
         catch (SQLException ex)
         {
-            LOGGER.error("Could not check if user " + userId + " has bookmarks!", ex);
+            LOGGER.error("Could not check if user {} has bookmarks!", userId, ex);
             return false;
         }
     }
@@ -329,7 +329,7 @@ public class BookmarkCommand extends SlashCommand
         }
         catch (SQLException ex)
         {
-            LOGGER.error("Could not add bookmark for user " + userId + "!", ex);
+            LOGGER.error("Could not add bookmark for user {}!", userId, ex);
         }
     }
 }

@@ -67,7 +67,7 @@ public class Bean
             Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(),
                     new ThreadFactoryBuilder()
                             .setNameFormat("Bean Command Thread %d")
-                            .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the command thread-pool! (Thread " + t.getName() + ")", e))
+                            .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the command thread-pool! (Thread {})", t.getName(), e))
                             .build());
 
     private final ScheduledExecutorService scheduledExecutor =
