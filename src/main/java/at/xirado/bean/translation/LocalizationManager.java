@@ -2,6 +2,7 @@ package at.xirado.bean.translation;
 
 import at.xirado.bean.data.LinkedDataObject;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,21 +14,20 @@ import java.util.concurrent.TimeUnit;
 
 public class LocalizationManager
 {
-
     private static final Logger log = LoggerFactory.getLogger(LocalizationManager.class);
 
     public static final List<String> LANGUAGES = new ArrayList<>();
-    private static final Map<String, LinkedDataObject> LANGUAGE_MAP;
+    private static final Map<String, I18n> LANGUAGE_MAP;
 
     static
     {
-        Map<String, LinkedDataObject> m = new HashMap<>();
+        Map<String, I18n> m = new HashMap<>();
 
-        try (var is = LocalizationManager.class.getResourceAsStream("/assets/languages/list.txt"))
+        try (var is = LocalizationManager.class.getResourceAsStream("/assets/languages.txt"))
         {
             if (is == null)
             {
-                throw new ExceptionInInitializerError("Could not initialize Language loader because list.txt does not exist!");
+                throw new ExceptionInInitializerError("Could not initialize localization manager because languages.txt does not exist!");
             }
             for (var lang : IOUtils.toString(is, StandardCharsets.UTF_8).trim().split("\n"))
             {
@@ -43,13 +43,13 @@ public class LocalizationManager
 
         for (String lang : LANGUAGES)
         {
-
             try (var is = LocalizationManager.class.getResourceAsStream("/assets/languages/" + lang))
             {
+                if (is == null)
+                    continue;
                 var name = lang.replace(".json", "");
-                LinkedDataObject json = LinkedDataObject.parse(is);
-                if (json == null) continue;
-                m.put(name, json.setMetadata(new String[]{name}));
+                DataObject json = DataObject.fromJson(is);
+                m.put(name, new I18n(json, name));
                 log.info("Successfully loaded locale {}", lang);
             }
             catch (Exception e)
@@ -57,16 +57,10 @@ public class LocalizationManager
                 log.error("Could not load locale '{}'!", lang, e);
             }
         }
-
         LANGUAGE_MAP = Collections.unmodifiableMap(m);
     }
 
-    public static String[] getLoadedLanguages()
-    {
-        return (String[]) LANGUAGES.toArray();
-    }
-
-    public static LinkedDataObject getForLanguage(String language)
+    public static I18n getForLanguage(String language)
     {
         var lang = LANGUAGE_MAP.get(language);
         if (lang == null)
@@ -77,7 +71,7 @@ public class LocalizationManager
         return lang;
     }
 
-    public static LinkedDataObject ofGuild(Guild guild)
+    public static I18n ofGuild(Guild guild)
     {
         Locale locale = guild.getLocale();
         String tag = locale.toLanguageTag();
