@@ -38,10 +38,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -206,53 +203,51 @@ public class InteractionCommandHandler
 
     public void handleAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event)
     {
-        if (event.getGuild() == null)
+        if (!event.isFromGuild())
             return;
+
         Runnable r = () ->
         {
-            try
+            Optional<SlashCommand> command = Optional.empty();
+            long guildId = event.getGuild().getIdLong();
+            if (registeredGuildCommands.containsKey(guildId))
             {
-                SlashCommand command = null;
-                long guildId = event.getGuild().getIdLong();
-                if (registeredGuildCommands.containsKey(guildId))
-                {
-                    List<SlashCommand> guildCommands = registeredGuildCommands.get(guildId)
-                            .stream()
-                            .filter(cmd -> cmd instanceof SlashCommand)
-                            .map(cmd -> (SlashCommand) cmd)
-                            .toList();
-                    SlashCommand guildCommand = guildCommands.stream().filter(cmd -> cmd.getCommandName().equalsIgnoreCase(event.getName()))
-                            .findFirst()
-                            .orElse(null);
-                    if (guildCommand != null)
-                        command = guildCommand;
-                }
-                if (command == null)
-                {
-                    SlashCommand globalCommand = registeredCommands.stream()
-                            .filter(cmd -> cmd instanceof SlashCommand)
-                            .map(cmd -> (SlashCommand) cmd)
-                            .filter(cmd -> cmd.getCommandName().equalsIgnoreCase(event.getName()))
-                            .findFirst()
-                            .orElse(null);
-                    if (globalCommand != null)
-                        command = globalCommand;
-                }
-                if (command != null)
-                    command.handleAutocomplete(event);
+                command = command.or(() -> getSlashCommandByName(registeredGuildCommands.get(guildId), event.getName()));
             }
-            catch (Exception ex)
-            {
-                LOGGER.warn("An error occurred while handling autocomplete!", ex);
-                event.replyChoices(Collections.emptyList()).queue(s ->
-                {
-                }, e ->
-                {
-                });
-            }
+
+            command.or(() -> getSlashCommandByName(registeredCommands, event.getName()))
+                    .ifPresent(cmd ->
+                    {
+                        try
+                        {
+                            cmd.handleAutocomplete(event);
+                        }
+                        catch (Exception e)
+                        {
+                            LOGGER.warn("An error occurred while handling autocomplete!", e);
+                            event.replyChoices(Collections.emptyList()).queue(s -> {}, throwable -> {});
+                        }
+                    });
         };
 
         Bean.getInstance().getCommandExecutor().execute(r);
+    }
+
+    /**
+     * Filters the given {@link Collection} of {@link GenericCommand} to the {@link SlashCommand} of the given name.
+     *
+     * @param commands The {@link Collection} of {@link GenericCommand GenericCommand's} to filter.
+     * @param name The name to look for.
+     *
+     * @return A {@link Optional} of {@link SlashCommand}
+     */
+    private static @NotNull Optional<SlashCommand> getSlashCommandByName(@NotNull Collection<GenericCommand> commands, @Nullable String name) {
+        return commands
+                .stream()
+                .filter(SlashCommand.class::isInstance)
+                .map(SlashCommand.class::cast)
+                .filter(cmd -> cmd.getCommandName().equalsIgnoreCase(name))
+                .findFirst();
     }
 
     public void handleMessageContextCommand(@NotNull MessageContextInteractionEvent event)
