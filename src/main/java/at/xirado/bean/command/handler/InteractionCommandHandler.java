@@ -125,7 +125,8 @@ public class InteractionCommandHandler
             {
                 Guild guild = Bean.getInstance().getShardManager().getGuildById(Bean.TEST_SERVER_ID);
 
-                if (guild == null) {
+                if (guild == null)
+                {
                     LOGGER.warn("Couldn't find the test server ({}) when trying to update commands.", Bean.TEST_SERVER_ID);
                     return;
                 }
@@ -140,18 +141,21 @@ public class InteractionCommandHandler
         {
             commandUpdateAction.queue(success, failure);
 
-            registeredGuildCommands.forEachKey(500L, (Long guildId) -> {
+            registeredGuildCommands.forEachKey(500L, (Long guildId) ->
+            {
                 List<GenericCommand> commands = Collections.unmodifiableList(
                         registeredGuildCommands.getOrDefault(guildId, List.of())
                 );
 
-                if (commands.isEmpty()) {
+                if (commands.isEmpty())
+                {
                     return;
                 }
 
                 Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
 
-                if (guild == null) {
+                if (guild == null)
+                {
                     LOGGER.warn("Guild {} wasn't found when trying to update guild commands", guildId);
                     return;
                 }
@@ -164,34 +168,39 @@ public class InteractionCommandHandler
         }
     }
 
-    private void registerCommand(GenericCommand command)
+    private void registerCommand(@NotNull GenericCommand command)
     {
-        if (!command.isGlobal() && !Bean.getInstance().isDebug())
-        {
-            if (command.getEnabledGuilds() == null || command.getEnabledGuilds().isEmpty()) return;
-            for (Long guildID : command.getEnabledGuilds())
-            {
-                Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
-                if (guild == null) continue;
-                List<GenericCommand> alreadyRegistered = registeredGuildCommands.containsKey(guildID) ? registeredGuildCommands.get(guildID) : new ArrayList<>();
-                alreadyRegistered.add(command);
-                registeredGuildCommands.put(guildID, alreadyRegistered);
-            }
-            return;
-        }
         if (Bean.getInstance().isDebug())
         {
             Guild guild = Bean.getInstance().getShardManager().getGuildById(Bean.TEST_SERVER_ID);
-            if (guild != null)
-            {
-                List<GenericCommand> alreadyRegistered = registeredGuildCommands.containsKey(Bean.TEST_SERVER_ID) ? registeredGuildCommands.get(Bean.TEST_SERVER_ID) : new ArrayList<>();
-                alreadyRegistered.add(command);
-                registeredGuildCommands.put(Bean.TEST_SERVER_ID, alreadyRegistered);
+
+            if (guild == null) {
+                return;
             }
-            return;
+
+            List<GenericCommand> alreadyRegisteredCommands = registeredGuildCommands.getOrDefault(Bean.TEST_SERVER_ID, List.of());
+            alreadyRegisteredCommands.add(command);
+            registeredGuildCommands.put(Bean.TEST_SERVER_ID, alreadyRegisteredCommands);
+
         }
-        commandUpdateAction.addCommands(command.getData());
-        registeredCommands.add(command);
+        else if (command.isGlobal())
+        {
+            commandUpdateAction.addCommands(command.getData());
+            registeredCommands.add(command);
+        }
+        else if (!command.getEnabledGuilds().isEmpty())
+        {
+            for (Long guildID : command.getEnabledGuilds())
+            {
+                Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
+
+                if (guild == null) continue;
+
+                List<GenericCommand> alreadyRegisteredCommands = registeredGuildCommands.getOrDefault(Bean.TEST_SERVER_ID, List.of());
+                alreadyRegisteredCommands.add(command);
+                registeredGuildCommands.put(guildID, alreadyRegisteredCommands);
+            }
+        }
     }
 
 
