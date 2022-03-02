@@ -112,42 +112,56 @@ public class InteractionCommandHandler
         registerCommand(new SlapContextMenuCommand());
     }
 
-    public void updateCommands(Consumer<List<Command>> success, Consumer<Throwable> failure)
+    public void updateCommands(@Nullable Consumer<? super List<Command>> success, @Nullable Consumer<? super Throwable> failure)
     {
-        if (!Bean.getInstance().isDebug())
+        if (Bean.getInstance().isDebug())
         {
-            commandUpdateAction.queue(success, failure);
-            for (Map.Entry<Long, List<GenericCommand>> entrySet : registeredGuildCommands.entrySet())
-            {
-                Long guildID = entrySet.getKey();
-                List<GenericCommand> slashCommands = entrySet.getValue();
-                if (guildID == null || slashCommands == null) continue;
-                if (slashCommands.isEmpty()) continue;
-                Guild guild = Bean.getInstance().getShardManager().getGuildById(guildID);
-                if (guild == null) continue;
-                CommandListUpdateAction guildCommandUpdateAction = guild.updateCommands();
-                for (GenericCommand cmd : slashCommands)
-                {
-                    guildCommandUpdateAction = guildCommandUpdateAction.addCommands(cmd.getData());
-                }
-                if (slashCommands.size() > 0) guildCommandUpdateAction.queue();
-            }
-        }
-        else
-        {
-            List<GenericCommand> commands = registeredGuildCommands.get(Bean.TEST_SERVER_ID);
-            if (commands != null && !commands.isEmpty())
+
+            List<GenericCommand> commands = Collections.unmodifiableList(
+                    registeredGuildCommands.getOrDefault(Bean.TEST_SERVER_ID, List.of())
+            );
+
+            if (!commands.isEmpty())
             {
                 Guild guild = Bean.getInstance().getShardManager().getGuildById(Bean.TEST_SERVER_ID);
-                if (guild == null)
+
+                if (guild == null) {
+                    LOGGER.warn("Couldn't find the test server ({}) when trying to update commands.", Bean.TEST_SERVER_ID);
                     return;
+                }
+
                 CommandListUpdateAction commandListUpdateAction = guild.updateCommands();
                 for (GenericCommand cmd : commands)
                     commandListUpdateAction.addCommands(cmd.getData());
                 commandListUpdateAction.queue(success, failure);
             }
         }
+        else
+        {
+            commandUpdateAction.queue(success, failure);
 
+            registeredGuildCommands.forEachKey(500L, (Long guildId) -> {
+                List<GenericCommand> commands = Collections.unmodifiableList(
+                        registeredGuildCommands.getOrDefault(guildId, List.of())
+                );
+
+                if (commands.isEmpty()) {
+                    return;
+                }
+
+                Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
+
+                if (guild == null) {
+                    LOGGER.warn("Guild {} wasn't found when trying to update guild commands", guildId);
+                    return;
+                }
+
+                CommandListUpdateAction guildCommandUpdateAction = guild.updateCommands();
+                for (GenericCommand cmd : commands)
+                    guildCommandUpdateAction.addCommands(cmd.getData());
+                guildCommandUpdateAction.queue();
+            });
+        }
     }
 
     private void registerCommand(GenericCommand command)
