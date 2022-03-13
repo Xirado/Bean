@@ -6,8 +6,10 @@ import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.data.RankingSystem;
 import at.xirado.bean.data.database.Database;
+import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.RoleReward;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -25,7 +27,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class XPMessageListener extends ListenerAdapter
 {
 
-
     public static final long TIMEOUT = Bean.getInstance().isDebug() ? 0L : 60000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XPMessageListener.class);
@@ -38,140 +39,96 @@ public class XPMessageListener extends ListenerAdapter
     {
         if (!event.isFromGuild())
             return;
+
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
-        if (event.getAuthor().isBot() || event.isWebhookMessage() || event.getMessage().getType().isSystem()) return;
+
+        if (event.getAuthor().isBot() || event.isWebhookMessage() || event.getMessage().getType().isSystem())
+            return;
+
         if (event.getMessage().getContentRaw().startsWith(GuildManager.getGuildData(event.getGuild()).getPrefix()))
             return;
+
         GuildData data = GuildManager.getGuildData(event.getGuild());
         DataObject dataObject = data.toData();
         DataArray disabledChannels = dataObject.optArray("no_xp_channels").orElse(DataArray.empty());
+
         if (disabledChannels.stream(DataArray::getString).anyMatch(x -> x.equals(event.getChannel().getId())))
             return;
-        Bean.getInstance().getExecutor().submit(() ->
+
+        long userId = event.getAuthor().getIdLong();
+        long guildId = event.getGuild().getIdLong();
+        if (!timeout.containsKey(userId) || (System.currentTimeMillis() - timeout.get(userId)) > TIMEOUT)
         {
-            long userID = event.getAuthor().getIdLong();
-            long guildID = event.getGuild().getIdLong();
-            if (timeout.containsKey(userID))
+            try (Connection connection = Database.getConnectionFromPool())
             {
-                long lastXPAdditionAgo = System.currentTimeMillis() - timeout.get(userID);
-                if (lastXPAdditionAgo > TIMEOUT)
+                if (connection == null) return;
+
+                // Current total amount of xp
+                long currentTotalXP = RankingSystem.getTotalXP(connection, guildId, userId);
+
+                // Current level
+                int level = RankingSystem.getLevel(currentTotalXP);
+
+                // Current relative xp for next level
+                long currentXP = currentTotalXP - RankingSystem.getTotalXPNeeded(level);
+
+                // Amount of xp left to level up
+                long xpLeft = RankingSystem.getXPToLevelUp(level);
+
+                // Generate random amount of xp between 15 and 25
+                int xpAmount = 15 + RANDOM.nextInt(11);
+
+                RankingSystem.addXP(connection, guildId, userId, xpAmount, event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getEffectiveAvatarUrl());
+
+                if (xpAmount + currentXP >= xpLeft)
                 {
-                    try (Connection connection = Database.getConnectionFromPool())
+                    try
                     {
-                        if (connection == null) return;
-                        long currentTotalXP = RankingSystem.getTotalXP(connection, guildID, userID);
-                        int level = RankingSystem.getLevel(currentTotalXP);
-                        long currentXP = currentTotalXP - RankingSystem.getTotalXPNeeded(level);
-                        long xpLeft = RankingSystem.getXPToLevelUp(level);
-                        int xpAmount = 15 + RANDOM.nextInt(11);
-                        RankingSystem.addXP(connection, guildID, userID, xpAmount, event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getEffectiveAvatarUrl());
-                        Util.closeQuietly(connection);
-                        if (xpAmount + currentXP >= xpLeft)
-                        {
-                            try
-                            {
-                                XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
-                            }
-                            catch (InsufficientPermissionException ignored)
-                            {
-                            }
-                            if (data.hasRoleReward(level + 1))
-                            {
-                                RoleReward reward = data.getRoleReward(level + 1);
-                                Role role = event.getGuild().getRoleById(reward.getRoleId());
-                                if (role != null)
-                                {
-                                    event.getGuild().addRoleToMember(userID, role).queue(s ->
-                                    {
-                                    }, e ->
-                                    {
-                                    });
-                                    RoleReward oldReward = data.getLastRoleReward(level);
-                                    if (oldReward != null)
-                                    {
-                                        if (oldReward.doesRemoveOnNextReward())
-                                        {
-                                            Role oldRole = event.getGuild().getRoleById(oldReward.getRoleId());
-                                            if (oldRole != null)
-                                            {
-                                                event.getGuild().removeRoleFromMember(userID, oldRole).queue(s ->
-                                                {
-                                                }, e ->
-                                                {
-                                                });
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        timeout.put(userID, System.currentTimeMillis());
+                        XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
                     }
-                    catch (Exception ex)
+                    catch (InsufficientPermissionException ignored) {}
+
+                    if (data.hasRoleReward(level + 1))
                     {
-                        LOGGER.error("Could not update XP!", ex);
-                    }
-                }
-            }
-            else
-            {
-                try (Connection connection = Database.getConnectionFromPool())
-                {
-                    if (connection == null) return;
-                    long currentTotalXP = RankingSystem.getTotalXP(connection, guildID, userID);
-                    int level = RankingSystem.getLevel(currentTotalXP);
-                    long currentXP = currentTotalXP - RankingSystem.getTotalXPNeeded(level);
-                    long xpLeft = RankingSystem.getXPToLevelUp(level);
-                    int xpAmount = 15 + RANDOM.nextInt(11);
-                    RankingSystem.addXP(connection, guildID, userID, xpAmount, event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getEffectiveAvatarUrl());
-                    Util.closeQuietly(connection);
-                    if (xpAmount + currentXP >= xpLeft)
-                    {
-                        try
+                        RoleReward reward = data.getRoleReward(level + 1);
+                        Role role = event.getGuild().getRoleById(reward.getRoleId());
+
+                        if (!event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES))
                         {
-                            XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
+                            Util.sendOwnerDM(EmbedUtil.errorEmbed("Hey! You have set up role-rewards in your guild **" + event.getGuild().getName() + "**, but i do not have the **Manage Roles** permission!\nPlease make sure to give me this permission!"));
+                            return;
                         }
-                        catch (InsufficientPermissionException ignored)
+
+                        if (role != null)
                         {
-                        }
-                        if (data.hasRoleReward(level + 1))
-                        {
-                            RoleReward reward = data.getRoleReward(level + 1);
-                            Role role = event.getGuild().getRoleById(reward.getRoleId());
-                            if (role != null)
+                            if (!event.getGuild().getSelfMember().canInteract(role))
                             {
-                                event.getGuild().addRoleToMember(userID, role).queue(s ->
+                                Util.sendOwnerDM(EmbedUtil.errorEmbed("Hey! You have up role-rewards in your guild **" + event.getGuild().getName() + "**, but the role **" + role.getName() + "** is above me in the role hierarchy!\nPlease make sure to move the role above me, so i can assign them!"));
+                                return;
+                            }
+                            event.getGuild().addRoleToMember(userId, role).queue(s -> {}, e -> {});
+                            RoleReward oldReward = data.getLastRoleReward(level);
+                            if (oldReward != null)
+                            {
+                                if (oldReward.doesRemoveOnNextReward())
                                 {
-                                }, e ->
-                                {
-                                });
-                                RoleReward oldReward = data.getLastRoleReward(level);
-                                if (oldReward != null)
-                                {
-                                    if (oldReward.doesRemoveOnNextReward())
+                                    Role oldRole = event.getGuild().getRoleById(oldReward.getRoleId());
+                                    if (oldRole != null)
                                     {
-                                        Role oldRole = event.getGuild().getRoleById(oldReward.getRoleId());
-                                        if (oldRole != null)
-                                        {
-                                            event.getGuild().removeRoleFromMember(userID, oldRole).queue(s ->
-                                            {
-                                            }, e ->
-                                            {
-                                            });
-                                        }
+                                        event.getGuild().removeRoleFromMember(userId, oldRole).queue(s -> {}, e -> {});
                                     }
                                 }
                             }
                         }
                     }
-                    timeout.put(userID, System.currentTimeMillis());
                 }
-                catch (Exception ex)
-                {
-                    LOGGER.error("Could not update XP!", ex);
-                }
+                timeout.put(userId, System.currentTimeMillis());
             }
-        });
+            catch (Exception ex)
+            {
+                LOGGER.error("Could not update XP!", ex);
+            }
+        }
     }
 }

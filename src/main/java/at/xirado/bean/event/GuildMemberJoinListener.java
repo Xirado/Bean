@@ -5,6 +5,7 @@ import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.data.RankingSystem;
 import at.xirado.bean.misc.objects.RoleReward;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -22,7 +23,12 @@ public class GuildMemberJoinListener extends ListenerAdapter
     {
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
+
+        if (!event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+            return;
+
         GuildData guildData = GuildManager.getGuildData(event.getGuild());
+
         Bean.getInstance().getScheduledExecutor().schedule(() ->
         {
             long totalXP = RankingSystem.getTotalXP(event.getGuild().getIdLong(), event.getUser().getIdLong());
@@ -41,9 +47,7 @@ public class GuildMemberJoinListener extends ListenerAdapter
                     }
                 }
                 if (!rolesToAdd.isEmpty())
-                {
                     event.getGuild().modifyMemberRoles(event.getMember(), rolesToAdd).queue();
-                }
             }
         }, 10, TimeUnit.SECONDS);
     }
