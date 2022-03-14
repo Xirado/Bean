@@ -18,6 +18,7 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class RedditCommand extends SlashCommand
     public RedditCommand()
     {
         setCommandData(Commands.slash("reddit", "Gets a trending post from a subreddit")
-                .addOptions(new OptionData(OptionType.STRING, "subreddit", "Select a subreddit")
+                .addOptions(new OptionData(OptionType.STRING, "subreddit", "Select or enter a subreddit")
                         .setAutoComplete(true)
                 )
         );
@@ -96,10 +97,16 @@ public class RedditCommand extends SlashCommand
                 new BasicAutocompletionChoice("r/memes", "memes"),
                 new BasicAutocompletionChoice("r/me_irl", "me_irl"),
                 new BasicAutocompletionChoice("r/ProgrammerHumor", "programmerhumor"),
-                new BasicAutocompletionChoice("r/dankmemes", "dankmemes")
+                new BasicAutocompletionChoice("r/dankmemes", "dankmemes"),
+                new BasicAutocompletionChoice("r/AdviceAnimals", "adviceanimals"),
+                new BasicAutocompletionChoice("r/interestingasfuck", "interestingasfuck")
         );
         event.replyChoices(
-                choices.stream().map(BasicAutocompletionChoice::toCommandAutocompleteChoice).toList()
+                choices.stream()
+                        .filter(value -> StringUtils.startsWithIgnoreCase(value.getName(), event.getFocusedOption().getValue())
+                                      || StringUtils.startsWithIgnoreCase(value.getValue(), event.getFocusedOption().getValue()))
+                        .map(BasicAutocompletionChoice::toCommandAutocompleteChoice)
+                        .toList()
         ).queue();
     }
 }
