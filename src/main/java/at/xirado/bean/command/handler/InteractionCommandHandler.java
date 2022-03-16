@@ -10,6 +10,7 @@ import at.xirado.bean.command.context.UserContextCommand;
 import at.xirado.bean.command.context.message.MockContextMenuCommand;
 import at.xirado.bean.command.context.user.SlapContextMenuCommand;
 import at.xirado.bean.command.slashcommands.*;
+import at.xirado.bean.command.slashcommands.games.WordleCommand;
 import at.xirado.bean.command.slashcommands.leveling.*;
 import at.xirado.bean.command.slashcommands.moderation.*;
 import at.xirado.bean.command.slashcommands.music.*;
@@ -106,6 +107,7 @@ public class InteractionCommandHandler
         registerCommand(new TestCommand());
         registerCommand(new SlapCommand());
         registerCommand(new RedditCommand());
+        registerCommand(new WordleCommand());
 
         // Context commands
         registerCommand(new MockContextMenuCommand());

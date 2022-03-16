@@ -12,6 +12,7 @@ import at.xirado.bean.lavaplayer.SpotifyAudioSource;
 import at.xirado.bean.log.Shell;
 import at.xirado.bean.mee6.MEE6Queue;
 import at.xirado.bean.misc.Util;
+import at.xirado.bean.misc.manager.WordleManager;
 import at.xirado.bean.music.AudioManager;
 import at.xirado.bean.prometheus.MetricsJob;
 import at.xirado.bean.prometheus.Prometheus;
@@ -52,7 +53,7 @@ public class Bean
 {
     public static final long OWNER_ID = 184654964122058752L;
     public static final Long TEST_SERVER_ID = 815597207617142814L;
-    public static final Set<Long> WHITELISTED_USERS = Set.of(184654964122058752L, 398610798315962408L);
+    public static final Set<Long> WHITELISTED_USERS = Set.of(184654964122058752L, 398610798315962408L, 626714496219611136L);
     public static final String SUPPORT_GUILD_INVITE = "https://discord.com/invite/7WEjttJtKa";
     public static final long START_TIME = System.currentTimeMillis() / 1000;
 
@@ -134,7 +135,7 @@ public class Bean
                 .addEventListeners(new JDAReadyListener(), new SlashCommandListener(), new MessageCreateListener(),
                         new XPMessageListener(), new MessageReactionAddListener(), new MessageReactionRemoveListener(), new VoiceUpdateListener(),
                         eventWaiter, new GuildMemberJoinListener(), lavalink, new HintAcknowledgeListener(), new GuildJoinListener(),
-                        new MusicPlayerButtonListener(), new MessageDeleteListener())
+                        new MusicPlayerButtonListener(), new MessageDeleteListener(), new WordleManager())
                 .build();
         audioManager = new AudioManager();
         authenticator = new Authenticator();
@@ -143,6 +144,7 @@ public class Bean
         new MetricsJob().start();
         mee6Queue = new MEE6Queue();
         mee6Queue.start();
+        WordleManager.initialize();
     }
 
     public static Bean getInstance()

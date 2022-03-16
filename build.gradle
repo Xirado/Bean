@@ -39,7 +39,7 @@ tasks.build {
 }
 
 dependencies {
-    implementation 'com.github.Dv8FromTheWorld:JDA:9ebcc22'
+    implementation 'com.github.xirado:JDA:36eea2a1c5'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
     implementation 'com.sparkjava:spark-core:2.9.3'
     implementation 'org.codehaus.groovy:groovy-jsr223:3.0.8'
