@@ -20,7 +20,7 @@ public class InviteURLRoute implements Route
                 .setPath("/oauth2/authorize")
                 .addParameter("client_id", Bean.getInstance().getWebServer().getClientId())
                 .addParameter("scope", "bot applications.commands")
-                .addParameter("permissions", "2080899263");
+                .addParameter("permissions", "275191770223");
         return DataObject.empty()
                 .put("url", builder.build().toString())
                 .toString();
