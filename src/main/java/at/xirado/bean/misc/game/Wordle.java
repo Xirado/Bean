@@ -124,10 +124,7 @@ public class Wordle
         graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         graphics.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
 
-        graphics.setColor(Color.black);
-        graphics.fillRoundRect(0, 0, image.getWidth(), image.getHeight(), 30, 30);
-
-        graphics.setColor(GRAY);
+        graphics.setColor(Color.BLACK);
 
         char[] currentWord = WordleManager.getCurrentWord().toCharArray();
 
@@ -145,18 +142,20 @@ public class Wordle
                         {
                             graphics.setColor(GREEN);
                             graphics.fillRect((PADDING * j) + (SQUARE_LENGTH * (j - 1)), (PADDING * i) + (SQUARE_LENGTH * (i - 1)), SQUARE_LENGTH, SQUARE_LENGTH);
-                            graphics.setColor(GRAY);
+                            graphics.setColor(Color.black);
                         }
                         else
                         {
                             graphics.setColor(YELLOW);
                             graphics.fillRect((PADDING * j) + (SQUARE_LENGTH * (j - 1)), (PADDING * i) + (SQUARE_LENGTH * (i - 1)), SQUARE_LENGTH, SQUARE_LENGTH);
-                            graphics.setColor(GRAY);
+                            graphics.setColor(Color.black);
                         }
                     }
                     else
                     {
+                        graphics.setColor(GRAY);
                         graphics.fillRect((PADDING * j) + (SQUARE_LENGTH * (j - 1)), (PADDING * i) + (SQUARE_LENGTH * (i - 1)), SQUARE_LENGTH, SQUARE_LENGTH);
+                        graphics.setColor(Color.BLACK);
                     }
                 }
                 else

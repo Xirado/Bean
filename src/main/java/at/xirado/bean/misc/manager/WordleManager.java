@@ -42,6 +42,11 @@ public class WordleManager extends ListenerAdapter
 
     private static String currentWord;
 
+    public static boolean hasFinishedDaily(long userId)
+    {
+        return finishedUsers.contains(userId);
+    }
+
     public static Wordle getWordle(long userId)
     {
         return currentWordleTries.stream().filter(wordle -> wordle.getUserId() == userId).findFirst().orElse(null);
@@ -71,6 +76,7 @@ public class WordleManager extends ListenerAdapter
     {
         Bean.getInstance().getScheduledExecutor().scheduleWithFixedDelay(() -> {
             currentWordleTries.clear();
+            finishedUsers.clear();
             wordleAnswers.remove(0);
             currentWord = wordleAnswers.get(0);
             LOG.debug("Midnight! New Wordle Word is {}!", currentWord);
@@ -141,21 +147,30 @@ public class WordleManager extends ListenerAdapter
         return c.getTimeInMillis() - now;
     }
 
+    public static String getDiscordRelativeTimeUntilMidnight()
+    {
+        return TimeFormat.RELATIVE.format(getMillisUntilMidnight() + System.currentTimeMillis());
+    }
+
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event)
     {
         if (!event.getComponentId().equals("wordle_next"))
             return;
 
-        Wordle wordle = getWordle(event.getUser().getIdLong());
-
-        if (wordle == null)
+        if (finishedUsers.contains(event.getUser().getIdLong()))
         {
-            wordle = createWordleGame(event.getUser().getIdLong());
+            event.replyEmbeds(EmbedUtil.errorEmbed("You already played today's wordle! Try again " + getDiscordRelativeTimeUntilMidnight()))
+                    .setEphemeral(true)
+                    .queue();
+            return;
         }
 
+        if (getWordle(event.getUser().getIdLong()) == null)
+            createWordleGame(event.getUser().getIdLong());
+
         TextInput textInput = TextInput.create("word", "Word", TextInputStyle.SHORT)
-                .setPlaceholder("Enter your word here")
+                .setPlaceholder("Enter word here")
                 .setRequired(true)
                 .setRequiredRange(5, 5)
                 .build();
@@ -168,6 +183,14 @@ public class WordleManager extends ListenerAdapter
     @Override
     public void onModalInteraction(@NotNull ModalInteractionEvent event)
     {
+        if (finishedUsers.contains(event.getUser().getIdLong()))
+        {
+            event.replyEmbeds(EmbedUtil.errorEmbed("You already played today's wordle! Try again " + getDiscordRelativeTimeUntilMidnight()))
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        }
+
         Wordle wordle = getWordle(event.getUser().getIdLong());
 
         if (wordle == null)
@@ -180,10 +203,9 @@ public class WordleManager extends ListenerAdapter
 
         if (!wordleAllowedGuesses.contains(word) && !wordleAnswers.contains(word))
         {
-            event.replyEmbeds(EmbedUtil.errorEmbed("**" + word + "** is not a valid word!")).setEphemeral(true).queue();
+            event.replyEmbeds(EmbedUtil.errorEmbed("`" + word + "` is not a valid choice!")).setEphemeral(true).queue();
             return;
         }
-
 
         wordle.setTry(word);
 
@@ -198,13 +220,15 @@ public class WordleManager extends ListenerAdapter
 
             if (wordle.hasWon())
             {
+                finishedUsers.add(event.getUser().getIdLong());
                 incrementWinStreak(event.getUser().getIdLong());
-                action.setContent("**Congratulations!**: You won today's wordle quiz! Next quiz will be available " + TimeFormat.RELATIVE.format(System.currentTimeMillis() +  getMillisUntilMidnight()) + "\nYour Win-Streak is at **" + getWinStreak(event.getUser().getIdLong()) + "**!");
+                action.setContent("**Congratulations!**: You won today's wordle quiz! Next quiz will be available " + getDiscordRelativeTimeUntilMidnight() + "\nYour Win-Streak is at **" + getWinStreak(event.getUser().getIdLong()) + "**!");
             }
             else if (!wordle.hasWon() && wordle.getCurrentTry() == 5)
             {
+                finishedUsers.add(event.getUser().getIdLong());
                 resetWinStreak(event.getUser().getIdLong());
-                action.setContent("**You lost**: You lost today's wordle quiz! Next quiz will be available " + TimeFormat.RELATIVE.format(System.currentTimeMillis() + getMillisUntilMidnight()));
+                action.setContent("**You lost**: You lost today's wordle quiz! Next quiz will be available " + getDiscordRelativeTimeUntilMidnight());
             }
 
             action.queue();
@@ -215,7 +239,6 @@ public class WordleManager extends ListenerAdapter
             LOG.error("Could not generate image!", e);
         }
     }
-
 
     public static int getWinStreak(long userId)
     {
