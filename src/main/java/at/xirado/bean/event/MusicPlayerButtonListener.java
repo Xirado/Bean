@@ -53,7 +53,9 @@ public class MusicPlayerButtonListener extends ListenerAdapter
                     event.reply("You must be a DJ to do this!").setEphemeral(true).queue();
                     return;
                 }
-                Bean.getInstance().getLavalink().getExistingLink(event.getGuild()).getPlayer().seekTo(0L);
+                // TODO: Support playing previous songs instead of just seeking
+                if (Bean.getInstance().getLavalink().getExistingLink(event.getGuild()).getPlayer().getPlayingTrack() != null)
+                    Bean.getInstance().getLavalink().getExistingLink(event.getGuild()).getPlayer().seekTo(0L);
             }
             case "player_play" -> {
                 if (!guildData.isDJ(member))
