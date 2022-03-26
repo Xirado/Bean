@@ -1,125 +1,34 @@
 package at.xirado.bean.misc.urbandictionary;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
+import org.jetbrains.annotations.NotNull;
 
-public class UrbanDefinition
+public class UrbanDefinition implements SerializableData
 {
-    private String word;
-    private String definition;
-    private String example;
-    private String author;
-    @JsonProperty("written_on")
-    private String writtenOn;
-    private String permalink;
-    private int defid;
+    private final String word;
+    private final String definition;
+    private final String example;
+    private final String author;
+    private final String writtenOn;
+    private final String permalink;
+    private final int definitionId;
+    private final int upvotes;
+    private final int downvotes;
 
-    @JsonIgnore
-    private String[] sound_urls;
-    @JsonIgnore
-    private String current_vote;
-
-    @JsonProperty("thumbs_up")
-    private int upvotes;
-    @JsonProperty("thumbs_down")
-    private int downvotes;
-
-    /**
-     * Initialize an instance of a Definition object after parsing the UrbanDictionary JSON interface.
-     *
-     * @param wordName
-     * @param definition
-     * @param example
-     * @param author
-     * @param writtenDate
-     * @param permaLink
-     * @param refID
-     * @param likes
-     * @param dislikes
-     */
-    public UrbanDefinition(String wordName, String definition, String example, String author, String writtenDate, String permaLink, int refID, int likes, int dislikes)
-    {
-        this.word = wordName;
-        this.definition = definition;
-        this.example = example;
-        this.author = author;
-        this.writtenOn = writtenDate;
-        this.permalink = permaLink;
-        this.defid = refID;
-        this.upvotes = likes;
-        this.downvotes = dislikes;
-    }
-
-    public UrbanDefinition()
-    {
-
-    }
-
-    public void setWord(String word)
+    private UrbanDefinition(String word, String definition, String example,
+                            String author, String writtenOn, String permaLink,
+                            int definitionId, int upvotes, int downvotes)
     {
         this.word = word;
-    }
-
-    public void setDefinition(String definition)
-    {
         this.definition = definition;
-    }
-
-    public void setExample(String example)
-    {
         this.example = example;
-    }
-
-    public void setAuthor(String author)
-    {
         this.author = author;
-    }
-
-    public void setWrittenOn(String writtenOn)
-    {
         this.writtenOn = writtenOn;
-    }
-
-    public void setPermalink(String permalink)
-    {
-        this.permalink = permalink;
-    }
-
-    public void setDefid(int defid)
-    {
-        this.defid = defid;
-    }
-
-    public void setDownvotes(int downvotes)
-    {
-        this.downvotes = downvotes;
-    }
-
-    public void setUpvotes(int upvotes)
-    {
+        this.permalink = permaLink;
+        this.definitionId = definitionId;
         this.upvotes = upvotes;
-    }
-
-    /**
-     * Returns a CSV-formatted String containing the information of the definition in the following order:
-     * Name, Definition, Example, Author, Date Written (ISO-8601), Definition ID#, # Likes, # Dislikes.
-     *
-     * @return a comma-delimited String.
-     */
-    @Override
-    public String toString()
-    {
-        return "\"" + word + "\",\"" + definition + "\",\"" + example + "\",\"" + author + "\",\"" + writtenOn + "\"," + defid + "," + upvotes + "," + downvotes;
-    }
-
-    /**
-     * Returns a String URL permalink to the definition the class entails.
-     *
-     * @return a shortened permalink to the UrbanDictionary definition of the word based on reference ID.
-     */
-    public String getPermalink()
-    {
-        return permalink;
+        this.downvotes = downvotes;
     }
 
     public String getWord()
@@ -142,19 +51,19 @@ public class UrbanDefinition
         return author;
     }
 
-    /**
-     * Returns the date that the post was made.
-     *
-     * @return the date of the Definition in ISO-8601 format.
-     */
     public String getWrittenOn()
     {
         return writtenOn;
     }
 
-    public int getDefid()
+    public String getPermalink()
     {
-        return defid;
+        return permalink;
+    }
+
+    public int getDefinitionId()
+    {
+        return definitionId;
     }
 
     public int getUpvotes()
@@ -167,8 +76,34 @@ public class UrbanDefinition
         return downvotes;
     }
 
-    public Object getSound_urls()
+    public static UrbanDefinition fromData(DataObject data)
     {
-        return sound_urls;
+        return new UrbanDefinition(
+                data.getString("word"),
+                data.getString("definition"),
+                data.getString("example"),
+                data.getString("author"),
+                data.getString("written_on"),
+                data.getString("permalink"),
+                data.getInt("defid"),
+                data.getInt("thumbs_up"),
+                data.getInt("thumbs_down")
+        );
+    }
+
+    @NotNull
+    @Override
+    public DataObject toData()
+    {
+        return DataObject.empty()
+                .put("word", word)
+                .put("definition", definition)
+                .put("example", example)
+                .put("author", author)
+                .put("written_on", writtenOn)
+                .put("permalink", permalink)
+                .put("defid", definitionId)
+                .put("thumbs_up", upvotes)
+                .put("thumbs_down", downvotes);
     }
 }

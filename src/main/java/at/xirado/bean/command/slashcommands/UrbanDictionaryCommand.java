@@ -3,7 +3,6 @@ package at.xirado.bean.command.slashcommands;
 import at.xirado.bean.Bean;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
-import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.urbandictionary.UrbanDefinition;
@@ -12,14 +11,16 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.time.Instant;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,13 +46,13 @@ public class UrbanDictionaryCommand extends SlashCommand
         int index = event.getOption("definition") != null ? (int) event.getOption("definition").getAsLong() : 1;
         if (index < 1) index = 1;
         event.deferReply().queue();
-        LinkedDataObject dataObject;
+        DataObject object;
         try
         {
             String url = "http://api.urbandictionary.com/v0/define?term=" + phrase.replaceAll("\\s+", "+");
             Response response = Bean.getInstance().getOkHttpClient()
                     .newCall(new Request.Builder().url(url).build()).execute();
-            dataObject = LinkedDataObject.parse(response.body().byteStream());
+            object = DataObject.fromJson(response.body().bytes());
             response.close();
         }
         catch (Exception ex)
@@ -61,19 +62,19 @@ public class UrbanDictionaryCommand extends SlashCommand
             return;
         }
 
-        UrbanDefinition[] results = dataObject.convertValueAt("list", UrbanDefinition[].class);
-        if (results.length == 0)
+        List<UrbanDefinition> results = object.getArray("list").stream(DataArray::getObject).map(UrbanDefinition::fromData).toList();
+        if (results.isEmpty())
         {
             EmbedBuilder builder = new EmbedBuilder()
-                    .setColor(Color.decode("#1D2439"))
+                    .setColor(0x1D2439)
                     .setTitle(ctx.getLocalized("commands.urban.not_found"))
                     .setTimestamp(Instant.now());
             event.getHook().sendMessageEmbeds(builder.build()).queue();
             return;
         }
-        if (results.length < index)
-            index = results.length;
-        UrbanDefinition result = results[index - 1];
+        if (results.size() < index)
+            index = results.size();
+        UrbanDefinition result = results.get(index - 1);
         String description = result.getDefinition();
         Matcher matcher = PATTERN.matcher(description);
         description = matcher.replaceAll(
@@ -85,10 +86,8 @@ public class UrbanDictionaryCommand extends SlashCommand
             description = split + replaceString;
         }
         EmbedBuilder builder = new EmbedBuilder()
-                .setColor(Color.decode("#1D2439"))
-                .setTitle(result.getWord())
+                .setColor(0x1D2439)
                 .setTitle(result.getWord(), result.getPermalink())
-                .setFooter(Util.ordinal(index) + " definition")
                 .setFooter(Util.ordinal(index) + " definition", "https://bean.bz/assets/udlogo.png")
                 .setDescription(description);
         String example = result.getExample();
