@@ -44,5 +44,6 @@ public class GuildMemberJoinListener extends ListenerAdapter
             }
             for (Role role : rolesToAdd)
                 event.getGuild().addRoleToMember(event.getMember(), role).queue(); // Need to do this because otherwise other roles get overwritten
+        }
     }
 }
