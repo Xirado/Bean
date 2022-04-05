@@ -35,7 +35,7 @@ public class MusicPlayerButtonListener extends ListenerAdapter
         Member selfMember = event.getGuild().getSelfMember();
         Member member = event.getMember();
 
-        if (member.getVoiceState().getChannel() == null || selfMember.getVoiceState().getChannel() == null)
+        if (member.getVoiceState().getChannel() == null)
             return;
 
         if (member.getVoiceState().getChannel().getIdLong() != selfMember.getVoiceState().getChannel().getIdLong())
@@ -53,9 +53,10 @@ public class MusicPlayerButtonListener extends ListenerAdapter
                     event.reply("You must be a DJ to do this!").setEphemeral(true).queue();
                     return;
                 }
-                // TODO: Support playing previous songs instead of just seeking
-                if (Bean.getInstance().getLavalink().getExistingLink(event.getGuild()).getPlayer().getPlayingTrack() != null)
+                if (guildAudioPlayer.getPlayer().getPlayingTrack() != null && guildAudioPlayer.getPlayer().getTrackPosition() > 5000)
                     Bean.getInstance().getLavalink().getExistingLink(event.getGuild()).getPlayer().seekTo(0L);
+                else
+                    guildAudioPlayer.getScheduler().prevTrack();
             }
             case "player_play" -> {
                 if (!guildData.isDJ(member))
@@ -103,22 +104,19 @@ public class MusicPlayerButtonListener extends ListenerAdapter
                     {
                         TrackInfo trackInfo = current.getUserData(TrackInfo.class);
                         String playlistUrl = trackInfo.getPlaylistUrl();
-                        if (playlistUrl != null)
-                        {
-                            Queue<AudioTrack> queue = guildAudioPlayer.getScheduler().getQueue();
-                            List<AudioTrack> fromThisPlaylist = queue
-                                    .stream().filter(track -> track.getUserData(TrackInfo.class).getPlaylistUrl().equals(playlistUrl))
-                                    .collect(Collectors.toList());
-                            Collections.shuffle(fromThisPlaylist);
+                        Queue<AudioTrack> queue = guildAudioPlayer.getScheduler().getQueue();
+                        List<AudioTrack> fromThisPlaylist = queue
+                                .stream().filter(track -> track.getUserData(TrackInfo.class).getPlaylistUrl().equals(playlistUrl))
+                                .collect(Collectors.toList());
+                        Collections.shuffle(fromThisPlaylist);
 
-                            List<AudioTrack> newQueue = new ArrayList<>(fromThisPlaylist);
+                        List<AudioTrack> newQueue = new ArrayList<>(fromThisPlaylist);
 
-                            fromThisPlaylist.forEach(queue::remove);
-                            List<AudioTrack> rest = new ArrayList<>(queue);
-                            newQueue.addAll(rest);
-                            queue.clear();
-                            queue.addAll(newQueue);
-                        }
+                        fromThisPlaylist.forEach(queue::remove);
+                        List<AudioTrack> rest = new ArrayList<>(queue);
+                        newQueue.addAll(rest);
+                        queue.clear();
+                        queue.addAll(newQueue);
                     }
                 }
             }

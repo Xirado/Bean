@@ -17,8 +17,12 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class AudioScheduler extends PlayerEventListenerAdapter
 {
@@ -26,7 +30,8 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     private static final Logger log = LoggerFactory.getLogger(AudioScheduler.class);
 
     private final LavalinkPlayer player;
-    private final BlockingQueue<AudioTrack> queue;
+    private final List<AudioTrack> lastTracks;
+    private final BlockingDeque<AudioTrack> queue;
     private final GuildAudioPlayer guildAudioPlayer;
     private final long guildId;
     private boolean repeat = false;
@@ -37,8 +42,26 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     {
         this.guildId = guildId;
         this.player = player;
-        this.queue = new LinkedBlockingQueue<>();
+        this.lastTracks = Collections.synchronizedList(new ArrayList<>());
+        this.queue = new LinkedBlockingDeque<>();
         this.guildAudioPlayer = guildAudioPlayer;
+    }
+
+    public void prevTrack()
+    {
+        if (lastTracks.isEmpty() && player.getPlayingTrack() != null)
+        {
+            player.seekTo(0L);
+            return;
+        }
+
+        AudioTrack currentTrack = player.getPlayingTrack();
+
+        if (currentTrack != null)
+            this.queue.offerFirst(currentTrack);
+
+        player.playTrack(lastTracks.get(lastTracks.size()-1));
+        lastTracks.remove(lastTracks.size() - 1);
     }
 
     public void queue(AudioTrack track)
@@ -56,6 +79,7 @@ public class AudioScheduler extends PlayerEventListenerAdapter
             player.playTrack(lastTrack.makeClone());
             return;
         }
+        lastTracks.add(lastTrack);
         AudioTrack track = queue.poll();
         if (track == null)
         {
@@ -207,6 +231,7 @@ public class AudioScheduler extends PlayerEventListenerAdapter
     public void destroy()
     {
         queue.clear();
+        lastTracks.clear();
         lastTrack = null;
     }
 }
