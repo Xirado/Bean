@@ -103,19 +103,22 @@ public class MusicPlayerButtonListener extends ListenerAdapter
                     {
                         TrackInfo trackInfo = current.getUserData(TrackInfo.class);
                         String playlistUrl = trackInfo.getPlaylistUrl();
-                        Queue<AudioTrack> queue = guildAudioPlayer.getScheduler().getQueue();
-                        List<AudioTrack> fromThisPlaylist = queue
-                                .stream().filter(track -> track.getUserData(TrackInfo.class).getPlaylistUrl().equals(playlistUrl))
-                                .collect(Collectors.toList());
-                        Collections.shuffle(fromThisPlaylist);
+                        if (playlistUrl != null)
+                        {
+                            Queue<AudioTrack> queue = guildAudioPlayer.getScheduler().getQueue();
+                            List<AudioTrack> fromThisPlaylist = queue
+                                    .stream().filter(track -> track.getUserData(TrackInfo.class).getPlaylistUrl().equals(playlistUrl))
+                                    .collect(Collectors.toList());
+                            Collections.shuffle(fromThisPlaylist);
 
-                        List<AudioTrack> newQueue = new ArrayList<>(fromThisPlaylist);
+                            List<AudioTrack> newQueue = new ArrayList<>(fromThisPlaylist);
 
-                        fromThisPlaylist.forEach(queue::remove);
-                        List<AudioTrack> rest = new ArrayList<>(queue);
-                        newQueue.addAll(rest);
-                        queue.clear();
-                        queue.addAll(newQueue);
+                            fromThisPlaylist.forEach(queue::remove);
+                            List<AudioTrack> rest = new ArrayList<>(queue);
+                            newQueue.addAll(rest);
+                            queue.clear();
+                            queue.addAll(newQueue);
+                        }
                     }
                 }
             }

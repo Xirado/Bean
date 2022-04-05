@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,7 @@ public class GuildJoinListener extends ListenerAdapter
         if (event.isFromGuild())
             return;
         if (event.getAuthor().getIdLong() == event.getJDA().getSelfUser().getIdLong()) return;
-        log.info("[DM]: {} ({}): {}", event.getAuthor().getAsTag(), event.getAuthor().getIdLong(), event.getMessage().getContentRaw());
+        log.info("[DM]: {} ({}): {}", MarkdownSanitizer.sanitize(event.getAuthor().getAsTag()), event.getAuthor().getIdLong(), MarkdownSanitizer.sanitize(event.getMessage().getContentRaw()));
     }
 
     public static boolean isGuildBanned(long guildId)

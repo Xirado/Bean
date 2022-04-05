@@ -181,6 +181,8 @@ public class AudioScheduler extends PlayerEventListenerAdapter
         Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
         if (guild == null)
             return;
+        if (info == null)
+            return;
         TextChannel channel = guild.getTextChannelById(info.getChannelId());
         if (channel == null)
             return;
