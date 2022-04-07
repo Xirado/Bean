@@ -32,12 +32,25 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("club.minnced:discord-webhooks:0.7.5")
     implementation("org.fusesource.jansi:jansi:2.4.0")
-
+    implementation("io.github.classgraph:classgraph:4.8.141")
+    implementation("ch.qos.logback:logback-classic:1.3.0-alpha14")
+    implementation("org.jline:jline:3.21.0")
+    implementation("org.codehaus.groovy:groovy-jsr223:3.0.8")
+    implementation("commons-io:commons-io:2.11.0")
 }
 
-tasks.withType<ProcessResources> {
-    filesMatching("**/app.properties") {
-        expand("app-version" to version, "build-time" to Instant.now().toString())
+tasks {
+    named<ProcessResources>("processResources") {
+        outputs.upToDateWhen { false }
+
+        filesMatching("**/app.properties") {
+            filter {
+                it.replace("@app-version@", version as String)
+            }
+            filter {
+                it.replace("@build-time@", Instant.now().toEpochMilli().toString())
+            }
+        }
     }
 }
 
@@ -47,16 +60,18 @@ tasks.create("clearResources") {
 
 val clean by tasks
 val build by tasks
+val processResources by tasks
 val clearResources by tasks
 val compileKotlin: KotlinCompile by tasks
 val shadowJar: ShadowJar by tasks
 
-compileKotlin.kotlinOptions.apply {
-    jvmTarget = "16"
-}
-
 tasks.build {
+    dependsOn(processResources)
     dependsOn(clearResources)
     dependsOn(shadowJar)
+}
+
+compileKotlin.kotlinOptions.apply {
+    jvmTarget = "16"
 }
 

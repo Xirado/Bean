@@ -11,6 +11,17 @@ import java.nio.file.Paths
 
 class ConfigLoader {
     companion object {
+
+        fun loadResourceAsJson(fileName: String): DataObject {
+            val inputStream = Application::class.java.getResourceAsStream("/$fileName")?: throw FileNotFoundException("Resource $fileName not found")
+            return DataObject.fromJson(inputStream)
+        }
+
+        fun loadResourceAsYaml(fileName: String): DataObject {
+            val inputStream = Application::class.java.getResourceAsStream("/$fileName")?: throw FileNotFoundException("Resource $fileName not found")
+            return DataObject.fromYaml(inputStream)
+        }
+
         fun loadFileAsJson(fileName: String, copyFromResources: Boolean): DataObject {
             val file = File(fileName)
             check(fileName, file, copyFromResources)
