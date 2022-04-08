@@ -3,7 +3,7 @@ package at.xirado.bean
 
 import at.xirado.bean.interaction.InteractionCommandHandler
 import at.xirado.bean.io.config.BeanConfiguration
-import at.xirado.bean.io.config.ConfigLoader
+import at.xirado.bean.io.config.FileLoader
 import at.xirado.bean.listener.InteractionCommandListener
 import at.xirado.bean.listener.ModalListener
 import at.xirado.bean.listener.ReadyListener
@@ -39,7 +39,7 @@ class Application {
         lateinit var instance: Application
     }
 
-    val config: BeanConfiguration = BeanConfiguration(ConfigLoader.loadFileAsYaml("config.yml", true))
+    val config: BeanConfiguration = BeanConfiguration(FileLoader.loadFileAsYaml("config.yml", true))
     val shardManager: ShardManager
     val coroutineScope = getDefaultScope()
     val interactionCommandHandler: InteractionCommandHandler
@@ -63,6 +63,7 @@ class Application {
             .build()
 
         interactionCommandHandler = InteractionCommandHandler(this)
+        Class.forName("at.xirado.bean.i18n.LocalizationManager")
     }
 
     private fun loadProperties() {

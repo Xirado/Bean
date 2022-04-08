@@ -1,11 +1,10 @@
 package at.xirado.bean.i18n
 
-import net.dv8tion.jda.api.utils.data.DataObject
-import org.apache.commons.io.IOUtils
+import at.xirado.bean.io.config.FileLoader
+import net.dv8tion.jda.api.utils.data.DataArray
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.IOException
-import java.nio.charset.StandardCharsets
 import java.util.*
 
 class LocalizationManager {
@@ -21,16 +20,12 @@ class LocalizationManager {
             val map = mutableMapOf<String, I18n>()
 
             try {
-                LocalizationManager::class.java.getResourceAsStream("/i18n/languages.txt").use { inputStream ->
-                    if (inputStream == null) {
-                        throw ExceptionInInitializerError("languages.txt doesn't exist!")
-                    }
+                val config = FileLoader.loadResourceAsYaml("i18n/locale_config.yml")
 
-                    IOUtils.toString(inputStream, StandardCharsets.UTF_8).trim().split("\n").forEach {
-                        val language = it.trim()
-                        LANGUAGES.add(language)
-                    }
-                }
+                config.optArray("locales").orElseGet(DataArray::empty)
+                    .stream(DataArray::getString)
+                    .map { it.trim() }
+                    .forEach(LANGUAGES::add)
             } catch (ex: IOException) {
                 log.error("Could not initialize localization manager", ex)
                 throw ExceptionInInitializerError(ex)
@@ -38,18 +33,10 @@ class LocalizationManager {
 
             LANGUAGES.forEach { lang ->
                 try {
-                    LocalizationManager::class.java.getResourceAsStream("/i18n/$lang").use {
-                        if (it == null) {
-                            log.warn("Ignoring missing locale file $lang")
-                            return@forEach
-                        }
-
-                        val name = lang.replace(".yml", "")
-                        val json = DataObject.fromYaml(it)
-                        map[name] = I18n(name, json)
-                        log.info("Loaded locale $lang")
-
-                    }
+                    val file = FileLoader.loadResourceAsYaml("i18n/locales/$lang")
+                    val name = lang.replace(".yml", "")
+                    map[name] = I18n(name, file)
+                    log.info("Loaded locale $lang")
                 } catch (ex: Exception) {
                     log.error("Could not load locale $lang", ex)
                 }
@@ -60,6 +47,5 @@ class LocalizationManager {
         fun getForLanguageTag(tag: String): I18n? {
             return LANGUAGE_MAP[tag]
         }
-
     }
 }

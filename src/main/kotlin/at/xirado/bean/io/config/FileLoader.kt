@@ -9,7 +9,7 @@ import java.io.FileNotFoundException
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class ConfigLoader {
+class FileLoader {
     companion object {
 
         fun loadResourceAsJson(fileName: String): DataObject {
