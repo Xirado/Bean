@@ -22,7 +22,7 @@ public class WordleCommand extends SlashCommand
     public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
     {
 
-        if (WordleManager.hasFinishedDaily(event.getUser().getIdLong()))
+        if (WordleManager.hasFinishedDaily(event.getUser().getIdLong()) || WordleManager.hasPlayedToday(event.getUser().getIdLong()))
         {
             event.replyEmbeds(EmbedUtil.errorEmbed("You already finished today's wordle quiz! Try again " + WordleManager.getDiscordRelativeTimeUntilMidnight())).queue();
             return;

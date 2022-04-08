@@ -4,6 +4,7 @@ import at.xirado.bean.Bean;
 import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.game.Wordle;
+import club.minnced.discord.webhook.WebhookClient;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -72,11 +73,23 @@ public class WordleManager extends ListenerAdapter
         Files.writeString(file.toPath(), output, StandardCharsets.UTF_8);
     }
 
+    // TODO: This needs improvement
+    private static void sendSummary()
+    {
+        if (!Bean.getInstance().getConfig().isNull("wordle_webhook_url"))
+        {
+            WebhookClient client = WebhookClient.withUrl(Bean.getInstance().getConfig().getString("wordle_webhook_url"));
+
+            client.send("**Todays Wordle Quiz**\n\nWord: **" + currentWord + "**\nTotal users played: **" + getTotalGamesToday() + " ("+getWonGamesToday()+" won)**");
+        }
+    }
+
     private static void setUpTimer()
     {
         Bean.getInstance().getScheduledExecutor().scheduleWithFixedDelay(() -> {
             currentWordleTries.clear();
             finishedUsers.clear();
+            sendSummary();
             wordleAnswers.remove(0);
             currentWord = wordleAnswers.get(0);
             LOG.debug("Midnight! New Wordle Word is {}!", currentWord);
@@ -136,7 +149,7 @@ public class WordleManager extends ListenerAdapter
 
     private static long getMillisUntilMidnight()
     {
-        Calendar c = Calendar.getInstance();
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         long now = c.getTimeInMillis();
         c.add(Calendar.DATE, 1);
         c.set(Calendar.HOUR_OF_DAY, 0);
@@ -145,6 +158,11 @@ public class WordleManager extends ListenerAdapter
         c.set(Calendar.MILLISECOND, 0);
 
         return c.getTimeInMillis() - now;
+    }
+
+    private static long getMillisPastMidnight()
+    {
+        return MILLIS_PER_DAY - getMillisUntilMidnight();
     }
 
     public static String getDiscordRelativeTimeUntilMidnight()
@@ -223,12 +241,14 @@ public class WordleManager extends ListenerAdapter
                 finishedUsers.add(event.getUser().getIdLong());
                 incrementWinStreak(event.getUser().getIdLong());
                 action.setContent("**Congratulations!**: You won today's wordle quiz! Next quiz will be available " + getDiscordRelativeTimeUntilMidnight() + "\nYour Win-Streak is at **" + getWinStreak(event.getUser().getIdLong()) + "**!");
+                insertGame(event.getUser().getIdLong(), currentWord, System.currentTimeMillis(), true, wordle.getCurrentTry());
             }
             else if (!wordle.hasWon() && wordle.getCurrentTry() == 5)
             {
                 finishedUsers.add(event.getUser().getIdLong());
                 resetWinStreak(event.getUser().getIdLong());
                 action.setContent("**You lost**: You lost today's wordle quiz! Next quiz will be available " + getDiscordRelativeTimeUntilMidnight());
+                insertGame(event.getUser().getIdLong(), currentWord, System.currentTimeMillis(), false, wordle.getCurrentTry());
             }
 
             action.queue();
@@ -275,6 +295,63 @@ public class WordleManager extends ListenerAdapter
         catch (SQLException exception)
         {
             LOG.error("Could not set wordle winstreak {} for user {}", streak, userId, exception);
+        }
+    }
+
+    public static boolean hasPlayedToday(long userId)
+    {
+        long minTime = System.currentTimeMillis() - getMillisPastMidnight();
+        long maxTime = minTime + MILLIS_PER_DAY;
+        try (var rs = new SQLBuilder("SELECT 1 FROM wordle WHERE user_id = ? AND played_at > ? AND played_at < ?", userId, minTime, maxTime).executeQuery())
+        {
+            return rs.next();
+        } catch (SQLException exception)
+        {
+            LOG.error("Could not check if user {} has played wordle today!", userId, exception);
+        }
+        return true;
+    }
+
+    public static int getTotalGamesToday()
+    {
+        long minTime = System.currentTimeMillis() - getMillisPastMidnight();
+        long maxTime = minTime + MILLIS_PER_DAY;
+        try (var rs = new SQLBuilder("SELECT COUNT(*) FROM wordle WHERE played_at > ? AND played_at < ?", minTime, maxTime).executeQuery())
+        {
+            if (rs.next())
+                return rs.getInt("COUNT(*)");
+            return 0;
+        } catch (SQLException exception)
+        {
+            LOG.error("Could not get total games from today!", exception);
+        }
+        return 0;
+    }
+
+    public static int getWonGamesToday()
+    {
+        long minTime = System.currentTimeMillis() - getMillisPastMidnight();
+        long maxTime = minTime + MILLIS_PER_DAY;
+        try (var rs = new SQLBuilder("SELECT COUNT(*) FROM wordle WHERE played_at > ? AND played_at < ? AND won = 1", minTime, maxTime).executeQuery())
+        {
+            if (rs.next())
+                return rs.getInt("COUNT(*)");
+            return 0;
+        } catch (SQLException exception)
+        {
+            LOG.error("Could not get won games from today!", exception);
+        }
+        return 0;
+    }
+
+    public static void insertGame(long userId, String word, long playedAt, boolean won, int tries)
+    {
+        try
+        {
+            new SQLBuilder("INSERT INTO wordle values (?,?,?,?,?)", userId, word, playedAt, won, tries).execute();
+        } catch (SQLException ex)
+        {
+            LOG.error("Could not insert wordle game into DB! ({}, {}, {}, {}, {})", userId, word, playedAt, won, tries, ex);
         }
     }
 }

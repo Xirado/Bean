@@ -100,7 +100,8 @@ public class Database
                 "CREATE TABLE IF NOT EXISTS bookmarks (user_id BIGINT, added_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL, PRIMARY KEY(user_id, value)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
                 "CREATE TABLE IF NOT EXISTS acknowledged_hints (user_id BIGINT, hint VARCHAR(64))",
                 "CREATE TABLE IF NOT EXISTS banned_guilds (guild_id BIGINT PRIMARY KEY, reason VARCHAR(256))",
-                "CREATE TABLE IF NOT EXISTS wordle_streak (user_id BIGINT PRIMARY KEY, streak INT)"
+                "CREATE TABLE IF NOT EXISTS wordle_streak (user_id BIGINT PRIMARY KEY, streak INT)",
+                "CREATE TABLE IF NOT EXISTS wordle (user_id BIGINT, word VARCHAR(5), played_at BIGINT, won BOOL, tries TINYINT)"
         };
 
         try (Connection connection = Database.getConnectionFromPool())
