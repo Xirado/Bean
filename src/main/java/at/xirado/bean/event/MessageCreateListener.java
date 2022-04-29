@@ -40,7 +40,8 @@ public class MessageCreateListener extends ListenerAdapter
                     });
             return;
         }
-        if (content.startsWith(prefix))
+
+        if (content.startsWith(prefix) || content.startsWith("<@" + event.getJDA().getSelfUser().getIdLong() + "> "))
         {
             Bean.getInstance().getCommandHandler().handleCommandFromGuild(event);
         }

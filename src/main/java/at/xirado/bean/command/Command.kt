@@ -1,128 +1,83 @@
-package at.xirado.bean.command;
+package at.xirado.bean.command
 
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.internal.utils.Checks
+import java.util.*
 
-import java.util.*;
+abstract class Command protected constructor(name: String, description: String, usage: String) {
 
-public abstract class Command
-{
-    private final String name;
-    private final String description;
-    private final String usage;
-    private final List<String> aliases = new ArrayList<>();
-    private final List<Permission> requiredPermissions = new ArrayList<>();
-    private final List<Permission> requiredBotPermissions = new ArrayList<>();
-    private final List<Long> allowedGuilds = new ArrayList<>();
-    private final EnumSet<CommandFlag> commandFlags;
+    val name: String
+    val description: String
+    val usage: String
+    private val aliases: MutableList<String> = mutableListOf()
+    private val requiredPermissions: MutableList<Permission> = mutableListOf()
+    private val requiredBotPermissions: MutableList<Permission> = mutableListOf()
+    private val allowedGuilds: MutableList<Long> = mutableListOf()
+    private val commandFlags: EnumSet<CommandFlag> = EnumSet.noneOf(CommandFlag::class.java)
 
-    protected Command(String name, String description, String usage)
-    {
-        Checks.notNull(name, "name");
-        Checks.notNull(description, "description");
-        Checks.notNull(usage, "usage");
-
-        this.name = name;
-        this.description = description;
-        this.usage = usage;
-        commandFlags = EnumSet.noneOf(CommandFlag.class);
+    init {
+        this.name = name
+        this.description = description
+        this.usage = usage
     }
 
-
-    public void addAliases(@NotNull String... aliases)
-    {
-        Checks.notNull(aliases, "Aliases");
-        this.aliases.addAll(Arrays.asList(aliases));
+    fun addAliases(vararg aliases: String) {
+        Checks.notNull(aliases, "Aliases")
+        this.aliases.addAll(listOf(*aliases))
     }
 
-    public void addRequiredPermissions(@NotNull Permission... permissions)
-    {
-        Checks.notNull(permissions, "Permissions");
-        this.requiredPermissions.addAll(Arrays.asList(permissions));
+    fun addRequiredPermissions(vararg permissions: Permission) {
+        Checks.notNull(permissions, "Permissions")
+        requiredPermissions.addAll(listOf(*permissions))
     }
 
-    public void addRequiredBotPermissions(@NotNull Permission... permissions)
-    {
-        Checks.notNull(permissions, "Permissions");
-        this.requiredBotPermissions.addAll(Arrays.asList(permissions));
+    fun addRequiredBotPermissions(vararg permissions: Permission) {
+        Checks.notNull(permissions, "Permissions")
+        requiredBotPermissions.addAll(listOf(*permissions))
     }
 
-    public void addAllowedGuilds(@NotNull Long... guildIDs)
-    {
-        Checks.notEmpty(guildIDs, "Guild Ids");
-        this.allowedGuilds.addAll(Arrays.asList(guildIDs));
+    fun addAllowedGuilds(vararg guildIDs: Long) {
+        Checks.notEmpty(guildIDs.toList(), "Guild Ids")
+        allowedGuilds.addAll(guildIDs.toList())
     }
 
-    public void addCommandFlags(@NotNull CommandFlag... commandFlags)
-    {
-        Checks.notNull(commandFlags, "CommandFlags");
-        this.commandFlags.addAll(Arrays.asList(commandFlags));
+    fun addCommandFlags(vararg commandFlags: CommandFlag?) {
+        Checks.notNull(commandFlags, "CommandFlags")
+        this.commandFlags.addAll(listOf(*commandFlags))
     }
 
-    public String getName()
-    {
-        return name;
+    fun getAliases(): List<String> {
+        return Collections.unmodifiableList(aliases)
     }
 
-    public String getDescription()
-    {
-        return description;
+    fun getRequiredPermissions(): List<Permission> {
+        return Collections.unmodifiableList(requiredPermissions)
     }
 
-    public String getUsage()
-    {
-        return usage;
+    fun getRequiredBotPermissions(): List<Permission> {
+        return Collections.unmodifiableList(requiredBotPermissions)
     }
 
-
-    public @NotNull List<String> getAliases()
-    {
-        return Collections.unmodifiableList(aliases);
+    fun getAllowedGuilds(): List<Long> {
+        return Collections.unmodifiableList(allowedGuilds)
     }
 
-    public @NotNull List<Permission> getRequiredPermissions()
-    {
-        return Collections.unmodifiableList(requiredPermissions);
+    fun getCommandFlags(): Set<CommandFlag> {
+        return Collections.unmodifiableSet(commandFlags)
     }
 
-    public @NotNull List<Permission> getRequiredBotPermissions()
-    {
-        return Collections.unmodifiableList(requiredBotPermissions);
+    fun hasCommandFlag(flag: CommandFlag): Boolean {
+        return commandFlags.contains(flag)
     }
 
-    public @NotNull List<Long> getAllowedGuilds()
-    {
-        return Collections.unmodifiableList(allowedGuilds);
+    fun isAvailableIn(guildID: Long): Boolean {
+        return if (hasCommandFlag(CommandFlag.PRIVATE_COMMAND)) getAllowedGuilds().contains(guildID) else true
     }
 
-    public @NotNull Set<CommandFlag> getCommandFlags()
-    {
-        return Collections.unmodifiableSet(commandFlags);
-    }
+    abstract suspend fun executeCommand(event: MessageReceivedEvent, context: CommandContext)
 
-    public boolean hasCommandFlag(CommandFlag flag)
-    {
-        return commandFlags.contains(flag);
-    }
-
-    public boolean isAvailableIn(long guildID)
-    {
-        if (hasCommandFlag(CommandFlag.PRIVATE_COMMAND))
-            return getAllowedGuilds().contains(guildID);
-        else
-            return true;
-    }
-
-    public abstract void executeCommand(MessageReceivedEvent event, CommandContext context);
-
-    @NonNls
-    @NotNull
-    @Override
-    public String toString()
-    {
+    override fun toString(): String {
         return "Command{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
@@ -132,6 +87,6 @@ public abstract class Command
                 ", requiredBotPermissions=" + requiredBotPermissions +
                 ", allowedGuilds=" + allowedGuilds +
                 ", commandFlags=" + commandFlags +
-                '}';
+                '}'
     }
 }
