@@ -159,7 +159,7 @@ class EvalCommand : Command("eval", "evaluates some code", "eval [code]") {
         val buttonEvent = jda.await<ButtonInteractionEvent>(5.minutes) {
             if (it.user.idLong !in Bean.WHITELISTED_USERS)
             {
-                it.reply("This haze isn't meant for you!").setEphemeral(true).queue()
+                it.reply("This maze isn't meant for you!").setEphemeral(true).queue()
                 return@await false
             }
 
