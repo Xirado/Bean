@@ -43,6 +43,7 @@ public class VoiceGameCommand extends SlashCommand
                 )
         );
         addRequiredUserPermissions(Permission.CREATE_INSTANT_INVITE);
+        addRequiredBotPermissions(Permission.CREATE_INSTANT_INVITE);
         addCommandFlags(CommandFlag.MUST_BE_IN_VC);
     }
 

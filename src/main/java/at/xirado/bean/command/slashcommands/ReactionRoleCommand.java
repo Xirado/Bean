@@ -38,8 +38,8 @@ public class ReactionRoleCommand extends SlashCommand
                         .addOption(OptionType.STRING, "message_id", "ID of the message you want to have reaction roles removed on.", true)
                 )
         );
-        addRequiredBotPermissions(Permission.ADMINISTRATOR);
-        addRequiredUserPermissions(Permission.MANAGE_ROLES, Permission.MESSAGE_MANAGE);
+        addRequiredUserPermissions(Permission.ADMINISTRATOR);
+        addRequiredBotPermissions(Permission.MANAGE_ROLES, Permission.MESSAGE_MANAGE);
     }
 
     @Override

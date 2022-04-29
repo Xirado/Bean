@@ -31,7 +31,7 @@ public class ModeratorCommand extends SlashCommand
                 )
                 .addSubcommands(new SubcommandData("list", "Lists all moderator roles."))
         );
-        addRequiredBotPermissions(Permission.ADMINISTRATOR);
+        addRequiredUserPermissions(Permission.ADMINISTRATOR);
     }
 
     @Override

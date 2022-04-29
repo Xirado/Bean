@@ -25,7 +25,7 @@ public class Mee6TransferCommand extends SlashCommand
     public Mee6TransferCommand()
     {
         setCommandData(Commands.slash("mee6transfer", "Transfer-command to migrate MEE6 XP to Bean for all found members."));
-        addRequiredBotPermissions(Permission.ADMINISTRATOR);
+        addRequiredUserPermissions(Permission.ADMINISTRATOR);
     }
 
     @Override

@@ -30,7 +30,7 @@ public class DJCommand extends SlashCommand
                 )
                 .addSubcommands(new SubcommandData("list", "Lists all DJs."))
         );
-        addRequiredBotPermissions(Permission.ADMINISTRATOR);
+        addRequiredUserPermissions(Permission.ADMINISTRATOR);
     }
 
     @Override

@@ -29,13 +29,13 @@ public abstract class SlashCommand implements GenericCommand
 
     public void addRequiredBotPermissions(Permission... permissions)
     {
-        requiredUserPermissions.addAll(Arrays.asList(permissions));
+        requiredBotPermissions.addAll(Arrays.asList(permissions));
     }
 
     public void addRequiredUserPermissions(Permission... permissions)
     {
         commandData.setDefaultPermissions(permissions);
-        requiredBotPermissions.addAll(Arrays.asList(permissions));
+        requiredUserPermissions.addAll(Arrays.asList(permissions));
     }
 
     public void addCommandFlags(CommandFlag... flags)
