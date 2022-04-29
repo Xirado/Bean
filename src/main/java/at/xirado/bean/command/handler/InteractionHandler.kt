@@ -196,7 +196,6 @@ class InteractionHandler(val bean: Bean) {
     }
 
     private fun addGuildCommand(guildId: Long, command: GenericCommand) {
-        println("Running addGuildCommand()")
         val enabledCommands = if (guildCommands.containsKey(guildId)) guildCommands[guildId] else mutableListOf()
 
         if (command in enabledCommands!!)
@@ -205,7 +204,6 @@ class InteractionHandler(val bean: Bean) {
         enabledCommands.add(command)
 
         guildCommands[guildId] = enabledCommands
-        println("SETTING")
     }
 
     /**
@@ -213,10 +211,8 @@ class InteractionHandler(val bean: Bean) {
      */
     fun updateGuildCommands(guild: Guild) {
         val guildId = guild.idLong
-        println("Registering guildddddd commands on guild ${guild.name}")
         if (guildId !in guildCommands || guildCommands[guildId]!!.isEmpty())
             return
-        println("guild ${guild.name} in list!")
         val updateAction = guild.updateCommands()
         val commands = guildCommands[guildId]!!
         commands.forEach { updateAction.addCommands(it.commandData) }
@@ -233,7 +229,7 @@ class InteractionHandler(val bean: Bean) {
         scanResult.getSubclasses(clazz).loadClasses().forEach {
             try {
                 registerCommand(action, it.getDeclaredConstructor().newInstance() as GenericCommand)
-                log.info("Found interaction-command ${it.name}")
+                log.debug("Found interaction-command ${it.name}")
             } catch (e: Exception) {
                 log.error("An error occurred while registering a command", e)
             }

@@ -31,15 +31,15 @@ public class JDAReadyListener extends ListenerAdapter
     public void onGuildReady(@NotNull GuildReadyEvent event)
     {
         if (!ready)
-        {
-            System.out.println("REGISTERING GLOBAL COMMANDS");
             Bean.getInstance().getInteractionHandler().init();
-            ready = true;
-        }
-        System.out.println("REGISTERING GUILD COMMANDS");
+
         Bean.getInstance().getInteractionHandler().updateGuildCommands(event.getGuild());
+
+
         if (ready)
             return;
+
+        ready = true;
         Bean.getInstance().getExecutor().submit(() ->
         {
             LOGGER.info("Successfully started {} shards!", Bean.getInstance().getShardManager().getShards().size());
