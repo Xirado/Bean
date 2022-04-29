@@ -80,7 +80,6 @@ public class Bean
                     .build());
 
     private final ConsoleCommandManager consoleCommandManager;
-    //private final InteractionCommandHandler interactionCommandHandler;
     private final InteractionHandler interactionHandler;
     private final CommandHandler commandHandler;
     private final AudioManager audioManager;
@@ -103,7 +102,6 @@ public class Bean
         consoleCommandManager = new ConsoleCommandManager();
         consoleCommandManager.registerAllCommands();
         debug = !config.isNull("debug") && config.getBoolean("debug");
-        //interactionCommandHandler = new InteractionCommandHandler();
         interactionHandler = new InteractionHandler(this);
         commandHandler = new CommandHandler();
         eventWaiter = new EventWaiter();
@@ -277,12 +275,6 @@ public class Bean
     {
         return consoleCommandManager;
     }
-
-//    public InteractionCommandHandler getInteractionCommandHandler()
-//    {
-//        return interactionCommandHandler;
-//    }
-
 
     public InteractionHandler getInteractionHandler()
     {
