@@ -257,13 +257,9 @@ class InteractionHandler(val bean: Bean) {
                 .orElse(getGenericCommand(name, type))
     }
 
-    private fun getMissingPermissions(member: Member, channel: GuildChannel, requiredPerms: EnumSet<Permission>) : EnumSet<Permission> {
-        val perms = EnumSet.noneOf(Permission::class.java)
+    private fun getMissingPermissions(member: Member, channel: GuildChannel, requiredPerms: EnumSet<Permission>) : Collection<Permission> {
+        val memberPerms = member.getPermissions(channel)
 
-        for (permission in requiredPerms) {
-            if (!member.hasPermission(channel, permission))
-                perms.add(permission)
-        }
-        return perms
+        return requiredPerms.filter { it !in memberPerms }
     }
 }
