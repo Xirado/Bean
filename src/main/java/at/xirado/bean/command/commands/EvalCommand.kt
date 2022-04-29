@@ -86,7 +86,8 @@ class EvalCommand : Command("eval", "evaluates some code", "eval [code]") {
         val formatted = try {
             parse(raw, defaultImports)
         } catch (ex: ParseError) {
-            message.reply("An error occurred while formatting the code!")
+            val error = ex.toString()
+            message.reply("An error occurred while formatting the code!" + if (error.length > 1000) "" else "\n```\n$error```")
                     .mentionRepliedUser(false)
                     .setActionRow(
                             generateError(ex.toString()),
@@ -102,7 +103,8 @@ class EvalCommand : Command("eval", "evaluates some code", "eval [code]") {
         val response = try {
             (engine.eval(formatted) as Deferred<*>).await()
         } catch (ex: Exception) {
-            message.reply("An error occurred while running script!")
+            val error = ex.toString()
+            message.reply("An error occurred while running the Kotlin script!" + if (error.length > 1000) "" else "\n```\n$error```")
                     .mentionRepliedUser(false)
                     .setActionRow(
                             generateError(ex.toString()),
@@ -178,7 +180,8 @@ class EvalCommand : Command("eval", "evaluates some code", "eval [code]") {
         val formatted = try {
             parse(input, defaultImports)
         } catch (ex: ParseError) {
-            modalEvent.reply("An error occurred while formatting the code!")
+            val error = ex.toString()
+            modalEvent.reply("An error occurred while formatting the code!" + if (error.length > 1000) "" else "\n```\n$error```")
                     .addActionRow(
                             generateError(ex.toString()),
                             generateSource(input),
@@ -195,7 +198,8 @@ class EvalCommand : Command("eval", "evaluates some code", "eval [code]") {
         val response = try {
             (engine.eval(formatted) as Deferred<*>).await()
         } catch (ex: Exception) {
-            modalEvent.reply("An error occurred while running script!")
+            val error = ex.toString()
+            modalEvent.reply("An error occurred while running the Kotlin script!" + if (error.length > 1000) "" else "\n```\n$error```")
                     .addActionRow(
                             generateError(ex.toString()),
                             generateSource(formatted),

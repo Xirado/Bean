@@ -6,23 +6,11 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 public class SlashCommandListener extends ListenerAdapter
 {
-    @Override
-    public void onButtonInteraction(@NotNull ButtonInteractionEvent event)
-    {
-        if (!Bean.WHITELISTED_USERS.contains(event.getUser().getIdLong()))
-            return;
-
-        if (event.getComponentId().equals("deletemsg")) {
-            event.getMessage().delete().queue(null, e -> {});
-        }
-    }
-
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event)
     {
