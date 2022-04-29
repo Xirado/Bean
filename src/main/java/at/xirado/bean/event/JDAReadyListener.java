@@ -30,16 +30,21 @@ public class JDAReadyListener extends ListenerAdapter
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event)
     {
+        if (!ready)
+        {
+            System.out.println("REGISTERING GLOBAL COMMANDS");
+            Bean.getInstance().getInteractionHandler().init();
+            ready = true;
+        }
+        System.out.println("REGISTERING GUILD COMMANDS");
+        Bean.getInstance().getInteractionHandler().updateGuildCommands(event.getGuild());
         if (ready)
             return;
-        ready = true;
         Bean.getInstance().getExecutor().submit(() ->
         {
             LOGGER.info("Successfully started {} shards!", Bean.getInstance().getShardManager().getShards().size());
-            Bean.getInstance().getInteractionCommandHandler().initialize();
             if (Bean.getInstance().isDebug())
                 LOGGER.warn("Development mode enabled.");
-            Bean.getInstance().initCommandCheck();
             JdaLavalink lavalink = Bean.getInstance().getLavalink();
             lavalink.setJdaProvider((shard) -> Bean.getInstance().getShardManager().getShardById(shard));
             lavalink.setUserId(event.getJDA().getSelfUser().getId());

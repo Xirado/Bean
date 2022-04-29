@@ -1,8 +1,6 @@
 package at.xirado.bean.command.terminal;
 
-import at.xirado.bean.Bean;
 import at.xirado.bean.command.ConsoleCommand;
-import at.xirado.bean.log.MCColor;
 
 public class UpdateSlashCommands extends ConsoleCommand
 {
@@ -15,6 +13,5 @@ public class UpdateSlashCommands extends ConsoleCommand
     @Override
     public void executeCommand(String invoke, String[] args)
     {
-        Bean.getInstance().getInteractionCommandHandler().updateCommands((x) -> System.out.println(MCColor.translate("&aUpdated " + x.size() + " commands!")), Throwable::printStackTrace);
     }
 }

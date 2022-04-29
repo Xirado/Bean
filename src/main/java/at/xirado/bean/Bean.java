@@ -3,9 +3,8 @@ package at.xirado.bean;
 import at.xirado.bean.backend.Authenticator;
 import at.xirado.bean.backend.WebServer;
 import at.xirado.bean.command.ConsoleCommandManager;
-import at.xirado.bean.command.GenericCommand;
 import at.xirado.bean.command.handler.CommandHandler;
-import at.xirado.bean.command.handler.InteractionCommandHandler;
+import at.xirado.bean.command.handler.InteractionHandler;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.event.*;
 import at.xirado.bean.lavaplayer.SpotifyAudioSource;
@@ -23,9 +22,6 @@ import lavalink.client.LavalinkUtil;
 import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -34,7 +30,6 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import okhttp3.OkHttpClient;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +38,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -83,7 +80,8 @@ public class Bean
                     .build());
 
     private final ConsoleCommandManager consoleCommandManager;
-    private final InteractionCommandHandler interactionCommandHandler;
+    //private final InteractionCommandHandler interactionCommandHandler;
+    private final InteractionHandler interactionHandler;
     private final CommandHandler commandHandler;
     private final AudioManager audioManager;
     private final EventWaiter eventWaiter;
@@ -105,7 +103,8 @@ public class Bean
         consoleCommandManager = new ConsoleCommandManager();
         consoleCommandManager.registerAllCommands();
         debug = !config.isNull("debug") && config.getBoolean("debug");
-        interactionCommandHandler = new InteractionCommandHandler();
+        //interactionCommandHandler = new InteractionCommandHandler();
+        interactionHandler = new InteractionHandler(this);
         commandHandler = new CommandHandler();
         eventWaiter = new EventWaiter();
         Class.forName("at.xirado.bean.translation.LocaleLoader");
@@ -279,9 +278,15 @@ public class Bean
         return consoleCommandManager;
     }
 
-    public InteractionCommandHandler getInteractionCommandHandler()
+//    public InteractionCommandHandler getInteractionCommandHandler()
+//    {
+//        return interactionCommandHandler;
+//    }
+
+
+    public InteractionHandler getInteractionHandler()
     {
-        return interactionCommandHandler;
+        return interactionHandler;
     }
 
     public CommandHandler getCommandHandler()
@@ -355,86 +360,4 @@ public class Bean
         return mee6Queue;
     }
 
-    public void initCommandCheck()
-    {
-        LOGGER.info("Checking for outdated command cache...");
-        getCommandExecutor().submit(() ->
-        {
-            if (getInstance().isDebug())
-            {
-                Guild guild = getInstance().getShardManager().getGuildById(815597207617142814L);
-                if (guild == null)
-                {
-                    LOGGER.error("Debug guild does not exist!");
-                    return;
-                }
-
-                guild.retrieveCommands().queue(discordCommands ->
-                {
-                    List<GenericCommand> localCommands = getInstance().getInteractionCommandHandler()
-                            .getRegisteredGuildCommands()
-                            .get(guild.getIdLong());
-                    handleCommandUpdates(discordCommands, localCommands);
-                });
-                return;
-            }
-
-            getInstance().getShardManager().getShards().get(0).retrieveCommands().queue((discordCommands) ->
-            {
-                List<GenericCommand> localCommands = getInstance().getInteractionCommandHandler().getRegisteredCommands()
-                        .stream()
-                        .filter(GenericCommand::isGlobal)
-                        .toList();
-                handleCommandUpdates(discordCommands, localCommands);
-            });
-        });
-    }
-
-    private static void handleCommandUpdates(@NotNull Collection<? extends Command> discordCommands, @NotNull Collection<? extends GenericCommand> localCommands)
-    {
-        boolean commandRemovedOrAdded = localCommands.size() != discordCommands.size();
-        if (commandRemovedOrAdded)
-        {
-            if (localCommands.size() > discordCommands.size())
-            {
-                LOGGER.warn("New command(s) has/have been added! Updating Discords cache...");
-            }
-            else
-            {
-                LOGGER.warn("Command(s) has/have been removed! Updating Discords cache...");
-            }
-
-            getInstance().getInteractionCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e ->
-            {
-            });
-            return;
-        }
-
-        boolean outdated = false;
-        for (GenericCommand localCommand : localCommands)
-        {
-            Command discordCommand = discordCommands.stream()
-                    .filter(x -> x.getName().equalsIgnoreCase(localCommand.getData().getName()))
-                    .findFirst().orElse(null);
-
-            CommandData localCommandData = localCommand.getData();
-            CommandData discordCommandData = CommandData.fromCommand(discordCommand);
-            if (!localCommandData.equals(discordCommandData))
-            {
-                outdated = true;
-                break;
-            }
-        }
-
-        if (outdated)
-        {
-            getInstance().getInteractionCommandHandler().updateCommands(commands -> LOGGER.info("Updated {} commands!", commands.size()), e ->
-            {
-            });
-        }
-        else
-        {
-            LOGGER.info("No outdated commands found!");
-        }
-    }
 }

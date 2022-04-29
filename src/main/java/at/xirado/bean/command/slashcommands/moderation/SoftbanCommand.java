@@ -31,8 +31,8 @@ public class SoftbanCommand extends SlashCommand
                 .addOption(OptionType.STRING, "reason", "Reason for the kick.", false)
         );
 
-        setRequiredUserPermissions(Permission.BAN_MEMBERS);
-        setRequiredBotPermissions(Permission.BAN_MEMBERS);
+        addRequiredBotPermissions(Permission.BAN_MEMBERS);
+        addRequiredUserPermissions(Permission.BAN_MEMBERS);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class SoftbanCommand extends SlashCommand
                 .flatMap(channel -> channel.sendMessageEmbeds(dmEmbed.build()))
                 .mapToResult()
                 .flatMap(message -> guild.ban(member, 7))
-                .flatMap(x -> guild.unban(member.getId()))
+                .flatMap(x -> guild.unban(member))
                 .queue(x ->
                 {
                     ModCase.createModCase(CaseType.SOFTBAN, guild.getIdLong(), member.getIdLong(), sender.getIdLong(), reason);

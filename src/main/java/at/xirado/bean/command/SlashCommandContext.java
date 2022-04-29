@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import javax.annotation.CheckReturnValue;
@@ -27,9 +27,9 @@ public class SlashCommandContext
     public static final String SUCCESS = "✅";
     public String language;
 
-    private final SlashCommandInteractionEvent event;
+    private final GenericCommandInteractionEvent event;
 
-    public SlashCommandContext(SlashCommandInteractionEvent event)
+    public SlashCommandContext(GenericCommandInteractionEvent event)
     {
         this.event = event;
         if (event.getGuild() != null)

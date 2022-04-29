@@ -15,8 +15,8 @@ public class TestCommand extends SlashCommand
         setCommandData(Commands.slash("test", "this command is only for test purposes")
                 .addOption(OptionType.BOOLEAN, "ephemeral", "if this message is ephemeral", true)
         );
-        setGlobal(false);
-        setEnabledGuilds(815597207617142814L);
+
+        addEnabledGuilds(815597207617142814L);
     }
 
     @Override

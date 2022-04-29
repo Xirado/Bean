@@ -31,8 +31,8 @@ public class BanCommand extends SlashCommand
                 .addOptions(new OptionData(OptionType.STRING, "reason", "Reason for the ban."))
                 .addOptions(new OptionData(OptionType.INTEGER, "del_days", "How many days of messages to delete."))
         );
-        setRequiredUserPermissions(Permission.BAN_MEMBERS);
-        setRequiredBotPermissions(Permission.BAN_MEMBERS);
+        addRequiredBotPermissions(Permission.BAN_MEMBERS);
+        addRequiredUserPermissions(Permission.BAN_MEMBERS);
     }
 
     @Override

@@ -20,8 +20,8 @@ public class UnbanCommand extends SlashCommand
         setCommandData(Commands.slash("unban", "Unbans a user from a server.")
                 .addOption(OptionType.USER, "user", "User to unban.", true)
         );
-        setRequiredBotPermissions(Permission.BAN_MEMBERS);
-        setRequiredUserPermissions(Permission.BAN_MEMBERS);
+        addRequiredUserPermissions(Permission.BAN_MEMBERS);
+        addRequiredBotPermissions(Permission.BAN_MEMBERS);
     }
 
     @Override

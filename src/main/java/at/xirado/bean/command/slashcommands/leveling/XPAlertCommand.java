@@ -30,7 +30,7 @@ public class XPAlertCommand extends SlashCommand
                         .addOption(OptionType.CHANNEL, "targetchannel", "Channel where level-ups should get logged.", true)
                 )
         );
-        setRequiredUserPermissions(Permission.ADMINISTRATOR);
+        addRequiredBotPermissions(Permission.ADMINISTRATOR);
     }
 
     @Override

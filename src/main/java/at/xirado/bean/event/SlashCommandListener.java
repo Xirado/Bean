@@ -23,7 +23,7 @@ public class SlashCommandListener extends ListenerAdapter
             event.reply(CommandContext.ERROR_EMOTE + " Bot is in debug mode! Only whitelisted users can execute commands!").setEphemeral(true).queue();
             return;
         }
-        Bean.getInstance().getInteractionCommandHandler().handleSlashCommand(event, event.getMember());
+        Bean.getInstance().getInteractionHandler().handleCommand(event);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class SlashCommandListener extends ListenerAdapter
             event.reply(CommandContext.ERROR_EMOTE + " Bot is in debug mode! Only whitelisted users can execute commands!").setEphemeral(true).queue();
             return;
         }
-        Bean.getInstance().getInteractionCommandHandler().handleMessageContextCommand(event);
+        Bean.getInstance().getInteractionHandler().handleCommand(event);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class SlashCommandListener extends ListenerAdapter
             event.reply(CommandContext.ERROR_EMOTE + " Bot is in debug mode! Only whitelisted users can execute commands!").setEphemeral(true).queue();
             return;
         }
-        Bean.getInstance().getInteractionCommandHandler().handleUserContextCommand(event);
+        Bean.getInstance().getInteractionHandler().handleCommand(event);
     }
 
     @Override
@@ -63,6 +63,7 @@ public class SlashCommandListener extends ListenerAdapter
             return;
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
-        Bean.getInstance().getInteractionCommandHandler().handleAutocomplete(event);
+
+        Bean.getInstance().getInteractionHandler().handleAutocomplete(event);
     }
 }

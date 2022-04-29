@@ -27,7 +27,6 @@ public class ChooseCommand extends SlashCommand
                 .addOption(OptionType.STRING, "9th", "Ninth argument.")
                 .addOption(OptionType.STRING, "10th", "Tenth argument.")
         );
-        setRunnableInDM(true);
     }
 
 

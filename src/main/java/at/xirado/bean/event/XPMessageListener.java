@@ -11,6 +11,7 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.RoleReward;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -107,7 +108,7 @@ public class XPMessageListener extends ListenerAdapter
                                 Util.sendOwnerDM(EmbedUtil.errorEmbed("Hey! You have up role-rewards in your guild **" + event.getGuild().getName() + "**, but the role **" + role.getName() + "** is above me in the role hierarchy!\nPlease make sure to move the role above me, so i can assign them!"));
                                 return;
                             }
-                            event.getGuild().addRoleToMember(userId, role).queue(s -> {}, e -> {});
+                            event.getGuild().addRoleToMember(UserSnowflake.fromId(userId), role).queue(s -> {}, e -> {});
                             RoleReward oldReward = data.getLastRoleReward(level);
                             if (oldReward != null)
                             {
@@ -116,7 +117,7 @@ public class XPMessageListener extends ListenerAdapter
                                     Role oldRole = event.getGuild().getRoleById(oldReward.getRoleId());
                                     if (oldRole != null)
                                     {
-                                        event.getGuild().removeRoleFromMember(userId, oldRole).queue(s -> {}, e -> {});
+                                        event.getGuild().removeRoleFromMember(UserSnowflake.fromId(userId), oldRole).queue(s -> {}, e -> {});
                                     }
                                 }
                             }

@@ -3,120 +3,85 @@ package at.xirado.bean.command;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class SlashCommand implements GenericCommand
 {
+    private SlashCommandData commandData = null;
 
-    private SlashCommandData commandData;
-    private final List<Permission> requiredUserPermissions;
-    private final List<Permission> requiredBotPermissions;
-    private boolean isGlobal;
-    private final List<Long> enabledGuilds;
-    private boolean runnableInDM;
-    private final Set<CommandFlag> commandFlags;
-
-    public boolean isRunnableInDM()
-    {
-        return runnableInDM;
-    }
-
-    public void setRunnableInDM(boolean runnableInDM)
-    {
-        this.runnableInDM = runnableInDM;
-    }
-
-    public String getCommandName()
-    {
-        return commandData.getName();
-    }
-
-    public String getCommandDescription()
-    {
-        return commandData.getDescription();
-    }
-
-    public List<OptionData> getOptions()
-    {
-        return commandData.getOptions();
-    }
-
-    @Override
-    public SlashCommandData getData()
-    {
-        return commandData;
-    }
+    private final EnumSet<Permission> requiredUserPermissions = EnumSet.noneOf(Permission.class);
+    private final EnumSet<Permission> requiredBotPermissions = EnumSet.noneOf(Permission.class);
+    private final Set<Long> enabledGuilds = new HashSet<>();
+    private final EnumSet<CommandFlag> commandFlags = EnumSet.noneOf(CommandFlag.class);
 
     public void setCommandData(SlashCommandData commandData)
     {
         this.commandData = commandData;
     }
 
-    public List<Permission> getRequiredUserPermissions()
+    public void addRequiredBotPermissions(Permission... permissions)
     {
-        return requiredUserPermissions;
+        requiredUserPermissions.addAll(Arrays.asList(permissions));
     }
 
-    public Set<CommandFlag> getCommandFlags()
+    public void addRequiredUserPermissions(Permission... permissions)
     {
-        return commandFlags;
-    }
-
-    public void setRequiredUserPermissions(Permission... permissions)
-    {
-        this.requiredUserPermissions.addAll(Arrays.asList(permissions));
-    }
-
-    public List<Permission> getRequiredBotPermissions()
-    {
-        return requiredBotPermissions;
-    }
-
-    public void setRequiredBotPermissions(Permission... permissions)
-    {
-        this.requiredBotPermissions.addAll(Arrays.asList(permissions));
-    }
-
-    public boolean isGlobal()
-    {
-        return isGlobal;
-    }
-
-    public void setGlobal(boolean global)
-    {
-        isGlobal = global;
-    }
-
-    public List<Long> getEnabledGuilds()
-    {
-        return enabledGuilds;
-    }
-
-    public void setEnabledGuilds(Long... enabledGuilds)
-    {
-        this.enabledGuilds.addAll(Arrays.asList(enabledGuilds));
+        commandData.setDefaultPermissions(permissions);
+        requiredBotPermissions.addAll(Arrays.asList(permissions));
     }
 
     public void addCommandFlags(CommandFlag... flags)
     {
-        Checks.notEmpty(flags, "Flags");
-        commandFlags.addAll(Set.of(flags));
+        commandFlags.addAll(Arrays.asList(flags));
     }
 
-    public SlashCommand()
+    public void addEnabledGuilds(Long... ids)
     {
-        this.requiredBotPermissions = new ArrayList<>();
-        this.requiredUserPermissions = new ArrayList<>();
-        this.commandData = null;
-        this.isGlobal = true;
-        this.enabledGuilds = new ArrayList<>();
-        this.runnableInDM = false;
-        this.commandFlags = new HashSet<>();
+        enabledGuilds.addAll(Arrays.asList(ids));
+    }
+
+    @Override
+    public CommandData getCommandData()
+    {
+        return commandData;
+    }
+
+    @Override
+    public EnumSet<Permission> getRequiredUserPermissions()
+    {
+        return requiredUserPermissions;
+    }
+
+    @Override
+    public EnumSet<Permission> getRequiredBotPermissions()
+    {
+        return requiredBotPermissions;
+    }
+
+    @Override
+    public Command.Type getType()
+    {
+        return Command.Type.SLASH;
+    }
+
+    @Override
+    public Set<Long> getEnabledGuilds()
+    {
+        return enabledGuilds;
+    }
+
+    @Override
+    public EnumSet<CommandFlag> getCommandFlags()
+    {
+        return commandFlags;
     }
 
     /**

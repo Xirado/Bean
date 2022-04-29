@@ -34,8 +34,8 @@ public class XPRoleRewardCommand extends SlashCommand
                         .addOption(OptionType.INTEGER, "level", "Level to remove a role reward from.", true))
                 .addSubcommands(new SubcommandData("list", "Lists all role rewards."))
         );
-        setRequiredUserPermissions(Permission.ADMINISTRATOR);
-        setRequiredBotPermissions(Permission.MANAGE_ROLES);
+        addRequiredBotPermissions(Permission.ADMINISTRATOR);
+        addRequiredUserPermissions(Permission.MANAGE_ROLES);
     }
 
     @Override

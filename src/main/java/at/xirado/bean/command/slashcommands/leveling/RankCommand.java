@@ -19,7 +19,6 @@ public class RankCommand extends SlashCommand
         setCommandData(Commands.slash("rank", "Shows a users level.")
                 .addOption(OptionType.USER, "user", "Member to get the level from.", false)
         );
-        setRunnableInDM(false);
     }
 
     @Override

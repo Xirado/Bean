@@ -24,8 +24,8 @@ public class KickCommand extends SlashCommand
                 .addOption(OptionType.USER, "user", "User to kick.", true)
                 .addOption(OptionType.STRING, "reason", "Reason for this kick.")
         );
-        setRequiredBotPermissions(Permission.KICK_MEMBERS);
-        setRequiredUserPermissions(Permission.KICK_MEMBERS);
+        addRequiredUserPermissions(Permission.KICK_MEMBERS);
+        addRequiredBotPermissions(Permission.KICK_MEMBERS);
     }
 
     @Override

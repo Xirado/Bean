@@ -4,6 +4,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 import java.time.Instant
 
 plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.6.20'
     id 'java'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
@@ -39,7 +40,8 @@ tasks.build {
 }
 
 dependencies {
-    implementation 'com.github.Dv8FromTheWorld:JDA:9ebcc22'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation 'com.github.Xirado:JDA:29a3402'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
     implementation 'com.sparkjava:spark-core:2.9.3'
     implementation 'org.codehaus.groovy:groovy-jsr223:3.0.8'
@@ -54,6 +56,7 @@ dependencies {
     implementation 'org.scilab.forge:jlatexmath:1.0.7'
     implementation 'com.github.Xirado:Lavalink-Client:041082f'
     implementation "club.minnced:discord-webhooks:0.7.5"
+    implementation 'io.github.classgraph:classgraph:4.8.146'
 
     // Prometheus
     implementation "io.prometheus:simpleclient:0.14.1"
@@ -67,5 +70,11 @@ processResources {
                 "app-version": version,
                 "build-time" : Instant.now().toEpochMilli() + ''
         ]
+    }
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "16"
     }
 }
