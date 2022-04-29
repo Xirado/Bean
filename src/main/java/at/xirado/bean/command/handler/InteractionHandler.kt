@@ -177,7 +177,7 @@ class InteractionHandler(val bean: Bean) {
     private fun registerCommands() {
         val updateAction = bean.shardManager.shards[0].updateCommands()
 
-        registerCommandsOfClass(SlashCommand::class.java, updateAction)
+        registerCommandsOfClass<SlashCommand>(updateAction)
 
         updateAction.queue()
     }
@@ -223,10 +223,10 @@ class InteractionHandler(val bean: Bean) {
         }
     }
 
-    private fun registerCommandsOfClass(clazz: Class<out GenericCommand>, action: CommandListUpdateAction) {
+    private inline fun <reified T> registerCommandsOfClass(action: CommandListUpdateAction) {
         val scanResult = ClassGraph().acceptPackages(commandsPackage).enableClassInfo().scan()
 
-        scanResult.getSubclasses(clazz).loadClasses().forEach {
+        scanResult.getSubclasses(T::class.java).loadClasses().forEach {
             try {
                 registerCommand(action, it.getDeclaredConstructor().newInstance() as GenericCommand)
                 log.debug("Found interaction-command ${it.name}")
