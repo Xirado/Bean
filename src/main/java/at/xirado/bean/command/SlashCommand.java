@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandPermission;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
@@ -24,6 +25,7 @@ public abstract class SlashCommand implements GenericCommand
 
     public void setCommandData(SlashCommandData commandData)
     {
+        commandData.setGuildOnly(true);
         this.commandData = commandData;
     }
 
@@ -34,7 +36,7 @@ public abstract class SlashCommand implements GenericCommand
 
     public void addRequiredUserPermissions(Permission... permissions)
     {
-        commandData.setDefaultPermissions(permissions);
+        commandData.setDefaultPermissions(CommandPermission.enabledFor(permissions));
         requiredUserPermissions.addAll(Arrays.asList(permissions));
     }
 

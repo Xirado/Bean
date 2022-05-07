@@ -10,7 +10,7 @@ object EvalListener : ListenerAdapter() {
             return
 
         if (event.componentId == "deletemsg") {
-            event.message.delete().queue(null) { e: Throwable? -> }
+            event.message.delete().queue(null) { }
         }
     }
 }
