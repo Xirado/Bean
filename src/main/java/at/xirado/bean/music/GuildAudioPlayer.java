@@ -14,8 +14,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.util.function.Consumer;
 
-public class GuildAudioPlayer
-{
+public class GuildAudioPlayer {
     private final LavalinkPlayer player;
     private final AudioScheduler scheduler;
     private final long guildId;
@@ -23,8 +22,7 @@ public class GuildAudioPlayer
 
     private CachedMessage openPlayer;
 
-    public GuildAudioPlayer(long guildId)
-    {
+    public GuildAudioPlayer(long guildId) {
         this.guildId = guildId;
         link = Bean.getInstance().getLavalink().getLink(String.valueOf(guildId));
         player = link.getPlayer();
@@ -33,49 +31,41 @@ public class GuildAudioPlayer
         openPlayer = null;
     }
 
-    public AudioScheduler getScheduler()
-    {
+    public AudioScheduler getScheduler() {
         return scheduler;
     }
 
-    public LavalinkPlayer getPlayer()
-    {
+    public LavalinkPlayer getPlayer() {
         return player;
     }
 
-    public long getGuildId()
-    {
+    public long getGuildId() {
         return guildId;
     }
 
-    public JdaLink getLink()
-    {
+    public JdaLink getLink() {
         return link;
     }
 
-    public CachedMessage getOpenPlayer()
-    {
+    public CachedMessage getOpenPlayer() {
         return openPlayer;
     }
 
-    public void setOpenPlayer(CachedMessage openPlayer)
-    {
-        if (this.openPlayer != null)
-        {
+    public void setOpenPlayer(CachedMessage openPlayer) {
+        if (this.openPlayer != null) {
             TextChannel channel = this.openPlayer.getChannel();
             if (channel != null)
-                channel.deleteMessageById(this.openPlayer.getMessageId()).queue(s -> {}, new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE));
+                channel.deleteMessageById(this.openPlayer.getMessageId()).queue(s -> {
+                }, new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE));
         }
         this.openPlayer = openPlayer;
     }
 
-    public void playerSetup(GuildMessageChannel channel, Consumer<Message> onSuccess, Consumer<Throwable> onError)
-    {
+    public void playerSetup(GuildMessageChannel channel, Consumer<Message> onSuccess, Consumer<Throwable> onError) {
         playerSetup(channel, null, onSuccess, onError);
     }
 
-    public void playerSetup(GuildMessageChannel channel, AudioTrack track, Consumer<Message> onSuccess, Consumer<Throwable> onError)
-    {
+    public void playerSetup(GuildMessageChannel channel, AudioTrack track, Consumer<Message> onSuccess, Consumer<Throwable> onError) {
         channel.sendMessageEmbeds(MusicUtil.getPlayerEmbed(track == null ? player.getPlayingTrack() : track))
                 .setActionRows(MusicUtil.getPlayerButtons(this))
                 .queue(message -> {
@@ -84,8 +74,7 @@ public class GuildAudioPlayer
                 }, onError);
     }
 
-    public void forcePlayerUpdate()
-    {
+    public void forcePlayerUpdate() {
         CachedMessage message = getOpenPlayer();
         if (message == null || message.getChannel() == null)
             return;
@@ -96,8 +85,7 @@ public class GuildAudioPlayer
 
     }
 
-    public void forcePlayerComponentsUpdate()
-    {
+    public void forcePlayerComponentsUpdate() {
         CachedMessage message = getOpenPlayer();
         if (message == null || message.getChannel() == null)
             return;
@@ -107,8 +95,7 @@ public class GuildAudioPlayer
                 .queue(null, e -> setOpenPlayer(null));
     }
 
-    public void destroy()
-    {
+    public void destroy() {
         setOpenPlayer(null);
         Bean.getInstance().getAudioManager().removePlayer(this);
         link.destroy();

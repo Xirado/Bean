@@ -7,8 +7,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import java.util.EnumSet;
 import java.util.Set;
 
-public interface GenericCommand
-{
+public interface GenericCommand {
     CommandData getCommandData();
 
     EnumSet<Permission> getRequiredUserPermissions();
@@ -17,8 +16,7 @@ public interface GenericCommand
 
     Command.Type getType();
 
-    default boolean isGlobal()
-    {
+    default boolean isGlobal() {
         return getEnabledGuilds().isEmpty();
     }
 

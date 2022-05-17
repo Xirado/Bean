@@ -24,13 +24,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class UrbanDictionaryCommand extends SlashCommand
-{
+public class UrbanDictionaryCommand extends SlashCommand {
     private static final Logger LOGGER = LoggerFactory.getLogger(UrbanDictionaryCommand.class);
     private static final Pattern PATTERN = Pattern.compile("\\[([^\\]]+)\\]");
 
-    public UrbanDictionaryCommand()
-    {
+    public UrbanDictionaryCommand() {
         setCommandData(Commands.slash("urban", "Searches for urbandictionary.com definitions.")
                 .addOptions(new OptionData(OptionType.STRING, "phrase", "Phrase to search for.")
                         .setRequired(true))
@@ -40,31 +38,26 @@ public class UrbanDictionaryCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         String phrase = event.getOption("phrase").getAsString();
         int index = event.getOption("definition") != null ? (int) event.getOption("definition").getAsLong() : 1;
         if (index < 1) index = 1;
         event.deferReply().queue();
         DataObject object;
-        try
-        {
+        try {
             String url = "http://api.urbandictionary.com/v0/define?term=" + phrase.replaceAll("\\s+", "+");
             Response response = Bean.getInstance().getOkHttpClient()
                     .newCall(new Request.Builder().url(url).build()).execute();
             object = DataObject.fromJson(response.body().bytes());
             response.close();
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             LOGGER.error("Could not get data from API!", ex);
             event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred, please try again later.")).queue();
             return;
         }
 
         List<UrbanDefinition> results = object.getArray("list").stream(DataArray::getObject).map(UrbanDefinition::fromData).toList();
-        if (results.isEmpty())
-        {
+        if (results.isEmpty()) {
             EmbedBuilder builder = new EmbedBuilder()
                     .setColor(0x1D2439)
                     .setTitle(ctx.getLocalized("commands.urban.not_found"))
@@ -79,8 +72,7 @@ public class UrbanDictionaryCommand extends SlashCommand
         Matcher matcher = PATTERN.matcher(description);
         description = matcher.replaceAll(
                 match -> "[" + match.group().replaceAll("\\[|\\]", "") + "]" + "(https://urbandictionary.com/define.php?term=" + match.group().replaceAll("\\s+", "+").replaceAll("\\[|\\]", "") + ")");
-        if (description.length() > 4096)
-        {
+        if (description.length() > 4096) {
             String replaceString = "... [**" + ctx.getLocalized("general.read_more") + "**](" + result.getPermalink() + ")";
             String split = description.substring(0, 4096 - replaceString.length());
             description = split + replaceString;
@@ -91,8 +83,7 @@ public class UrbanDictionaryCommand extends SlashCommand
                 .setFooter(Util.ordinal(index) + " definition", "https://bean.bz/assets/udlogo.png")
                 .setDescription(description);
         String example = result.getExample();
-        if (example != null)
-        {
+        if (example != null) {
             boolean alreadyRecursive = example.startsWith("*") && example.endsWith("*");
             Matcher matcher2 = PATTERN.matcher(example);
             example = matcher2.replaceAll(

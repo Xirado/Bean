@@ -4,8 +4,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import org.jetbrains.annotations.NotNull;
 
-public class UrbanDefinition implements SerializableData
-{
+public class UrbanDefinition implements SerializableData {
     private final String word;
     private final String definition;
     private final String example;
@@ -18,8 +17,7 @@ public class UrbanDefinition implements SerializableData
 
     private UrbanDefinition(String word, String definition, String example,
                             String author, String writtenOn, String permaLink,
-                            int definitionId, int upvotes, int downvotes)
-    {
+                            int definitionId, int upvotes, int downvotes) {
         this.word = word;
         this.definition = definition;
         this.example = example;
@@ -31,53 +29,43 @@ public class UrbanDefinition implements SerializableData
         this.downvotes = downvotes;
     }
 
-    public String getWord()
-    {
+    public String getWord() {
         return word;
     }
 
-    public String getDefinition()
-    {
+    public String getDefinition() {
         return definition;
     }
 
-    public String getExample()
-    {
+    public String getExample() {
         return example;
     }
 
-    public String getAuthor()
-    {
+    public String getAuthor() {
         return author;
     }
 
-    public String getWrittenOn()
-    {
+    public String getWrittenOn() {
         return writtenOn;
     }
 
-    public String getPermalink()
-    {
+    public String getPermalink() {
         return permalink;
     }
 
-    public int getDefinitionId()
-    {
+    public int getDefinitionId() {
         return definitionId;
     }
 
-    public int getUpvotes()
-    {
+    public int getUpvotes() {
         return upvotes;
     }
 
-    public int getDownvotes()
-    {
+    public int getDownvotes() {
         return downvotes;
     }
 
-    public static UrbanDefinition fromData(DataObject data)
-    {
+    public static UrbanDefinition fromData(DataObject data) {
         return new UrbanDefinition(
                 data.getString("word"),
                 data.getString("definition"),
@@ -93,8 +81,7 @@ public class UrbanDefinition implements SerializableData
 
     @NotNull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         return DataObject.empty()
                 .put("word", word)
                 .put("definition", definition)

@@ -9,7 +9,10 @@ import net.dv8tion.jda.api.hooks.SubscribeEvent
 import kotlin.coroutines.resume
 import kotlin.time.Duration
 
-suspend inline fun <reified T : GenericEvent> JDA.await(timeout: Duration, crossinline filter: (T) -> Boolean = { true }): T? {
+suspend inline fun <reified T : GenericEvent> JDA.await(
+    timeout: Duration,
+    crossinline filter: (T) -> Boolean = { true }
+): T? {
     return withTimeoutOrNull(timeout) {
         return@withTimeoutOrNull suspendCancellableCoroutine<T> {
             val listener = object : EventListener {

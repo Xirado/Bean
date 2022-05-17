@@ -9,14 +9,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 
-public class HintAcknowledgeListener extends ListenerAdapter
-{
+public class HintAcknowledgeListener extends ListenerAdapter {
 
     private static final MessageEmbed CONFIRMATION_EMBED = EmbedUtil.defaultEmbedBuilder("Thank you for your feedback!").build();
 
     @Override
-    public void onButtonInteraction(@NotNull ButtonInteractionEvent event)
-    {
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
         String componentId = event.getComponentId();

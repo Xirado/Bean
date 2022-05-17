@@ -7,13 +7,11 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class InviteURLRoute implements Route
-{
+public class InviteURLRoute implements Route {
     public static final String HOST = "discord.com";
 
     @Override
-    public Object handle(Request request, Response response) throws Exception
-    {
+    public Object handle(Request request, Response response) throws Exception {
         URIBuilder builder = new URIBuilder()
                 .setScheme("https")
                 .setHost(HOST)
@@ -26,10 +24,8 @@ public class InviteURLRoute implements Route
                 .toString();
     }
 
-    public static String getInviteURL()
-    {
-        try
-        {
+    public static String getInviteURL() {
+        try {
             URIBuilder builder = new URIBuilder()
                     .setScheme("https")
                     .setHost(HOST)
@@ -38,9 +34,7 @@ public class InviteURLRoute implements Route
                     .addParameter("scope", "bot applications.commands")
                     .addParameter("permissions", "275191770223");
             return builder.build().toString();
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             return null;
         }
     }

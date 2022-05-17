@@ -20,12 +20,10 @@ import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ReactionRoleCommand extends SlashCommand
-{
+public class ReactionRoleCommand extends SlashCommand {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReactionRoleCommand.class);
 
-    public ReactionRoleCommand()
-    {
+    public ReactionRoleCommand() {
         setCommandData(Commands.slash("reactionrole", "Sets up reaction roles.")
                 .addSubcommands(new SubcommandData("create", "Creates reaction roles.")
                         .addOptions(new OptionData(OptionType.CHANNEL, "channel", "Channel which contains the message.", true).setChannelTypes(ChannelType.TEXT))
@@ -43,32 +41,25 @@ public class ReactionRoleCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
 
         Guild guild = event.getGuild();
         Member bot = guild.getSelfMember();
         String subcommand = event.getSubcommandName();
-        if (subcommand == null)
-        {
+        if (subcommand == null) {
             ctx.reply(ctx.getLocalized("commands.invalid_subcommand")).setEphemeral(true).queue();
             return;
         }
-        if (subcommand.equalsIgnoreCase("remove"))
-        {
+        if (subcommand.equalsIgnoreCase("remove")) {
             TextChannel channel = (TextChannel) event.getOption("channel").getAsGuildChannel();
-            if (channel == null)
-            {
+            if (channel == null) {
                 ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("commands.channel_not_exists")).setEphemeral(true).queue();
                 return;
             }
             long messageID = 0;
-            try
-            {
+            try {
                 messageID = Long.parseLong(event.getOption("message_id").getAsString());
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("commands.message_invalid")).setEphemeral(true).queue();
                 return;
             }
@@ -90,22 +81,16 @@ public class ReactionRoleCommand extends SlashCommand
                                 LOGGER.error("An error occurred while trying to remove reaction roles!", err);
                             })
             );
-        }
-        else if (subcommand.equalsIgnoreCase("create"))
-        {
+        } else if (subcommand.equalsIgnoreCase("create")) {
             TextChannel channel = (TextChannel) event.getOption("channel").getAsGuildChannel();
-            if (channel == null)
-            {
+            if (channel == null) {
                 ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("commands.channel_not_exists")).setEphemeral(true).queue();
                 return;
             }
             long messageID = 0;
-            try
-            {
+            try {
                 messageID = Long.parseLong(event.getOption("message_id").getAsString());
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("commands.message_invalid")).setEphemeral(true).queue();
                 return;
             }
@@ -113,8 +98,7 @@ public class ReactionRoleCommand extends SlashCommand
                     (message) ->
                     {
                         Role role = event.getOption("role").getAsRole();
-                        if (!bot.canInteract(role))
-                        {
+                        if (!bot.canInteract(role)) {
                             ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("commands.cannot_interact_role", role.getAsMention())).setEphemeral(true).queue();
                             return;
                         }
@@ -122,8 +106,7 @@ public class ReactionRoleCommand extends SlashCommand
                         String emote = emoticon;
                         Pattern pattern = Message.MentionType.EMOTE.getPattern();
                         Matcher matcher = pattern.matcher(emoticon);
-                        if (matcher.matches())
-                        {
+                        if (matcher.matches()) {
                             emoticon = "emote:" + matcher.group(2);
                             emote = matcher.group(2);
                         }

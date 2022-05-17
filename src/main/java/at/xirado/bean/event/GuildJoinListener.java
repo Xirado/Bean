@@ -13,18 +13,15 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
-public class GuildJoinListener extends ListenerAdapter
-{
+public class GuildJoinListener extends ListenerAdapter {
     private static final Logger log = LoggerFactory.getLogger(Bean.class);
 
     @Override
-    public void onGuildJoin(@NotNull GuildJoinEvent event)
-    {
+    public void onGuildJoin(@NotNull GuildJoinEvent event) {
         Guild guild = event.getGuild();
         String name = guild.getName();
         int memberCount = guild.getMemberCount();
-        if (isGuildBanned(guild.getIdLong()))
-        {
+        if (isGuildBanned(guild.getIdLong())) {
             log.info("Joined banned guild {} with {} members", name, memberCount);
             return;
         }
@@ -32,13 +29,11 @@ public class GuildJoinListener extends ListenerAdapter
     }
 
     @Override
-    public void onGuildLeave(@NotNull GuildLeaveEvent event)
-    {
+    public void onGuildLeave(@NotNull GuildLeaveEvent event) {
         Guild guild = event.getGuild();
         String name = guild.getName();
         int memberCount = guild.getMemberCount();
-        if (isGuildBanned(guild.getIdLong()))
-        {
+        if (isGuildBanned(guild.getIdLong())) {
             log.info("Left banned guild {} with {} members", name, memberCount);
             return;
         }
@@ -46,47 +41,34 @@ public class GuildJoinListener extends ListenerAdapter
     }
 
     @Override
-    public void onMessageReceived(@NotNull MessageReceivedEvent event)
-    {
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         if (event.isFromGuild())
             return;
         if (event.getAuthor().getIdLong() == event.getJDA().getSelfUser().getIdLong()) return;
         log.info("[DM]: {} ({}): {}", event.getAuthor().getAsTag(), event.getAuthor().getIdLong(), event.getMessage().getContentRaw());
     }
 
-    public static boolean isGuildBanned(long guildId)
-    {
-        try (var rs = new SQLBuilder("SELECT 1 from banned_guilds WHERE guild_id = ?", guildId).executeQuery())
-        {
+    public static boolean isGuildBanned(long guildId) {
+        try (var rs = new SQLBuilder("SELECT 1 from banned_guilds WHERE guild_id = ?", guildId).executeQuery()) {
             return rs.next();
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             log.error("Could not check if guild {} is banned", guildId, ex);
             return false;
         }
     }
 
-    public static void banGuild(long guildId, String reason)
-    {
-        try
-        {
+    public static void banGuild(long guildId, String reason) {
+        try {
             new SQLBuilder("INSERT INTO banned_guilds (guild_id, reason) values (?,?) ON DUPLICATE KEY UPDATE reason = ?", guildId, reason, reason).execute();
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             log.error("Could not ban guild {}", guildId, ex);
         }
     }
 
-    public static void unbanGuild(long guildId)
-    {
-        try
-        {
+    public static void unbanGuild(long guildId) {
+        try {
             new SQLBuilder("DELETE FROM banned_guilds WHERE guild_id = ?", guildId).execute();
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             log.error("Could not unban guild {}", guildId, ex);
         }
     }

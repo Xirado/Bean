@@ -2,8 +2,7 @@ package at.xirado.bean.moderation;
 
 import java.awt.*;
 
-public enum CaseType
-{
+public enum CaseType {
     WARN("Warn", Color.decode("#FFFF00"), (byte) 3),
     MUTE("Mute", Color.decode("#E24C00"), (byte) 2),
     KICK("Kick", Color.decode("#800080"), (byte) 1),
@@ -15,32 +14,26 @@ public enum CaseType
     private final Color embedColor;
     private final byte id;
 
-    CaseType(String friendlyName, Color embedColor, byte id)
-    {
+    CaseType(String friendlyName, Color embedColor, byte id) {
         this.friendlyName = friendlyName;
         this.embedColor = embedColor;
         this.id = id;
     }
 
-    public String getFriendlyName()
-    {
+    public String getFriendlyName() {
         return friendlyName;
     }
 
-    public Color getEmbedColor()
-    {
+    public Color getEmbedColor() {
         return embedColor;
     }
 
-    public byte getId()
-    {
+    public byte getId() {
         return id;
     }
 
-    public static CaseType fromId(byte id)
-    {
-        for (CaseType caseType : values())
-        {
+    public static CaseType fromId(byte id) {
+        for (CaseType caseType : values()) {
             if (caseType.getId() == id)
                 return caseType;
         }

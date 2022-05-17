@@ -45,8 +45,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-public class Bean
-{
+public class Bean {
     public static final long OWNER_ID = 184654964122058752L;
     public static final Long TEST_SERVER_ID = 815597207617142814L;
     public static final Set<Long> WHITELISTED_USERS = Set.of(184654964122058752L, 398610798315962408L);
@@ -93,8 +92,7 @@ public class Bean
     private WebhookClient webhookClient = null;
     private DataObject config = loadConfig();
 
-    public Bean() throws Exception
-    {
+    public Bean() throws Exception {
         instance = this;
         LavalinkUtil.getPlayerManager().registerSourceManager(new SpotifyAudioSource());
         Database.connect();
@@ -142,13 +140,11 @@ public class Bean
         mee6Queue.start();
     }
 
-    public static Bean getInstance()
-    {
+    public static Bean getInstance() {
         return instance;
     }
 
-    public static EnumSet<GatewayIntent> getIntents()
-    {
+    public static EnumSet<GatewayIntent> getIntents() {
         return EnumSet.of(
                 GatewayIntent.GUILD_VOICE_STATES,
                 GatewayIntent.GUILD_MEMBERS,
@@ -158,20 +154,15 @@ public class Bean
         );
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         Thread.currentThread().setName("Main");
-        try
-        {
+        try {
             loadPropertiesFile();
             Shell.startShell();
             Shell.awaitReady();
             new Bean();
-        }
-        catch (Exception e)
-        {
-            if (e instanceof LoginException ex)
-            {
+        } catch (Exception e) {
+            if (e instanceof LoginException ex) {
                 LOGGER.error("Could not login to Discord!", ex);
                 return;
             }
@@ -179,176 +170,138 @@ public class Bean
         }
     }
 
-    private static void loadPropertiesFile()
-    {
-        try
-        {
+    private static void loadPropertiesFile() {
+        try {
             Properties properties = new Properties();
             properties.load(Bean.class.getClassLoader().getResourceAsStream("app.properties"));
             VERSION = properties.getProperty("app-version");
             BUILD_TIME = Long.parseLong(properties.getProperty("build-time"));
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             LOGGER.error("An error occurred while reading app.properties file!", e);
             VERSION = "0.0.0";
             BUILD_TIME = 0L;
         }
     }
 
-    public WebhookClient getWebhookClient()
-    {
+    public WebhookClient getWebhookClient() {
         return webhookClient;
     }
 
-    public static void info(String msg)
-    {
+    public static void info(String msg) {
         LOGGER.info(msg);
     }
 
-    public static void warn(String msg)
-    {
+    public static void warn(String msg) {
         LOGGER.warn(msg);
     }
 
-    public static void error(String msg)
-    {
+    public static void error(String msg) {
         LOGGER.error(msg);
     }
 
-    public static void error(String msg, Throwable t)
-    {
+    public static void error(String msg, Throwable t) {
         LOGGER.error(msg, t);
     }
 
-    public static String getBeanVersion()
-    {
+    public static String getBeanVersion() {
         return VERSION;
     }
 
-    public static long getBuildTime()
-    {
+    public static long getBuildTime() {
         return BUILD_TIME;
     }
 
-    public static boolean isWhitelistedUser(long userId)
-    {
+    public static boolean isWhitelistedUser(long userId) {
         return WHITELISTED_USERS.contains(userId);
     }
 
-    public synchronized DataObject getConfig()
-    {
+    public synchronized DataObject getConfig() {
         return config;
     }
 
-    public synchronized void updateConfig()
-    {
+    public synchronized void updateConfig() {
         this.config = loadConfig();
     }
 
-    public ExecutorService getCommandExecutor()
-    {
+    public ExecutorService getCommandExecutor() {
         return commandExecutor;
     }
 
-    public ScheduledExecutorService getScheduledExecutor()
-    {
+    public ScheduledExecutorService getScheduledExecutor() {
         return scheduledExecutor;
     }
 
-    public ExecutorService getExecutor()
-    {
+    public ExecutorService getExecutor() {
         return executor;
     }
 
-    public boolean isDebug()
-    {
+    public boolean isDebug() {
         return debug;
     }
 
-    public ShardManager getShardManager()
-    {
+    public ShardManager getShardManager() {
         return shardManager;
     }
 
-    public ConsoleCommandManager getConsoleCommandManager()
-    {
+    public ConsoleCommandManager getConsoleCommandManager() {
         return consoleCommandManager;
     }
 
-    public InteractionHandler getInteractionHandler()
-    {
+    public InteractionHandler getInteractionHandler() {
         return interactionHandler;
     }
 
-    public CommandHandler getCommandHandler()
-    {
+    public CommandHandler getCommandHandler() {
         return commandHandler;
     }
 
-    public AudioManager getAudioManager()
-    {
+    public AudioManager getAudioManager() {
         return audioManager;
     }
 
-    public EventWaiter getEventWaiter()
-    {
+    public EventWaiter getEventWaiter() {
         return eventWaiter;
     }
 
-    public OkHttpClient getOkHttpClient()
-    {
+    public OkHttpClient getOkHttpClient() {
         return okHttpClient;
     }
 
-    public Authenticator getAuthenticator()
-    {
+    public Authenticator getAuthenticator() {
         return authenticator;
     }
 
-    private DataObject loadConfig()
-    {
+    private DataObject loadConfig() {
         File configFile = new File("config.json");
-        if (!configFile.exists())
-        {
+        if (!configFile.exists()) {
             InputStream inputStream = Bean.class.getResourceAsStream("/config.json");
-            if (inputStream == null)
-            {
+            if (inputStream == null) {
                 LOGGER.error("Could not copy config from resources folder!");
                 return DataObject.empty();
             }
             Path path = Paths.get(Util.getJarPath() + "/config.json");
-            try
-            {
+            try {
                 Files.copy(inputStream, path);
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 LOGGER.error("Could not copy config file!", e);
             }
         }
-        try
-        {
+        try {
             return DataObject.fromJson(new FileInputStream(configFile));
-        }
-        catch (FileNotFoundException ignored)
-        {
+        } catch (FileNotFoundException ignored) {
         }
         return DataObject.empty();
     }
 
-    public WebServer getWebServer()
-    {
+    public WebServer getWebServer() {
         return webServer;
     }
 
-    public JdaLavalink getLavalink()
-    {
+    public JdaLavalink getLavalink() {
         return lavalink;
     }
 
-    public MEE6Queue getMEE6Queue()
-    {
+    public MEE6Queue getMEE6Queue() {
         return mee6Queue;
     }
 

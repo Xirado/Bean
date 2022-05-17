@@ -25,21 +25,21 @@ import javax.script.ScriptEngineManager
 import kotlin.time.Duration.Companion.minutes
 
 private val defaultImports = listOf(
-        "kotlinx.coroutines.async",
-        "dev.minn.jda.ktx.await",
-        "net.dv8tion.jda.api.managers.*",
-        "net.dv8tion.jda.api.entities.*",
-        "net.dv8tion.jda.api.*",
-        "net.dv8tion.jda.api.utils.*",
-        "net.dv8tion.jda.api.utils.data.*",
-        "net.dv8tion.jda.internal.entities.*",
-        "net.dv8tion.jda.internal.requests.*",
-        "net.dv8tion.jda.api.requests.*",
-        "java.io.*",
-        "java.math.*",
-        "java.util.*",
-        "java.util.concurrent.*",
-        "java.time.*"
+    "kotlinx.coroutines.async",
+    "dev.minn.jda.ktx.await",
+    "net.dv8tion.jda.api.managers.*",
+    "net.dv8tion.jda.api.entities.*",
+    "net.dv8tion.jda.api.*",
+    "net.dv8tion.jda.api.utils.*",
+    "net.dv8tion.jda.api.utils.data.*",
+    "net.dv8tion.jda.internal.entities.*",
+    "net.dv8tion.jda.internal.requests.*",
+    "net.dv8tion.jda.api.requests.*",
+    "java.io.*",
+    "java.math.*",
+    "java.util.*",
+    "java.util.concurrent.*",
+    "java.time.*"
 )
 
 class EvalCommand : Command("eval", "evaluates some code", "eval [code]") {
@@ -66,19 +66,19 @@ class EvalCommand : Command("eval", "evaluates some code", "eval [code]") {
         }.trim()
 
         val bindings = mapOf(
-                "scope" to Bean.getInstance().commandHandler.scope,
-                "channel" to event.channel,
-                "guild" to event.guild,
-                "jda" to event.jda,
-                "user" to event.author,
-                "author" to event.author,
-                "member" to event.member!!,
-                "api" to event.jda,
-                "event" to event,
-                "bot" to event.jda.selfUser,
-                "selfUser" to event.jda.selfUser,
-                "selfMember" to event.guild.selfMember,
-                "log" to LoggerFactory.getLogger(Bean::class.java) as Logger
+            "scope" to Bean.getInstance().commandHandler.scope,
+            "channel" to event.channel,
+            "guild" to event.guild,
+            "jda" to event.jda,
+            "user" to event.author,
+            "author" to event.author,
+            "member" to event.member!!,
+            "api" to event.jda,
+            "event" to event,
+            "bot" to event.jda.selfUser,
+            "selfUser" to event.jda.selfUser,
+            "selfMember" to event.guild.selfMember,
+            "log" to LoggerFactory.getLogger(Bean::class.java) as Logger
         )
 
         bindings.forEach { (t, u) -> engine.put(t, u) }
@@ -88,14 +88,14 @@ class EvalCommand : Command("eval", "evaluates some code", "eval [code]") {
         } catch (ex: ParseError) {
             val error = ex.toString()
             message.reply("An error occurred while formatting the code!" + if (error.length > 1000) "" else "\n```\n$error```")
-                    .mentionRepliedUser(false)
-                    .setActionRow(
-                            generateError(ex.toString()),
-                            generateSource(raw),
-                            editCodeButton(event.messageIdLong),
-                            deleteMessageButton()
-                    )
-                    .queue()
+                .mentionRepliedUser(false)
+                .setActionRow(
+                    generateError(ex.toString()),
+                    generateSource(raw),
+                    editCodeButton(event.messageIdLong),
+                    deleteMessageButton()
+                )
+                .queue()
             waitForEdit(event.jda, event.messageIdLong, raw, bindings)
             return
         }
@@ -105,27 +105,27 @@ class EvalCommand : Command("eval", "evaluates some code", "eval [code]") {
         } catch (ex: Exception) {
             val error = ex.toString()
             message.reply("An error occurred while running the Kotlin script!" + if (error.length > 1000) "" else "\n```\n$error```")
-                    .mentionRepliedUser(false)
-                    .setActionRow(
-                            generateError(ex.toString()),
-                            generateSource(formatted),
-                            editCodeButton(event.messageIdLong),
-                            deleteMessageButton()
-                    )
-                    .queue()
+                .mentionRepliedUser(false)
+                .setActionRow(
+                    generateError(ex.toString()),
+                    generateSource(formatted),
+                    editCodeButton(event.messageIdLong),
+                    deleteMessageButton()
+                )
+                .queue()
             waitForEdit(event.jda, event.messageIdLong, raw, bindings)
             return
         }
 
         if (response is Unit) {
             message.reply("Code executed without errors")
-                    .mentionRepliedUser(false)
-                    .setActionRow(
-                            generateSource(formatted),
-                            editCodeButton(event.messageIdLong),
-                            deleteMessageButton()
-                    )
-                    .queue()
+                .mentionRepliedUser(false)
+                .setActionRow(
+                    generateSource(formatted),
+                    editCodeButton(event.messageIdLong),
+                    deleteMessageButton()
+                )
+                .queue()
             waitForEdit(event.jda, event.messageIdLong, raw, bindings)
             return
         }
@@ -134,33 +134,32 @@ class EvalCommand : Command("eval", "evaluates some code", "eval [code]") {
 
         if (responseString.length > 1993) {
             message.reply("⚠ Result was too long. Please get it from the Hastebin!")
-                    .setActionRow(
-                            generateSource(formatted),
-                            generateResult(responseString),
-                            editCodeButton(event.messageIdLong),
-                            deleteMessageButton()
-                    )
-                    .mentionRepliedUser(false)
-                    .queue()
+                .setActionRow(
+                    generateSource(formatted),
+                    generateResult(responseString),
+                    editCodeButton(event.messageIdLong),
+                    deleteMessageButton()
+                )
+                .mentionRepliedUser(false)
+                .queue()
             waitForEdit(event.jda, event.messageIdLong, raw, bindings)
         } else {
             message.reply("```\n${response}```")
-                    .setActionRow(
-                            generateSource(formatted),
-                            generateResult(responseString),
-                            editCodeButton(event.messageIdLong),
-                            deleteMessageButton()
-                    )
-                    .mentionRepliedUser(false)
-                    .await()
+                .setActionRow(
+                    generateSource(formatted),
+                    generateResult(responseString),
+                    editCodeButton(event.messageIdLong),
+                    deleteMessageButton()
+                )
+                .mentionRepliedUser(false)
+                .await()
             waitForEdit(event.jda, event.messageIdLong, raw, bindings)
         }
     }
 
     private suspend fun waitForEdit(jda: JDA, messageId: Long, content: String, bindings: Map<String, Any>) {
         val buttonEvent = jda.await<ButtonInteractionEvent>(5.minutes) {
-            if (it.user.idLong !in Bean.WHITELISTED_USERS)
-            {
+            if (it.user.idLong !in Bean.WHITELISTED_USERS) {
                 it.reply("This maze isn't meant for you!").setEphemeral(true).queue()
                 return@await false
             }
@@ -169,8 +168,8 @@ class EvalCommand : Command("eval", "evaluates some code", "eval [code]") {
         } ?: return
 
         val textInput = TextInput.create("eval", "Code", TextInputStyle.PARAGRAPH)
-                .setValue(content)
-                .build()
+            .setValue(content)
+            .build()
 
         buttonEvent.replyModal(Modal.create("eval-$messageId", "Eval").addActionRow(textInput).build()).queue()
         val modalEvent = jda.await<ModalInteractionEvent>(5.minutes) { it.modalId == "eval-$messageId" } ?: return
@@ -182,43 +181,43 @@ class EvalCommand : Command("eval", "evaluates some code", "eval [code]") {
         } catch (ex: ParseError) {
             val error = ex.toString()
             modalEvent.reply("An error occurred while formatting the code!" + if (error.length > 1000) "" else "\n```\n$error```")
-                    .addActionRow(
-                            generateError(ex.toString()),
-                            generateSource(input),
-                            editCodeButton(messageId),
-                            deleteMessageButton()
-                    )
-                    .queue()
+                .addActionRow(
+                    generateError(ex.toString()),
+                    generateSource(input),
+                    editCodeButton(messageId),
+                    deleteMessageButton()
+                )
+                .queue()
             waitForEdit(jda, messageId, input, bindings)
             return
         }
 
-        bindings.forEach { (t, u) -> engine.put(t, u)  }
+        bindings.forEach { (t, u) -> engine.put(t, u) }
 
         val response = try {
             (engine.eval(formatted) as Deferred<*>).await()
         } catch (ex: Exception) {
             val error = ex.toString()
             modalEvent.reply("An error occurred while running the Kotlin script!" + if (error.length > 1000) "" else "\n```\n$error```")
-                    .addActionRow(
-                            generateError(ex.toString()),
-                            generateSource(formatted),
-                            editCodeButton(messageId),
-                            deleteMessageButton()
-                    )
-                    .queue()
+                .addActionRow(
+                    generateError(ex.toString()),
+                    generateSource(formatted),
+                    editCodeButton(messageId),
+                    deleteMessageButton()
+                )
+                .queue()
             waitForEdit(jda, messageId, input, bindings)
             return
         }
 
         if (response is Unit) {
             modalEvent.reply("Code executed without errors")
-                    .addActionRow(
-                            generateSource(formatted),
-                            editCodeButton(messageId),
-                            deleteMessageButton()
-                    )
-                    .queue()
+                .addActionRow(
+                    generateSource(formatted),
+                    editCodeButton(messageId),
+                    deleteMessageButton()
+                )
+                .queue()
             waitForEdit(jda, messageId, input, bindings)
             return
         }
@@ -227,23 +226,23 @@ class EvalCommand : Command("eval", "evaluates some code", "eval [code]") {
 
         if (responseString.length > 1993) {
             modalEvent.reply("⚠ Result was too long. Please get it from the Hastebin!")
-                    .addActionRow(
-                            generateSource(formatted),
-                            generateResult(responseString),
-                            editCodeButton(messageId),
-                            deleteMessageButton()
-                    )
-                    .queue()
+                .addActionRow(
+                    generateSource(formatted),
+                    generateResult(responseString),
+                    editCodeButton(messageId),
+                    deleteMessageButton()
+                )
+                .queue()
             waitForEdit(jda, messageId, input, bindings)
         } else {
             modalEvent.reply("```\n${response}```")
-                    .addActionRow(
-                            generateSource(formatted),
-                            generateResult(responseString),
-                            editCodeButton(messageId),
-                            deleteMessageButton()
-                    )
-                    .queue()
+                .addActionRow(
+                    generateSource(formatted),
+                    generateResult(responseString),
+                    editCodeButton(messageId),
+                    deleteMessageButton()
+                )
+                .queue()
             waitForEdit(jda, messageId, input, bindings)
         }
     }
@@ -285,31 +284,44 @@ private fun parse(input: String, imports: List<String>): String {
 
 private fun generateError(content: String): Button {
     val link = runCatching { Hastebin.post(content, false) }
-            .getOrNull()
+        .getOrNull()
 
-    return if (link != null) errorLinkButton(link, "Error") else errorLinkButton("https://nop.link", "Error").asDisabled()
+    return if (link != null) errorLinkButton(link, "Error") else errorLinkButton(
+        "https://nop.link",
+        "Error"
+    ).asDisabled()
 }
 
 private fun generateSource(content: String): Button {
     val link = runCatching { Hastebin.post(content, false, "kt") }
-            .getOrNull()
+        .getOrNull()
 
-    return if (link != null) sourceLinkButton(link, "Source-Code") else sourceLinkButton("https://nop.link", "Source-Code").asDisabled()
+    return if (link != null) sourceLinkButton(link, "Source-Code") else sourceLinkButton(
+        "https://nop.link",
+        "Source-Code"
+    ).asDisabled()
 }
 
 private fun generateResult(content: String): Button {
     val link = runCatching { Hastebin.post(content, false) }
-            .getOrNull()
+        .getOrNull()
 
-    return if (link != null) resultLinkButton(link, "Result") else resultLinkButton("https://nop.link", "Result").asDisabled()
+    return if (link != null) resultLinkButton(link, "Result") else resultLinkButton(
+        "https://nop.link",
+        "Result"
+    ).asDisabled()
 }
 
-private fun resultLinkButton(url: String, label: String) = Button.link(url, label).withEmoji(Emoji.fromMarkdown("\uD83D\uDEE0"))
+private fun resultLinkButton(url: String, label: String) =
+    Button.link(url, label).withEmoji(Emoji.fromMarkdown("\uD83D\uDEE0"))
 
 private fun deleteMessageButton() = Button.danger("deletemsg", "Delete").withEmoji(Emoji.fromMarkdown("\uD83D\uDDD1"))
 
-private fun editCodeButton(messageId: Long) = Button.primary("eval-$messageId", "Edit & Re-run Code").withEmoji(Emoji.fromEmote("repeat", 940204537355063346, false))
+private fun editCodeButton(messageId: Long) = Button.primary("eval-$messageId", "Edit & Re-run Code")
+    .withEmoji(Emoji.fromEmote("repeat", 940204537355063346, false))
 
-private fun errorLinkButton(url: String, label: String) = Button.link(url, label).withEmoji(Emoji.fromEmote("error", 943524725487968298, false))
+private fun errorLinkButton(url: String, label: String) =
+    Button.link(url, label).withEmoji(Emoji.fromEmote("error", 943524725487968298, false))
 
-private fun sourceLinkButton(url: String, label: String) = Button.link(url, label).withEmoji(Emoji.fromMarkdown("\uD83D\uDCDD"))
+private fun sourceLinkButton(url: String, label: String) =
+    Button.link(url, label).withEmoji(Emoji.fromMarkdown("\uD83D\uDCDD"))

@@ -9,12 +9,10 @@ import okhttp3.Response;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class Hastebin
-{
+public class Hastebin {
     private static final String BASE = "https://hastebin.de";
 
-    public static String post(String text, boolean raw) throws IOException
-    {
+    public static String post(String text, boolean raw) throws IOException {
         return post(text, raw, null);
     }
 

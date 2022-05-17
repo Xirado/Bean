@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CommandArgument
-{
+public class CommandArgument {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandArgument.class);
     private static final Pattern MENTION_PATTERN = Pattern.compile("<@!?\\d+>\\s*?(\\w+)\\s*([\\s\\S]+)?");
@@ -19,8 +18,7 @@ public class CommandArgument
     private final String rawArguments;
     private final String[] args;
 
-    public CommandArgument(String argumentString, String prefix)
-    {
+    public CommandArgument(String argumentString, String prefix) {
         Checks.notEmpty(argumentString, "Argument");
         Checks.notEmpty(prefix, "Prefix");
         String[] argumentArray = argumentString.split("\\s+");
@@ -31,8 +29,7 @@ public class CommandArgument
         arguments.toArray(args);
     }
 
-    public CommandArgument(String argumentString, long userId)
-    {
+    public CommandArgument(String argumentString, long userId) {
         Matcher matcher = MENTION_PATTERN.matcher(argumentString);
         if (!matcher.matches())
             throw new IllegalArgumentException("Input string does not match regex!");
@@ -44,34 +41,28 @@ public class CommandArgument
             args = new String[0];
     }
 
-    public String getCommandName()
-    {
+    public String getCommandName() {
         return command;
     }
 
-    public String[] toStringArray()
-    {
+    public String[] toStringArray() {
         return args;
     }
 
-    public String getRawArguments()
-    {
+    public String getRawArguments() {
         return rawArguments;
     }
 
-    public String toString(int startIndex)
-    {
+    public String toString(int startIndex) {
         StringBuilder sb = new StringBuilder();
-        for (int i = startIndex; i < args.length; i++)
-        {
+        for (int i = startIndex; i < args.length; i++) {
             sb.append(args[i]).append(" ");
         }
         return sb.toString().trim();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return toString(0);
     }
 }

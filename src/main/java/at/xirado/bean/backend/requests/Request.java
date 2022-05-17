@@ -9,53 +9,42 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-public class Request
-{
+public class Request {
     public static final Logger LOGGER = LoggerFactory.getLogger(Request.class);
 
     private final okhttp3.Request request;
     private final OkHttpClient client;
 
-    public Request(okhttp3.Request request, OkHttpClient client)
-    {
+    public Request(okhttp3.Request request, OkHttpClient client) {
         this.request = request;
         this.client = client;
     }
 
-    public Response complete() throws IOException
-    {
+    public Response complete() throws IOException {
         return client.newCall(request).execute();
     }
 
-    public void queue(Consumer<Response> success, Consumer<Exception> failure)
-    {
+    public void queue(Consumer<Response> success, Consumer<Exception> failure) {
         Bean.getInstance().getCommandExecutor().execute(() ->
         {
-            try
-            {
+            try {
                 Response response = client.newCall(request).execute();
                 success.accept(response);
                 response.close();
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 failure.accept(ex);
             }
         });
     }
 
-    public void queue(Consumer<Response> success)
-    {
+    public void queue(Consumer<Response> success) {
         Bean.getInstance().getCommandExecutor().execute(() ->
         {
-            try
-            {
+            try {
                 Response response = client.newCall(request).execute();
                 success.accept(response);
                 response.close();
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 LOGGER.error("Error occurred while executing Request!", ex);
             }
         });

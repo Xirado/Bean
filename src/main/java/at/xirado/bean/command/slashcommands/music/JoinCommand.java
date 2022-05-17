@@ -16,53 +16,45 @@ import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 
-public class JoinCommand extends SlashCommand
-{
-    public JoinCommand()
-    {
+public class JoinCommand extends SlashCommand {
+    public JoinCommand() {
         setCommandData(Commands.slash("join", "Makes the bot join your current channel."));
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         Member member = event.getMember();
         GuildVoiceState voiceState = member.getVoiceState();
-        if (voiceState.getChannel() == null)
-        {
+        if (voiceState.getChannel() == null) {
             event.replyEmbeds(EmbedUtil.errorEmbed("You must be listening in a voice channel to run this command!")).queue();
             return;
         }
         GuildVoiceState state = event.getGuild().getSelfMember().getVoiceState();
-        if (state.getChannel() != null)
-        {
+        if (state.getChannel() != null) {
             AudioChannel channel = state.getChannel();
-            if (voiceState.getChannel().getIdLong() == channel.getIdLong())
-            {
+            if (voiceState.getChannel().getIdLong() == channel.getIdLong()) {
                 event.replyEmbeds(EmbedUtil.errorEmbed("I already joined this channel!")).queue();
                 return;
             }
-            if (Util.getListeningUsers(channel) > 0)
-            {
+            if (Util.getListeningUsers(channel) > 0) {
                 event.replyEmbeds(EmbedUtil.errorEmbed("I am already playing music in **" + channel.getName() + "**!")).queue();
                 return;
             }
         }
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        try
-        {
+        try {
             audioPlayer.getLink().connect(voiceState.getChannel());
-        }
-        catch (PermissionException exception)
-        {
+        } catch (PermissionException exception) {
             event.replyEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
             return;
         }
         event.replyEmbeds(EmbedUtil.successEmbed("Joined <#" + voiceState.getChannel().getIdLong() + ">!")).setEphemeral(true).queue();
         audioPlayer.playerSetup(
                 (GuildMessageChannel) event.getChannel(),
-                (s) -> {}, e -> {}
+                (s) -> {
+                }, e -> {
+                }
         );
 
     }

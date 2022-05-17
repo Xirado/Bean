@@ -52,7 +52,7 @@ class InteractionHandler(val bean: Bean) {
     fun handleAutocomplete(event: CommandAutoCompleteInteractionEvent) {
         val guild = event.guild!!
         val guildId = guild.idLong
-        val command = getGenericCommand(guildId, event.name, event.commandType.id)?: return
+        val command = getGenericCommand(guildId, event.name, event.commandType.id) ?: return
 
         val missingPerms = getMissingPermissions(event.member!!, event.guildChannel, command.requiredUserPermissions)
         if (missingPerms.isNotEmpty())
@@ -68,9 +68,9 @@ class InteractionHandler(val bean: Bean) {
     }
 
     fun handleCommand(event: GenericCommandInteractionEvent) {
-        val guild = event.guild?: return
+        val guild = event.guild ?: return
         val guildId = guild.idLong
-        val command = getGenericCommand(guildId, event.name, event.commandType.id)?: return
+        val command = getGenericCommand(guildId, event.name, event.commandType.id) ?: return
         val member = event.member!!
 
         val missingUserPerms = getMissingPermissions(member, event.guildChannel, command.requiredUserPermissions)
@@ -78,17 +78,20 @@ class InteractionHandler(val bean: Bean) {
         if (!missingUserPerms.isEmpty()) {
             val singular = missingUserPerms.size == 1
             val parsed = missingUserPerms.stream().map { "`${it}`" }.collect(Collectors.joining(", "))
-            event.replyEmbeds(EmbedUtil.noEntryEmbed("You are missing the following ${if (singular) "permission" else "permissions"}:\n$parsed")).setEphemeral(true).queue()
+            event.replyEmbeds(EmbedUtil.noEntryEmbed("You are missing the following ${if (singular) "permission" else "permissions"}:\n$parsed"))
+                .setEphemeral(true).queue()
             log.debug("Refusing execution of command ${command.commandData.name} (Type=${command.type}, Guild=${guild.idLong}, User=${member.idLong}, Channel=${event.guildChannel.idLong}): User Missing permissions $missingUserPerms")
             return
         }
 
-        val missingBotPerms = getMissingPermissions(guild.selfMember, event.guildChannel, command.requiredBotPermissions)
+        val missingBotPerms =
+            getMissingPermissions(guild.selfMember, event.guildChannel, command.requiredBotPermissions)
 
         if (!missingBotPerms.isEmpty()) {
             val singular = missingBotPerms.size == 1
             val parsed = missingBotPerms.stream().map { "`${it}`" }.collect(Collectors.joining(", "))
-            event.replyEmbeds(EmbedUtil.noEntryEmbed("I am missing the following ${if (singular) "permission" else "permissions"}:\n$parsed")).setEphemeral(true).queue()
+            event.replyEmbeds(EmbedUtil.noEntryEmbed("I am missing the following ${if (singular) "permission" else "permissions"}:\n$parsed"))
+                .setEphemeral(true).queue()
             log.debug("Refusing execution of command ${command.commandData.name} (Type=${command.type}, Guild=${guild.idLong}, User=${member.idLong}, Channel=${event.guildChannel.idLong}): Bot Missing permissions $missingBotPerms")
             return
         }
@@ -98,7 +101,8 @@ class InteractionHandler(val bean: Bean) {
         if (CommandFlag.MUST_BE_IN_VC in command.commandFlags) {
             val voiceState = member.voiceState!!
             if (voiceState.channel == null) {
-                event.replyEmbeds(EmbedUtil.noEntryEmbed("You must be listening in a voice-channel to use this command!")).setEphemeral(true).queue()
+                event.replyEmbeds(EmbedUtil.noEntryEmbed("You must be listening in a voice-channel to use this command!"))
+                    .setEphemeral(true).queue()
                 return
             }
         }
@@ -115,7 +119,8 @@ class InteractionHandler(val bean: Bean) {
             val botVoiceState = guild.selfMember.voiceState!!
             if (botVoiceState.channel != null) {
                 if (userVoiceState.channel != botVoiceState.channel) {
-                    event.replyEmbeds(EmbedUtil.noEntryEmbed("You must be listening in ${botVoiceState.channel!!.asMention} to use this command!")).queue()
+                    event.replyEmbeds(EmbedUtil.noEntryEmbed("You must be listening in ${botVoiceState.channel!!.asMention} to use this command!"))
+                        .queue()
                     return
                 }
             }
@@ -124,8 +129,8 @@ class InteractionHandler(val bean: Bean) {
         if (CommandFlag.REQUIRES_LAVALINK_NODE in command.commandFlags) {
             if (!context.isLavalinkNodeAvailable) {
                 event.replyEmbeds(EmbedUtil.errorEmbed("There are currently no voice nodes available!\nIf the issue persists, please leave a message on our support server!"))
-                        .addActionRow(Util.getSupportButton())
-                        .queue()
+                    .addActionRow(Util.getSupportButton())
+                    .queue()
                 return;
             }
         }
@@ -150,12 +155,12 @@ class InteractionHandler(val bean: Bean) {
         log.error("An unhandled exception in a command occurred", exception)
         if (event.isAcknowledged) {
             event.hook.sendMessageEmbeds(ERROR_EMBED)
-                    .addActionRow(Util.getSupportButton())
-                    .queue()
+                .addActionRow(Util.getSupportButton())
+                .queue()
         } else {
             event.replyEmbeds(ERROR_EMBED)
-                    .addActionRow(Util.getSupportButton())
-                    .setEphemeral(true).queue()
+                .addActionRow(Util.getSupportButton())
+                .setEphemeral(true).queue()
         }
 
         val path = StringBuilder("/${event.commandPath.replace("/", " ")}")
@@ -163,15 +168,21 @@ class InteractionHandler(val bean: Bean) {
             path.append(" *${option.name}* : `${option.asString}`")
         }
         val builder = EmbedBuilder()
-                .setTitle("An error occurred while executing a slash-command!")
-                .addField("Guild", if (event.guild == null) "None (Direct message)" else "${event.guild!!.idLong} (${event.guild!!.name})", true)
-                .addField("Channel", if (event.guild == null) "None (Direct message)" else event.channel!!.name, true)
-                .addField("User", event.user.asMention + " (" + event.user.asTag + ")", true)
-                .addField("Command", path.toString(), false)
-                .setColor(EmbedUtil.ERROR_COLOR)
+            .setTitle("An error occurred while executing a slash-command!")
+            .addField(
+                "Guild",
+                if (event.guild == null) "None (Direct message)" else "${event.guild!!.idLong} (${event.guild!!.name})",
+                true
+            )
+            .addField("Channel", if (event.guild == null) "None (Direct message)" else event.channel!!.name, true)
+            .addField("User", event.user.asMention + " (" + event.user.asTag + ")", true)
+            .addField("Command", path.toString(), false)
+            .setColor(EmbedUtil.ERROR_COLOR)
         event.jda.openPrivateChannelById(Bean.OWNER_ID)
-                .flatMap { it.sendMessageEmbeds(builder.build()).content("```fix\n${ExceptionUtils.getStackTrace(exception)}```") }
-                .queue()
+            .flatMap {
+                it.sendMessageEmbeds(builder.build()).content("```fix\n${ExceptionUtils.getStackTrace(exception)}```")
+            }
+            .queue()
     }
 
     private fun registerCommands() {
@@ -217,7 +228,7 @@ class InteractionHandler(val bean: Bean) {
         val commands = guildCommands[guildId]!!
         commands.forEach { updateAction.addCommands(it.commandData) }
         updateAction.queue {
-            it.forEach {  command ->
+            it.forEach { command ->
                 log.debug("Registered command ${command.name} on guild $guildId")
             }
         }
@@ -237,27 +248,31 @@ class InteractionHandler(val bean: Bean) {
         scanResult.close()
     }
 
-    fun getGuildCommands() : Map<Long, List<GenericCommand>> {
+    fun getGuildCommands(): Map<Long, List<GenericCommand>> {
         return Collections.unmodifiableMap(guildCommands)
     }
 
     fun getPublicCommands() = globalCommands.toList()
 
-    private fun getGenericCommand(name: String, type: Int) : GenericCommand? {
+    private fun getGenericCommand(name: String, type: Int): GenericCommand? {
         return globalCommands.stream()
-                .filter { it.commandData.name.equals(name, true) && it.type.id == type}
-                .findFirst().orElse(null)
+            .filter { it.commandData.name.equals(name, true) && it.type.id == type }
+            .findFirst().orElse(null)
     }
 
-    private fun getGenericCommand(guildId: Long, name: String, type: Int) : GenericCommand? {
+    private fun getGenericCommand(guildId: Long, name: String, type: Int): GenericCommand? {
         return guildCommands.getOrDefault(guildId, mutableListOf())
-                .stream()
-                .filter { it.commandData.name.equals(name, true) && it.type.id == type }
-                .findFirst()
-                .orElse(getGenericCommand(name, type))
+            .stream()
+            .filter { it.commandData.name.equals(name, true) && it.type.id == type }
+            .findFirst()
+            .orElse(getGenericCommand(name, type))
     }
 
-    private fun getMissingPermissions(member: Member, channel: GuildChannel, requiredPerms: EnumSet<Permission>) : Collection<Permission> {
+    private fun getMissingPermissions(
+        member: Member,
+        channel: GuildChannel,
+        requiredPerms: EnumSet<Permission>
+    ): Collection<Permission> {
         val memberPerms = member.getPermissions(channel)
 
         return requiredPerms.filter { it !in memberPerms }

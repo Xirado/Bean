@@ -13,18 +13,15 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.time.Instant;
 
-public class AvatarCommand extends SlashCommand
-{
-    public AvatarCommand()
-    {
+public class AvatarCommand extends SlashCommand {
+    public AvatarCommand() {
         setCommandData(Commands.slash("avatar", "Gets the avatar of a user.")
                 .addOption(OptionType.USER, "user", "User to get the avatar from.", false)
         );
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         OptionMapping option = event.getOption("user");
         User user = option != null ? option.getAsUser() : event.getUser();
         EmbedBuilder b = new EmbedBuilder()

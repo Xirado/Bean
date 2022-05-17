@@ -14,43 +14,36 @@ import java.io.IOException;
 import static com.sedmelluq.discord.lavaplayer.tools.DataFormatTools.readNullableText;
 import static com.sedmelluq.discord.lavaplayer.tools.DataFormatTools.writeNullableText;
 
-public class SpotifyAudioSource implements AudioSourceManager
-{
+public class SpotifyAudioSource implements AudioSourceManager {
     @Override
-    public String getSourceName()
-    {
+    public String getSourceName() {
         return "spotify";
     }
 
     @Override
-    public AudioItem loadItem(AudioPlayerManager manager, AudioReference reference)
-    {
+    public AudioItem loadItem(AudioPlayerManager manager, AudioReference reference) {
         return null;
     }
 
     @Override
-    public boolean isTrackEncodable(AudioTrack track)
-    {
+    public boolean isTrackEncodable(AudioTrack track) {
         return true;
     }
 
     @Override
-    public void encodeTrack(AudioTrack track, DataOutput output) throws IOException
-    {
+    public void encodeTrack(AudioTrack track, DataOutput output) throws IOException {
         var spotifyTrack = (SpotifyTrack) track;
         writeNullableText(output, spotifyTrack.getISRC());
         writeNullableText(output, spotifyTrack.getArtworkURL());
     }
 
     @Override
-    public AudioTrack decodeTrack(AudioTrackInfo trackInfo, DataInput input) throws IOException
-    {
+    public AudioTrack decodeTrack(AudioTrackInfo trackInfo, DataInput input) throws IOException {
         return new SpotifyTrack(trackInfo, readNullableText(input), readNullableText(input), this);
     }
 
     @Override
-    public void shutdown()
-    {
+    public void shutdown() {
 
     }
 }

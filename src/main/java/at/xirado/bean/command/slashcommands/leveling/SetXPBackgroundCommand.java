@@ -13,10 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
-public class SetXPBackgroundCommand extends SlashCommand
-{
-    public SetXPBackgroundCommand()
-    {
+public class SetXPBackgroundCommand extends SlashCommand {
+    public SetXPBackgroundCommand() {
         setCommandData(Commands.slash("setxpcard", "Updates /rank background.")
                 .addOptions(new OptionData(OptionType.STRING, "background", "The Background.")
                         .addChoice("Blue (Default)", "card1")
@@ -29,15 +27,11 @@ public class SetXPBackgroundCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
-        try
-        {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
+        try {
             RankingSystem.setPreferredCard(event.getUser(), event.getOption("background").getAsString());
             ctx.reply("Your background has been updated!").setEphemeral(true).queue();
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             ctx.replyError("Could not update background!").setEphemeral(true).queue();
             LoggerFactory.getLogger(Bean.class).error("Could not update a users background!", ex);
 

@@ -8,19 +8,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class Prometheus
-{
+public class Prometheus {
     private static final Logger LOG = LoggerFactory.getLogger(Prometheus.class);
 
-    public Prometheus()
-    {
+    public Prometheus() {
         DefaultExports.initialize();
-        try
-        {
+        try {
             new HTTPServer(Bean.getInstance().getConfig().getInt("prometheus_port", 5123));
-        }
-        catch (IOException ex)
-        {
+        } catch (IOException ex) {
             LOG.error("Could not initialize Prometheus HTTP Server!", ex);
         }
     }

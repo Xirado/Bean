@@ -18,10 +18,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ModeratorCommand extends SlashCommand
-{
-    public ModeratorCommand()
-    {
+public class ModeratorCommand extends SlashCommand {
+    public ModeratorCommand() {
         setCommandData(Commands.slash("moderator", "Sets up moderator roles.")
                 .addSubcommands(new SubcommandData("add", "Adds a moderator role.")
                         .addOption(OptionType.ROLE, "role", "Role to add.", true)
@@ -35,66 +33,59 @@ public class ModeratorCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         String subcommand = event.getSubcommandName();
-        switch (subcommand)
-        {
-        case "add" -> {
-            Role role = event.getOption("role").getAsRole();
-            List<Role> moderatorRoles = ctx.getGuildData().getModeratorRoles();
-            if (moderatorRoles.contains(role))
-            {
-                ctx.sendSimpleEmbed(ctx.getLocalized("commands.moderator.already_added"));
-                return;
+        switch (subcommand) {
+            case "add" -> {
+                Role role = event.getOption("role").getAsRole();
+                List<Role> moderatorRoles = ctx.getGuildData().getModeratorRoles();
+                if (moderatorRoles.contains(role)) {
+                    ctx.sendSimpleEmbed(ctx.getLocalized("commands.moderator.already_added"));
+                    return;
+                }
+                ctx.getGuildData().addModeratorRoles(role).update();
+                EmbedBuilder builder = new EmbedBuilder()
+                        .setColor(role.getColor())
+                        .setDescription(ctx.getLocalized("commands.moderator.added", role.getAsMention()));
+                ctx.reply(builder.build()).queue();
             }
-            ctx.getGuildData().addModeratorRoles(role).update();
-            EmbedBuilder builder = new EmbedBuilder()
-                    .setColor(role.getColor())
-                    .setDescription(ctx.getLocalized("commands.moderator.added", role.getAsMention()));
-            ctx.reply(builder.build()).queue();
-        }
-        case "remove" -> {
-            Role role = event.getOption("role").getAsRole();
-            List<Role> allowedRoles = ctx.getGuildData().getModeratorRoles();
-            if (!allowedRoles.contains(role))
-            {
-                ctx.sendSimpleEmbed(ctx.getLocalized("commands.moderator.not_added"));
-                return;
+            case "remove" -> {
+                Role role = event.getOption("role").getAsRole();
+                List<Role> allowedRoles = ctx.getGuildData().getModeratorRoles();
+                if (!allowedRoles.contains(role)) {
+                    ctx.sendSimpleEmbed(ctx.getLocalized("commands.moderator.not_added"));
+                    return;
+                }
+                ctx.getGuildData().removeModeratorRoles(role).update();
+                EmbedBuilder builder = new EmbedBuilder()
+                        .setColor(role.getColor())
+                        .setDescription(ctx.getLocalized("commands.moderator.removed", role.getAsMention()));
+                ctx.reply(builder.build()).queue();
             }
-            ctx.getGuildData().removeModeratorRoles(role).update();
-            EmbedBuilder builder = new EmbedBuilder()
-                    .setColor(role.getColor())
-                    .setDescription(ctx.getLocalized("commands.moderator.removed", role.getAsMention()));
-            ctx.reply(builder.build()).queue();
-        }
-        case "list" -> {
-            GuildData guildData = ctx.getGuildData();
-            List<Role> allowedRoles = guildData.getModeratorRoles();
-            if (allowedRoles == null || allowedRoles.isEmpty())
-            {
-                ctx.sendSimpleEmbed(ctx.getLocalized("commands.listmods.no_roles_found"));
-                return;
+            case "list" -> {
+                GuildData guildData = ctx.getGuildData();
+                List<Role> allowedRoles = guildData.getModeratorRoles();
+                if (allowedRoles == null || allowedRoles.isEmpty()) {
+                    ctx.sendSimpleEmbed(ctx.getLocalized("commands.listmods.no_roles_found"));
+                    return;
+                }
+                StringBuilder sb = new StringBuilder();
+                Color firstColor = null;
+                if (allowedRoles.size() > 1) {
+                    allowedRoles = allowedRoles.stream().sorted(Comparator.comparingInt(Role::getPosition)).collect(Collectors.toList());
+                    allowedRoles = allowedRoles.stream().sorted(Collections.reverseOrder()).collect(Collectors.toList());
+                }
+                for (Role r : allowedRoles) {
+                    if (firstColor == null) firstColor = r.getColor();
+                    sb.append(r.getAsMention()).append(", ");
+                }
+                String description = sb.toString();
+                description = description.substring(0, description.length() - 2);
+                EmbedBuilder builder = new EmbedBuilder()
+                        .setColor(firstColor == null ? Color.green : firstColor)
+                        .setDescription(ctx.getLocalized("commands.listmods.all_mod_roles") + ":\n" + description);
+                ctx.reply(builder.build()).queue();
             }
-            StringBuilder sb = new StringBuilder();
-            Color firstColor = null;
-            if (allowedRoles.size() > 1)
-            {
-                allowedRoles = allowedRoles.stream().sorted(Comparator.comparingInt(Role::getPosition)).collect(Collectors.toList());
-                allowedRoles = allowedRoles.stream().sorted(Collections.reverseOrder()).collect(Collectors.toList());
-            }
-            for (Role r : allowedRoles)
-            {
-                if (firstColor == null) firstColor = r.getColor();
-                sb.append(r.getAsMention()).append(", ");
-            }
-            String description = sb.toString();
-            description = description.substring(0, description.length() - 2);
-            EmbedBuilder builder = new EmbedBuilder()
-                    .setColor(firstColor == null ? Color.green : firstColor)
-                    .setDescription(ctx.getLocalized("commands.listmods.all_mod_roles") + ":\n" + description);
-            ctx.reply(builder.build()).queue();
-        }
         }
     }
 }

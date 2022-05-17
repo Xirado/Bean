@@ -8,10 +8,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 
-public class TestCommand extends SlashCommand
-{
-    public TestCommand()
-    {
+public class TestCommand extends SlashCommand {
+    public TestCommand() {
         setCommandData(Commands.slash("test", "this command is only for test purposes")
                 .addOption(OptionType.BOOLEAN, "ephemeral", "if this message is ephemeral", true)
         );
@@ -20,8 +18,7 @@ public class TestCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         Member member = event.getMember();
         long balance = ctx.getGuildData().getBalance(member.getIdLong());
         event.reply("Your balance is: $" + balance).queue();

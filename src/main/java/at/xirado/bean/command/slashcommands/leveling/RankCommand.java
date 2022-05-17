@@ -12,18 +12,15 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 
-public class RankCommand extends SlashCommand
-{
-    public RankCommand()
-    {
+public class RankCommand extends SlashCommand {
+    public RankCommand() {
         setCommandData(Commands.slash("rank", "Shows a users level.")
                 .addOption(OptionType.USER, "user", "Member to get the level from.", false)
         );
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         InteractionHook commandHook = event.getHook();
 
         event.deferReply(false).queue();
@@ -33,8 +30,7 @@ public class RankCommand extends SlashCommand
 
         long xp = RankingSystem.getTotalXP(event.getGuild().getIdLong(), user.getIdLong());
 
-        if (xp < 100)
-        {
+        if (xp < 100) {
             if (optionData == null)
                 commandHook.sendMessage("You are not yet ranked!").queue();
             else
@@ -43,8 +39,7 @@ public class RankCommand extends SlashCommand
         }
 
         byte[] rankCard = RankingSystem.generateLevelCard(user, event.getGuild());
-        if (rankCard == null)
-        {
+        if (rankCard == null) {
             commandHook.sendMessageEmbeds(EmbedUtil.errorEmbed("Could not load rank card! Please try again later!")).queue();
             return;
         }

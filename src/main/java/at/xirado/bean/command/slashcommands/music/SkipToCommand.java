@@ -13,10 +13,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.BlockingQueue;
 
-public class SkipToCommand extends SlashCommand
-{
-    public SkipToCommand()
-    {
+public class SkipToCommand extends SlashCommand {
+    public SkipToCommand() {
         setCommandData(Commands.slash("skipto", "Skips to a specified track in the queue.")
                 .addOption(OptionType.INTEGER, "index", "Index to skip to.", true)
         );
@@ -24,28 +22,23 @@ public class SkipToCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         long index = event.getOption("index").getAsLong();
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        if (guildAudioPlayer.getPlayer().getPlayingTrack() == null)
-        {
+        if (guildAudioPlayer.getPlayer().getPlayingTrack() == null) {
             ctx.sendSimpleEphemeralEmbed("There is no music playing!");
             return;
         }
         BlockingQueue<AudioTrack> queue = guildAudioPlayer.getScheduler().getQueue();
-        if (queue.size() == 0)
-        {
+        if (queue.size() == 0) {
             ctx.sendSimpleEphemeralEmbed("There is nothing in the queue!");
             return;
         }
-        if (index < 1 || index > queue.size())
-        {
+        if (index < 1 || index > queue.size()) {
             ctx.sendSimpleEphemeralEmbed("Index must be a valid integer between 1 and " + queue.size() + "!");
             return;
         }
-        for (int i = 0; i < index - 1; i++)
-        {
+        for (int i = 0; i < index - 1; i++) {
             queue.remove();
         }
         guildAudioPlayer.getScheduler().nextTrack();

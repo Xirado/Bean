@@ -17,10 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class DJCommand extends SlashCommand
-{
-    public DJCommand()
-    {
+public class DJCommand extends SlashCommand {
+    public DJCommand() {
         setCommandData(Commands.slash("dj", "Set up users/roles who can use DJ-commands.")
                 .addSubcommands(new SubcommandData("add", "Adds a DJ. (role or member)")
                         .addOption(OptionType.MENTIONABLE, "role_or_member", "Role or member", true)
@@ -34,104 +32,87 @@ public class DJCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         GuildData guildData = ctx.getGuildData();
-        switch (event.getSubcommandName().toLowerCase())
-        {
-        case "add" -> {
-            IMentionable mentionable = event.getOption("role_or_member").getAsMentionable();
-            if (mentionable instanceof Role role)
-            {
-                if (guildData.isDJ(role))
-                {
+        switch (event.getSubcommandName().toLowerCase()) {
+            case "add" -> {
+                IMentionable mentionable = event.getOption("role_or_member").getAsMentionable();
+                if (mentionable instanceof Role role) {
+                    if (guildData.isDJ(role)) {
+                        EmbedBuilder builder = new EmbedBuilder()
+                                .setColor(role.getColor())
+                                .setDescription(role.getAsMention() + " is already a DJ!");
+                        ctx.reply(builder.build()).setEphemeral(true).queue();
+                        return;
+                    }
+                    guildData.addDJRoles(role).update();
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(role.getColor())
-                            .setDescription(role.getAsMention() + " is already a DJ!");
+                            .setDescription(role.getAsMention() + " is now a DJ!");
                     ctx.reply(builder.build()).setEphemeral(true).queue();
-                    return;
-                }
-                guildData.addDJRoles(role).update();
-                EmbedBuilder builder = new EmbedBuilder()
-                        .setColor(role.getColor())
-                        .setDescription(role.getAsMention() + " is now a DJ!");
-                ctx.reply(builder.build()).setEphemeral(true).queue();
-            }
-            else if (mentionable instanceof Member member)
-            {
-                if (guildData.getDJMembers().contains(member.getIdLong()))
-                {
+                } else if (mentionable instanceof Member member) {
+                    if (guildData.getDJMembers().contains(member.getIdLong())) {
+                        EmbedBuilder builder = new EmbedBuilder()
+                                .setColor(member.getColor())
+                                .setDescription(member.getAsMention() + " is already a DJ!");
+                        ctx.reply(builder.build()).setEphemeral(true).queue();
+                        return;
+                    }
+                    guildData.addDJMembers(member).update();
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(member.getColor())
-                            .setDescription(member.getAsMention() + " is already a DJ!");
+                            .setDescription(member.getAsMention() + " is now a DJ!");
                     ctx.reply(builder.build()).setEphemeral(true).queue();
-                    return;
+                } else {
+                    ctx.replyError("Invalid argument! Only roles and members are allowed!").setEphemeral(true).queue();
                 }
-                guildData.addDJMembers(member).update();
-                EmbedBuilder builder = new EmbedBuilder()
-                        .setColor(member.getColor())
-                        .setDescription(member.getAsMention() + " is now a DJ!");
-                ctx.reply(builder.build()).setEphemeral(true).queue();
             }
-            else
-            {
-                ctx.replyError("Invalid argument! Only roles and members are allowed!").setEphemeral(true).queue();
-            }
-        }
-        case "remove" -> {
-            IMentionable mentionable = event.getOption("role_or_member").getAsMentionable();
-            if (mentionable instanceof Role role)
-            {
-                if (!guildData.isDJ(role))
-                {
+            case "remove" -> {
+                IMentionable mentionable = event.getOption("role_or_member").getAsMentionable();
+                if (mentionable instanceof Role role) {
+                    if (!guildData.isDJ(role)) {
+                        EmbedBuilder builder = new EmbedBuilder()
+                                .setColor(role.getColor())
+                                .setDescription(role.getAsMention() + " is already not a DJ!");
+                        ctx.reply(builder.build()).setEphemeral(true).queue();
+                        return;
+                    }
+                    guildData.removeDJRoles(role).update();
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(role.getColor())
-                            .setDescription(role.getAsMention() + " is already not a DJ!");
+                            .setDescription(role.getAsMention() + " is no longer a DJ!");
                     ctx.reply(builder.build()).setEphemeral(true).queue();
-                    return;
-                }
-                guildData.removeDJRoles(role).update();
-                EmbedBuilder builder = new EmbedBuilder()
-                        .setColor(role.getColor())
-                        .setDescription(role.getAsMention() + " is no longer a DJ!");
-                ctx.reply(builder.build()).setEphemeral(true).queue();
-            }
-            else if (mentionable instanceof Member member)
-            {
-                if (!guildData.getDJMembers().contains(member.getIdLong()))
-                {
+                } else if (mentionable instanceof Member member) {
+                    if (!guildData.getDJMembers().contains(member.getIdLong())) {
+                        EmbedBuilder builder = new EmbedBuilder()
+                                .setColor(member.getColor())
+                                .setDescription(member.getAsMention() + " is already not a DJ!");
+                        ctx.reply(builder.build()).setEphemeral(true).queue();
+                        return;
+                    }
+                    guildData.removeDJMembers(member).update();
                     EmbedBuilder builder = new EmbedBuilder()
                             .setColor(member.getColor())
-                            .setDescription(member.getAsMention() + " is already not a DJ!");
+                            .setDescription(member.getAsMention() + " is no longer a DJ!");
                     ctx.reply(builder.build()).setEphemeral(true).queue();
+                } else {
+                    ctx.replyError("Invalid argument! Only roles and members are allowed!").queue();
+                }
+            }
+            case "list" -> {
+                List<Role> djRoles = guildData.getDJRoles(false);
+                List<Long> djMembers = guildData.getDJMembers();
+                if (djRoles.isEmpty() && djMembers.isEmpty()) {
+                    event.replyEmbeds(EmbedUtil.warningEmbed("There are no DJs!")).setEphemeral(true).queue();
                     return;
                 }
-                guildData.removeDJMembers(member).update();
-                EmbedBuilder builder = new EmbedBuilder()
-                        .setColor(member.getColor())
-                        .setDescription(member.getAsMention() + " is no longer a DJ!");
-                ctx.reply(builder.build()).setEphemeral(true).queue();
+                StringBuilder builder = new StringBuilder();
+                builder.append("**DJs**:\n\n");
+                djRoles.forEach(x -> builder.append(x.getAsMention()).append("\n"));
+                builder.append("\n");
+                djMembers.forEach(x -> builder.append("<@").append(x).append(">\n"));
+                event.replyEmbeds(EmbedUtil.defaultEmbed(builder.toString().trim()));
             }
-            else
-            {
-                ctx.replyError("Invalid argument! Only roles and members are allowed!").queue();
-            }
-        }
-        case "list" -> {
-            List<Role> djRoles = guildData.getDJRoles(false);
-            List<Long> djMembers = guildData.getDJMembers();
-            if (djRoles.isEmpty() && djMembers.isEmpty())
-            {
-                event.replyEmbeds(EmbedUtil.warningEmbed("There are no DJs!")).setEphemeral(true).queue();
-                return;
-            }
-            StringBuilder builder = new StringBuilder();
-            builder.append("**DJs**:\n\n");
-            djRoles.forEach(x -> builder.append(x.getAsMention()).append("\n"));
-            builder.append("\n");
-            djMembers.forEach(x -> builder.append("<@").append(x).append(">\n"));
-            event.replyEmbeds(EmbedUtil.defaultEmbed(builder.toString().trim()));
-        }
         }
     }
 }

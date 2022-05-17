@@ -9,14 +9,11 @@ import spark.Route;
 
 import java.nio.charset.StandardCharsets;
 
-public class UserRoute implements Route
-{
+public class UserRoute implements Route {
     @Override
-    public Object handle(Request request, Response response) throws Exception
-    {
+    public Object handle(Request request, Response response) throws Exception {
         String authHeader = request.headers("authorization");
-        if (authHeader == null || !authHeader.startsWith("Token "))
-        {
+        if (authHeader == null || !authHeader.startsWith("Token ")) {
             response.status(401);
             return DataObject.empty()
                     .put("code", 401)
@@ -26,8 +23,7 @@ public class UserRoute implements Route
         String token = authHeader.substring(7);
         byte[] tokenBytes = token.getBytes(StandardCharsets.UTF_8);
         Authenticator authenticator = Bean.getInstance().getAuthenticator();
-        if (!authenticator.isAuthenticated(tokenBytes))
-        {
+        if (!authenticator.isAuthenticated(tokenBytes)) {
             response.status(401);
             return DataObject.empty()
                     .put("code", 401)
@@ -42,8 +38,7 @@ public class UserRoute implements Route
         String effectiveAvatarURL = "";
         if (user.getObject("user").isNull("avatar"))
             effectiveAvatarURL = "https://cdn.discordapp.com/embed/avatars/" + (discriminator % 5) + ".png";
-        else
-        {
+        else {
             String avatarHash = user.getObject("user").getString("avatar");
             boolean animated = avatarHash.startsWith("a_");
             effectiveAvatarURL = "https://cdn.discordapp.com/avatars/" + id + "/" + avatarHash + (animated ? ".gif" : ".png");

@@ -6,23 +6,19 @@ import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class MetricsJob extends Thread
-{
-    public MetricsJob()
-    {
+public class MetricsJob extends Thread {
+    public MetricsJob() {
         setDaemon(true);
         setName("Metrics-Job");
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
         byte runs = 0;
 
         Bean instance = Bean.getInstance();
 
-        while (true)
-        {
+        while (true) {
             int busyCommandThreads = ((ThreadPoolExecutor) instance.getCommandExecutor()).getActiveCount();
             int totalCommandThreads = ((ThreadPoolExecutor) instance.getCommandExecutor()).getCorePoolSize();
 
@@ -50,12 +46,9 @@ public class MetricsJob extends Thread
 
                 runs = 0;
             }
-            try
-            {
+            try {
                 Thread.sleep(5000);
-            }
-            catch (InterruptedException ignored)
-            {
+            } catch (InterruptedException ignored) {
             }
         }
     }

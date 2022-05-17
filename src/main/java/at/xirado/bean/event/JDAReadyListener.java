@@ -15,21 +15,18 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class JDAReadyListener extends ListenerAdapter
-{
+public class JDAReadyListener extends ListenerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
     private boolean ready = false;
 
     @Override
-    public void onGenericEvent(@NotNull GenericEvent event)
-    {
+    public void onGenericEvent(@NotNull GenericEvent event) {
         Metrics.EVENTS.inc();
     }
 
     @Override
-    public void onGuildReady(@NotNull GuildReadyEvent event)
-    {
+    public void onGuildReady(@NotNull GuildReadyEvent event) {
         if (!ready)
             Bean.getInstance().getInteractionHandler().init();
 
@@ -54,12 +51,9 @@ public class JDAReadyListener extends ListenerAdapter
             {
                 String url = node.getString("url");
                 String password = node.getString("password");
-                try
-                {
+                try {
                     lavalink.addNode(new URI(url), password);
-                }
-                catch (URISyntaxException e)
-                {
+                } catch (URISyntaxException e) {
                     LOGGER.error("Could not add Lavalink node!", e);
                 }
             });

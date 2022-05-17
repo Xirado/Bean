@@ -12,19 +12,16 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MessageReactionAddListener extends ListenerAdapter
-{
+public class MessageReactionAddListener extends ListenerAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageReactionAddListener.class);
 
     @Override
-    public void onMessageReactionAdd(@NotNull MessageReactionAddEvent e)
-    {
+    public void onMessageReactionAdd(@NotNull MessageReactionAddEvent e) {
         if (!e.isFromGuild())
             return;
         if (GuildJoinListener.isGuildBanned(e.getGuild().getIdLong()))
             return;
-        try
-        {
+        try {
             if (e.getMember().getUser().isBot()) return;
             Guild g = e.getGuild();
             long id = e.getMessageIdLong();
@@ -34,8 +31,7 @@ public class MessageReactionAddListener extends ListenerAdapter
             ReactionRole reactionRole = data.getReactionRoles().stream()
                     .filter(x -> x.getMessageId() == id && x.getEmote().equals(reacted))
                     .findFirst().orElse(null);
-            if (reactionRole != null)
-            {
+            if (reactionRole != null) {
                 Role role = e.getGuild().getRoleById(reactionRole.getRoleId());
                 if (role != null)
                     g.addRoleToMember(e.getMember(), role).queue(s ->
@@ -44,9 +40,7 @@ public class MessageReactionAddListener extends ListenerAdapter
                     {
                     });
             }
-        }
-        catch (Exception e2)
-        {
+        } catch (Exception e2) {
             LOGGER.error("An error occured whilst executing reaction role event!", e2);
         }
     }

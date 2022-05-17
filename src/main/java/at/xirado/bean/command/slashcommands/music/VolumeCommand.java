@@ -12,10 +12,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 
-public class VolumeCommand extends SlashCommand
-{
-    public VolumeCommand()
-    {
+public class VolumeCommand extends SlashCommand {
+    public VolumeCommand() {
         setCommandData(Commands.slash("volume", "Changes the volume of the player.")
                 .addOption(OptionType.INTEGER, "volume", "Volume in percent.", true)
         );
@@ -23,8 +21,7 @@ public class VolumeCommand extends SlashCommand
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         OptionMapping option = event.getOption("volume");
         GuildData guildData = ctx.getGuildData();
 

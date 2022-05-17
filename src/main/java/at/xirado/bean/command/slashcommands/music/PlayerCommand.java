@@ -10,17 +10,14 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerCommand extends SlashCommand
-{
+public class PlayerCommand extends SlashCommand {
 
-    public PlayerCommand()
-    {
+    public PlayerCommand() {
         setCommandData(Commands.slash("player", "Music Player Navigation"));
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         GuildAudioPlayer player = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
 
         AudioTrack track = player.getPlayer().getPlayingTrack();

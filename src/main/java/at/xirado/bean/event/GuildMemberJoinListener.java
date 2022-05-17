@@ -14,11 +14,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class GuildMemberJoinListener extends ListenerAdapter
-{
+public class GuildMemberJoinListener extends ListenerAdapter {
     @Override
-    public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event)
-    {
+    public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
 
@@ -29,14 +27,11 @@ public class GuildMemberJoinListener extends ListenerAdapter
 
         long totalXP = RankingSystem.getTotalXP(event.getGuild().getIdLong(), event.getUser().getIdLong());
         int level = RankingSystem.getLevel(totalXP);
-        if (level > 0)
-        {
+        if (level > 0) {
             List<RoleReward> roleRewards = guildData.getEffectiveRoleRewards(level);
             Set<Role> rolesToAdd = new HashSet<>();
-            for (RoleReward reward : roleRewards)
-            {
-                if (reward.isPersistant())
-                {
+            for (RoleReward reward : roleRewards) {
+                if (reward.isPersistant()) {
                     Role role = event.getGuild().getRoleById(reward.getRoleId());
                     if (role != null && event.getGuild().getSelfMember().canInteract(role))
                         rolesToAdd.add(role);

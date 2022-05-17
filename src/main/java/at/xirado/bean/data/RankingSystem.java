@@ -23,8 +23,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 
-public class RankingSystem
-{
+public class RankingSystem {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RankingSystem.class);
     private static LinkedDataObject colorData = null;
@@ -47,15 +46,11 @@ public class RankingSystem
     private static final int XP_BAR_WIDTH = CARD_WIDTH - AVATAR_SIZE - BORDER_SIZE * 3;
     private static final int XP_BAR_HEIGHT = CARD_HEIGHT / 5;
 
-    static
-    {
-        try
-        {
+    static {
+        try {
             FONT = Font.createFont(Font.TRUETYPE_FONT, RankingSystem.class.getResourceAsStream("/assets/fonts/NotoSans.ttf"));
             colorData = LinkedDataObject.parse(RankingSystem.class.getResourceAsStream("/assets/wildcards/ColorInfo.json"));
-        }
-        catch (FontFormatException | IOException e)
-        {
+        } catch (FontFormatException | IOException e) {
             LOGGER.error("Couldn't load font from resources", e);
         }
     }
@@ -66,8 +61,7 @@ public class RankingSystem
      * @param currentLevel the current level
      * @return relative XP needed to level up
      */
-    public static long getXPToLevelUp(int currentLevel)
-    {
+    public static long getXPToLevelUp(int currentLevel) {
         double x = 5 * (currentLevel * currentLevel) + (50 * currentLevel) + 100;
         return (long) x;
     }
@@ -78,13 +72,11 @@ public class RankingSystem
      * @param xp total xp
      * @return the level
      */
-    public static int getLevel(long xp)
-    {
+    public static int getLevel(long xp) {
         if (xp < 100) return 0;
         int counter = 0;
         long total = 0L;
-        while (true)
-        {
+        while (true) {
             long neededForNextLevel = getXPToLevelUp(counter);
             if (neededForNextLevel > xp) return counter;
             total += neededForNextLevel;
@@ -99,56 +91,44 @@ public class RankingSystem
      * @param level the level
      * @return total xp needed to reach that level
      */
-    public static long getTotalXPNeeded(int level)
-    {
+    public static long getTotalXPNeeded(int level) {
         long x = 0;
-        for (int i = 0; i < level; i++)
-        {
+        for (int i = 0; i < level; i++) {
             x += getXPToLevelUp(i);
         }
         return x;
     }
 
-    public static long getTotalXP(@Nonnull Connection connection, long guildID, long userID)
-    {
+    public static long getTotalXP(@Nonnull Connection connection, long guildID, long userID) {
         var query = new SQLBuilder("SELECT totalXP FROM levels WHERE guildID = ? AND userID = ?")
                 .useConnection(connection)
                 .addParameters(guildID, userID);
-        try (var result = query.executeQuery())
-        {
+        try (var result = query.executeQuery()) {
             if (result.next())
                 return result.getLong("totalXP");
             return 0L;
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             LOGGER.error("Could not get total xp! (guild {}, user {})", guildID, userID, ex);
             return -1L;
         }
     }
 
-    public static long getTotalXP(long guildID, long userID)
-    {
+    public static long getTotalXP(long guildID, long userID) {
         var query = new SQLBuilder("SELECT totalXP FROM levels WHERE guildID = ? AND userID = ?")
                 .addParameters(guildID, userID);
-        try (var result = query.executeQuery())
-        {
+        try (var result = query.executeQuery()) {
             if (result.next())
                 return result.getLong("totalXP");
             return 0L;
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             LOGGER.error("Could not get total xp! (guild {}, user {})", guildID, userID, ex);
             return -1L;
         }
     }
 
-    public static void addXP(long guildID, long userID, long addedAmount, String name, String discriminator)
-    {
+    public static void addXP(long guildID, long userID, long addedAmount, String name, String discriminator) {
         var connection = Database.getConnectionFromPool();
-        if (connection == null)
-        {
+        if (connection == null) {
             LOGGER.error("Could not get connection from db pool!", new SQLException("Connection == null!"));
             return;
         }
@@ -157,101 +137,75 @@ public class RankingSystem
         var query = new SQLBuilder(sql)
                 .useConnection(connection)
                 .addParameters(guildID, userID, totalXP, name, discriminator, totalXP, name, discriminator);
-        try
-        {
+        try {
             query.execute();
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             LOGGER.error("Could not add XP!", e);
-        }
-        finally
-        {
+        } finally {
             Util.closeQuietly(connection);
         }
     }
 
-    public static void addXP(@Nonnull Connection connection, long guildID, long userID, long addedAmount, String name, String discriminator, String avatarUrl)
-    {
+    public static void addXP(@Nonnull Connection connection, long guildID, long userID, long addedAmount, String name, String discriminator, String avatarUrl) {
         var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator, avatar) values (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?, avatar = ?";
         var totalXP = getTotalXP(connection, guildID, userID) + addedAmount;
         var query = new SQLBuilder(sql)
                 .useConnection(connection)
                 .addParameters(guildID, userID, totalXP, name, discriminator, avatarUrl, totalXP, name, discriminator, avatarUrl);
-        try
-        {
+        try {
             query.execute();
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             LOGGER.error("Could not add XP!", e);
         }
     }
 
-    public static void setXP(long guildID, long userID, long setAmount, String name, String discriminator)
-    {
+    public static void setXP(long guildID, long userID, long setAmount, String name, String discriminator) {
         var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?";
         var query = new SQLBuilder(sql)
                 .addParameters(guildID, userID, setAmount, name, discriminator, setAmount, name, discriminator);
-        try
-        {
+        try {
             query.execute();
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             LOGGER.error("Could not add XP!", e);
         }
     }
 
-    public static void setXP(@Nonnull Connection connection, long guildID, long userID, long setAmount, String name, String discriminator)
-    {
+    public static void setXP(@Nonnull Connection connection, long guildID, long userID, long setAmount, String name, String discriminator) {
         var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?";
         var query = new SQLBuilder(sql)
                 .useConnection(connection)
                 .addParameters(guildID, userID, setAmount, name, discriminator, setAmount, name, discriminator);
-        try
-        {
+        try {
             query.execute();
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             LOGGER.error("Could not add XP!", e);
         }
     }
 
-    public static void setXP(@Nonnull Connection connection, long guildID, long userID, long setAmount, String name, String discriminator, String avatarUrl)
-    {
+    public static void setXP(@Nonnull Connection connection, long guildID, long userID, long setAmount, String name, String discriminator, String avatarUrl) {
         var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator, avatar) values (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?, avatar = ?";
         var query = new SQLBuilder(sql)
                 .useConnection(connection)
                 .addParameters(guildID, userID, setAmount, name, discriminator, avatarUrl, setAmount, name, discriminator, avatarUrl);
-        try
-        {
+        try {
             query.execute();
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             LOGGER.error("Could not add XP!", e);
         }
     }
 
-    public static String getPreferredCard(@Nonnull User user)
-    {
+    public static String getPreferredCard(@Nonnull User user) {
         var query = new SQLBuilder("SELECT * FROM wildcardSettings WHERE userID = ?")
                 .addParameter(user.getIdLong());
-        try (var rs = query.executeQuery())
-        {
+        try (var rs = query.executeQuery()) {
             return rs.next() ? rs.getString("card") : "card1";
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             LOGGER.error("Could not get user preferred wildcard background (user {})", user.getIdLong(), ex);
             return "card1";
         }
     }
 
-    public static void setPreferredCard(@Nonnull User user, @Nonnull String card) throws SQLException
-    {
+    public static void setPreferredCard(@Nonnull User user, @Nonnull String card) throws SQLException {
         String qry = "INSERT INTO wildcardSettings (userID, card) VALUES (?,?) ON DUPLICATE KEY UPDATE card = ?";
 
         var query = new SQLBuilder(qry, user.getIdLong(), card, card);
@@ -259,42 +213,32 @@ public class RankingSystem
         query.execute();
     }
 
-    public static String getPreferredCard(@Nonnull Connection connection, @Nonnull User user)
-    {
+    public static String getPreferredCard(@Nonnull Connection connection, @Nonnull User user) {
         var query = new SQLBuilder("SELECT * FROM wildcardSettings WHERE userID = ?")
                 .useConnection(connection)
                 .addParameter(user.getIdLong());
-        try (var rs = query.executeQuery())
-        {
+        try (var rs = query.executeQuery()) {
             return rs.next() ? rs.getString("card") : "card1";
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             LOGGER.error("Could not get user preferred wildcard background (user {})", user.getIdLong(), ex);
             return "card1";
         }
     }
 
-    public static void setPreferredCard(@Nonnull Connection connection, @Nonnull User user, @Nonnull String card)
-    {
+    public static void setPreferredCard(@Nonnull Connection connection, @Nonnull User user, @Nonnull String card) {
         String qry = "INSERT INTO wildcardSettings (userID, card) VALUES (?,?) ON DUPLICATE KEY UPDATE card = ?";
         var query = new SQLBuilder(qry)
                 .useConnection(connection)
                 .addParameters(user.getIdLong(), card, card);
-        try
-        {
+        try {
             query.execute();
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             LOGGER.error("Could not set user preferred wildcard background (user {})", user.getIdLong(), ex);
         }
     }
 
-    public static byte[] generateLevelCard(@Nonnull User user, @Nonnull Guild guild)
-    {
-        try
-        {
+    public static byte[] generateLevelCard(@Nonnull User user, @Nonnull Guild guild) {
+        try {
             var avatar = ImageIO.read(new URL(user.getEffectiveAvatarUrl() + "?size=" + RAW_AVATAR_SIZE));
 
             // make the avatar round
@@ -325,20 +269,16 @@ public class RankingSystem
             var g = rankCard.createGraphics();
 
             var background = RankingSystem.class.getResourceAsStream("/assets/wildcards/" + card + ".png");
-            if (background != null)
-            {
+            if (background != null) {
                 var image = makeRoundedCorner(ImageIO.read(background), 60);
                 var width = image.getWidth();
                 var height = image.getHeight();
                 var drawWidth = 0;
                 var drawHeight = 0;
-                if (width > height)
-                {
+                if (width > height) {
                     drawWidth = width;
                     drawHeight = width / CARD_RATIO;
-                }
-                else
-                {
+                } else {
                     drawHeight = height;
                     drawWidth = height * CARD_RATIO;
                 }
@@ -404,9 +344,7 @@ public class RankingSystem
             var baos = new ByteArrayOutputStream();
             ImageIO.write(rankCard, "png", baos);
             return baos.toByteArray();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             LOGGER.error("Error while generating level cards", e);
         }
         return null;
@@ -415,24 +353,20 @@ public class RankingSystem
     private static final String[] suffix = new String[]{"", "k", "M", "G", "T"};
     private static final int MAX_LENGTH = 5;
 
-    public static String formatXP(long xp)
-    {
+    public static String formatXP(long xp) {
         String r = new DecimalFormat("##0E0").format(xp);
         r = r.replaceAll("E[0-9]", suffix[Character.getNumericValue(r.charAt(r.length() - 1)) / 3]);
-        while (r.length() > MAX_LENGTH || r.matches("[0-9]+,[a-z]"))
-        {
+        while (r.length() > MAX_LENGTH || r.matches("[0-9]+,[a-z]")) {
             r = r.substring(0, r.length() - 2) + r.substring(r.length() - 1);
         }
         return r.replaceAll(",", ".");
     }
 
-    public static Color getColor(String fileName)
-    {
+    public static Color getColor(String fileName) {
         return Color.decode("#" + colorData.get(fileName, String.class));
     }
 
-    public static BufferedImage makeRoundedCorner(BufferedImage image, int cornerRadius)
-    {
+    public static BufferedImage makeRoundedCorner(BufferedImage image, int cornerRadius) {
         int w = image.getWidth();
         int h = image.getHeight();
         BufferedImage output = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
@@ -459,15 +393,12 @@ public class RankingSystem
         return output;
     }
 
-    public static DataArray getLeaderboard(long guildId, int page, int itemsPerPage) throws SQLException
-    {
+    public static DataArray getLeaderboard(long guildId, int page, int itemsPerPage) throws SQLException {
         var start = page == 1 ? 0 : ((page - 1) * itemsPerPage);
         var query = new SQLBuilder("SELECT * FROM levels WHERE guildID = ? ORDER by totalXP DESC LIMIT ?, ?", guildId, start, itemsPerPage);
-        try (var rs = query.executeQuery())
-        {
+        try (var rs = query.executeQuery()) {
             DataArray array = DataArray.empty();
-            while (rs.next())
-            {
+            while (rs.next()) {
                 array.add(
                         DataObject.empty()
                                 .put("user", rs.getLong("userID"))
@@ -481,42 +412,34 @@ public class RankingSystem
         }
     }
 
-    public static int getDataCount(long guildId) throws SQLException
-    {
+    public static int getDataCount(long guildId) throws SQLException {
         var query = new SQLBuilder("SELECT COUNT(*) FROM levels WHERE guildID = ?", guildId);
-        try (var rs = query.executeQuery())
-        {
+        try (var rs = query.executeQuery()) {
             if (rs.next())
                 return rs.getInt("COUNT(*)");
             return 0;
         }
     }
 
-    public static int getRank(long guildID, long userID)
-    {
+    public static int getRank(long guildID, long userID) {
         String qry = "SELECT totalXP, FIND_IN_SET( totalXP, ( SELECT GROUP_CONCAT( totalXP ORDER BY totalXP DESC ) FROM levels WHERE guildID = ? )) AS rank FROM levels WHERE guildID = ? and userID = ?";
         var query = new SQLBuilder(qry)
                 .addParameters(guildID, guildID, userID);
-        try (var rs = query.executeQuery())
-        {
+        try (var rs = query.executeQuery()) {
             if (rs.next()) return rs.getInt("rank");
             return -1;
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             LOGGER.error("Could not get rank of member! Guild: {} User: {}", guildID, userID);
             return -1;
         }
     }
 
-    public static Color getRankColor(int rank)
-    {
-        return switch (rank)
-                {
-                    case 1 -> Color.decode("#D4AF37");
-                    case 2 -> Color.decode("#BEC2CB");
-                    case 3 -> Color.decode("#CD7F32");
-                    default -> null;
-                };
+    public static Color getRankColor(int rank) {
+        return switch (rank) {
+            case 1 -> Color.decode("#D4AF37");
+            case 2 -> Color.decode("#BEC2CB");
+            case 3 -> Color.decode("#CD7F32");
+            default -> null;
+        };
     }
 }

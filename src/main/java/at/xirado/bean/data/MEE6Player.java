@@ -2,8 +2,7 @@ package at.xirado.bean.data;
 
 import net.dv8tion.jda.api.utils.data.DataObject;
 
-public class MEE6Player
-{
+public class MEE6Player {
     private static final String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s";
 
     private String avatar;
@@ -16,15 +15,13 @@ public class MEE6Player
     private String username;
     private long xp;
 
-    public static MEE6Player fromData(DataObject object)
-    {
+    public static MEE6Player fromData(DataObject object) {
         MEE6Player player = new MEE6Player();
         player.setId(object.getString("id"));
         player.setXp(object.getInt("xp"));
         player.setDiscriminator(object.getString("discriminator"));
         player.setUsername(object.getString("username"));
-        if (!object.isNull("avatar"))
-        {
+        if (!object.isNull("avatar")) {
             String avatarId = object.getString("avatar");
             String avatarUrl = String.format(AVATAR_URL, player.getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
             player.setAvatar(avatarUrl);
@@ -32,93 +29,75 @@ public class MEE6Player
         return player;
     }
 
-    public void setXp(long xp)
-    {
+    public void setXp(long xp) {
         this.xp = xp;
     }
 
-    public void setUsername(String username)
-    {
+    public void setUsername(String username) {
         this.username = username;
     }
 
-    public void setMessage_count(int message_count)
-    {
+    public void setMessage_count(int message_count) {
         this.message_count = message_count;
     }
 
-    public void setLevel(int level)
-    {
+    public void setLevel(int level) {
         this.level = level;
     }
 
-    public void setId(String id)
-    {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public void setGuild_id(String guild_id)
-    {
+    public void setGuild_id(String guild_id) {
         this.guild_id = guild_id;
     }
 
-    public void setDiscriminator(String discriminator)
-    {
+    public void setDiscriminator(String discriminator) {
         this.discriminator = discriminator;
     }
 
-    public void setDetailed_xp(long[] detailed_xp)
-    {
+    public void setDetailed_xp(long[] detailed_xp) {
         this.detailed_xp = detailed_xp;
     }
 
-    public void setAvatar(String avatar)
-    {
+    public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
-    public long getXp()
-    {
+    public long getXp() {
         return xp;
     }
 
-    public String getUsername()
-    {
+    public String getUsername() {
         return username;
     }
 
-    public int getMessage_count()
-    {
+    public int getMessage_count() {
         return message_count;
     }
 
-    public int getLevel()
-    {
+    public int getLevel() {
         return level;
     }
 
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
-    public String getGuild_id()
-    {
+    public String getGuild_id() {
         return guild_id;
     }
 
-    public String getDiscriminator()
-    {
+    public String getDiscriminator() {
         return discriminator;
     }
 
-    public long[] getDetailed_xp()
-    {
+    public long[] getDetailed_xp() {
         return detailed_xp;
     }
 
-    public String getAvatar()
-    {
+    public String getAvatar() {
         return avatar;
     }
 }

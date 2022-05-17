@@ -14,28 +14,24 @@ import spark.Route;
 
 import java.util.List;
 
-public class CommandsRoute implements Route
-{
+public class CommandsRoute implements Route {
     public static final long DEV_GUILD_ID = 815597207617142814L;
 
     @Override
-    public Object handle(Request request, Response response) throws Exception
-    {
+    public Object handle(Request request, Response response) throws Exception {
         List<SlashCommand> commands = Bean.getInstance().isDebug()
                 ? Bean.getInstance().getInteractionHandler().getGuildCommands().get(DEV_GUILD_ID)
                 .stream().filter(cmd -> cmd instanceof SlashCommand).map(cmd -> (SlashCommand) cmd).toList()
                 : Bean.getInstance().getInteractionHandler().getPublicCommands().stream().filter(cmd -> cmd.getType() == Command.Type.SLASH)
                 .map(cmd -> (SlashCommand) cmd).toList();
         DataArray commandArray = DataArray.empty();
-        for (SlashCommand command : commands)
-        {
+        for (SlashCommand command : commands) {
             DataObject commandObject = DataObject.empty();
             SlashCommandData slashCommandData = (SlashCommandData) command.getCommandData();
             DataArray options = DataArray.empty();
             DataArray subCommands = DataArray.empty();
 
-            for (OptionData option : slashCommandData.getOptions())
-            {
+            for (OptionData option : slashCommandData.getOptions()) {
                 DataObject optionObject = DataObject.empty()
                         .put("name", option.getName())
                         .put("type", option.getType().toString())
@@ -43,12 +39,10 @@ public class CommandsRoute implements Route
                         .put("required", option.isRequired());
                 options.add(optionObject);
             }
-            for (SubcommandData subcommandData : slashCommandData.getSubcommands())
-            {
+            for (SubcommandData subcommandData : slashCommandData.getSubcommands()) {
                 DataObject subCommandObject = DataObject.empty();
                 DataArray subCommandOptions = DataArray.empty();
-                for (OptionData option : subcommandData.getOptions())
-                {
+                for (OptionData option : subcommandData.getOptions()) {
                     DataObject optionObject = DataObject.empty()
                             .put("name", option.getName())
                             .put("type", option.getType().toString())

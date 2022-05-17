@@ -14,8 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static spark.Spark.*;
 
-public class WebServer
-{
+public class WebServer {
     private final String clientId;
     private final String clientSecret;
     private final String redirectUri;
@@ -24,8 +23,7 @@ public class WebServer
 
     public static final Map<String, DataObject> USER_CACHE = new ConcurrentHashMap<>();
 
-    public WebServer(int port)
-    {
+    public WebServer(int port) {
         DataObject config = Bean.getInstance().getConfig();
         if (config.isNull("client_id") || config.isNull("client_secret") || config.isNull("redirect_uri"))
             throw new IllegalStateException("Missing Discord Oauth2 configuration!");
@@ -37,14 +35,13 @@ public class WebServer
         enableCORS("*", "*", "*");
         before(((request, response) ->
         {
-            switch (request.raw().getMethod())
-            {
-            case "GET" -> Metrics.REQUESTS.labels("get").inc();
-            case "POST" -> Metrics.REQUESTS.labels("post").inc();
-            case "PUT" -> Metrics.REQUESTS.labels("put").inc();
-            case "DELETE" -> Metrics.REQUESTS.labels("delete").inc();
-            case "PATCH" -> Metrics.REQUESTS.labels("patch").inc();
-            default -> Metrics.REQUESTS.labels("other").inc();
+            switch (request.raw().getMethod()) {
+                case "GET" -> Metrics.REQUESTS.labels("get").inc();
+                case "POST" -> Metrics.REQUESTS.labels("post").inc();
+                case "PUT" -> Metrics.REQUESTS.labels("put").inc();
+                case "DELETE" -> Metrics.REQUESTS.labels("delete").inc();
+                case "PATCH" -> Metrics.REQUESTS.labels("patch").inc();
+                default -> Metrics.REQUESTS.labels("other").inc();
             }
         }));
         get("/guilds", new GuildsRoute());
@@ -66,8 +63,7 @@ public class WebServer
         });
     }
 
-    public DataObject refreshToken(String refreshToken) throws IOException
-    {
+    public DataObject refreshToken(String refreshToken) throws IOException {
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
 
         DataObject requestObject = DataObject.empty()
@@ -90,8 +86,7 @@ public class WebServer
         return DataObject.fromJson(response.body().byteStream());
     }
 
-    public static DataObject retrieveUser(String accessToken) throws IOException
-    {
+    public static DataObject retrieveUser(String accessToken) throws IOException {
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
         Request request = new Request.Builder()
                 .header("authorization", "Bearer " + accessToken)
@@ -105,8 +100,7 @@ public class WebServer
         return DataObject.fromJson(response.body().byteStream());
     }
 
-    public static DataObject retrieveGuilds(String accessToken) throws IOException
-    {
+    public static DataObject retrieveGuilds(String accessToken) throws IOException {
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
 
         Request request = new Request.Builder()
@@ -134,21 +128,18 @@ public class WebServer
         return object;
     }
 
-    private static void enableCORS(final String origin, final String methods, final String headers)
-    {
+    private static void enableCORS(final String origin, final String methods, final String headers) {
 
         options("/*", (request, response) ->
         {
 
             String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
-            if (accessControlRequestHeaders != null)
-            {
+            if (accessControlRequestHeaders != null) {
                 response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
             }
 
             String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
-            if (accessControlRequestMethod != null)
-            {
+            if (accessControlRequestMethod != null) {
                 response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
             }
             return "OK";
@@ -165,8 +156,7 @@ public class WebServer
         });
     }
 
-    public DataObject retrieveTokens(String code) throws IOException
-    {
+    public DataObject retrieveTokens(String code) throws IOException {
         OkHttpClient client = Bean.getInstance().getOkHttpClient();
 
         RequestBody requestBody = new FormBody.Builder()
@@ -187,18 +177,15 @@ public class WebServer
         return DataObject.fromJson(response.body().byteStream()).put("status", response.code());
     }
 
-    public String getClientId()
-    {
+    public String getClientId() {
         return clientId;
     }
 
-    public String getClientSecret()
-    {
+    public String getClientSecret() {
         return clientSecret;
     }
 
-    public String getRedirectUri()
-    {
+    public String getRedirectUri() {
         return redirectUri;
     }
 }
