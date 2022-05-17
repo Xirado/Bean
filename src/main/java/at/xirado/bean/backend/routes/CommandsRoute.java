@@ -21,7 +21,7 @@ public class CommandsRoute implements Route {
     public Object handle(Request request, Response response) throws Exception {
         List<SlashCommand> commands = Bean.getInstance().isDebug()
                 ? Bean.getInstance().getInteractionHandler().getGuildCommands().get(DEV_GUILD_ID)
-                .stream().filter(cmd -> cmd instanceof SlashCommand).map(cmd -> (SlashCommand) cmd).toList()
+                .stream().filter(cmd -> cmd.getType() == Command.Type.SLASH).map(cmd -> (SlashCommand) cmd).toList()
                 : Bean.getInstance().getInteractionHandler().getPublicCommands().stream().filter(cmd -> cmd.getType() == Command.Type.SLASH)
                 .map(cmd -> (SlashCommand) cmd).toList();
         DataArray commandArray = DataArray.empty();

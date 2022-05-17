@@ -21,8 +21,7 @@ public class Authenticator {
     private final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 
     public Authenticator() {
-        Bean.getInstance().getScheduledExecutor().scheduleAtFixedRate(() ->
-        {
+        Bean.getInstance().getScheduledExecutor().scheduleAtFixedRate(() -> {
             for (Map.Entry<ByteBuffer, DataObject> entries : users.entrySet()) {
                 ByteBuffer token = entries.getKey();
                 DataObject user = entries.getValue();

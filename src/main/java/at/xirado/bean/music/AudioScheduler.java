@@ -81,16 +81,6 @@ public class AudioScheduler extends PlayerEventListenerAdapter {
                     stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(null)).queue();
             }
         }
-        if (guildAudioPlayer.getOpenPlayer() != null && track == null) {
-            CachedMessage message = guildAudioPlayer.getOpenPlayer();
-            TextChannel channel = message.getChannel();
-            if (channel == null) {
-                guildAudioPlayer.setOpenPlayer(null);
-                return;
-            }
-
-            channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(null)).queue(null, (e) -> guildAudioPlayer.setOpenPlayer(null));
-        }
         if (track != null)
             player.playTrack(track);
         else
@@ -133,17 +123,16 @@ public class AudioScheduler extends PlayerEventListenerAdapter {
                 stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(track)).queue();
             }
         }
-        if (guildAudioPlayer.getOpenPlayer() != null) {
+        if (guildAudioPlayer.getOpenPlayer() != null && guildAudioPlayer.getLastPlayerUpdate() + 5000 < System.currentTimeMillis()) {
             CachedMessage message = guildAudioPlayer.getOpenPlayer();
             TextChannel channel = message.getChannel();
             if (channel == null) {
                 guildAudioPlayer.setOpenPlayer(null);
                 return;
             }
-
+            guildAudioPlayer.setLastPlayerUpdate(System.currentTimeMillis());
             channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(track)).queue(null, (e) -> guildAudioPlayer.setOpenPlayer(null));
         }
-
     }
 
     @Override

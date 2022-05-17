@@ -17,10 +17,11 @@ import java.util.function.Consumer;
 public class GuildAudioPlayer {
     private final LavalinkPlayer player;
     private final AudioScheduler scheduler;
-    private final long guildId;
     private final JdaLink link;
+    private final long guildId;
 
     private CachedMessage openPlayer;
+    private long lastPlayerUpdate;
 
     public GuildAudioPlayer(long guildId) {
         this.guildId = guildId;
@@ -29,6 +30,7 @@ public class GuildAudioPlayer {
         scheduler = new AudioScheduler(player, guildId, this);
         player.addListener(scheduler);
         openPlayer = null;
+        lastPlayerUpdate = 0;
     }
 
     public AudioScheduler getScheduler() {
@@ -55,8 +57,8 @@ public class GuildAudioPlayer {
         if (this.openPlayer != null) {
             TextChannel channel = this.openPlayer.getChannel();
             if (channel != null)
-                channel.deleteMessageById(this.openPlayer.getMessageId()).queue(s -> {
-                }, new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE));
+                channel.deleteMessageById(this.openPlayer.getMessageId())
+                        .queue(null, new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE));
         }
         this.openPlayer = openPlayer;
     }
@@ -100,5 +102,13 @@ public class GuildAudioPlayer {
         Bean.getInstance().getAudioManager().removePlayer(this);
         link.destroy();
         scheduler.destroy();
+    }
+
+    public synchronized long getLastPlayerUpdate() {
+        return lastPlayerUpdate;
+    }
+
+    public synchronized void setLastPlayerUpdate(long lastPlayerUpdate) {
+        this.lastPlayerUpdate = lastPlayerUpdate;
     }
 }

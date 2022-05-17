@@ -32,11 +32,12 @@ public class AudioManager {
                     if (message != null) {
                         if (guildAudioPlayer.getPlayer().isPaused() || guildAudioPlayer.getPlayer().getPlayingTrack() == null)
                             continue;
+                        if (guildAudioPlayer.getLastPlayerUpdate() + 5000 > System.currentTimeMillis())
+                            continue;
+
                         OffsetDateTime created = TimeUtil.getTimeCreated(message.getMessageId());
-                        if (created.plusMinutes(10).isBefore(OffsetDateTime.now())) {
-                            guildAudioPlayer.playerSetup(message.getChannel(), s -> {
-                            }, e -> {
-                            });
+                        if (created.plusMinutes(30).isBefore(OffsetDateTime.now())) {
+                            guildAudioPlayer.playerSetup(message.getChannel(), s -> {}, e -> {});
                             continue;
                         }
                         TextChannel channel = message.getChannel();
@@ -44,6 +45,7 @@ public class AudioManager {
                             guildAudioPlayer.setOpenPlayer(null);
                             continue;
                         }
+                        guildAudioPlayer.setLastPlayerUpdate(System.currentTimeMillis());
                         guildAudioPlayer.forcePlayerUpdate();
                     }
                 }
@@ -53,8 +55,7 @@ public class AudioManager {
                 Metrics.PLAYING_MUSIC_PLAYERS.set(playingAudioPlayers);
                 try {
                     Thread.sleep(5000);
-                } catch (InterruptedException ignored) {
-                }
+                } catch (InterruptedException ignored) {}
             }
         });
         t.setDaemon(true);

@@ -9,8 +9,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static spark.Spark.*;
 
@@ -20,8 +18,6 @@ public class WebServer {
     private final String redirectUri;
 
     public static final String BASE_URL = "https://discord.com/api/v9";
-
-    public static final Map<String, DataObject> USER_CACHE = new ConcurrentHashMap<>();
 
     public WebServer(int port) {
         DataObject config = Bean.getInstance().getConfig();
