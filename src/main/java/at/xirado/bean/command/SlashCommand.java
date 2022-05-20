@@ -1,5 +1,6 @@
 package at.xirado.bean.command;
 
+import at.xirado.bean.Bean;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -23,7 +24,9 @@ public abstract class SlashCommand implements GenericCommand {
     private final EnumSet<CommandFlag> commandFlags = EnumSet.noneOf(CommandFlag.class);
 
     public void setCommandData(SlashCommandData commandData) {
-        commandData.setGuildOnly(true);
+        // Discord has a bug where setting this field on a guild command updates it even though they stay the same
+        if (!Bean.getInstance().isDebug())
+            commandData.setGuildOnly(true);
         this.commandData = commandData;
     }
 

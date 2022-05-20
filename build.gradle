@@ -27,6 +27,7 @@ repositories {
     maven { url 'https://m2.chew.pro/releases' }
     jcenter()
 }
+
 /**
  * Clears resources folder for processResources task
  */
