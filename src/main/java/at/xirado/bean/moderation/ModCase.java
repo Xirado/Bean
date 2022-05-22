@@ -12,8 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class ModCase
-{
+public class ModCase {
     private static final Logger LOGGER = LoggerFactory.getLogger(ModCase.class);
 
     private final UUID uuid;
@@ -27,8 +26,7 @@ public class ModCase
 
     private ModCase(UUID uuid, CaseType caseType, long guildId,
                     long targetId, long moderatorId, String reason,
-                    long createdAt, long duration)
-    {
+                    long createdAt, long duration) {
         this.uuid = uuid;
         this.caseType = caseType;
         this.guildId = guildId;
@@ -41,21 +39,17 @@ public class ModCase
 
     private ModCase(UUID uuid, CaseType caseType, long guildId,
                     long targetId, long moderatorId, long createdAt,
-                    String reason)
-    {
+                    String reason) {
         this(uuid, caseType, guildId, targetId, moderatorId, reason, createdAt, -1);
     }
 
-    public static ModCase createModCase(CaseType type, long guildId, long targetId, long moderatorId, String reason)
-    {
+    public static ModCase createModCase(CaseType type, long guildId, long targetId, long moderatorId, String reason) {
         return createModCase(type, guildId, targetId, moderatorId, -1, reason);
     }
 
-    public static ModCase createModCase(CaseType type, long guildId, long targetId, long moderatorId, long duration, String reason)
-    {
+    public static ModCase createModCase(CaseType type, long guildId, long targetId, long moderatorId, long duration, String reason) {
         try (Connection connection = Database.getConnectionFromPool();
-             PreparedStatement ps = connection.prepareStatement("INSERT INTO modcases (uuid, caseType, guild, user, moderator, reason, createdAt, duration) values (?,?,?,?,?,?,?,?)"))
-        {
+             PreparedStatement ps = connection.prepareStatement("INSERT INTO modcases (uuid, caseType, guild, user, moderator, reason, createdAt, duration) values (?,?,?,?,?,?,?,?)")) {
             UUID uuid = generateUUID(connection);
             long creationTime = System.currentTimeMillis();
             ps.setString(1, uuid.toString());
@@ -68,37 +62,29 @@ public class ModCase
             ps.setLong(8, duration);
             ps.execute();
             return new ModCase(uuid, type, guildId, targetId, moderatorId, reason, creationTime, duration);
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             LOGGER.error("Could not create Mod-Case!", ex);
             return null;
         }
     }
 
-    public static ModCase retrieveModCase(UUID uuid)
-    {
+    public static ModCase retrieveModCase(UUID uuid) {
         try (Connection connection = Database.getConnectionFromPool();
-             PreparedStatement ps = connection.prepareStatement("SELECT * FROM modcases WHERE uuid = ?"))
-        {
+             PreparedStatement ps = connection.prepareStatement("SELECT * FROM modcases WHERE uuid = ?")) {
             ps.setString(1, uuid.toString());
             long creationTime = System.currentTimeMillis();
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return null;
             return new ModCase(uuid, CaseType.fromId(rs.getByte("caseType")), rs.getLong("guild"), rs.getLong("user"), rs.getLong("moderator"), rs.getString("reason"), rs.getLong("createdAt"), rs.getLong("duration"));
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             LOGGER.error("Could not retrieve Mod-Case!", ex);
             return null;
         }
     }
 
-    private static UUID generateUUID(@Nonnull Connection connection)
-    {
+    private static UUID generateUUID(@Nonnull Connection connection) {
         Checks.notNull(connection, "Connection");
-        while (true)
-        {
+        while (true) {
             UUID uuid = UUID.randomUUID();
             if (uuidAlreadyExists(connection, uuid))
                 continue;
@@ -106,60 +92,48 @@ public class ModCase
         }
     }
 
-    private static boolean uuidAlreadyExists(@Nonnull Connection connection, @Nonnull UUID uuid)
-    {
+    private static boolean uuidAlreadyExists(@Nonnull Connection connection, @Nonnull UUID uuid) {
         Checks.notNull(connection, "Connection");
         Checks.notNull(uuid, "UUID");
-        try (PreparedStatement ps = connection.prepareStatement("SELECT 1 FROM modcases WHERE uuid = ?"))
-        {
+        try (PreparedStatement ps = connection.prepareStatement("SELECT 1 FROM modcases WHERE uuid = ?")) {
             ps.setString(1, uuid.toString());
             ResultSet rs = ps.executeQuery();
             return rs.next();
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             LOGGER.error("Could not check if UUID already exists!", ex);
             return false;
         }
     }
 
-    public UUID getUuid()
-    {
+    public UUID getUuid() {
         return uuid;
     }
 
-    public CaseType getCaseType()
-    {
+    public CaseType getCaseType() {
         return caseType;
     }
 
-    public long getGuildId()
-    {
+    public long getGuildId() {
         return guildId;
     }
 
-    public long getTargetId()
-    {
+    public long getTargetId() {
         return targetId;
     }
 
-    public long getModeratorId()
-    {
+    public long getModeratorId() {
         return moderatorId;
     }
 
-    public String getReason()
-    {
+    public String getReason() {
         return reason;
     }
 
-    public long getCreatedAt()
-    {
+    public long getCreatedAt() {
         return createdAt;
     }
 
-    public long getDuration()
-    {
+    public long getDuration() {
         return duration;
     }
 }

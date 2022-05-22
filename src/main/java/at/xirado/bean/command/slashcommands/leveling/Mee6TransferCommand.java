@@ -20,21 +20,17 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-public class Mee6TransferCommand extends SlashCommand
-{
-    public Mee6TransferCommand()
-    {
+public class Mee6TransferCommand extends SlashCommand {
+    public Mee6TransferCommand() {
         setCommandData(Commands.slash("mee6transfer", "Transfer-command to migrate MEE6 XP to Bean for all found members."));
-        setRequiredUserPermissions(Permission.ADMINISTRATOR);
+        addRequiredUserPermissions(Permission.ADMINISTRATOR);
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         Guild guild = event.getGuild();
         MEE6Queue queue = Bean.getInstance().getMEE6Queue();
-        if (queue.hasPendingRequest(guild.getIdLong()))
-        {
+        if (queue.hasPendingRequest(guild.getIdLong())) {
             event.replyEmbeds(EmbedUtil.warningEmbed("Hey hey! The migration process of your server is still going on!")).setEphemeral(true).queue();
             return;
         }

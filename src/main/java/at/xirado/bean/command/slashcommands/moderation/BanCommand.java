@@ -17,13 +17,11 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BanCommand extends SlashCommand
-{
+public class BanCommand extends SlashCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
 
-    public BanCommand()
-    {
+    public BanCommand() {
         setCommandData(Commands.slash("ban", "Permanently bans a user from a server.")
                 .addOptions(new OptionData(OptionType.USER, "user", "User to ban.")
                         .setRequired(true)
@@ -31,17 +29,15 @@ public class BanCommand extends SlashCommand
                 .addOptions(new OptionData(OptionType.STRING, "reason", "Reason for the ban."))
                 .addOptions(new OptionData(OptionType.INTEGER, "del_days", "How many days of messages to delete."))
         );
-        setRequiredUserPermissions(Permission.BAN_MEMBERS);
-        setRequiredBotPermissions(Permission.BAN_MEMBERS);
+        addRequiredBotPermissions(Permission.BAN_MEMBERS);
+        addRequiredUserPermissions(Permission.BAN_MEMBERS);
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         Member sender = event.getMember();
         Guild guild = event.getGuild();
-        if (guild == null)
-        {
+        if (guild == null) {
             LOGGER.error("Received /ban command with empty guild!");
             return;
         }
@@ -49,25 +45,20 @@ public class BanCommand extends SlashCommand
         Member targetMember = event.getOption("user").getAsMember();
         String reason = event.getOption("reason") == null ? null : event.getOption("reason").getAsString();
         int delDays = event.getOption("del_days") != null ? (int) Math.max(0, Math.min(7, event.getOption("del_days").getAsLong())) : 0;
-        if (targetMember != null)
-        {
-            if (sender.getIdLong() == targetMember.getIdLong())
-            {
+        if (targetMember != null) {
+            if (sender.getIdLong() == targetMember.getIdLong()) {
                 ctx.reply(EmbedUtil.errorEmbed(ctx.getLocalized("commands.ban.cannot_ban_self"))).setEphemeral(true).queue();
                 return;
             }
-            if (!sender.canInteract(targetMember))
-            {
+            if (!sender.canInteract(targetMember)) {
                 ctx.reply(EmbedUtil.noEntryEmbed(ctx.getLocalized("commands.ban.you_cannot_ban_this_member"))).setEphemeral(true).queue();
                 return;
             }
-            if (ctx.getGuildData().isModerator(targetMember))
-            {
+            if (ctx.getGuildData().isModerator(targetMember)) {
                 ctx.reply(EmbedUtil.noEntryEmbed(ctx.getLocalized("commands.ban.cannot_ban_moderator"))).setEphemeral(true).queue();
                 return;
             }
-            if (!guild.getSelfMember().canInteract(targetMember))
-            {
+            if (!guild.getSelfMember().canInteract(targetMember)) {
                 ctx.reply(EmbedUtil.noEntryEmbed(ctx.getLocalized("commands.ban.i_cannot_ban_this_member"))).setEphemeral(true).queue();
                 return;
             }
@@ -94,8 +85,7 @@ public class BanCommand extends SlashCommand
                             .addField(ctx.getLocalized("commands.duration"), "∞", true)
                             .build();
                     event.getHook().sendMessageEmbeds(confirmationEmbed).queue();
-                    if (ctx.getGuildData().getLogChannel() != null)
-                    {
+                    if (ctx.getGuildData().getLogChannel() != null) {
                         TextChannel logChannel = ctx.getGuildData().getLogChannel();
                         MessageEmbed logEmbed = new EmbedBuilder()
                                 .setColor(CaseType.BAN.getEmbedColor())

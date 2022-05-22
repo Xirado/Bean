@@ -13,8 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class Shell
-{
+public class Shell {
     public static LineReader reader = null;
 
     private static final Logger logger = LoggerFactory.getLogger(Shell.class);
@@ -29,8 +28,7 @@ public class Shell
     public static final int LOGO_LENGTH = 44;
 
 
-    public static void startShell()
-    {
+    public static void startShell() {
         Thread t = new Thread(() ->
         {
             AnsiConsole.systemInstall();
@@ -38,12 +36,9 @@ public class Shell
             TerminalBuilder builder = TerminalBuilder.builder();
             builder.system(true);
 
-            try
-            {
+            try {
                 terminal = builder.build();
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 logger.error("Could not build Terminal!", e);
             }
             terminal.puts(InfoCmp.Capability.clear_screen);
@@ -60,11 +55,9 @@ public class Shell
             System.setErr(CustomPrintStream.getPrintStream());
             terminal.writer().println(getLogo());
             started = true;
-            while (true)
-            {
+            while (true) {
                 String line;
-                try
-                {
+                try {
                     line = reader.readLine(prompt, null, (MaskingCallback) null, null);
                     line = line.trim();
                     terminal.flush();
@@ -73,13 +66,9 @@ public class Shell
                     String[] argv = pl.words().subList(1, pl.words().size()).toArray(new String[0]);
                     Bean.getInstance().getConsoleCommandManager().handleConsoleCommand(pl.word(), argv);
 
-                }
-                catch (UserInterruptException e)
-                {
+                } catch (UserInterruptException e) {
                     System.exit(0);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     logger.error("An error occured", e);
                 }
             }
@@ -89,17 +78,14 @@ public class Shell
         t.start();
     }
 
-    public static void awaitReady() throws InterruptedException
-    {
+    public static void awaitReady() throws InterruptedException {
         if (started) return;
-        while (!started)
-        {
+        while (!started) {
             Thread.onSpinWait();
         }
     }
 
-    public static String centerText(String text)
-    {
+    public static String centerText(String text) {
         int width = terminal.getWidth();
         text = text.trim();
         int textLength = text.length();
@@ -107,8 +93,7 @@ public class Shell
         return " ".repeat(Math.max(0, spaces)) + text;
     }
 
-    public static String getLogo()
-    {
+    public static String getLogo() {
         String logo =
                 """
                         ▄▄▄▄· ▄▄▄ . ▄▄▄·  ▐ ▄\s
@@ -121,8 +106,7 @@ public class Shell
         String[] split = logo.split("\n");
         AttributedStringBuilder builder = new AttributedStringBuilder();
         builder.style(PRIMARY);
-        for (String s : split)
-        {
+        for (String s : split) {
             int repeat = (width / 2) - (s.length() / 2);
             if (repeat < 1) repeat = 1;
             builder.append(" ".repeat(repeat)).append(s).append("\n");
@@ -132,13 +116,11 @@ public class Shell
         return builder.toAnsi();
     }
 
-    public static void println(String text)
-    {
+    public static void println(String text) {
         System.out.println(text);
     }
 
-    public static void printErr(String text)
-    {
+    public static void printErr(String text) {
         String ansiString = new AttributedStringBuilder().style(AttributedStyle.DEFAULT.foreground(255, 45, 0))
                 .append("Error: ")
                 .append(text)

@@ -1,7 +1,6 @@
 package at.xirado.bean.command;
 
-public enum CommandFlag
-{
+public enum CommandFlag {
     ALLOWED_IN_DMS(),
     DEVELOPER_ONLY(),
     AUTO_DELETE_MESSAGE(),

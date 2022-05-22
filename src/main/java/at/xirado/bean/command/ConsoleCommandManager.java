@@ -11,23 +11,18 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 
 
-public class ConsoleCommandManager
-{
+public class ConsoleCommandManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleCommandManager.class);
 
     private final ArrayList<ConsoleCommand> consoleCommands = new ArrayList<>();
 
-    public void handleConsoleCommand(final String invoke, final String[] args)
-    {
+    public void handleConsoleCommand(final String invoke, final String[] args) {
         Runnable r = () ->
         {
-            try
-            {
+            try {
                 boolean foundCommand = false;
-                for (ConsoleCommand ccmd : consoleCommands)
-                {
-                    if (ccmd.getInvoke().equalsIgnoreCase(invoke) || ccmd.getAliases().stream().anyMatch(invoke::equalsIgnoreCase))
-                    {
+                for (ConsoleCommand ccmd : consoleCommands) {
+                    if (ccmd.getInvoke().equalsIgnoreCase(invoke) || ccmd.getAliases().stream().anyMatch(invoke::equalsIgnoreCase)) {
                         ccmd.executeCommand(invoke, args);
                         foundCommand = true;
                         break;
@@ -35,22 +30,18 @@ public class ConsoleCommandManager
                 }
                 if (!foundCommand)
                     System.out.println(new AttributedStringBuilder().style(AttributedStyle.DEFAULT.foreground(0xFF0000)).append("Befehl \"").append(invoke).append("\" wurde nicht gefunden!"));
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 LOGGER.error("Could not execute console-command", e);
             }
         };
         Bean.getInstance().getExecutor().submit(r);
     }
 
-    public void registerCommand(ConsoleCommand ccmd)
-    {
+    public void registerCommand(ConsoleCommand ccmd) {
         consoleCommands.add(ccmd);
     }
 
-    public void registerAllCommands()
-    {
+    public void registerAllCommands() {
         registerCommand(new SendMessage());
         registerCommand(new ClearScreen());
         registerCommand(new Shutdown());
@@ -64,8 +55,7 @@ public class ConsoleCommandManager
         registerCommand(new LogLevelCommand());
     }
 
-    public ArrayList<ConsoleCommand> getCommands()
-    {
+    public ArrayList<ConsoleCommand> getCommands() {
         return consoleCommands;
     }
 }

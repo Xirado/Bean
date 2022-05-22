@@ -15,31 +15,33 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class JDAReadyListener extends ListenerAdapter
-{
+public class JDAReadyListener extends ListenerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
     private boolean ready = false;
 
     @Override
-    public void onGenericEvent(@NotNull GenericEvent event)
-    {
+    public void onGenericEvent(@NotNull GenericEvent event) {
         Metrics.EVENTS.inc();
     }
 
     @Override
-    public void onGuildReady(@NotNull GuildReadyEvent event)
-    {
+    public void onGuildReady(@NotNull GuildReadyEvent event) {
+        if (!ready)
+            Bean.getInstance().getInteractionHandler().init();
+
+        Bean.getInstance().getInteractionHandler().updateGuildCommands(event.getGuild());
+
+
         if (ready)
             return;
+
         ready = true;
         Bean.getInstance().getExecutor().submit(() ->
         {
             LOGGER.info("Successfully started {} shards!", Bean.getInstance().getShardManager().getShards().size());
-            Bean.getInstance().getInteractionCommandHandler().initialize();
             if (Bean.getInstance().isDebug())
                 LOGGER.warn("Development mode enabled.");
-            Bean.getInstance().initCommandCheck();
             JdaLavalink lavalink = Bean.getInstance().getLavalink();
             lavalink.setJdaProvider((shard) -> Bean.getInstance().getShardManager().getShardById(shard));
             lavalink.setUserId(event.getJDA().getSelfUser().getId());
@@ -49,12 +51,9 @@ public class JDAReadyListener extends ListenerAdapter
             {
                 String url = node.getString("url");
                 String password = node.getString("password");
-                try
-                {
+                try {
                     lavalink.addNode(new URI(url), password);
-                }
-                catch (URISyntaxException e)
-                {
+                } catch (URISyntaxException e) {
                     LOGGER.error("Could not add Lavalink node!", e);
                 }
             });

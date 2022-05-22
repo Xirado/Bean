@@ -13,19 +13,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class GuildManager
-{
+public class GuildManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(GuildManager.class);
 
     private static final Map<Long, GuildData> GUILD_DATA = new ConcurrentHashMap<>();
 
-    public static GuildData getGuildData(Guild guild)
-    {
+    public static GuildData getGuildData(Guild guild) {
         if (GUILD_DATA.containsKey(guild.getIdLong()))
             return GUILD_DATA.get(guild.getIdLong());
         GuildData retrievedData = retrieveGuildData(guild.getIdLong());
-        if (retrievedData != null)
-        {
+        if (retrievedData != null) {
             GUILD_DATA.put(guild.getIdLong(), retrievedData);
             return retrievedData;
         }
@@ -34,16 +31,14 @@ public class GuildManager
         return createdData;
     }
 
-    public static Optional<GuildData> optGuildData(long guildId)
-    {
+    public static Optional<GuildData> optGuildData(long guildId) {
         if (GUILD_DATA.containsKey(guildId))
             return Optional.of(GUILD_DATA.get(guildId));
         GuildData retrievedData = retrieveGuildData(guildId);
         return Optional.ofNullable(retrievedData);
     }
 
-    public static String getGuildDataJSON(long guildId) throws JsonProcessingException
-    {
+    public static String getGuildDataJSON(long guildId) throws JsonProcessingException {
         Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
         if (guild != null)
             return getGuildData(guild).toPrettyString();
@@ -53,41 +48,32 @@ public class GuildManager
         return DataObject.empty().toPrettyString();
     }
 
-    private static GuildData retrieveGuildData(long guildID)
-    {
+    private static GuildData retrieveGuildData(long guildID) {
         String sql = "SELECT data FROM guildSettings WHERE guildID = ?";
         var query = new SQLBuilder(sql)
                 .addParameter(guildID);
-        try (var rs = query.executeQuery())
-        {
+        try (var rs = query.executeQuery()) {
             if (rs.next()) return new GuildData(guildID, DataObject.fromJson(rs.getString("data")));
             return null;
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             LOGGER.error("Could not retrieve guild data!", ex);
             return null;
         }
     }
 
-    private static void updateGuildData(long guildID, DataObject data)
-    {
+    private static void updateGuildData(long guildID, DataObject data) {
         String sql = "INSERT INTO guildSettings (guildID, data) values (?,?) ON DUPLICATE KEY UPDATE data = ?";
-        try
-        {
+        try {
             String jsonString = data.toString();
             var query = new SQLBuilder(sql)
                     .addParameters(guildID, jsonString, jsonString);
             query.execute();
-        }
-        catch (SQLException exception)
-        {
+        } catch (SQLException exception) {
             LOGGER.error("Could not update guild data!", exception);
         }
     }
 
-    private static GuildData createGuildData(Guild guild)
-    {
+    private static GuildData createGuildData(Guild guild) {
         DataObject json = DataObject.empty()
                 .put("id", guild.getIdLong())
                 .put("name", guild.getName())

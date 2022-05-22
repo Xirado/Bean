@@ -10,32 +10,24 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 
-public class RandomFactCommand extends SlashCommand
-{
+public class RandomFactCommand extends SlashCommand {
 
-    public RandomFactCommand()
-    {
+    public RandomFactCommand() {
         setCommandData(Commands.slash("fact", "Gets a random useless fact."));
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
-        try
-        {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
+        try {
             String requestURL = "";
-            if (ctx.getLanguage().toString().equals("de.json"))
-            {
+            if (ctx.getLanguage().toString().equals("de.json")) {
                 requestURL = "https://uselessfacts.jsph.pl/random.json?language=de";
-            }
-            else
-            {
+            } else {
                 requestURL = "https://uselessfacts.jsph.pl/random.json?language=en";
             }
             URL url = new URL(requestURL);
             LinkedDataObject json = LinkedDataObject.parse(url);
-            if (json == null)
-            {
+            if (json == null) {
                 ctx.replyError(ctx.getLocalized("commands.fact.api_down")).queue();
                 return;
             }
@@ -45,9 +37,7 @@ public class RandomFactCommand extends SlashCommand
                     .setColor(0x152238);
             ctx.reply(builder.build()).queue();
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             ctx.replyError(ctx.getLocalized("general.unknown_error_occured")).queue();
         }
     }

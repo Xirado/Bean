@@ -13,39 +13,32 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 
 
-public class VoteSkipCommand extends SlashCommand
-{
-    public VoteSkipCommand()
-    {
+public class VoteSkipCommand extends SlashCommand {
+    public VoteSkipCommand() {
         setCommandData(Commands.slash("voteskip", "Votes to skip the currently playing track."));
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC);
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        if (event.getMember().getVoiceState().isDeafened())
-        {
+        if (event.getMember().getVoiceState().isDeafened()) {
             ctx.sendSimpleEphemeralEmbed("You can't do this since you're deafened!");
             return;
         }
         AudioTrack track = guildAudioPlayer.getPlayer().getPlayingTrack();
-        if (track == null)
-        {
+        if (track == null) {
             ctx.sendSimpleEphemeralEmbed("There is no music to skip!");
             return;
         }
         TrackInfo trackInfo = track.getUserData(TrackInfo.class);
         long requester = trackInfo.getRequesterIdLong();
-        if (event.getUser().getIdLong() == requester)
-        {
+        if (event.getUser().getIdLong() == requester) {
             if (guildAudioPlayer.getScheduler().isRepeat())
                 guildAudioPlayer.getScheduler().setRepeat(false);
             guildAudioPlayer.getScheduler().nextTrack();
             AudioTrack nextTrack = guildAudioPlayer.getPlayer().getPlayingTrack();
-            if (nextTrack == null)
-            {
+            if (nextTrack == null) {
                 ctx.sendSimpleEphemeralEmbed("**Skipped!**");
                 guildAudioPlayer.forcePlayerUpdate();
                 return;
@@ -56,8 +49,7 @@ public class VoteSkipCommand extends SlashCommand
         }
         int listeners = (int) event.getMember().getVoiceState().getChannel().getMembers().stream()
                 .filter(m -> !m.getUser().isBot() && !m.getVoiceState().isDeafened()).count();
-        if (trackInfo.getVoteSkips().contains(event.getUser().getIdLong()))
-        {
+        if (trackInfo.getVoteSkips().contains(event.getUser().getIdLong())) {
             ctx.sendSimpleEphemeralEmbed("You already voted to skip this song!");
             return;
         }
@@ -65,23 +57,19 @@ public class VoteSkipCommand extends SlashCommand
         int skippers = (int) event.getMember().getVoiceState().getChannel().getMembers().stream()
                 .filter(m -> trackInfo.getVoteSkips().contains(m.getIdLong())).count();
         int required = (int) Math.ceil(listeners * .55);
-        if (skippers >= required)
-        {
+        if (skippers >= required) {
             if (guildAudioPlayer.getScheduler().isRepeat())
                 guildAudioPlayer.getScheduler().setRepeat(false);
             guildAudioPlayer.getScheduler().nextTrack();
             AudioTrack nextTrack = guildAudioPlayer.getPlayer().getPlayingTrack();
-            if (nextTrack == null)
-            {
+            if (nextTrack == null) {
                 ctx.sendSimpleEphemeralEmbed("**Skipped!**");
                 guildAudioPlayer.forcePlayerUpdate();
                 return;
             }
             ctx.sendSimpleEphemeralEmbed("**Skipped!** Now playing " + Util.titleMarkdown(nextTrack));
             guildAudioPlayer.forcePlayerUpdate();
-        }
-        else
-        {
+        } else {
             ctx.sendSimpleEphemeralEmbed("Voted to skip: **" + (required - skippers) + "** more votes needed");
             guildAudioPlayer.forcePlayerUpdate();
         }

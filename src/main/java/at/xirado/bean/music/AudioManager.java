@@ -12,42 +12,40 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AudioManager
-{
+public class AudioManager {
     private final AudioPlayerManager playerManager;
     private final Map<Long, GuildAudioPlayer> audioPlayers;
 
-    public AudioManager()
-    {
+    public AudioManager() {
         this.playerManager = new DefaultAudioPlayerManager();
         this.audioPlayers = new ConcurrentHashMap<>();
         Thread t = new Thread(() ->
         {
-            while (true)
-            {
-                for (GuildAudioPlayer guildAudioPlayer : getAudioPlayers())
-                {
+            while (true) {
+                for (GuildAudioPlayer guildAudioPlayer : getAudioPlayers()) {
                     if (guildAudioPlayer.getPlayer().getPlayingTrack() == null)
                         continue;
 
                     if (guildAudioPlayer.getPlayer().getPlayingTrack().getDuration() == Long.MAX_VALUE)
                         continue;
                     CachedMessage message = guildAudioPlayer.getOpenPlayer();
-                    if (message != null)
-                    {
-                        if (guildAudioPlayer.getPlayer().isPaused() || guildAudioPlayer.getPlayer().getPlayingTrack() == null) continue;
+                    if (message != null) {
+                        if (guildAudioPlayer.getPlayer().isPaused() || guildAudioPlayer.getPlayer().getPlayingTrack() == null)
+                            continue;
+                        if (guildAudioPlayer.getLastPlayerUpdate() + 5000 > System.currentTimeMillis())
+                            continue;
+
                         OffsetDateTime created = TimeUtil.getTimeCreated(message.getMessageId());
-                        if (created.plusMinutes(10).isBefore(OffsetDateTime.now()))
-                        {
+                        if (created.plusMinutes(30).isBefore(OffsetDateTime.now())) {
                             guildAudioPlayer.playerSetup(message.getChannel(), s -> {}, e -> {});
                             continue;
                         }
                         TextChannel channel = message.getChannel();
-                        if (channel == null)
-                        {
+                        if (channel == null) {
                             guildAudioPlayer.setOpenPlayer(null);
                             continue;
                         }
+                        guildAudioPlayer.setLastPlayerUpdate(System.currentTimeMillis());
                         guildAudioPlayer.forcePlayerUpdate();
                     }
                 }
@@ -55,21 +53,16 @@ public class AudioManager
                         .mapToInt(pl -> pl.getPlayer().getPlayingTrack() == null ? 0 : 1)
                         .sum();
                 Metrics.PLAYING_MUSIC_PLAYERS.set(playingAudioPlayers);
-                try
-                {
+                try {
                     Thread.sleep(5000);
-                }
-                catch (InterruptedException ignored)
-                {
-                }
+                } catch (InterruptedException ignored) {}
             }
         });
         t.setDaemon(true);
         t.start();
     }
 
-    public synchronized GuildAudioPlayer getAudioPlayer(long guildId)
-    {
+    public synchronized GuildAudioPlayer getAudioPlayer(long guildId) {
         if (audioPlayers.containsKey(guildId))
             return audioPlayers.get(guildId);
         GuildAudioPlayer player = new GuildAudioPlayer(guildId);
@@ -77,13 +70,11 @@ public class AudioManager
         return player;
     }
 
-    public Set<GuildAudioPlayer> getAudioPlayers()
-    {
+    public Set<GuildAudioPlayer> getAudioPlayers() {
         return Set.copyOf(audioPlayers.values());
     }
 
-    public void removePlayer(GuildAudioPlayer player)
-    {
+    public void removePlayer(GuildAudioPlayer player) {
         audioPlayers.remove(player.getGuildId());
     }
 }

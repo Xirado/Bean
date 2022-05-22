@@ -7,8 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * A counter that counts events within the past time interval. All events that occurred before this interval will be
  * removed from the counter.
  */
-public class FrequencyCounter
-{
+public class FrequencyCounter {
 
     private final long monitoringInterval;
 
@@ -26,8 +25,7 @@ public class FrequencyCounter
      * @param interval the time to monitor/count the events.
      * @param unit     the time unit of the {@code interval} argument
      */
-    public FrequencyCounter(long interval, TimeUnit unit)
-    {
+    public FrequencyCounter(long interval, TimeUnit unit) {
         this(interval, unit, 16);
     }
 
@@ -38,11 +36,9 @@ public class FrequencyCounter
      * @param unit      the time unit of the {@code interval} argument
      * @param precision the count of time slices for the measurement
      */
-    FrequencyCounter(long interval, TimeUnit unit, int precision)
-    {
+    FrequencyCounter(long interval, TimeUnit unit, int precision) {
         monitoringInterval = unit.toMillis(interval);
-        if (monitoringInterval <= 0)
-        {
+        if (monitoringInterval <= 0) {
             throw new IllegalArgumentException("Interval must be a positive value:" + interval);
         }
         details = new int[precision];
@@ -52,8 +48,7 @@ public class FrequencyCounter
     /**
      * Count a single event.
      */
-    public void increment()
-    {
+    public void increment() {
         checkInterval(System.currentTimeMillis());
         currentCount.incrementAndGet();
     }
@@ -63,8 +58,7 @@ public class FrequencyCounter
      *
      * @return the counter value
      */
-    public int getCount()
-    {
+    public int getCount() {
         long currentTime = System.currentTimeMillis();
         checkInterval(currentTime);
         long diff = currentTime - startInterval - monitoringInterval;
@@ -79,18 +73,13 @@ public class FrequencyCounter
      *
      * @param time the current time
      */
-    private void checkInterval(final long time)
-    {
-        if ((time - startInterval - monitoringInterval) > monitoringInterval / details.length)
-        {
-            synchronized (details)
-            {
+    private void checkInterval(final long time) {
+        if ((time - startInterval - monitoringInterval) > monitoringInterval / details.length) {
+            synchronized (details) {
                 long detailInterval = monitoringInterval / details.length;
-                while ((time - startInterval - monitoringInterval) > detailInterval)
-                {
+                while ((time - startInterval - monitoringInterval) > detailInterval) {
                     int currentValue = currentCount.getAndSet(0);
-                    if ((total | currentValue) == 0)
-                    {
+                    if ((total | currentValue) == 0) {
                         // for the case that the counter was not used for a long time
                         startInterval = time - monitoringInterval;
                         return;

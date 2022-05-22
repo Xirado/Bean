@@ -17,12 +17,10 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import org.jetbrains.annotations.NotNull;
 
-public class VoiceGameCommand extends SlashCommand
-{
+public class VoiceGameCommand extends SlashCommand {
     public static final Route ROUTE = Route.Invites.CREATE_INVITE;
 
-    public VoiceGameCommand()
-    {
+    public VoiceGameCommand() {
         setCommandData(Commands.slash("voicegame", "Creates voice games.")
                 .addOptions(new OptionData(OptionType.STRING, "application", "Application to create.")
                         .addChoice("Watch Together", "880218394199220334")
@@ -42,19 +40,18 @@ public class VoiceGameCommand extends SlashCommand
                         .setRequired(false)
                 )
         );
-        setRequiredBotPermissions(Permission.CREATE_INSTANT_INVITE);
+        addRequiredUserPermissions(Permission.CREATE_INSTANT_INVITE);
+        addRequiredBotPermissions(Permission.CREATE_INSTANT_INVITE);
         addCommandFlags(CommandFlag.MUST_BE_IN_VC);
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         long appId = Long.parseUnsignedLong(event.getOption("application").getAsString());
         boolean ephemeral = event.getOption("hide") != null && event.getOption("hide").getAsBoolean();
         GuildVoiceState voiceState = event.getMember().getVoiceState();
         AudioChannel audioChannel = voiceState.getChannel();
-        if (audioChannel == null)
-        {
+        if (audioChannel == null) {
             event.replyEmbeds(EmbedUtil.errorEmbed("You must be in a audio-channel to do this!")).setEphemeral(true).queue();
             return;
         }
@@ -73,8 +70,7 @@ public class VoiceGameCommand extends SlashCommand
      * @param applicationId The Application-ID to use
      * @return RestAction
      */
-    public static RestAction<String> createInvite(int maxAgeInSecs, int maxUses, AudioChannel audioChannel, long applicationId)
-    {
+    public static RestAction<String> createInvite(int maxAgeInSecs, int maxUses, AudioChannel audioChannel, long applicationId) {
         DataObject requestBody = DataObject.empty()
                 .put("max_age", maxAgeInSecs)
                 .put("max_uses", maxUses)

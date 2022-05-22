@@ -13,20 +13,17 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jetbrains.annotations.NotNull;
 
-public class UnbanCommand extends SlashCommand
-{
-    public UnbanCommand()
-    {
+public class UnbanCommand extends SlashCommand {
+    public UnbanCommand() {
         setCommandData(Commands.slash("unban", "Unbans a user from a server.")
                 .addOption(OptionType.USER, "user", "User to unban.", true)
         );
-        setRequiredBotPermissions(Permission.BAN_MEMBERS);
-        setRequiredUserPermissions(Permission.BAN_MEMBERS);
+        addRequiredUserPermissions(Permission.BAN_MEMBERS);
+        addRequiredBotPermissions(Permission.BAN_MEMBERS);
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         Guild guild = event.getGuild();
         if (guild == null) return;
         User user = event.getOption("user").getAsUser();

@@ -11,16 +11,13 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 
-public class InfoCommand extends SlashCommand
-{
-    public InfoCommand()
-    {
+public class InfoCommand extends SlashCommand {
+    public InfoCommand() {
         setCommandData(Commands.slash("info", "Shows info about the bot."));
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         long currentTime = System.currentTimeMillis() / 1000;
         event.getJDA().getRestPing().queue(restPing ->
         {

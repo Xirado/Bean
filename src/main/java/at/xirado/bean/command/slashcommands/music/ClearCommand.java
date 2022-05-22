@@ -17,54 +17,44 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClearCommand extends SlashCommand
-{
-    public ClearCommand()
-    {
+public class ClearCommand extends SlashCommand {
+    public ClearCommand() {
         setCommandData(Commands.slash("clear", "Clears the queue"));
         addCommandFlags(CommandFlag.MUST_BE_IN_SAME_VC, CommandFlag.MUST_BE_IN_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         GuildVoiceState state = event.getGuild().getSelfMember().getVoiceState();
-        if (state.getChannel() == null)
-        {
+        if (state.getChannel() == null) {
             event.replyEmbeds(EmbedUtil.warningEmbed("I am not connected to a voice channel!")).setEphemeral(true).queue();
             return;
         }
         GuildAudioPlayer player = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        if (player.getScheduler().getQueue().isEmpty())
-        {
+        if (player.getScheduler().getQueue().isEmpty()) {
             event.replyEmbeds(EmbedUtil.warningEmbed("The queue is already empty!")).setEphemeral(true).queue();
             return;
         }
 
-        if (Util.getListeningUsers(state.getChannel()) == 1)
-        {
+        if (Util.getListeningUsers(state.getChannel()) == 1) {
             player.getScheduler().getQueue().clear();
             event.replyEmbeds(EmbedUtil.defaultEmbed("Cleared the queue!")).setEphemeral(true).queue();
             player.forcePlayerUpdate();
             return;
         }
 
-        if (!ctx.getGuildData().isDJ(event.getMember()))
-        {
+        if (!ctx.getGuildData().isDJ(event.getMember())) {
             boolean allowedToStop = true;
             long userId = event.getUser().getIdLong();
             List<AudioTrack> tracks = new ArrayList<>(player.getScheduler().getQueue());
-            for (AudioTrack track : tracks)
-            {
+            for (AudioTrack track : tracks) {
                 TrackInfo trackInfo = track.getUserData(TrackInfo.class);
-                if (trackInfo.getRequesterIdLong() != userId)
-                {
+                if (trackInfo.getRequesterIdLong() != userId) {
                     allowedToStop = false;
                     break;
                 }
             }
-            if (!allowedToStop)
-            {
+            if (!allowedToStop) {
                 event.replyEmbeds(EmbedUtil.errorEmbed("You need to be a DJ to do this!")).setEphemeral(true).queue();
                 return;
             }

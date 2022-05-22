@@ -7,13 +7,11 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class LoginUrlRoute implements Route
-{
+public class LoginUrlRoute implements Route {
     public static final String HOST = "discord.com";
 
     @Override
-    public Object handle(Request request, Response response) throws Exception
-    {
+    public Object handle(Request request, Response response) throws Exception {
         URIBuilder builder = new URIBuilder()
                 .setScheme("https")
                 .setHost(HOST)

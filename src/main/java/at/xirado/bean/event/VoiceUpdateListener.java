@@ -13,8 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-public class VoiceUpdateListener extends ListenerAdapter
-{
+public class VoiceUpdateListener extends ListenerAdapter {
 
     /**
      * How long the bot stays in a VoiceChannel after every member left
@@ -30,34 +29,25 @@ public class VoiceUpdateListener extends ListenerAdapter
      * @param event
      */
     @Override
-    public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event)
-    {
+    public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event) {
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
-        if (event.getMember().equals(event.getGuild().getSelfMember()))
-        {
+        if (event.getMember().equals(event.getGuild().getSelfMember())) {
             GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
             if (!event.getGuild().getSelfMember().getVoiceState().isGuildDeafened())
-                try
-                {
+                try {
                     event.getGuild().deafen(event.getGuild().getSelfMember(), true).queue(s ->
                     {
                     }, e ->
                     {
                     });
+                } catch (InsufficientPermissionException ignored) {
                 }
-                catch (InsufficientPermissionException ignored)
-                {
-                }
-            if (event.getChannelJoined() instanceof StageChannel stageChannel)
-            {
-                if (stageChannel.getStageInstance() == null)
-                {
+            if (event.getChannelJoined() instanceof StageChannel stageChannel) {
+                if (stageChannel.getStageInstance() == null) {
                     if (audioPlayer.getPlayer().getPlayingTrack() != null)
                         stageChannel.createStageInstance(MusicUtil.getStageTopicString(audioPlayer.getPlayer().getPlayingTrack())).queue();
-                }
-                else
-                {
+                } else {
                     if (audioPlayer.getPlayer().getPlayingTrack() != null)
                         stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(audioPlayer.getPlayer().getPlayingTrack())).queue();
                 }
@@ -71,19 +61,15 @@ public class VoiceUpdateListener extends ListenerAdapter
      * @param event
      */
     @Override
-    public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event)
-    {
+    public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        if (event.getChannelLeft() instanceof StageChannel stageChannel)
-        {
-            if (stageChannel.getStageInstance() != null)
-            {
-                if (stageChannel.getStageInstance().getTopic().startsWith("Playing "))
-                {
+        if (event.getChannelLeft() instanceof StageChannel stageChannel) {
+            if (stageChannel.getStageInstance() != null) {
+                if (stageChannel.getStageInstance().getTopic().startsWith("Playing ")) {
                     stageChannel.getStageInstance().delete().queue(s ->
                     {
                     }, e ->
@@ -101,8 +87,7 @@ public class VoiceUpdateListener extends ListenerAdapter
      * @param event
      */
     @Override
-    public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event)
-    {
+    public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event) {
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
@@ -114,18 +99,15 @@ public class VoiceUpdateListener extends ListenerAdapter
             if (stageChannel.getStageInstance() != null)
                 if (stageChannel.getStageInstance().getTopic().startsWith("Playing "))
                     stageChannel.getStageInstance().delete().queue();
-        if (event.getChannelJoined() instanceof StageChannel channel)
-        {
+        if (event.getChannelJoined() instanceof StageChannel channel) {
             event.getGuild().requestToSpeak();
             if (channel.getStageInstance() == null && player.getPlayingTrack() != null)
                 channel.createStageInstance(MusicUtil.getStageTopicString(player.getPlayingTrack())).queue();
         }
-        if (event.getChannelJoined().getMembers().size() == 1)
-        {
+        if (event.getChannelJoined().getMembers().size() == 1) {
             GuildVoiceState voiceState = event.getGuild().getSelfMember().getVoiceState();
             final long channelId = event.getChannelJoined().getIdLong();
-            if (player.getPlayingTrack() != null)
-            {
+            if (player.getPlayingTrack() != null) {
                 player.setPaused(true);
                 audioPlayer.forcePlayerUpdate();
             }
@@ -162,8 +144,7 @@ public class VoiceUpdateListener extends ListenerAdapter
      * @param event
      */
     @Override
-    public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event)
-    {
+    public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
         if (event.getChannelLeft() == null)
@@ -171,21 +152,15 @@ public class VoiceUpdateListener extends ListenerAdapter
         if (event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildVoiceState state = event.getGuild().getSelfMember().getVoiceState();
-        if (state.getChannel() != null)
-        {
-            if (state.getChannel().equals(event.getChannelLeft()))
-            {
-                if (event.getChannelLeft().getMembers().size() == 1)
-                {
+        if (state.getChannel() != null) {
+            if (state.getChannel().equals(event.getChannelLeft())) {
+                if (event.getChannelLeft().getMembers().size() == 1) {
                     GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
                     LavalinkPlayer player = audioPlayer.getPlayer();
-                    if (player.getPlayingTrack() != null)
-                    {
+                    if (player.getPlayingTrack() != null) {
                         player.setPaused(true);
                         audioPlayer.forcePlayerUpdate();
-                    }
-                    else
-                    {
+                    } else {
                         audioPlayer.destroy();
                         return;
                     }
@@ -211,8 +186,7 @@ public class VoiceUpdateListener extends ListenerAdapter
                             {
                                 if (state.getChannel() != null && state.getChannel().getMembers().size() > 1)
                                     return;
-                                if (state.getChannel() != null && state.getChannel().getIdLong() == channelId)
-                                {
+                                if (state.getChannel() != null && state.getChannel().getIdLong() == channelId) {
                                     audioPlayer.destroy();
                                 }
                             }

@@ -11,6 +11,7 @@ import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.RoleReward;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -24,8 +25,7 @@ import java.sql.Connection;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class XPMessageListener extends ListenerAdapter
-{
+public class XPMessageListener extends ListenerAdapter {
 
     public static final long TIMEOUT = Bean.getInstance().isDebug() ? 0L : 60000;
 
@@ -35,8 +35,7 @@ public class XPMessageListener extends ListenerAdapter
     private static final Random RANDOM = new Random();
 
     @Override
-    public void onMessageReceived(@NotNull MessageReceivedEvent event)
-    {
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         if (!event.isFromGuild())
             return;
 
@@ -58,10 +57,8 @@ public class XPMessageListener extends ListenerAdapter
 
         long userId = event.getAuthor().getIdLong();
         long guildId = event.getGuild().getIdLong();
-        if (!timeout.containsKey(userId) || (System.currentTimeMillis() - timeout.get(userId)) > TIMEOUT)
-        {
-            try (Connection connection = Database.getConnectionFromPool())
-            {
+        if (!timeout.containsKey(userId) || (System.currentTimeMillis() - timeout.get(userId)) > TIMEOUT) {
+            try (Connection connection = Database.getConnectionFromPool()) {
                 if (connection == null) return;
 
                 // Current total amount of xp
@@ -81,42 +78,37 @@ public class XPMessageListener extends ListenerAdapter
 
                 RankingSystem.addXP(connection, guildId, userId, xpAmount, event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getEffectiveAvatarUrl());
 
-                if (xpAmount + currentXP >= xpLeft)
-                {
-                    try
-                    {
+                if (xpAmount + currentXP >= xpLeft) {
+                    try {
                         XPAlertCommand.sendXPAlert(event.getMember(), level + 1, event.getChannel());
+                    } catch (InsufficientPermissionException ignored) {
                     }
-                    catch (InsufficientPermissionException ignored) {}
 
-                    if (data.hasRoleReward(level + 1))
-                    {
+                    if (data.hasRoleReward(level + 1)) {
                         RoleReward reward = data.getRoleReward(level + 1);
                         Role role = event.getGuild().getRoleById(reward.getRoleId());
 
-                        if (!event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES))
-                        {
+                        if (!event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
                             Util.sendOwnerDM(EmbedUtil.errorEmbed("Hey! You have set up role-rewards in your guild **" + event.getGuild().getName() + "**, but i do not have the **Manage Roles** permission!\nPlease make sure to give me this permission!"));
                             return;
                         }
 
-                        if (role != null)
-                        {
-                            if (!event.getGuild().getSelfMember().canInteract(role))
-                            {
+                        if (role != null) {
+                            if (!event.getGuild().getSelfMember().canInteract(role)) {
                                 Util.sendOwnerDM(EmbedUtil.errorEmbed("Hey! You have up role-rewards in your guild **" + event.getGuild().getName() + "**, but the role **" + role.getName() + "** is above me in the role hierarchy!\nPlease make sure to move the role above me, so i can assign them!"));
                                 return;
                             }
-                            event.getGuild().addRoleToMember(userId, role).queue(s -> {}, e -> {});
+                            event.getGuild().addRoleToMember(UserSnowflake.fromId(userId), role).queue(s -> {
+                            }, e -> {
+                            });
                             RoleReward oldReward = data.getLastRoleReward(level);
-                            if (oldReward != null)
-                            {
-                                if (oldReward.doesRemoveOnNextReward())
-                                {
+                            if (oldReward != null) {
+                                if (oldReward.doesRemoveOnNextReward()) {
                                     Role oldRole = event.getGuild().getRoleById(oldReward.getRoleId());
-                                    if (oldRole != null)
-                                    {
-                                        event.getGuild().removeRoleFromMember(userId, oldRole).queue(s -> {}, e -> {});
+                                    if (oldRole != null) {
+                                        event.getGuild().removeRoleFromMember(UserSnowflake.fromId(userId), oldRole).queue(s -> {
+                                        }, e -> {
+                                        });
                                     }
                                 }
                             }
@@ -124,9 +116,7 @@ public class XPMessageListener extends ListenerAdapter
                     }
                 }
                 timeout.put(userId, System.currentTimeMillis());
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 LOGGER.error("Could not update XP!", ex);
             }
         }

@@ -18,31 +18,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
-{
+public class FileLoggerLayout extends LayoutBase<ILoggingEvent> {
 
     private final List<String> pendingMessages = new ArrayList<>();
     private final ReentrantLock webhookLock = new ReentrantLock();
     private final int emptyLength = getWebhookMessageLength(Collections.emptyList());
 
-    public FileLoggerLayout()
-    {
+    public FileLoggerLayout() {
         Thread webhookThread = new Thread(() ->
         {
             int state = 0;
             long waitingTime = 0;
-            while (true)
-            {
+            while (true) {
                 webhookLock.lock();
                 int size = pendingMessages.size();
                 webhookLock.unlock();
-                if (size > 0 && state != 1)
-                {
+                if (size > 0 && state != 1) {
                     state = 1; //Waiting
                     waitingTime = System.currentTimeMillis();
                 }
-                if (state == 1 && (System.currentTimeMillis() > waitingTime + 3000))
-                {
+                if (state == 1 && (System.currentTimeMillis() > waitingTime + 3000)) {
                     webhookLock.lock();
                     List<List<String>> pack = splitUp(pendingMessages);
                     pack.forEach(this::sendWebhook);
@@ -50,12 +45,9 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
                     webhookLock.unlock();
                     state = 0;
                 }
-                try
-                {
+                try {
                     Thread.sleep(100);
-                }
-                catch (InterruptedException ignored)
-                {
+                } catch (InterruptedException ignored) {
                 }
             }
         });
@@ -63,8 +55,7 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
         webhookThread.start();
     }
 
-    public String doLayout(ILoggingEvent event)
-    {
+    public String doLayout(ILoggingEvent event) {
         StringBuilder sbuf = new StringBuilder();
         LocalDateTime myDateObj = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
@@ -76,15 +67,13 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
                 .append(event.getLevel().levelStr.toUpperCase())
                 .append("]: ")
                 .append(event.getFormattedMessage());
-        if (event.getThrowableProxy() != null)
-        {
+        if (event.getThrowableProxy() != null) {
             IThrowableProxy iThrowableProxy = event.getThrowableProxy();
             asb.append("\n").append(ThrowableProxyUtil.asString(iThrowableProxy));
         }
         asb.append(CoreConstants.LINE_SEPARATOR);
         sbuf.append(asb.toAnsi());
-        if (Bean.getInstance().getWebhookClient() != null && event.getLevel() != Level.DEBUG)
-        {
+        if (Bean.getInstance().getWebhookClient() != null && event.getLevel() != Level.DEBUG) {
             webhookLock.lock();
             pendingMessages.add(getFormatted(event));
             webhookLock.unlock();
@@ -99,8 +88,7 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
     private static final String WHITE = "\u001B[37m";
     private static final String RESET = "\u001B[0m";
 
-    private static String getFormatted(ILoggingEvent event)
-    {
+    private static String getFormatted(ILoggingEvent event) {
         String formattedMessage = event.getFormattedMessage();
         if (formattedMessage.length() > 1500)
             formattedMessage = "[!] Message too long";
@@ -124,8 +112,7 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
                 .append(priColor)
                 .append(formattedMessage)
                 .append("\n");
-        if (event.getThrowableProxy() != null)
-        {
+        if (event.getThrowableProxy() != null) {
             IThrowableProxy iThrowableProxy = event.getThrowableProxy();
             String result = ThrowableProxyUtil.asString(iThrowableProxy).length() > 1500 ? "    [!] Stacktrace too long!\n" : ThrowableProxyUtil.asString(iThrowableProxy) + "\n";
             builder.append(result).append(RESET);
@@ -133,8 +120,7 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
         return builder.toString();
     }
 
-    private void sendWebhook(List<String> logs)
-    {
+    private void sendWebhook(List<String> logs) {
         WebhookClient client = Bean.getInstance().getWebhookClient();
         StringBuilder result = new StringBuilder("```ansi\n");
         logs.forEach(result::append);
@@ -143,8 +129,7 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
         logs.clear();
     }
 
-    private int getWebhookMessageLength(List<String> logs)
-    {
+    private int getWebhookMessageLength(List<String> logs) {
         StringBuilder result = new StringBuilder("```ansi\n");
         logs.forEach(result::append);
         result.append("```");
@@ -157,16 +142,13 @@ public class FileLoggerLayout extends LayoutBase<ILoggingEvent>
      * @param input The input list
      * @return a List of Lists with a resulting length smaller than 2000 characters
      */
-    private List<List<String>> splitUp(List<String> input)
-    {
+    private List<List<String>> splitUp(List<String> input) {
         List<List<String>> output = new ArrayList<>();
         List<String> current = new ArrayList<>();
         int currentSize = emptyLength; // Including the char count of the code block (should be 11)
         int index = 0;
-        for (int i = 0; i < input.size(); i++)
-        {
-            if (currentSize + input.get(i).length() <= 2000)
-            {
+        for (int i = 0; i < input.size(); i++) {
+            if (currentSize + input.get(i).length() <= 2000) {
                 currentSize += input.get(i).length();
                 current.add(input.get(i));
                 continue;

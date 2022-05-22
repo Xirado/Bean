@@ -10,14 +10,11 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class LeaderboardRoute implements Route
-{
+public class LeaderboardRoute implements Route {
     @Override
-    public Object handle(Request request, Response response) throws Exception
-    {
+    public Object handle(Request request, Response response) throws Exception {
         String guildId = request.params("guild");
-        if (!Helpers.isNumeric(guildId))
-        {
+        if (!Helpers.isNumeric(guildId)) {
             response.status(400);
             return DataObject.empty()
                     .put("code", 400)
@@ -25,16 +22,14 @@ public class LeaderboardRoute implements Route
         }
         long guildIdLong = Long.parseLong(guildId);
         int totalAmount = RankingSystem.getDataCount(guildIdLong);
-        if (totalAmount == 0)
-        {
+        if (totalAmount == 0) {
             response.status(404);
             return DataObject.empty()
                     .put("code", 404)
                     .put("message", "The requested data could not be found!").toString();
         }
         Guild guild = Bean.getInstance().getShardManager().getGuildById(guildIdLong);
-        if (guild == null)
-        {
+        if (guild == null) {
             response.status(404);
             return DataObject.empty()
                     .put("code", 404)
@@ -46,8 +41,7 @@ public class LeaderboardRoute implements Route
         String pageHeader = request.queryParams("page");
         int availablePages = (int) Math.ceil((double) totalAmount / 100);
         int page = 1;
-        if (Helpers.isNumeric(pageHeader))
-        {
+        if (Helpers.isNumeric(pageHeader)) {
             int pageHeaderParsed = Integer.parseInt(pageHeader);
             if (pageHeaderParsed > 1)
                 page = pageHeaderParsed;

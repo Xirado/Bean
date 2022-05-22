@@ -11,33 +11,27 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MessageReactionRemoveListener extends ListenerAdapter
-{
+public class MessageReactionRemoveListener extends ListenerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageReactionRemoveListener.class);
 
     @Override
-    public void onMessageReactionRemoveAll(MessageReactionRemoveAllEvent e)
-    {
+    public void onMessageReactionRemoveAll(MessageReactionRemoveAllEvent e) {
         if (!e.isFromGuild())
             return;
         if (GuildJoinListener.isGuildBanned(e.getGuild().getIdLong()))
             return;
-        try
-        {
+        try {
             long messageId = e.getMessageIdLong();
             GuildData data = GuildManager.getGuildData(e.getGuild());
             data.removeReactionRoles(messageId).update();
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             LOGGER.error("An error occured while executing GuildMessageReactionRemoveAllEvent!", exception);
         }
     }
 
     @Override
-    public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent e)
-    {
+    public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent e) {
         if (!e.isFromGuild())
             return;
         if (GuildJoinListener.isGuildBanned(e.getGuild().getIdLong()))

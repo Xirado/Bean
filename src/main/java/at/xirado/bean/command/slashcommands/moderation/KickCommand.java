@@ -16,48 +16,40 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 
-public class KickCommand extends SlashCommand
-{
-    public KickCommand()
-    {
+public class KickCommand extends SlashCommand {
+    public KickCommand() {
         setCommandData(Commands.slash("kick", "Kicks a member from a server.")
                 .addOption(OptionType.USER, "user", "User to kick.", true)
                 .addOption(OptionType.STRING, "reason", "Reason for this kick.")
         );
-        setRequiredBotPermissions(Permission.KICK_MEMBERS);
-        setRequiredUserPermissions(Permission.KICK_MEMBERS);
+        addRequiredUserPermissions(Permission.KICK_MEMBERS);
+        addRequiredBotPermissions(Permission.KICK_MEMBERS);
     }
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         Member sender = event.getMember();
         Guild guild = event.getGuild();
         if (guild == null) return;
         Member member = event.getOption("user").getAsMember();
         String reason = event.getOption("reason") == null ? null : event.getOption("reason").getAsString();
-        if (member == null)
-        {
+        if (member == null) {
             event.replyEmbeds(EmbedUtil.errorEmbed("This user is not member of this guild!")).setEphemeral(true).queue();
             return;
         }
-        if (sender.getIdLong() == member.getIdLong())
-        {
+        if (sender.getIdLong() == member.getIdLong()) {
             ctx.reply(EmbedUtil.errorEmbed("You cannot kick yourself!")).setEphemeral(true).queue();
             return;
         }
-        if (!sender.canInteract(member))
-        {
+        if (!sender.canInteract(member)) {
             ctx.reply(EmbedUtil.noEntryEmbed(ctx.getLocalized("commands.kick.you_cannot_kick"))).setEphemeral(true).queue();
             return;
         }
-        if (ctx.getGuildData().isModerator(member))
-        {
+        if (ctx.getGuildData().isModerator(member)) {
             ctx.reply(EmbedUtil.noEntryEmbed(ctx.getLocalized("commands.kick.you_cannot_kick_moderator"))).setEphemeral(true).queue();
             return;
         }
-        if (!guild.getSelfMember().canInteract(member))
-        {
+        if (!guild.getSelfMember().canInteract(member)) {
             ctx.reply(EmbedUtil.noEntryEmbed(ctx.getLocalized("commands.kick.i_cannot_kick"))).setEphemeral(true).queue();
             return;
         }
@@ -82,8 +74,7 @@ public class KickCommand extends SlashCommand
                 .queue(x ->
                 {
                     ModCase.createModCase(CaseType.KICK, guild.getIdLong(), member.getIdLong(), sender.getIdLong(), reason);
-                    if (ctx.getGuildData().getLogChannel() != null)
-                    {
+                    if (ctx.getGuildData().getLogChannel() != null) {
                         TextChannel logChannel = ctx.getGuildData().getLogChannel();
                         MessageEmbed logEmbed = new EmbedBuilder()
                                 .setColor(CaseType.KICK.getEmbedColor())

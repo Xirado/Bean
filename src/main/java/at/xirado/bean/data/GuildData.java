@@ -19,8 +19,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class GuildData
-{
+public class GuildData {
     private static final Logger LOGGER = LoggerFactory.getLogger(GuildData.class);
 
     private final long guildId;
@@ -28,8 +27,7 @@ public class GuildData
 
     private Set<ReactionRole> reactionRoles = new HashSet<>();
 
-    public GuildData(long guildID, DataObject json)
-    {
+    public GuildData(long guildID, DataObject json) {
         this.guildId = guildID;
         this.dataObject = json;
         ReactionRole[] reactions = json.isNull("reaction_roles") ? new ReactionRole[0] : json.getArray("reaction_roles")
@@ -41,107 +39,87 @@ public class GuildData
             reactionRoles.addAll(Arrays.asList(reactions));
     }
 
-    public GuildData put(String key, Object object)
-    {
+    public GuildData put(String key, Object object) {
         dataObject.put(key, object);
         return this;
     }
 
-    public String toJson()
-    {
+    public String toJson() {
         return dataObject.toString();
     }
 
-    public String toPrettyString()
-    {
+    public String toPrettyString() {
         return dataObject.toPrettyString();
     }
 
-    public GuildData putNull(String key)
-    {
+    public GuildData putNull(String key) {
         dataObject.putNull(key);
         return this;
     }
 
-    public boolean isNull(String key)
-    {
+    public boolean isNull(String key) {
         return dataObject.isNull(key);
     }
 
-    public String getString(String query, Object... objects)
-    {
+    public String getString(String query, Object... objects) {
         return String.format(dataObject.getString(query), objects);
     }
 
-    public Integer getInt(String query)
-    {
+    public Integer getInt(String query) {
         return dataObject.getInt(query);
     }
 
-    public Boolean getBoolean(String query)
-    {
+    public Boolean getBoolean(String query) {
         return dataObject.getBoolean(query);
     }
 
-    public Double getDouble(String query)
-    {
+    public Double getDouble(String query) {
         return dataObject.getDouble(query);
     }
 
-    public Long getLong(String query)
-    {
+    public Long getLong(String query) {
         return dataObject.getLong(query);
     }
 
-    public Object getObject(String query)
-    {
+    public Object getObject(String query) {
         return dataObject.getObject(query);
     }
 
-    public <T> T get(String query, Class<T> type)
-    {
+    public <T> T get(String query, Class<T> type) {
         return type.cast(dataObject.get(query));
     }
 
     // guild specific getters and setters
 
-    public GuildData update()
-    {
+    public GuildData update() {
         String sql = "INSERT INTO guildSettings (guildID, data) values (?,?) ON DUPLICATE KEY UPDATE data = ?";
-        try
-        {
+        try {
             String jsonString = dataObject.toString();
             new SQLBuilder(sql)
                     .addParameters(guildId, jsonString, jsonString)
                     .execute();
-        }
-        catch (SQLException exception)
-        {
+        } catch (SQLException exception) {
             LOGGER.error("Could not update guild data!", exception);
         }
         return this;
     }
 
-    public String getPrefix()
-    {
+    public String getPrefix() {
         return dataObject.getString("command_prefix");
     }
 
-    public TextChannel getLogChannel()
-    {
+    public TextChannel getLogChannel() {
         if (dataObject.isNull("log_channel")) return null;
         long id = dataObject.getLong("log_channel");
         return Bean.getInstance().getShardManager().getTextChannelById(id);
     }
 
-    public Set<ReactionRole> getReactionRoles()
-    {
+    public Set<ReactionRole> getReactionRoles() {
         return reactionRoles;
     }
 
     @CheckReturnValue
-    public GuildData addReactionRoles(ReactionRole... reactionRoles)
-    {
+    public GuildData addReactionRoles(ReactionRole... reactionRoles) {
         Checks.noneNull(reactionRoles, "Reaction roles");
         this.reactionRoles.addAll(Arrays.asList(reactionRoles));
         dataObject.put("reaction_roles", DataArray.fromCollection(this.reactionRoles));
@@ -149,8 +127,7 @@ public class GuildData
     }
 
     @CheckReturnValue
-    public GuildData removeReactionRoles(ReactionRole... reactionRoles)
-    {
+    public GuildData removeReactionRoles(ReactionRole... reactionRoles) {
         Checks.noneNull(reactionRoles, "Reaction roles");
         Arrays.asList(reactionRoles).forEach(this.reactionRoles::remove);
         dataObject.put("reaction_roles", DataArray.fromCollection(this.reactionRoles));
@@ -158,8 +135,7 @@ public class GuildData
     }
 
     @CheckReturnValue
-    public GuildData removeReactionRoles(long messageID)
-    {
+    public GuildData removeReactionRoles(long messageID) {
         reactionRoles = reactionRoles.stream()
                 .filter(x -> x.getMessageId() != messageID)
                 .collect(Collectors.toSet());
@@ -167,15 +143,13 @@ public class GuildData
         return this;
     }
 
-    public List<Role> getModeratorRoles()
-    {
+    public List<Role> getModeratorRoles() {
         List<Role> roles = new ArrayList<>();
         if (dataObject.isNull("moderator_roles")) return roles;
         Long[] roleIds = dataObject.getArray("moderator_roles").stream(DataArray::getLong).toArray(Long[]::new);
         Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
         if (guild == null) return roles;
-        for (long roleId : roleIds)
-        {
+        for (long roleId : roleIds) {
             Role role = guild.getRoleById(roleId);
             if (role != null) roles.add(role);
         }
@@ -183,8 +157,7 @@ public class GuildData
     }
 
     @CheckReturnValue
-    public GuildData addModeratorRoles(Role... roles)
-    {
+    public GuildData addModeratorRoles(Role... roles) {
         Checks.notEmpty(roles, "Roles");
         List<Role> modRoles = getModeratorRoles();
         modRoles.addAll(Arrays.asList(roles));
@@ -195,8 +168,7 @@ public class GuildData
     }
 
     @CheckReturnValue
-    public GuildData removeModeratorRoles(Role... roles)
-    {
+    public GuildData removeModeratorRoles(Role... roles) {
         Checks.notEmpty(roles, "Roles");
         List<Role> modRoles = getModeratorRoles();
         Arrays.asList(roles).forEach(modRoles::remove);
@@ -206,15 +178,13 @@ public class GuildData
         return this;
     }
 
-    public boolean isModerator(Member member)
-    {
+    public boolean isModerator(Member member) {
         if (member.hasPermission(Permission.ADMINISTRATOR)) return true;
         List<Role> roles = getModeratorRoles();
         return CollectionUtils.containsAny(roles, member.getRoles());
     }
 
-    public List<Role> getDJRoles(boolean includeMods)
-    {
+    public List<Role> getDJRoles(boolean includeMods) {
         List<Role> roles = new ArrayList<>();
         if (includeMods) roles.addAll(getModeratorRoles());
         if (dataObject.isNull("dj_roles"))
@@ -222,8 +192,7 @@ public class GuildData
         Long[] roleIds = dataObject.getArray("dj_roles").stream(DataArray::getLong).toArray(Long[]::new);
         Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
         if (guild == null) return roles;
-        for (long roleId : roleIds)
-        {
+        for (long roleId : roleIds) {
             Role role = guild.getRoleById(roleId);
             if (role != null) roles.add(role);
         }
@@ -231,8 +200,7 @@ public class GuildData
     }
 
     @CheckReturnValue
-    public GuildData addDJRoles(Role... roles)
-    {
+    public GuildData addDJRoles(Role... roles) {
         Checks.notEmpty(roles, "Roles");
         List<Role> djRoles = getDJRoles(false);
         djRoles.addAll(Arrays.asList(roles));
@@ -241,8 +209,7 @@ public class GuildData
     }
 
     @CheckReturnValue
-    public GuildData removeDJRoles(Role... roles)
-    {
+    public GuildData removeDJRoles(Role... roles) {
         Checks.notEmpty(roles, "Roles");
         List<Role> djRoles = getDJRoles(false);
         Arrays.asList(roles).forEach(djRoles::remove);
@@ -250,8 +217,7 @@ public class GuildData
         return this;
     }
 
-    public boolean isDJ(Member member)
-    {
+    public boolean isDJ(Member member) {
         if (member.hasPermission(Permission.ADMINISTRATOR)) return true;
         List<Role> roles = getDJRoles(true);
         if (CollectionUtils.containsAny(roles, member.getRoles())) return true;
@@ -262,13 +228,11 @@ public class GuildData
         return channel.getMembers().size() == 2 && channel.getMembers().contains(member.getGuild().getSelfMember());
     }
 
-    public boolean isDJ(Role role)
-    {
+    public boolean isDJ(Role role) {
         return getDJRoles(false).contains(role);
     }
 
-    public List<Long> getDJMembers()
-    {
+    public List<Long> getDJMembers() {
         if (dataObject.isNull("dj_members"))
             return new ArrayList<>();
         return dataObject.getArray("dj_members")
@@ -278,8 +242,7 @@ public class GuildData
     }
 
     @CheckReturnValue
-    public GuildData addDJMembers(Member... members)
-    {
+    public GuildData addDJMembers(Member... members) {
         Checks.noneNull(members, "Members");
         List<Long> djMembers = getDJMembers();
         djMembers.addAll(Arrays.stream(members).map(Member::getIdLong).collect(Collectors.toSet()));
@@ -288,8 +251,7 @@ public class GuildData
     }
 
     @CheckReturnValue
-    public GuildData removeDJMembers(Member... members)
-    {
+    public GuildData removeDJMembers(Member... members) {
         Checks.notEmpty(members, "Members");
         List<Long> djMembers = getDJMembers();
         Arrays.asList(members).stream().map(ISnowflake::getIdLong).forEach(djMembers::remove);
@@ -297,8 +259,7 @@ public class GuildData
         return this;
     }
 
-    public List<RoleReward> getRoleRewards()
-    {
+    public List<RoleReward> getRoleRewards() {
         if (dataObject.isNull("role_rewards"))
             return new ArrayList<>();
         return dataObject.getArray("role_rewards")
@@ -308,16 +269,14 @@ public class GuildData
     }
 
     @CheckReturnValue
-    public GuildData addRoleReward(int level, long roleId, boolean persist, boolean removeOnNextReward)
-    {
+    public GuildData addRoleReward(int level, long roleId, boolean persist, boolean removeOnNextReward) {
         RoleReward roleReward = new RoleReward(level, roleId, persist, removeOnNextReward);
         List<RoleReward> currentRewards = new ArrayList<>(getRoleRewards());
         if (hasRoleReward(level))
             currentRewards.removeIf(reward -> reward.getLevel() == level);
         currentRewards.add(roleReward);
         DataArray array = DataArray.empty();
-        for (RoleReward reward : currentRewards)
-        {
+        for (RoleReward reward : currentRewards) {
             array.add(
                     DataObject.empty()
                             .put("persistant", reward.isPersistant())
@@ -331,14 +290,12 @@ public class GuildData
     }
 
     @CheckReturnValue
-    public GuildData removeRoleReward(int level)
-    {
+    public GuildData removeRoleReward(int level) {
         if (!hasRoleReward(level)) return this;
         List<RoleReward> currentRewards = new ArrayList<>(getRoleRewards());
         currentRewards.removeIf(reward -> reward.getLevel() == level);
         DataArray array = DataArray.empty();
-        for (RoleReward reward : currentRewards)
-        {
+        for (RoleReward reward : currentRewards) {
             array.add(
                     DataObject.empty()
                             .put("persistant", reward.isPersistant())
@@ -351,23 +308,19 @@ public class GuildData
         return this;
     }
 
-    public RoleReward getRoleReward(int level)
-    {
+    public RoleReward getRoleReward(int level) {
         return getRoleRewards().stream().filter(reward -> reward.getLevel() == level).findFirst().orElse(null);
     }
 
-    public boolean hasRoleReward(int level)
-    {
+    public boolean hasRoleReward(int level) {
         return getRoleRewards().stream().anyMatch(reward -> reward.getLevel() == level);
     }
 
-    public RoleReward getLastRoleReward(int starting)
-    {
+    public RoleReward getLastRoleReward(int starting) {
         if (starting < 1) return null;
         List<RoleReward> rewards = getRoleRewards();
         AtomicInteger integer = new AtomicInteger(starting);
-        while (integer.get() > 0)
-        {
+        while (integer.get() > 0) {
             RoleReward reward = rewards.stream().filter(reward1 -> reward1.getLevel() == integer.get()).findFirst().orElse(null);
             if (reward != null)
                 return reward;
@@ -376,8 +329,7 @@ public class GuildData
         return null;
     }
 
-    public Set<RoleReward> getAllRoleRewardsUpTo(int level)
-    {
+    public Set<RoleReward> getAllRoleRewardsUpTo(int level) {
         if (level < 1) return Collections.emptySet();
         return getRoleRewards().stream().filter(reward -> reward.getLevel() <= level).collect(Collectors.toSet());
     }
@@ -389,18 +341,15 @@ public class GuildData
      * @param level The level
      * @return A Set of RoleRewards
      */
-    public List<RoleReward> getEffectiveRoleRewards(int level)
-    {
+    public List<RoleReward> getEffectiveRoleRewards(int level) {
         List<RoleReward> rewardList = new ArrayList<>(getAllRoleRewardsUpTo(level));
         if (rewardList.isEmpty())
             return Collections.emptyList();
         rewardList.sort(Comparator.comparingInt(RoleReward::getLevel));
         List<RoleReward> result = new ArrayList<>();
         RoleReward previous = null;
-        for (RoleReward reward : rewardList)
-        {
-            if (previous != null && previous.doesRemoveOnNextReward())
-            {
+        for (RoleReward reward : rewardList) {
+            if (previous != null && previous.doesRemoveOnNextReward()) {
                 result.remove(previous);
             }
             result.add(reward);
@@ -409,57 +358,43 @@ public class GuildData
         return result;
     }
 
-    public long getBalance(long userId)
-    {
-        try (var rs = new SQLBuilder("SELECT balance from userbalance WHERE guild_id = ? AND user_id = ?").addParameters(guildId, userId).executeQuery())
-        {
+    public long getBalance(long userId) {
+        try (var rs = new SQLBuilder("SELECT balance from userbalance WHERE guild_id = ? AND user_id = ?").addParameters(guildId, userId).executeQuery()) {
             if (rs.next())
                 return rs.getLong("balance");
             return 0;
-        }
-        catch (SQLException throwables)
-        {
+        } catch (SQLException throwables) {
             LOGGER.error("Could not get balance for user {} on guild {}!", userId, guildId);
             return 0;
         }
     }
 
-    public void addBalance(long userId, long amount)
-    {
+    public void addBalance(long userId, long amount) {
         long oldBalance = getBalance(userId);
 
-        try
-        {
+        try {
             new SQLBuilder("INSERT INTO userbalance (guild_id, user_id, balance) values (?,?,?) ON DUPLICATE KEY UPDATE balance = ?").addParameters(guildId, userId, oldBalance + amount, oldBalance + amount).execute();
 
-        }
-        catch (SQLException throwables)
-        {
+        } catch (SQLException throwables) {
             LOGGER.error("Could not add balance amount {} to user {} on guild {}", amount, userId, guildId);
         }
     }
 
-    public void setBalance(long userId, long amount)
-    {
-        try
-        {
+    public void setBalance(long userId, long amount) {
+        try {
             new SQLBuilder("INSERT INTO userbalance (guild_id, user_id, balance) values (?,?,?) ON DUPLICATE KEY UPDATE balance = ?").addParameters(guildId, userId, amount, amount).execute();
 
-        }
-        catch (SQLException throwables)
-        {
+        } catch (SQLException throwables) {
             LOGGER.error("Could not set balance amount {} to user {} on guild {}", amount, userId, guildId);
         }
     }
 
-    public void resetBalance(long userId)
-    {
+    public void resetBalance(long userId) {
         setBalance(userId, 0);
     }
 
 
-    public DataObject toData()
-    {
+    public DataObject toData() {
         return dataObject;
     }
 }

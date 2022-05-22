@@ -12,20 +12,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class Database
-{
+public class Database {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Database.class);
 
     private static final HikariConfig config = new HikariConfig();
     private static HikariDataSource ds;
 
-    public static void connect()
-    {
+    public static void connect() {
         Runnable r = () ->
         {
-            if (!isConnected())
-            {
+            if (!isConnected()) {
                 DataObject dbConfig = Bean.getInstance().getConfig().optObject("database").orElse(DataObject.empty());
                 if (
                         dbConfig.isNull("host") || dbConfig.isNull("database") || dbConfig.isNull("username")
@@ -56,64 +53,51 @@ public class Database
         Bean.getInstance().getExecutor().submit(r);
     }
 
-    public static Connection getConnectionFromPool()
-    {
-        try
-        {
+    public static Connection getConnectionFromPool() {
+        try {
             return ds.getConnection();
-        }
-        catch (SQLException throwables)
-        {
+        } catch (SQLException throwables) {
             LOGGER.error("Could not get Connection from SQL-Pool!", throwables);
             return null;
         }
     }
 
-    public static void awaitReady()
-    {
-        while (!isConnected())
-        {
+    public static void awaitReady() {
+        while (!isConnected()) {
             Thread.onSpinWait();
         }
     }
 
-    public static void disconnect()
-    {
+    public static void disconnect() {
         ds.close();
     }
 
-    public static boolean isConnected()
-    {
+    public static boolean isConnected() {
         return (ds != null);
     }
 
-    private static void executeQueries()
-    {
+    private static void executeQueries() {
         String[] commands = new String[]{"CREATE TABLE IF NOT EXISTS modcases (uuid VARCHAR(36) PRIMARY KEY, caseType TINYINT, guild BIGINT, user BIGINT, moderator BIGINT, reason VARCHAR(256), createdAt BIGINT, duration BIGINT)",
                 "CREATE TABLE IF NOT EXISTS levels (guildID BIGINT, userID BIGINT, totalXP BIGINT, name VARCHAR(256), discriminator VARCHAR(4), avatar VARCHAR(128), PRIMARY KEY(guildID, userID)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
                 "CREATE TABLE IF NOT EXISTS guildsettings (guildID BIGINT PRIMARY KEY, data JSON CHECK (JSON_VALID(data)))",
                 "CREATE TABLE IF NOT EXISTS usersettings (userID BIGINT PRIMARY KEY, data JSON CHECK (JSON_VALID(data)))",
                 "CREATE TABLE IF NOT EXISTS xpalerts (guildID BIGINT PRIMARY KEY, mode VARCHAR(128))",
-                "CREATE TABLE IF NOT EXISTS wildcardsettings (userID BIGINT PRIMARY KEY, card VARCHAR(128) NOT NULL)",
+                "CREATE TABLE IF NOT EXISTS wildcardsettings (userID BIGINT PRIMARY KEY, card VARCHAR(128) NOT NULL, accent INT)",
                 "CREATE TABLE IF NOT EXISTS searchqueries (user_id BIGINT, searched_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
                 "CREATE TABLE IF NOT EXISTS userBalance (guild_id BIGINT, user_id BIGINT, balance BIGINT, PRIMARY KEY(guild_id, user_id))",
                 "CREATE TABLE IF NOT EXISTS bookmarks (user_id BIGINT, added_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL, PRIMARY KEY(user_id, value)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
-                "CREATE TABLE IF NOT EXISTS acknowledged_hints (user_id BIGINT, hint VARCHAR(64))",
+                "CREATE TABLE IF NOT EXISTS dismissable_contents (user_id BIGINT, identifier VARCHAR(128), state VARCHAR(128), PRIMARY KEY(user_id, identifier))",
                 "CREATE TABLE IF NOT EXISTS banned_guilds (guild_id BIGINT PRIMARY KEY, reason VARCHAR(256))"
         };
 
-        try (Connection connection = Database.getConnectionFromPool())
-        {
+        try (Connection connection = Database.getConnectionFromPool()) {
             if (connection == null) return;
-            for (String command : commands)
-            {
+            for (String command : commands) {
                 PreparedStatement ps = connection.prepareStatement(command);
                 ps.execute();
                 ps.close();
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             LOGGER.error("Could not run command", e);
         }
     }

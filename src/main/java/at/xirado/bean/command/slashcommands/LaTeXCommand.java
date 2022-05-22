@@ -20,10 +20,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class LaTeXCommand extends SlashCommand
-{
-    public LaTeXCommand()
-    {
+public class LaTeXCommand extends SlashCommand {
+    public LaTeXCommand() {
         setCommandData(Commands.slash("latex", "Creates an image from a LaTeX Formula.")
                 .addOption(OptionType.STRING, "formula", "Formula to create the image from.", true)
         );
@@ -31,18 +29,14 @@ public class LaTeXCommand extends SlashCommand
 
 
     @Override
-    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx)
-    {
+    public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         event.deferReply().queue();
         InteractionHook hook = event.getHook();
         String formula = event.getOption("formula").getAsString();
         TeXFormula tf;
-        try
-        {
+        try {
             tf = new TeXFormula(formula);
-        }
-        catch (ParseException exception)
-        {
+        } catch (ParseException exception) {
             hook.sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred while parsing LaTeX formula!\n```\n" + exception.getMessage() + "\n```")).queue();
             return;
         }
@@ -55,12 +49,9 @@ public class LaTeXCommand extends SlashCommand
         jl.setForeground(new Color(0, 0, 0));
         ti.paintIcon(jl, g2d, 0, 0);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try
-        {
+        try {
             ImageIO.write(bimg, "png", baos);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             hook.sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred!")).queue();
             return;
         }

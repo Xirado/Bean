@@ -25,8 +25,7 @@ import java.sql.SQLException;
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
 
-public class MEE6Queue extends Thread
-{
+public class MEE6Queue extends Thread {
     private static final Logger LOGGER = LoggerFactory.getLogger(MEE6Queue.class);
     private static final int DELAY_MS = 1200;
 
@@ -37,67 +36,53 @@ public class MEE6Queue extends Thread
     private long currentRequestGuildId = 0;
     private boolean isRateLimit = false;
 
-    public MEE6Queue()
-    {
+    public MEE6Queue() {
         setName("MEE6 Worker");
         setDaemon(true);
         setUncaughtExceptionHandler((t, e) -> LOGGER.error("Error occurred on MEE6-Worker thread!", e));
     }
 
     @Override
-    public void run()
-    {
-        while (true)
-        {
-            try
-            {
-                if (queue.isEmpty())
-                {
+    public void run() {
+        while (true) {
+            try {
+                if (queue.isEmpty()) {
                     Thread.sleep(100);
                     continue;
                 }
                 long currentTime = System.currentTimeMillis();
 
-                if (isRateLimit)
-                {
-                    if (rateLimitExpiry > currentTime)
-                    {
+                if (isRateLimit) {
+                    if (rateLimitExpiry > currentTime) {
                         Thread.sleep(100);
                         continue;
-                    }
-                    else
-                    {
+                    } else {
                         isRateLimit = false;
                         rateLimitExpiry = 0;
                     }
                 }
 
-                if (!queue.isEmpty())
-                {
+                if (!queue.isEmpty()) {
                     makeCall(queue.poll());
                 }
 
                 Thread.sleep(DELAY_MS);
+            } catch (InterruptedException ignored) {
             }
-            catch (InterruptedException ignored) {}
         }
     }
 
-    public void addRequest(MEE6Request request)
-    {
+    public void addRequest(MEE6Request request) {
         queue.add(request);
     }
 
-    public Queue<MEE6Request> getQueue()
-    {
+    public Queue<MEE6Request> getQueue() {
         return queue;
     }
 
-    private void makeCall(MEE6Request request)
-    {
+    private void makeCall(MEE6Request request) {
         currentRequestGuildId = request.getGuildId();
-        try
-        {
+        try {
             URI uri = new URIBuilder()
                     .setScheme("https")
                     .setHost("mee6.xyz")
@@ -114,8 +99,7 @@ public class MEE6Queue extends Thread
 
             Response response = call.execute();
 
-            if (response.code() == 429)
-            {
+            if (response.code() == 429) {
                 String retryAfter = response.header("retry-after");
                 if (retryAfter != null)
                     LOGGER.warn("Encountered MEE6 Cloudflare Rate-limit! Retrying after {} seconds", retryAfter);
@@ -129,8 +113,7 @@ public class MEE6Queue extends Thread
                 return;
             }
 
-            if (response.code() == 404)
-            {
+            if (response.code() == 404) {
                 Guild guild = Bean.getInstance().getShardManager().getGuildById(request.getGuildId());
                 if (guild != null)
                     Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We tried to migrate MEE6 experience for your guild **" + guild.getName() + "**, but sadly we could not find anything!\n\nAdding MEE6 to your server again often fixes this issue!"));
@@ -139,8 +122,7 @@ public class MEE6Queue extends Thread
                 return;
             }
 
-            if (response.code() == 401)
-            {
+            if (response.code() == 401) {
                 Guild guild = Bean.getInstance().getShardManager().getGuildById(request.getGuildId());
                 if (guild != null)
                     Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We tried to migrate MEE6 experience for your guild **" + guild.getName() + "**, but your servers MEE6 leaderboard is [set to private](https://mee6.xyz/dashboard/" + guild.getIdLong() + "/leaderboard)!\n\nPlease set it to public and try again!"));
@@ -149,8 +131,7 @@ public class MEE6Queue extends Thread
                 return;
             }
 
-            if (String.valueOf(response.code()).charAt(0) == '5')
-            {
+            if (String.valueOf(response.code()).charAt(0) == '5') {
                 Guild guild = Bean.getInstance().getShardManager().getGuildById(request.getGuildId());
                 if (guild != null)
                     Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We tried to migrate MEE6 experience for your guild **" + guild.getName() + "**, but the MEE6 server appears to be having issues!\n\nPlease try again later."));
@@ -159,8 +140,7 @@ public class MEE6Queue extends Thread
                 return;
             }
 
-            if (!response.isSuccessful())
-            {
+            if (!response.isSuccessful()) {
                 LOGGER.error("MEE6 returned unhandled error {}\n{}", response.code(), response.body().string());
                 response.close();
                 currentRequestGuildId = 0L;
@@ -174,20 +154,16 @@ public class MEE6Queue extends Thread
 
             int entries = playersArray.length();
 
-            try (Connection connection = Database.getConnectionFromPool())
-            {
+            try (Connection connection = Database.getConnectionFromPool()) {
                 playersArray
                         .stream(DataArray::getObject)
                         .map(MEE6Player::fromData)
                         .forEach(player -> updateXP(connection, player, request.getGuildId()));
-            }
-            catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 LOGGER.error("SQLException occurred!", e);
             }
 
-            if (entries == 100)
-            {
+            if (entries == 100) {
                 addRequest(new MEE6Request(request.getGuildId(), request.getAuthorId()).setPage(request.getPage() + 1));
                 currentRequestGuildId = 0L;
                 return;
@@ -201,15 +177,12 @@ public class MEE6Queue extends Thread
             else if (guild != null && entriesTotal == 0)
                 Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We tried to migrate MEE6 xp for all users on your guild **" + guild.getName() + "**, but we couldn't find any!"));
             currentRequestGuildId = 0L;
-        }
-        catch (URISyntaxException | IOException exception)
-        {
+        } catch (URISyntaxException | IOException exception) {
             LOGGER.error("Error occurred in MEE6Queue!", exception);
         }
     }
 
-    private void updateXP(Connection connection, MEE6Player player, long guildId)
-    {
+    private void updateXP(Connection connection, MEE6Player player, long guildId) {
         long id = Long.parseLong(player.getId());
         long xp = player.getXp();
         String name = player.getUsername();
@@ -218,8 +191,7 @@ public class MEE6Queue extends Thread
         RankingSystem.setXP(connection, guildId, id, xp, name, discriminator, avatarUrl);
     }
 
-    public boolean hasPendingRequest(long guildId)
-    {
+    public boolean hasPendingRequest(long guildId) {
         if (currentRequestGuildId == guildId)
             return true;
         return queue.stream()

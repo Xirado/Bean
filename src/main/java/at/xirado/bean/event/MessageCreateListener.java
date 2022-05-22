@@ -10,15 +10,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 
-public class MessageCreateListener extends ListenerAdapter
-{
+public class MessageCreateListener extends ListenerAdapter {
     @Override
-    public void onMessageReceived(@NotNull MessageReceivedEvent event)
-    {
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         if (!event.isFromGuild())
             return;
-        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
-        {
+        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong())) {
             Metrics.MESSAGES.labels("banned").inc();
             return;
         }
@@ -30,8 +27,7 @@ public class MessageCreateListener extends ListenerAdapter
         GuildData guildData = GuildManager.getGuildData(event.getGuild());
         String prefix = guildData.getPrefix();
         String[] args = content.split("\\s+");
-        if (args.length == 1 && event.getMessage().getMentionedUsers().contains(event.getJDA().getSelfUser()) && event.getMessage().getReferencedMessage() == null)
-        {
+        if (args.length == 1 && event.getMessage().getMentions().isMentioned(event.getJDA().getSelfUser()) && event.getMessage().getReferencedMessage() == null) {
             event.getMessage().reply("<a:ping:818580038949273621>")
                     .mentionRepliedUser(false).queue(s ->
                     {
@@ -40,8 +36,8 @@ public class MessageCreateListener extends ListenerAdapter
                     });
             return;
         }
-        if (content.startsWith(prefix))
-        {
+
+        if (content.startsWith(prefix) || content.startsWith("<@" + event.getJDA().getSelfUser().getIdLong() + "> ")) {
             Bean.getInstance().getCommandHandler().handleCommandFromGuild(event);
         }
     }

@@ -9,60 +9,53 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
-public class SlashCommandListener extends ListenerAdapter
-{
+public class SlashCommandListener extends ListenerAdapter {
     @Override
-    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event)
-    {
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         if (event.getGuild() == null)
             return;
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
-        if (Bean.getInstance().isDebug() && Bean.WHITELISTED_USERS.stream().noneMatch(x -> x == event.getUser().getIdLong()))
-        {
+        if (Bean.getInstance().isDebug() && Bean.WHITELISTED_USERS.stream().noneMatch(x -> x == event.getUser().getIdLong())) {
             event.reply(CommandContext.ERROR_EMOTE + " Bot is in debug mode! Only whitelisted users can execute commands!").setEphemeral(true).queue();
             return;
         }
-        Bean.getInstance().getInteractionCommandHandler().handleSlashCommand(event, event.getMember());
+        Bean.getInstance().getInteractionHandler().handleCommand(event);
     }
 
     @Override
-    public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event)
-    {
+    public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
         if (event.getGuild() == null)
             return;
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
-        if (Bean.getInstance().isDebug() && Bean.WHITELISTED_USERS.stream().noneMatch(x -> x == event.getUser().getIdLong()))
-        {
+        if (Bean.getInstance().isDebug() && Bean.WHITELISTED_USERS.stream().noneMatch(x -> x == event.getUser().getIdLong())) {
             event.reply(CommandContext.ERROR_EMOTE + " Bot is in debug mode! Only whitelisted users can execute commands!").setEphemeral(true).queue();
             return;
         }
-        Bean.getInstance().getInteractionCommandHandler().handleMessageContextCommand(event);
+        Bean.getInstance().getInteractionHandler().handleCommand(event);
     }
 
     @Override
-    public void onUserContextInteraction(@NotNull UserContextInteractionEvent event)
-    {
+    public void onUserContextInteraction(@NotNull UserContextInteractionEvent event) {
         if (event.getGuild() == null)
             return;
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
-        if (Bean.getInstance().isDebug() && Bean.WHITELISTED_USERS.stream().noneMatch(x -> x == event.getUser().getIdLong()))
-        {
+        if (Bean.getInstance().isDebug() && Bean.WHITELISTED_USERS.stream().noneMatch(x -> x == event.getUser().getIdLong())) {
             event.reply(CommandContext.ERROR_EMOTE + " Bot is in debug mode! Only whitelisted users can execute commands!").setEphemeral(true).queue();
             return;
         }
-        Bean.getInstance().getInteractionCommandHandler().handleUserContextCommand(event);
+        Bean.getInstance().getInteractionHandler().handleCommand(event);
     }
 
     @Override
-    public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event)
-    {
+    public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
         if (event.getGuild() == null)
             return;
         if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
             return;
-        Bean.getInstance().getInteractionCommandHandler().handleAutocomplete(event);
+
+        Bean.getInstance().getInteractionHandler().handleAutocomplete(event);
     }
 }

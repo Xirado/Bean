@@ -3,8 +3,7 @@ package at.xirado.bean.misc;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 
-public class Metrics
-{
+public class Metrics {
     public static final Gauge GUILD_COUNT = Gauge.build()
             .name("bean_guilds")
             .help("Guild Count")

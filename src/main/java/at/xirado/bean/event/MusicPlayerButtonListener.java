@@ -18,14 +18,12 @@ import java.util.List;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
-public class MusicPlayerButtonListener extends ListenerAdapter
-{
+public class MusicPlayerButtonListener extends ListenerAdapter {
 
     public static final List<String> BUTTON_IDS = List.of("player_previous", "player_play", "player_next", "player_repeat", "player_shuffle");
 
     @Override
-    public void onButtonInteraction(@NotNull ButtonInteractionEvent event)
-    {
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         if (event.getGuild() == null)
             return;
 
@@ -45,11 +43,9 @@ public class MusicPlayerButtonListener extends ListenerAdapter
         GuildData guildData = GuildManager.getGuildData(event.getGuild());
 
 
-        switch (event.getComponentId())
-        {
+        switch (event.getComponentId()) {
             case "player_previous" -> {
-                if (!guildData.isDJ(member))
-                {
+                if (!guildData.isDJ(member)) {
                     event.reply("You must be a DJ to do this!").setEphemeral(true).queue();
                     return;
                 }
@@ -59,16 +55,14 @@ public class MusicPlayerButtonListener extends ListenerAdapter
                     guildAudioPlayer.getScheduler().prevTrack();
             }
             case "player_play" -> {
-                if (!guildData.isDJ(member))
-                {
+                if (!guildData.isDJ(member)) {
                     event.reply("You must be a DJ to do this!").setEphemeral(true).queue();
                     return;
                 }
                 guildAudioPlayer.getPlayer().setPaused(!guildAudioPlayer.getPlayer().isPaused());
             }
             case "player_next" -> {
-                if (guildAudioPlayer.getPlayer().getPlayingTrack() != null)
-                {
+                if (guildAudioPlayer.getPlayer().getPlayingTrack() != null) {
                     boolean isDj = guildData.isDJ(member);
                     boolean isRequester = isRequester(member, guildAudioPlayer.getPlayer().getPlayingTrack());
                     if (!isDj && !isRequester)
@@ -79,16 +73,14 @@ public class MusicPlayerButtonListener extends ListenerAdapter
                 }
             }
             case "player_repeat" -> {
-                if (!guildData.isDJ(member))
-                {
+                if (!guildData.isDJ(member)) {
                     event.reply("You must be a DJ to do this!").setEphemeral(true).queue();
                     return;
                 }
                 guildAudioPlayer.getScheduler().setRepeat(!guildAudioPlayer.getScheduler().isRepeat());
             }
             case "player_shuffle" -> {
-                if (!guildData.isDJ(member))
-                {
+                if (!guildData.isDJ(member)) {
                     event.reply("You must be a DJ to do this!").setEphemeral(true).queue();
                     return;
                 }
@@ -97,11 +89,9 @@ public class MusicPlayerButtonListener extends ListenerAdapter
 
                 guildAudioPlayer.getScheduler().setShuffle(!isShuffle);
 
-                if (guildAudioPlayer.getScheduler().isShuffle())
-                {
+                if (guildAudioPlayer.getScheduler().isShuffle()) {
                     AudioTrack current = guildAudioPlayer.getPlayer().getPlayingTrack();
-                    if (current != null)
-                    {
+                    if (current != null) {
                         TrackInfo trackInfo = current.getUserData(TrackInfo.class);
                         String playlistUrl = trackInfo.getPlaylistUrl();
                         Queue<AudioTrack> queue = guildAudioPlayer.getScheduler().getQueue();
@@ -124,15 +114,13 @@ public class MusicPlayerButtonListener extends ListenerAdapter
         event.deferEdit().setEmbeds(MusicUtil.getPlayerEmbed(guildAudioPlayer.getPlayer().getPlayingTrack())).setActionRows(MusicUtil.getPlayerButtons(guildAudioPlayer.getPlayer().isPaused(), guildAudioPlayer.getScheduler().isRepeat(), guildAudioPlayer.getScheduler().isShuffle())).queue();
     }
 
-    private boolean isRequester(Member member, AudioTrack track)
-    {
+    private boolean isRequester(Member member, AudioTrack track) {
         if (track == null)
             return false;
         return track.getUserData(TrackInfo.class).getRequesterIdLong() == member.getIdLong();
     }
 
-    private boolean processVoteSkip(ButtonInteractionEvent event, GuildAudioPlayer player)
-    {
+    private boolean processVoteSkip(ButtonInteractionEvent event, GuildAudioPlayer player) {
         AudioTrack track = player.getPlayer().getPlayingTrack();
 
         TrackInfo trackInfo = track.getUserData(TrackInfo.class);
@@ -140,8 +128,7 @@ public class MusicPlayerButtonListener extends ListenerAdapter
         int listeners = (int) event.getMember().getVoiceState().getChannel().getMembers().stream()
                 .filter(m -> !m.getUser().isBot() && !m.getVoiceState().isDeafened()).count();
 
-        if (trackInfo.getVoteSkips().contains(event.getUser().getIdLong()))
-        {
+        if (trackInfo.getVoteSkips().contains(event.getUser().getIdLong())) {
             event.reply("You already voted to skip this song!").setEphemeral(true).queue();
             return false;
         }
@@ -152,14 +139,11 @@ public class MusicPlayerButtonListener extends ListenerAdapter
 
         int required = (int) Math.ceil(listeners * .55);
 
-        if (skippers >= required)
-        {
+        if (skippers >= required) {
             if (player.getScheduler().isRepeat())
                 player.getScheduler().setRepeat(false);
             return true;
-        }
-        else
-        {
+        } else {
             event.reply("Voted to skip: **" + (required - skippers) + "** more votes needed").setEphemeral(true).queue();
             return false;
         }
