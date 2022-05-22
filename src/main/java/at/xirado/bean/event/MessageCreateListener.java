@@ -27,7 +27,7 @@ public class MessageCreateListener extends ListenerAdapter {
         GuildData guildData = GuildManager.getGuildData(event.getGuild());
         String prefix = guildData.getPrefix();
         String[] args = content.split("\\s+");
-        if (args.length == 1 && event.getMessage().getMentionedUsers().contains(event.getJDA().getSelfUser()) && event.getMessage().getReferencedMessage() == null) {
+        if (args.length == 1 && event.getMessage().getMentions().isMentioned(event.getJDA().getSelfUser()) && event.getMessage().getReferencedMessage() == null) {
             event.getMessage().reply("<a:ping:818580038949273621>")
                     .mentionRepliedUser(false).queue(s ->
                     {

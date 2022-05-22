@@ -42,7 +42,7 @@ tasks.build {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation 'com.github.Xirado:JDA:2ae1b1a'
+    implementation 'com.github.Xirado:JDA:6ac9d59'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
     implementation 'com.sparkjava:spark-core:2.9.3'
     implementation 'org.codehaus.groovy:groovy-jsr223:3.0.8'
@@ -59,6 +59,7 @@ dependencies {
     implementation "club.minnced:discord-webhooks:0.7.5"
     implementation 'io.github.classgraph:classgraph:4.8.146'
     implementation 'com.github.minndevelopment:jda-ktx:9f01b74'
+    implementation 'net.jodah:expiringmap:0.5.10'
 
     // Prometheus
     implementation "io.prometheus:simpleclient:0.14.1"

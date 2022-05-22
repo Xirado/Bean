@@ -1,8 +1,10 @@
 package at.xirado.bean.command.slashcommands.leveling;
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.RankingSystem;
+import at.xirado.bean.data.content.*;
 import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -45,5 +47,23 @@ public class RankCommand extends SlashCommand {
         }
 
         commandHook.sendFile(rankCard, "card.png").queue();
+
+        long userId = event.getUser().getIdLong();
+        DismissableContentManager contentManager = Bean.getInstance().getDismissableContentManager();
+
+        if (!contentManager.hasProgress(userId, RankCustomBackgroundDismissableContent.class)) {
+            if (!RankingSystem.getPreferredCard(event.getUser()).startsWith("card")) { // Default backgrounds
+                // They have a custom background so no need to show it to them.
+                contentManager.createDismissableContent(userId, RankCustomBackgroundDismissableContent.class, DismissableState.AWARE);
+            } else {
+                DismissableProgress progress = contentManager.createDismissableContent(
+                        userId, RankCustomBackgroundDismissableContent.class, DismissableState.SEEN
+                );
+                var dismissable = (MessageEmbedDismissable) progress.getDismissable();
+                commandHook.sendMessageEmbeds(dismissable.get())
+                        .setEphemeral(true)
+                        .queue();
+            }
+        }
     }
 }

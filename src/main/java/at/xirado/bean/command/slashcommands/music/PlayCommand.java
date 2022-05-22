@@ -5,9 +5,9 @@ import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.BasicAutocompletionChoice;
-import at.xirado.bean.data.Hints;
 import at.xirado.bean.data.IAutocompleteChoice;
 import at.xirado.bean.data.SearchEntry;
+import at.xirado.bean.data.content.*;
 import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.lavaplayer.SpotifyTrack;
 import at.xirado.bean.misc.EmbedUtil;
@@ -23,11 +23,15 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -64,13 +68,6 @@ public class PlayCommand extends SlashCommand {
         );
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
-
-    private static final MessageEmbed BOOKMARK_HINT_EMBED =
-            EmbedUtil.defaultEmbedBuilder("Bookmark songs and playlists using the **/bookmark** command!\nHaving to always type the link to your favourite youtube or spotify playlist is annoying, isn't it?")
-                    .setAuthor(Bean.getInstance().getShardManager().getShards().get(0).getSelfUser().getAsTag(), null, Bean.getInstance().getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
-                    .setImage("https://bean.bz/assets/hints/bookmark.png")
-                    .setTitle("Tip")
-                    .build();
 
     @Override
     public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
@@ -109,7 +106,10 @@ public class PlayCommand extends SlashCommand {
         long guildId = event.getGuild().getIdLong();
         long channelId = event.getChannel().getIdLong();
         String rawQuery = event.getOption("query").getAsString();
+        DismissableContentManager contentManager = Bean.getInstance().getDismissableContentManager();
+        boolean hasBookmarks = !BookmarkCommand.getBookmarks(event.getUser().getIdLong(), false).isEmpty();
         link.getRestClient().loadItem(query, new AudioLoadResultHandler() {
+
             @Override
             public void trackLoaded(AudioTrack track) {
                 TrackInfo trackInfo = new TrackInfo(userId, guildId, channelId)
@@ -117,13 +117,7 @@ public class PlayCommand extends SlashCommand {
                 track.setUserData(trackInfo);
                 event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, track)).queue();
                 boolean isBookmarked = BookmarkCommand.getBookmark(event.getUser().getIdLong(), track.getInfo().uri) != null;
-                if (!Hints.hasAcknowledged(userId, "bookmark") && !isBookmarked) {
-                    event.getHook().sendMessageEmbeds(BOOKMARK_HINT_EMBED)
-                            .setEphemeral(true)
-                            .addActionRow(Util.getDontShowThisAgainButton("bookmark"))
-                            .queue();
-                    Hints.sentUserHint(userId, "bookmark");
-                }
+                handleDismissableContent(contentManager, userId, hasBookmarks, event.getHook());
                 guildAudioPlayer.getScheduler().queue(track);
                 if (guildAudioPlayer.getOpenPlayer() == null)
                     guildAudioPlayer.playerSetup((GuildMessageChannel) event.getChannel(), (s) -> {
@@ -171,13 +165,7 @@ public class PlayCommand extends SlashCommand {
                     embed.setThumbnail(track.getArtworkURL());
                 embed.setFooter(playlist.getName());
                 event.getHook().sendMessageEmbeds(embed.build()).queue();
-                if (!Hints.hasAcknowledged(userId, "bookmark") && !isBookmarked) {
-                    event.getHook().sendMessageEmbeds(BOOKMARK_HINT_EMBED)
-                            .setEphemeral(true)
-                            .addActionRow(Util.getDontShowThisAgainButton("bookmark"))
-                            .queue();
-                    Hints.sentUserHint(userId, "bookmark");
-                }
+                handleDismissableContent(contentManager, userId, hasBookmarks, event.getHook());
                 tracks.forEach(track ->
                 {
                     TrackInfo trackInfo = new TrackInfo(userId, guildId, channelId)
@@ -335,6 +323,23 @@ public class PlayCommand extends SlashCommand {
         } catch (SQLException ex) {
             LOGGER.error("Could not add search entry for user {}!", userId, ex);
 
+        }
+    }
+
+    private void handleDismissableContent(DismissableContentManager contentManager, long userId, boolean hasBookmarks, InteractionHook hook) {
+        if (!contentManager.hasProgress(userId, BookmarkDismissableContent.class)) {
+            if (hasBookmarks) {
+                contentManager.createDismissableContent(userId, BookmarkDismissableContent.class, DismissableState.AWARE);
+            } else {
+                DismissableProgress progress = contentManager.createDismissableContent(
+                        userId, BookmarkDismissableContent.class, DismissableState.SEEN
+                );
+
+                MessageEmbedDismissable dismissable = (MessageEmbedDismissable) progress.getDismissable();
+                hook.sendMessageEmbeds(dismissable.get())
+                        .setEphemeral(true)
+                        .queue();
+            }
         }
     }
 

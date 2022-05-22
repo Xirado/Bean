@@ -1,5 +1,6 @@
 package at.xirado.bean.data;
 
+import at.xirado.bean.command.slashcommands.leveling.SetXPBackgroundCommand;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.Util;
@@ -16,8 +17,8 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.awt.image.RescaleOp;
+import java.io.*;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -26,8 +27,8 @@ import java.text.DecimalFormat;
 public class RankingSystem {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RankingSystem.class);
-    private static LinkedDataObject colorData = null;
     private static Font FONT;
+    private static final RescaleOp RESCALE_OP = new RescaleOp(.5f, 0, null);
 
     private static final int CARD_WIDTH = 1200;
     private static final int CARD_HEIGHT = CARD_WIDTH / 4;
@@ -49,7 +50,6 @@ public class RankingSystem {
     static {
         try {
             FONT = Font.createFont(Font.TRUETYPE_FONT, RankingSystem.class.getResourceAsStream("/assets/fonts/NotoSans.ttf"));
-            colorData = LinkedDataObject.parse(RankingSystem.class.getResourceAsStream("/assets/wildcards/ColorInfo.json"));
         } catch (FontFormatException | IOException e) {
             LOGGER.error("Couldn't load font from resources", e);
         }
@@ -205,10 +205,16 @@ public class RankingSystem {
         }
     }
 
-    public static void setPreferredCard(@Nonnull User user, @Nonnull String card) throws SQLException {
-        String qry = "INSERT INTO wildcardSettings (userID, card) VALUES (?,?) ON DUPLICATE KEY UPDATE card = ?";
+    public static void setPreferredCard(@Nonnull User user, @Nonnull String card, int primary) throws SQLException {
+        String oldCard = getPreferredCard(user);
+        if (!oldCard.startsWith("card")) {
+            File file = new File(SetXPBackgroundCommand.DIRECTORY, oldCard);
+            if (file.exists())
+                file.delete();
+        }
+        String qry = "INSERT INTO wildcardSettings (userID, card, accent) VALUES (?,?,?) ON DUPLICATE KEY UPDATE card = ?, accent = ?";
 
-        var query = new SQLBuilder(qry, user.getIdLong(), card, card);
+        var query = new SQLBuilder(qry, user.getIdLong(), card, primary, card, primary);
 
         query.execute();
     }
@@ -225,15 +231,14 @@ public class RankingSystem {
         }
     }
 
-    public static void setPreferredCard(@Nonnull Connection connection, @Nonnull User user, @Nonnull String card) {
-        String qry = "INSERT INTO wildcardSettings (userID, card) VALUES (?,?) ON DUPLICATE KEY UPDATE card = ?";
-        var query = new SQLBuilder(qry)
-                .useConnection(connection)
-                .addParameters(user.getIdLong(), card, card);
-        try {
-            query.execute();
+    public static int getPrimaryColor(@Nonnull User user) {
+        var query = new SQLBuilder("SELECT accent FROM wildcardSettings WHERE userID = ?")
+                .addParameter(user.getIdLong());
+        try (var rs = query.executeQuery()) {
+            return rs.next() ? rs.getInt("accent") : 0x0C71E0;
         } catch (SQLException ex) {
-            LOGGER.error("Could not set user preferred wildcard background (user {})", user.getIdLong(), ex);
+            LOGGER.error("Could not get user preferred wildcard background (user {})", user.getIdLong(), ex);
+            return 0x0C71E0;
         }
     }
 
@@ -265,25 +270,46 @@ public class RankingSystem {
 
             // prepare level card
             String card = getPreferredCard(user);
+            if (!card.startsWith("card") && !new File(SetXPBackgroundCommand.DIRECTORY, card).exists()) {
+                card = "card1";
+            }
             var rankCard = new BufferedImage(CARD_WIDTH, CARD_HEIGHT, BufferedImage.TYPE_INT_ARGB);
             var g = rankCard.createGraphics();
 
-            var background = RankingSystem.class.getResourceAsStream("/assets/wildcards/" + card + ".png");
-            if (background != null) {
-                var image = makeRoundedCorner(ImageIO.read(background), 60);
-                var width = image.getWidth();
-                var height = image.getHeight();
-                var drawWidth = 0;
-                var drawHeight = 0;
-                if (width > height) {
-                    drawWidth = width;
-                    drawHeight = width / CARD_RATIO;
-                } else {
-                    drawHeight = height;
-                    drawWidth = height * CARD_RATIO;
-                }
-                g.drawImage(image.getSubimage(0, 0, drawWidth, drawHeight), 0, 0, CARD_WIDTH, CARD_HEIGHT, null);
+            InputStream background;
+            if (card.startsWith("card")) {
+                background = RankingSystem.class.getResourceAsStream("/assets/wildcards/" + card + ".png");
+            } else {
+                File file = new File(SetXPBackgroundCommand.DIRECTORY, card);
+                background = new FileInputStream(file);
             }
+
+            var backgroundImage = RESCALE_OP.filter(ImageIO.read(background), null);
+            var width = backgroundImage.getWidth();
+            var height = backgroundImage.getHeight();
+            if (width > 1200)
+                width = 1200;
+
+            if (height > 300)
+                height = 300;
+
+            var drawWidth = 0;
+            var drawHeight = 0;
+            if (width > height) {
+                drawWidth = width;
+                drawHeight = width / CARD_RATIO;
+            } else {
+                drawHeight = height;
+                drawWidth = height * CARD_RATIO;
+            }
+            if (drawWidth > width)
+                drawWidth = width;
+
+            if (drawHeight > height)
+                drawHeight = height;
+
+            g.drawImage(backgroundImage.getSubimage(0, 0, drawWidth, drawHeight), 0, 0, CARD_WIDTH, CARD_HEIGHT, null);
+            background.close();
 
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -299,19 +325,21 @@ public class RankingSystem {
             var leftAvatarAlign = AVATAR_SIZE + BORDER_SIZE * 2;
             g.drawString(userString, leftAvatarAlign, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT);
 
+            Color c = new Color(getPrimaryColor(user));
+
+            g.setColor(Color.white.darker());
+
             // draw discriminator
             var nameWidth = g.getFontMetrics().stringWidth(userString);
             g.setFont(g.getFont().deriveFont(DISCRIMINATOR_FONT_SIZE).deriveFont(Font.BOLD));
-            g.setColor(g.getColor().darker().darker());
             g.drawString("#" + user.getDiscriminator(), AVATAR_SIZE + BORDER_SIZE * 2 + nameWidth, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT);
 
-            // draw xp
             var totalXP = getTotalXP(guild.getIdLong(), user.getIdLong());
             var currentLevel = getLevel(totalXP);
             var neededXP = getXPToLevelUp(currentLevel);
             var currentXP = totalXP - getTotalXPNeeded(currentLevel);
+
             // draw level
-            Color c = getColor(card);
             g.setFont(g.getFont().deriveFont(FONT_SIZE).deriveFont(Font.BOLD));
             g.setColor(Color.white);
             var levelString = "Level " + currentLevel;
@@ -342,7 +370,7 @@ public class RankingSystem {
             g.dispose();
 
             var baos = new ByteArrayOutputStream();
-            ImageIO.write(rankCard, "png", baos);
+            ImageIO.write(makeRoundedCorner(rankCard, 60), "png", baos);
             return baos.toByteArray();
         } catch (IOException e) {
             LOGGER.error("Error while generating level cards", e);
@@ -360,10 +388,6 @@ public class RankingSystem {
             r = r.substring(0, r.length() - 2) + r.substring(r.length() - 1);
         }
         return r.replaceAll(",", ".");
-    }
-
-    public static Color getColor(String fileName) {
-        return Color.decode("#" + colorData.get(fileName, String.class));
     }
 
     public static BufferedImage makeRoundedCorner(BufferedImage image, int cornerRadius) {
