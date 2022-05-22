@@ -36,7 +36,7 @@ public class SetXPBackgroundCommand extends SlashCommand {
         );
     }
 
-    public static final List<String> SUPPORTED_EXTENSIONS = List.of("png", "jpg", "jpeg", "gif");
+    public static final List<String> SUPPORTED_EXTENSIONS = List.of("png", "jpg", "jpeg");
 
     public static final File DIRECTORY = new File("backgrounds");
     public static final int MAX_SIZE = 1000 * 1000 * 15; // 15 MB

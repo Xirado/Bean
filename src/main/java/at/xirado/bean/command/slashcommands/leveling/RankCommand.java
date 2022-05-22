@@ -52,7 +52,7 @@ public class RankCommand extends SlashCommand {
         commandHook.sendFile(rankCard, "card.png").queue();
 
         DismissableContentManager contentManager = Bean.getInstance().getDismissableContentManager();
-        if (!contentManager.hasState(event.getUser().getIdLong(), RankCustomBackgroundDismissableContent.class)) {
+        if (!contentManager.hasState(event.getUser().getIdLong(), RankCustomBackgroundDismissableContent.class) && RankingSystem.getPreferredCard(event.getUser()).startsWith("card")) {
             DismissableContentState state = contentManager.createDismissableContent(
                     event.getUser().getIdLong(),
                     RankCustomBackgroundDismissableContent.class,
