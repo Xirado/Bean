@@ -1,50 +1,70 @@
 package at.xirado.bean.data.content;
 
 import at.xirado.bean.data.database.SQLBuilder;
+import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class DismissableContentManager {
 
-    private static final List<IDismissable<?>> CONTENT = new ArrayList<>();
+    private static final List<IDismissable<?>> DISMISSABLES = new ArrayList<>();
 
     static {
-        CONTENT.add(new RankCustomBackgroundDismissableContent());
-        CONTENT.add(new BookmarkDismissableContent());
+        DISMISSABLES.add(new RankCustomBackgroundDismissableContent());
+        DISMISSABLES.add(new BookmarkDismissableContent());
     }
 
-    private final Map<Long, List<DismissableContentState>> STATES = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Long, List<DismissableProgress>> progressCache = ExpiringMap.builder()
+            .expiration(5, TimeUnit.MINUTES)
+            .expirationPolicy(ExpirationPolicy.ACCESSED)
+            .build();
 
     @Nonnull
-    public DismissableContentState createDismissableContent(long userId, Class<? extends IDismissable<?>> dismissable,
-                                                            DismissableContentState.State initialState) {
+    public DismissableProgress createDismissableContent(long userId, Class<? extends IDismissable<?>> dismissable,
+                                                        DismissableState initialState) {
+        return createDismissableContent(userId, dismissable, initialState, true);
+    }
+
+    @Nonnull
+    public DismissableProgress createDismissableContent(long userId, Class<? extends IDismissable<?>> dismissable,
+                                                        DismissableState initialState, boolean shouldStore) {
         IDismissable<?> object = getFromClass(dismissable);
-        DismissableContentState state = new DismissableContentState(userId, object, initialState);
-        List<DismissableContentState> states = STATES.computeIfAbsent(userId, (k) -> new ArrayList<>());
-        states.add(state);
-        return state;
+        DismissableProgress progress = new DismissableProgress(userId, object, initialState);
+        List<DismissableProgress> progresses = progressCache.computeIfAbsent(userId, (k) -> new ArrayList<>());
+        progresses.add(progress);
+        if (shouldStore)
+            progress.update();
+        return progress;
     }
 
     @Nullable
-    public DismissableContentState getState(long userId, Class<? extends IDismissable<?>> dismissable, boolean retrieve) {
-        return STATES.getOrDefault(userId, Collections.emptyList())
+    public DismissableProgress getProgress(long userId, Class<? extends IDismissable<?>> dismissable, boolean retrieve) {
+        return progressCache.getOrDefault(userId, Collections.emptyList())
                 .stream()
-                .filter(state -> dismissable.isInstance(state.getContent()))
+                .filter(progress -> dismissable.isInstance(progress.getDismissable()))
                 .findFirst()
-                .orElse(retrieve ? retrieveState(userId, dismissable) : null);
+                .orElse(retrieve ? retrieveProgress(userId, dismissable) : null);
     }
 
     @Nullable
-    public DismissableContentState retrieveState(long userId, Class<? extends IDismissable<?>> dismissable) {
+    public DismissableProgress getProgress(long userId, String identifier, boolean retrieve) {
+        Class<? extends IDismissable<?>> dismissable = getClassFromIdentifier(identifier);
+        return getProgress(userId, dismissable, retrieve);
+    }
+
+    @Nullable
+    public DismissableProgress retrieveProgress(long userId, Class<? extends IDismissable<?>> dismissable) {
         IDismissable<?> dismissableObj = getFromClass(dismissable);
         try (var rs = new SQLBuilder("SELECT * FROM dismissable_contents WHERE user_id = ? AND identifier = ?",
                 userId, dismissableObj.getIdentifier()).executeQuery()) {
             if (rs.next()) {
-                DismissableContentState.State state = DismissableContentState.State.valueOf(rs.getString("state"));
-                return new DismissableContentState(userId, dismissableObj, state);
+                DismissableState state = DismissableState.valueOf(rs.getString("state"));
+                return new DismissableProgress(userId, dismissableObj, state);
             }
             return null;
         } catch (SQLException exception) {
@@ -52,13 +72,13 @@ public class DismissableContentManager {
         }
     }
 
-    public boolean hasState(long userId, Class<? extends IDismissable<?>> dismissable) {
-        return getState(userId, dismissable, true) != null;
+    public boolean hasProgress(long userId, Class<? extends IDismissable<?>> dismissable) {
+        return getProgress(userId, dismissable, true) != null;
     }
 
     @Nonnull
     public IDismissable<?> getFromIdentifier(String identifier) {
-        return CONTENT.stream()
+        return DISMISSABLES.stream()
                 .filter(dismissable -> dismissable.getIdentifier().equals(identifier))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("No Dismissable with identifier \"" + identifier + "\" found!"));
@@ -67,7 +87,7 @@ public class DismissableContentManager {
     @Nonnull
     @SuppressWarnings("unchecked")
     public Class<? extends IDismissable<?>> getClassFromIdentifier(String identifier) {
-        return (Class<? extends IDismissable<?>>) CONTENT.stream()
+        return (Class<? extends IDismissable<?>>) DISMISSABLES.stream()
                 .filter(dismissable -> dismissable.getIdentifier().equals(identifier))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("No Dismissable with identifier \"" + identifier + "\" found!")).getClass();
@@ -75,7 +95,7 @@ public class DismissableContentManager {
 
     @Nonnull
     public IDismissable<?> getFromClass(Class<? extends IDismissable<?>> clazz) {
-        return CONTENT.stream()
+        return DISMISSABLES.stream()
                 .filter(clazz::isInstance)
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Passed IDismissable is not registered!"));

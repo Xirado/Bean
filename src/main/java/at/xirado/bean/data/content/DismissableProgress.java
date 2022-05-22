@@ -4,7 +4,7 @@ import at.xirado.bean.data.database.SQLBuilder;
 
 import java.sql.SQLException;
 
-public class DismissableContentState {
+public class DismissableProgress {
 
     private static final String UPDATE_SQL = """
             INSERT INTO dismissable_contents (user_id, identifier, state) values (?,?,?)
@@ -12,18 +12,18 @@ public class DismissableContentState {
             """;
 
     private final long userId;
-    private final IDismissable<?> content;
-    private State state;
+    private final IDismissable<?> dismissable;
+    private DismissableState state;
 
-    public DismissableContentState(long userId, IDismissable<?> content, State initialState) {
+    public DismissableProgress(long userId, IDismissable<?> dismissable, DismissableState initialState) {
         this.userId = userId;
-        this.content = content;
+        this.dismissable = dismissable;
         this.state = initialState;
     }
 
-    public DismissableContentState update() {
+    public DismissableProgress update() {
         try {
-            new SQLBuilder(UPDATE_SQL, getUserId(), getContent().getIdentifier(), getState().toString()).execute();
+            new SQLBuilder(UPDATE_SQL, getUserId(), getDismissable().getIdentifier(), getState().toString()).execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -34,23 +34,16 @@ public class DismissableContentState {
         return userId;
     }
 
-    public IDismissable<?> getContent() {
-        return content;
+    public IDismissable<?> getDismissable() {
+        return dismissable;
     }
 
-    public State getState() {
+    public DismissableState getState() {
         return state;
     }
 
-    public DismissableContentState setState(State state) {
+    public DismissableProgress setState(DismissableState state) {
         this.state = state;
         return this;
     }
-
-    public enum State {
-        NONE(),
-        SEEN(),
-        ACKNOWLEDGED()
-    }
-
 }

@@ -1,33 +1,32 @@
 package at.xirado.bean.data.content;
 
-import checkers.nullness.quals.NonNull;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class RankCustomBackgroundDismissableContent implements MessageEmbedDismissable {
 
-    @NonNull
+    @NotNull
     @Override
     public String getIdentifier() {
         return "rankcustombackground";
     }
 
-    @NonNull
+    @Nullable
     @Override
     public String getMediaUrl() {
         return "https://bean.bz/assets/content/rank_custom_backgrounds.png";
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageEmbed get() {
         return new EmbedBuilder()
                 .setTitle("Did you know?")
                 .setDescription("You can set your own custom background on your rank card using `/setxpcard`!")
                 .setImage(getMediaUrl())
-                .setColor(0x842BD7)
+                .setColor(getEmbedColor())
                 .build();
     }
 }

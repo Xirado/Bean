@@ -1,7 +1,7 @@
 package at.xirado.bean.event;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.data.content.DismissableContentState;
+import at.xirado.bean.data.content.DismissableState;
 import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -22,12 +22,11 @@ public class DismissableContentButtonListener extends ListenerAdapter {
         if (!componentId.startsWith("dismissable:"))
             return;
         var identifier = componentId.substring(12);
-        var clazz = Bean.getInstance().getDismissableContentManager().getClassFromIdentifier(identifier);
-        var state = Bean.getInstance().getDismissableContentManager().getState(event.getUser().getIdLong(), clazz, true);
-        if (state == null)
+        var progress = Bean.getInstance().getDismissableContentManager().getProgress(event.getUser().getIdLong(), identifier, true);
+        if (progress == null)
             return;
 
-        state.setState(DismissableContentState.State.ACKNOWLEDGED).update();
+        progress.setState(DismissableState.ACKNOWLEDGED).update();
         event.editMessageEmbeds(CONFIRMATION_EMBED)
                 .setActionRows(Collections.emptyList())
                 .queue();
