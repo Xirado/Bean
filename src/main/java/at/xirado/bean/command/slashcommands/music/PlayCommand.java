@@ -5,9 +5,12 @@ import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.BasicAutocompletionChoice;
-import at.xirado.bean.data.Hints;
 import at.xirado.bean.data.IAutocompleteChoice;
 import at.xirado.bean.data.SearchEntry;
+import at.xirado.bean.data.content.BookmarkDismissableContent;
+import at.xirado.bean.data.content.DismissableContentManager;
+import at.xirado.bean.data.content.DismissableContentState;
+import at.xirado.bean.data.content.MessageEmbedDismissable;
 import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.lavaplayer.SpotifyTrack;
 import at.xirado.bean.misc.EmbedUtil;
@@ -23,7 +26,10 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -65,13 +71,6 @@ public class PlayCommand extends SlashCommand {
         addCommandFlags(CommandFlag.MUST_BE_IN_VC, CommandFlag.MUST_BE_IN_SAME_VC, CommandFlag.REQUIRES_LAVALINK_NODE);
     }
 
-    private static final MessageEmbed BOOKMARK_HINT_EMBED =
-            EmbedUtil.defaultEmbedBuilder("Bookmark songs and playlists using the **/bookmark** command!\nHaving to always type the link to your favourite youtube or spotify playlist is annoying, isn't it?")
-                    .setAuthor(Bean.getInstance().getShardManager().getShards().get(0).getSelfUser().getAsTag(), null, Bean.getInstance().getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
-                    .setImage("https://bean.bz/assets/hints/bookmark.png")
-                    .setTitle("Tip")
-                    .build();
-
     @Override
     public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
         JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
@@ -109,6 +108,7 @@ public class PlayCommand extends SlashCommand {
         long guildId = event.getGuild().getIdLong();
         long channelId = event.getChannel().getIdLong();
         String rawQuery = event.getOption("query").getAsString();
+        DismissableContentManager contentManager = Bean.getInstance().getDismissableContentManager();
         link.getRestClient().loadItem(query, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
@@ -117,12 +117,16 @@ public class PlayCommand extends SlashCommand {
                 track.setUserData(trackInfo);
                 event.getHook().sendMessageEmbeds(MusicUtil.getAddedToQueueMessage(guildAudioPlayer, track)).queue();
                 boolean isBookmarked = BookmarkCommand.getBookmark(event.getUser().getIdLong(), track.getInfo().uri) != null;
-                if (!Hints.hasAcknowledged(userId, "bookmark") && !isBookmarked) {
-                    event.getHook().sendMessageEmbeds(BOOKMARK_HINT_EMBED)
+                if (!contentManager.hasState(userId, BookmarkDismissableContent.class) && !isBookmarked) {
+                    DismissableContentState state = contentManager.createDismissableContent(
+                            userId, BookmarkDismissableContent.class, DismissableContentState.State.SEEN
+                    );
+
+                    MessageEmbedDismissable dismissable = (MessageEmbedDismissable) state.getContent();
+                    event.getHook().sendMessageEmbeds(dismissable.get())
                             .setEphemeral(true)
-                            .addActionRow(Util.getDontShowThisAgainButton("bookmark"))
+                            .addActionRows(dismissable.getButtonLayout())
                             .queue();
-                    Hints.sentUserHint(userId, "bookmark");
                 }
                 guildAudioPlayer.getScheduler().queue(track);
                 if (guildAudioPlayer.getOpenPlayer() == null)
@@ -171,12 +175,16 @@ public class PlayCommand extends SlashCommand {
                     embed.setThumbnail(track.getArtworkURL());
                 embed.setFooter(playlist.getName());
                 event.getHook().sendMessageEmbeds(embed.build()).queue();
-                if (!Hints.hasAcknowledged(userId, "bookmark") && !isBookmarked) {
-                    event.getHook().sendMessageEmbeds(BOOKMARK_HINT_EMBED)
+                if (!contentManager.hasState(userId, BookmarkDismissableContent.class) && !isBookmarked) {
+                    DismissableContentState state = contentManager.createDismissableContent(
+                            userId, BookmarkDismissableContent.class, DismissableContentState.State.SEEN
+                    );
+
+                    MessageEmbedDismissable dismissable = (MessageEmbedDismissable) state.getContent();
+                    event.getHook().sendMessageEmbeds(dismissable.get())
                             .setEphemeral(true)
-                            .addActionRow(Util.getDontShowThisAgainButton("bookmark"))
+                            .addActionRows(dismissable.getButtonLayout())
                             .queue();
-                    Hints.sentUserHint(userId, "bookmark");
                 }
                 tracks.forEach(track ->
                 {

@@ -5,6 +5,7 @@ import at.xirado.bean.backend.WebServer;
 import at.xirado.bean.command.ConsoleCommandManager;
 import at.xirado.bean.command.handler.CommandHandler;
 import at.xirado.bean.command.handler.InteractionHandler;
+import at.xirado.bean.data.content.DismissableContentManager;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.event.*;
 import at.xirado.bean.lavaplayer.SpotifyAudioSource;
@@ -88,6 +89,7 @@ public class Bean {
     private final Authenticator authenticator;
     private final JdaLavalink lavalink;
     private final MEE6Queue mee6Queue;
+    private final DismissableContentManager dismissableContentManager;
 
     private WebhookClient webhookClient = null;
     private DataObject config = loadConfig();
@@ -128,12 +130,13 @@ public class Bean {
                 .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER)
                 .addEventListeners(new JDAReadyListener(), new SlashCommandListener(), new MessageCreateListener(),
                         new XPMessageListener(), new MessageReactionAddListener(), new MessageReactionRemoveListener(), new VoiceUpdateListener(),
-                        eventWaiter, new GuildMemberJoinListener(), lavalink, new HintAcknowledgeListener(), new GuildJoinListener(),
+                        eventWaiter, new GuildMemberJoinListener(), lavalink, new DismissableContentButtonListener(), new GuildJoinListener(),
                         new MusicPlayerButtonListener(), new MessageDeleteListener())
                 .build();
         audioManager = new AudioManager();
         authenticator = new Authenticator();
         webServer = new WebServer(8887);
+        dismissableContentManager = new DismissableContentManager();
         new Prometheus();
         new MetricsJob().start();
         mee6Queue = new MEE6Queue();
@@ -269,6 +272,10 @@ public class Bean {
 
     public Authenticator getAuthenticator() {
         return authenticator;
+    }
+
+    public DismissableContentManager getDismissableContentManager() {
+        return dismissableContentManager;
     }
 
     private DataObject loadConfig() {
