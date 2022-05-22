@@ -89,13 +89,13 @@ public class XPMessageListener extends ListenerAdapter {
                         Role role = event.getGuild().getRoleById(reward.getRoleId());
 
                         if (!event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
-                            Util.sendOwnerDM(EmbedUtil.errorEmbed("Hey! You have set up role-rewards in your guild **" + event.getGuild().getName() + "**, but i do not have the **Manage Roles** permission!\nPlease make sure to give me this permission!"));
+                            Util.sendDM(event.getGuild().getOwnerIdLong(), EmbedUtil.errorEmbed("Hey! You have set up role-rewards in your guild **" + event.getGuild().getName() + "**, but i do not have the **Manage Roles** permission!\nPlease make sure to give me this permission, so i can assign them!"));
                             return;
                         }
 
                         if (role != null) {
                             if (!event.getGuild().getSelfMember().canInteract(role)) {
-                                Util.sendOwnerDM(EmbedUtil.errorEmbed("Hey! You have up role-rewards in your guild **" + event.getGuild().getName() + "**, but the role **" + role.getName() + "** is above me in the role hierarchy!\nPlease make sure to move the role above me, so i can assign them!"));
+                                Util.sendDM(event.getGuild().getOwnerIdLong(), EmbedUtil.errorEmbed("Hey! You have set up role-rewards in your guild **" + event.getGuild().getName() + "**, but the role **" + role.getName() + "** is above me in the role hierarchy!\nPlease make sure to move the role above me, so i can assign them!"));
                                 return;
                             }
                             event.getGuild().addRoleToMember(UserSnowflake.fromId(userId), role).queue(s -> {
