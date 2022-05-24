@@ -199,7 +199,7 @@ public class PlayCommand extends SlashCommand {
     }
 
     @Override
-    public void handleAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event) throws Exception {
+    public void handleAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event) {
         long userId = event.getUser().getIdLong();
         if (event.getFocusedOption().getName().equals("query")) {
             AutoCompleteQuery query = event.getFocusedOption();
@@ -238,7 +238,7 @@ public class PlayCommand extends SlashCommand {
                     .filter(choice -> StringUtils.startsWithIgnoreCase(choice.getName(), query.getValue()))
                     .limit(25)
                     .forEach(result::add);
-            List<String> valueList = result.stream().map(IAutocompleteChoice::getValue).collect(Collectors.toList());
+            List<String> valueList = result.stream().map(IAutocompleteChoice::getValue).toList();
             List<String> alreadyAdded = new ArrayList<>();
             if (hasSearchEntries) {
                 List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), true);
@@ -327,18 +327,13 @@ public class PlayCommand extends SlashCommand {
     }
 
     private void handleDismissableContent(DismissableContentManager contentManager, long userId, boolean hasBookmarks, InteractionHook hook) {
-        if (!contentManager.hasProgress(userId, BookmarkDismissableContent.class)) {
+        if (!contentManager.hasState(userId, Feature.BOOKMARK)) {
             if (hasBookmarks) {
-                contentManager.createDismissableContent(userId, BookmarkDismissableContent.class, DismissableState.AWARE);
+                contentManager.setState(userId, Feature.BOOKMARK, Status.AWARE);
             } else {
-                DismissableProgress progress = contentManager.createDismissableContent(
-                        userId, BookmarkDismissableContent.class, DismissableState.SEEN
-                );
-
-                MessageEmbedDismissable dismissable = (MessageEmbedDismissable) progress.getDismissable();
-                hook.sendMessageEmbeds(dismissable.get())
-                        .setEphemeral(true)
-                        .queue();
+                var progress = contentManager.setState(userId, Feature.BOOKMARK, Status.SEEN);
+                var content = (MessageEmbedDismissable) progress.getContent();
+                hook.sendMessageEmbeds(content.getValue()).setEphemeral(true).queue();
             }
         }
     }
@@ -360,7 +355,7 @@ public class PlayCommand extends SlashCommand {
                     .build();
             DataObject body = config.getObject("innertube_request_body");
             body.put("input", query);
-            RequestBody requestBody = RequestBody.create(MediaType.get("application/json"), body.toString());
+            RequestBody requestBody = RequestBody.create(body.toString(), MediaType.get("application/json"));
             Request request = new Request.Builder()
                     .url(uri.toURL())
                     .post(requestBody)
@@ -373,7 +368,7 @@ public class PlayCommand extends SlashCommand {
             DataObject responseBody = DataObject.fromJson(response.body().string());
             response.close();
             Optional<DataArray> optContents = responseBody.optArray("contents");
-            if (!optContents.isPresent())
+            if (optContents.isEmpty())
                 return Collections.emptyList();
             DataObject renderer = optContents.get().getObject(0).getObject("searchSuggestionsSectionRenderer");
             DataArray contents = renderer.optArray("contents").orElse(DataArray.empty());
