@@ -19,7 +19,12 @@ shadowJar {
     archiveFileName = "Bean.jar"
 }
 
-compileJava.options.encoding = 'UTF-8'
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
+    options.encoding = 'UTF-8'
+}
+
 repositories {
     mavenCentral()
     maven { url 'https://m2.dv8tion.net/releases' }
