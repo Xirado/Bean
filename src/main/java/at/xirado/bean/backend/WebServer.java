@@ -49,14 +49,19 @@ public class WebServer {
         post("/modifyguild", new GuildDataRoute());
         get("/commands", new CommandsRoute());
         get("/guilds/:guild/levels", new LeaderboardRoute());
-        get("/*", (req, res) ->
-        {
-            res.status(404);
-            return DataObject.empty()
-                    .put("code", 404)
-                    .put("message", "Site not found")
-                    .toString();
-        });
+
+        get("/*", (req, res) -> { res.status(404); return notFound(); });
+        post("/*", (req, res) -> { res.status(404); return notFound(); });
+        patch("/*", (req, res) -> { res.status(404); return notFound(); });
+        delete("/*", (req, res) -> { res.status(404); return notFound(); });
+        put("/*", (req, res) -> { res.status(404); return notFound(); });
+    }
+
+    private String notFound() {
+        return DataObject.empty()
+                .put("code", 404)
+                .put("message", "Site not found")
+                .toString();
     }
 
     public DataObject refreshToken(String refreshToken) throws IOException {

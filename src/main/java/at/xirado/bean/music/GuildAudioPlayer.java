@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.util.function.Consumer;
 
@@ -31,6 +32,22 @@ public class GuildAudioPlayer {
         player.addListener(scheduler);
         openPlayer = null;
         lastPlayerUpdate = 0;
+    }
+
+    public DataObject toJson() {
+        DataObject object = DataObject.empty()
+                .put("guild_id", guildId)
+                .put("repeat", scheduler.isRepeat())
+                .put("shuffle", scheduler.isShuffle())
+                .put("history", scheduler.serializeHistory())
+                .put("position", player.getTrackPosition())
+                .put("channel_id", Long.parseUnsignedLong(player.getLink().getChannel()))
+                .put("playing_track", LavalinkRestartController.toJson(player.getPlayingTrack()))
+                .put("tracks", scheduler.serializeQueue());
+
+        if (openPlayer != null)
+            object.put("player_channel_id", openPlayer.getChannelId());
+        return object;
     }
 
     public AudioScheduler getScheduler() {
@@ -72,8 +89,9 @@ public class GuildAudioPlayer {
                 .setActionRows(MusicUtil.getPlayerButtons(this))
                 .queue(message -> {
                     setOpenPlayer(new CachedMessage(message));
-                    onSuccess.accept(message);
-                }, onError);
+                    if (onSuccess != null)
+                        onSuccess.accept(message);
+                }, onError != null ? onError : (ex) -> {});
     }
 
     public void forcePlayerUpdate() {

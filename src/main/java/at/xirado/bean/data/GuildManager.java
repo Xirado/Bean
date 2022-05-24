@@ -5,18 +5,24 @@ import at.xirado.bean.data.database.SQLBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class GuildManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(GuildManager.class);
 
-    private static final Map<Long, GuildData> GUILD_DATA = new ConcurrentHashMap<>();
+    private static final Map<Long, GuildData> GUILD_DATA = ExpiringMap.builder()
+            .expiration(30, TimeUnit.MINUTES)
+            .expirationPolicy(ExpirationPolicy.ACCESSED)
+            .expirationListener((k, v) -> LOGGER.debug("Unloaded GuildData of guild " + k))
+            .build();
 
     public static GuildData getGuildData(Guild guild) {
         if (GUILD_DATA.containsKey(guild.getIdLong()))

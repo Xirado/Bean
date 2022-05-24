@@ -2,16 +2,20 @@ package at.xirado.bean.misc.objects;
 
 import at.xirado.bean.Bean;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TrackInfo {
+public class TrackInfo implements SerializableData {
     private final long requester;
     private final long channelId;
     private final long guildId;
-    private Set<Long> voteSkips;
+    private Set<Long> voteSkips = new HashSet<>();
     private boolean fromPlaylist = false;
     private String trackUrl = null;
     private String playlistUrl = null;
@@ -21,6 +25,30 @@ public class TrackInfo {
         this.requester = requester;
         this.guildId = guildId;
         this.channelId = channelId;
+    }
+
+    public static TrackInfo fromData(DataObject data) {
+        TrackInfo info = new TrackInfo(data.getLong("requester"), data.getLong("guild_id"), data.getLong("channel_id"));
+
+        data.optArray("vote_skips").orElseGet(DataArray::empty).stream(DataArray::getLong).forEach(info::addVoteSkip);
+        info.setTrackUrl(data.getString("track_url"));
+        info.setPlaylistUrl(data.getString("playlist_url"));
+        info.setPlaylistName(data.getString("playlist_name"));
+
+        return info;
+    }
+
+    @NotNull
+    @Override
+    public DataObject toData() {
+        return DataObject.empty()
+                .put("requester", requester)
+                .put("channel_id", channelId)
+                .put("guild_id", guildId)
+                .put("vote_skips", voteSkips)
+                .put("track_url", trackUrl)
+                .put("playlist_url", playlistUrl)
+                .put("playlist_name", playlistName);
     }
 
     public long getChannelId() {
@@ -64,24 +92,17 @@ public class TrackInfo {
     }
 
     public TrackInfo addVoteSkip(long userId) {
-        if (voteSkips == null) {
-            this.voteSkips = new HashSet<>();
-            this.voteSkips.add(userId);
-            return this;
-        }
         this.voteSkips.add(userId);
         return this;
     }
 
     public TrackInfo removeVoteSkip(long userId) {
-        if (voteSkips == null)
-            return this;
         this.voteSkips.remove(userId);
         return this;
     }
 
     public Set<Long> getVoteSkips() {
-        return voteSkips == null ? new HashSet<>() : voteSkips;
+        return voteSkips;
     }
 
     public long getGuildId() {
@@ -91,4 +112,6 @@ public class TrackInfo {
     public Guild getGuild() {
         return Bean.getInstance().getShardManager().getGuildById(guildId);
     }
+
+
 }
