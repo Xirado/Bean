@@ -101,7 +101,6 @@ public class RankingSystem {
 
     public static long getTotalXP(@Nonnull Connection connection, long guildID, long userID) {
         var query = new SQLBuilder("SELECT totalXP FROM levels WHERE guildID = ? AND userID = ?")
-                .useConnection(connection)
                 .addParameters(guildID, userID);
         try (var result = query.executeQuery()) {
             if (result.next())
@@ -127,15 +126,10 @@ public class RankingSystem {
     }
 
     public static void addXP(long guildID, long userID, long addedAmount, String name, String discriminator) {
-        var connection = Database.getConnectionFromPool();
-        if (connection == null) {
-            LOGGER.error("Could not get connection from db pool!", new SQLException("Connection == null!"));
-            return;
-        }
+        var connection = Database.getConnection();
         var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?";
         var totalXP = getTotalXP(connection, guildID, userID) + addedAmount;
         var query = new SQLBuilder(sql)
-                .useConnection(connection)
                 .addParameters(guildID, userID, totalXP, name, discriminator, totalXP, name, discriminator);
         try {
             query.execute();
@@ -150,7 +144,6 @@ public class RankingSystem {
         var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator, avatar) values (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?, avatar = ?";
         var totalXP = getTotalXP(connection, guildID, userID) + addedAmount;
         var query = new SQLBuilder(sql)
-                .useConnection(connection)
                 .addParameters(guildID, userID, totalXP, name, discriminator, avatarUrl, totalXP, name, discriminator, avatarUrl);
         try {
             query.execute();
@@ -173,7 +166,6 @@ public class RankingSystem {
     public static void setXP(@Nonnull Connection connection, long guildID, long userID, long setAmount, String name, String discriminator) {
         var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?";
         var query = new SQLBuilder(sql)
-                .useConnection(connection)
                 .addParameters(guildID, userID, setAmount, name, discriminator, setAmount, name, discriminator);
         try {
             query.execute();
@@ -185,7 +177,6 @@ public class RankingSystem {
     public static void setXP(@Nonnull Connection connection, long guildID, long userID, long setAmount, String name, String discriminator, String avatarUrl) {
         var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator, avatar) values (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?, avatar = ?";
         var query = new SQLBuilder(sql)
-                .useConnection(connection)
                 .addParameters(guildID, userID, setAmount, name, discriminator, avatarUrl, setAmount, name, discriminator, avatarUrl);
         try {
             query.execute();
@@ -221,7 +212,6 @@ public class RankingSystem {
 
     public static String getPreferredCard(@Nonnull Connection connection, @Nonnull User user) {
         var query = new SQLBuilder("SELECT * FROM wildcardSettings WHERE userID = ?")
-                .useConnection(connection)
                 .addParameter(user.getIdLong());
         try (var rs = query.executeQuery()) {
             return rs.next() ? rs.getString("card") : "card1";

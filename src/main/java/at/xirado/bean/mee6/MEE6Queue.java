@@ -154,7 +154,7 @@ public class MEE6Queue extends Thread {
 
             int entries = playersArray.length();
 
-            try (Connection connection = Database.getConnectionFromPool()) {
+            try (Connection connection = Database.getConnection()) {
                 playersArray
                         .stream(DataArray::getObject)
                         .map(MEE6Player::fromData)

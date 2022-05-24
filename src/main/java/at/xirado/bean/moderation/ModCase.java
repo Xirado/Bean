@@ -48,7 +48,7 @@ public class ModCase {
     }
 
     public static ModCase createModCase(CaseType type, long guildId, long targetId, long moderatorId, long duration, String reason) {
-        try (Connection connection = Database.getConnectionFromPool();
+        try (Connection connection = Database.getConnection();
              PreparedStatement ps = connection.prepareStatement("INSERT INTO modcases (uuid, caseType, guild, user, moderator, reason, createdAt, duration) values (?,?,?,?,?,?,?,?)")) {
             UUID uuid = generateUUID(connection);
             long creationTime = System.currentTimeMillis();
@@ -69,7 +69,7 @@ public class ModCase {
     }
 
     public static ModCase retrieveModCase(UUID uuid) {
-        try (Connection connection = Database.getConnectionFromPool();
+        try (Connection connection = Database.getConnection();
              PreparedStatement ps = connection.prepareStatement("SELECT * FROM modcases WHERE uuid = ?")) {
             ps.setString(1, uuid.toString());
             long creationTime = System.currentTimeMillis();
