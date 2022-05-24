@@ -5,6 +5,7 @@ import at.xirado.bean.command.ConsoleCommand;
 import at.xirado.bean.log.MCColor;
 import at.xirado.bean.log.Shell;
 import at.xirado.bean.music.GuildAudioPlayer;
+import at.xirado.bean.music.LavalinkRestartController;
 import net.dv8tion.jda.api.JDA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,20 +25,18 @@ public class Shutdown extends ConsoleCommand {
     public void executeCommand(String invoke, String[] args) {
         Set<GuildAudioPlayer> audioPlayers = Bean.getInstance().getAudioManager().getAudioPlayers();
         if (args.length == 0 || !args[0].equalsIgnoreCase("-f")) {
-            int playing = audioPlayers.stream()
-                    .mapToInt(pl -> pl.getPlayer().getPlayingTrack() == null ? 0 : 1)
-                    .sum();
 
             int mee6QueueSize = Bean.getInstance().getMEE6Queue().getQueue().size();
-
-            if (playing > 0)
-                Shell.println(MCColor.translate('&', "&eCareful: There are &2" + playing + "&e players running! Use shutdown -f to force-shutdown."));
-            if (mee6QueueSize > 0)
+            if (mee6QueueSize > 0) {
                 Shell.println(MCColor.translate('&', "&eCareful: There are &2" + mee6QueueSize + "&e pending MEE6 requests!"));
-            if (playing > 0 || mee6QueueSize > 0)
                 return;
+            }
         }
         logger.info("Shutting down...");
+        logger.info("Storing player session data...");
+        audioPlayers.stream()
+                .filter(audioPlayer -> audioPlayer.getPlayer().getPlayingTrack() != null)
+                .forEach(LavalinkRestartController::storeData);
         logger.info("Deleting player messages...");
         audioPlayers.forEach(pl -> {
             if (pl.getOpenPlayer() != null)

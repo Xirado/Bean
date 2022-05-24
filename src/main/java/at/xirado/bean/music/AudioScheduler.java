@@ -14,10 +14,12 @@ import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
@@ -43,6 +45,24 @@ public class AudioScheduler extends PlayerEventListenerAdapter {
         this.lastTracks = Collections.synchronizedList(new ArrayList<>());
         this.queue = new LinkedBlockingDeque<>();
         this.guildAudioPlayer = guildAudioPlayer;
+    }
+
+    public DataArray serializeQueue() {
+        DataArray tracks = DataArray.empty();
+        for (AudioTrack audioTrack : queue) {
+            tracks.add(LavalinkRestartController.toJson(audioTrack));
+        }
+
+        return tracks;
+    }
+
+    public DataArray serializeHistory() {
+        DataArray tracks = DataArray.empty();
+        for (AudioTrack audioTrack : lastTracks) {
+            tracks.add(LavalinkRestartController.toJson(audioTrack));
+        }
+
+        return tracks;
     }
 
     public void prevTrack() {
@@ -106,6 +126,14 @@ public class AudioScheduler extends PlayerEventListenerAdapter {
 
     public BlockingQueue<AudioTrack> getQueue() {
         return queue;
+    }
+
+    public List<AudioTrack> getLastTracks() {
+        return lastTracks;
+    }
+
+    public void addLastTrack(AudioTrack... tracks) {
+        lastTracks.addAll(Arrays.asList(tracks));
     }
 
     public LavalinkPlayer getPlayer() {

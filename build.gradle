@@ -55,7 +55,7 @@ dependencies {
     implementation 'com.google.guava:guava:31.0.1-jre'
     implementation 'pw.chew:jda-chewtils:1.20.2'
     implementation 'org.scilab.forge:jlatexmath:1.0.7'
-    implementation 'com.github.Xirado:Lavalink-Client:041082f'
+    implementation 'com.github.Xirado:Lavalink-Client:6da17b6'
     implementation "club.minnced:discord-webhooks:0.7.5"
     implementation 'io.github.classgraph:classgraph:4.8.146'
     implementation 'com.github.minndevelopment:jda-ktx:9f01b74'
