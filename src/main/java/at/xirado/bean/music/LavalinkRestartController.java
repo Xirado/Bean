@@ -17,6 +17,8 @@ import java.nio.file.Path;
 
 public class LavalinkRestartController {
 
+    private static final long MAX_TIME_MS = 10 * 60 * 1000;
+
     static {
         Path path = Path.of("players");
         try {
@@ -28,10 +30,12 @@ public class LavalinkRestartController {
     }
 
     public static void storeData(GuildAudioPlayer player) {
-        DataObject toStore = player.toJson();
-
         if (player.getPlayer().getPlayingTrack() == null)
             return;
+
+        DataObject toStore = player.toJson();
+
+        toStore.put("timestamp", System.currentTimeMillis());
 
         Path path = Path.of("players", player.getGuildId() + ".json");
 
@@ -54,11 +58,17 @@ public class LavalinkRestartController {
 
             Files.delete(path);
 
+            if (object.getLong("timestamp") + MAX_TIME_MS < System.currentTimeMillis())
+                return;
+
             GuildAudioPlayer player = Bean.getInstance().getAudioManager().getAudioPlayer(guild.getIdLong());
 
             AudioChannel channel = guild.getChannelById(AudioChannel.class, object.getLong("channel_id"));
 
             if (channel == null)
+                return;
+
+            if (channel.getMembers().size() == 0)
                 return;
 
             player.getLink().connect(channel);
