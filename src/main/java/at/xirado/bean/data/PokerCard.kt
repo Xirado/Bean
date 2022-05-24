@@ -1,9 +1,13 @@
-package at.xirado.bean.data;
+package at.xirado.bean.data
 
-import java.util.Arrays;
-
-public enum PokerCard {
-    // Clubs
+enum class PokerCard(
+    val emote: String,
+    val cardType: CardSuit,
+    val isAce: Boolean,
+    val isNumber: Boolean,
+    val isPicture: Boolean,
+    val value: Int
+) {
     ACE_CLUB("<:ace_of_clubs:909935152019410975>", CardSuit.CLUB, true, false, false, 11),
     TWO_CLUB("<:2_of_clubs:909935143601446922>", CardSuit.CLUB, false, true, false, 2),
     THREE_CLUB("<:3_of_clubs:909935148483629106>", CardSuit.CLUB, false, true, false, 3),
@@ -31,9 +35,7 @@ public enum PokerCard {
     TEN_DIAMOND("<:10_of_diamonds:909935152287842314>", CardSuit.DIAMOND, false, true, false, 10),
     JACK_DIAMOND("<:jack_of_diamonds:909938948137189396>", CardSuit.DIAMOND, false, false, true, 10),
     QUEEN_DIAMOND("<:queen_of_diamonds:909938948854415420>", CardSuit.DIAMOND, false, false, true, 10),
-    KING_DIAMOND("<:king_of_diamonds:909938948724371547>", CardSuit.DIAMOND, false, false, true, 10),
-
-    // Hearts
+    KING_DIAMOND("<:king_of_diamonds:909938948724371547>", CardSuit.DIAMOND, false, false, true, 10),  // Hearts
     ACE_HEART("<:ace_of_hearts:909935152354979920>", CardSuit.HEART, true, false, false, 11),
     TWO_HEART("<:2_of_hearts:909935145094619176>", CardSuit.HEART, false, true, false, 2),
     THREE_HEART("<:3_of_hearts:909935149087588372>", CardSuit.HEART, false, true, false, 3),
@@ -63,58 +65,16 @@ public enum PokerCard {
     QUEEN_SPADE("<:queen_of_spades:909938948854403113>", CardSuit.SPADE, false, false, true, 10),
     KING_SPADE("<:king_of_spades:909938948854403112>", CardSuit.SPADE, false, false, true, 10);
 
-    enum CardSuit {
-        CLUB(),
-        DIAMOND(),
-        HEART(),
-        SPADE();
+    enum class CardSuit {
+        CLUB,
+        DIAMOND,
+        HEART,
+        SPADE;
     }
 
-    private final String emote;
-    private final CardSuit cardType;
-    private final boolean isAce, isNumber, isPicture;
-    private final int value;
+    companion object {
+        val cards = PokerCard.values()
 
-    PokerCard(String emote, CardSuit cardType, boolean isAce, boolean isNumber, boolean isPicture, int value) {
-        this.emote = emote;
-        this.cardType = cardType;
-        this.isAce = isAce;
-        this.isNumber = isNumber;
-        this.isPicture = isPicture;
-        this.value = value;
-    }
-
-    public String getEmote() {
-        return emote;
-    }
-
-    public CardSuit getCardType() {
-        return cardType;
-    }
-
-    public boolean isAce() {
-        return isAce;
-    }
-
-    public boolean isNumber() {
-        return isNumber;
-    }
-
-    public boolean isPicture() {
-        return isPicture;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public static PokerCard[] getCards() {
-        return PokerCard.values();
-    }
-
-    public static PokerCard[] getCards(CardSuit cardType) {
-        return Arrays.stream(PokerCard.values())
-                .filter(card -> card.cardType == cardType)
-                .toArray(PokerCard[]::new);
+        fun getCards(cardType: CardSuit) = cards.filter { it.cardType == cardType }
     }
 }
