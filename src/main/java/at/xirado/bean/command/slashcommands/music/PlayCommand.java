@@ -331,8 +331,8 @@ public class PlayCommand extends SlashCommand {
             if (hasBookmarks) {
                 contentManager.setState(userId, Feature.BOOKMARK, Status.AWARE);
             } else {
-                var progress = contentManager.setState(userId, Feature.BOOKMARK, Status.SEEN);
-                var content = (MessageEmbedDismissable) progress.getContent();
+                var state = contentManager.setState(userId, Feature.BOOKMARK, Status.SEEN);
+                var content = (MessageEmbedDismissable) state.getContent();
                 hook.sendMessageEmbeds(content.getValue()).setEphemeral(true).queue();
             }
         }
