@@ -31,9 +31,14 @@ public class TrackInfo implements SerializableData {
         TrackInfo info = new TrackInfo(data.getLong("requester"), data.getLong("guild_id"), data.getLong("channel_id"));
 
         data.optArray("vote_skips").orElseGet(DataArray::empty).stream(DataArray::getLong).forEach(info::addVoteSkip);
-        info.setTrackUrl(data.getString("track_url"));
-        info.setPlaylistUrl(data.getString("playlist_url"));
-        info.setPlaylistName(data.getString("playlist_name"));
+        if (!data.isNull("track_url"))
+            info.setTrackUrl(data.getString("track_url"));
+
+        if (!data.isNull("playlist_url"))
+            info.setPlaylistUrl(data.getString("playlist_url"));
+
+        if (!data.isNull("playlist_name"))
+            info.setPlaylistName(data.getString("playlist_name"));
 
         return info;
     }
