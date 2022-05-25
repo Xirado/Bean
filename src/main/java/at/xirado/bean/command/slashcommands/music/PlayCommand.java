@@ -4,8 +4,8 @@ import at.xirado.bean.Bean;
 import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
-import at.xirado.bean.data.BasicAutocompletionChoice;
-import at.xirado.bean.data.IAutocompleteChoice;
+import at.xirado.bean.data.BasicAutoCompletionChoice;
+import at.xirado.bean.data.IAutoCompleteChoice;
 import at.xirado.bean.data.SearchEntry;
 import at.xirado.bean.data.content.*;
 import at.xirado.bean.data.database.SQLBuilder;
@@ -200,17 +200,17 @@ public class PlayCommand extends SlashCommand {
     }
 
     @Override
-    public void handleAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event) throws Exception {
+    public void handleAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event) {
         long userId = event.getUser().getIdLong();
         if (event.getFocusedOption().getName().equals("query")) {
             AutoCompleteQuery query = event.getFocusedOption();
-            List<IAutocompleteChoice> result = new ArrayList<>();
+            List<IAutoCompleteChoice> result = new ArrayList<>();
             boolean hasSearchEntries = hasSearchEntries(userId);
             if (query.getValue().isEmpty()) {
                 result.addAll(BookmarkCommand.getBookmarks(userId, false));
                 if (!hasSearchEntries) {
                     event.replyChoices(
-                            result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
+                            result.stream().map(IAutoCompleteChoice::toChoice).collect(Collectors.toList())
                     ).queue(s ->
                     {
                     }, e ->
@@ -219,14 +219,14 @@ public class PlayCommand extends SlashCommand {
                     return;
                 }
                 List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), false);
-                List<String> valueList = result.stream().map(IAutocompleteChoice::getValue).toList();
+                List<String> valueList = result.stream().map(IAutoCompleteChoice::getValue).toList();
                 searchEntries.stream()
                         .filter(x -> !valueList.contains(x.getValue()))
                         .limit(25 - result.size())
                         .limit(7)
                         .forEachOrdered(result::add);
                 event.replyChoices(
-                        result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
+                        result.stream().map(IAutoCompleteChoice::toChoice).collect(Collectors.toList())
                 ).queue(s ->
                 {
                 }, e ->
@@ -239,7 +239,7 @@ public class PlayCommand extends SlashCommand {
                     .filter(choice -> StringUtils.startsWithIgnoreCase(choice.getName(), query.getValue()))
                     .limit(25)
                     .forEach(result::add);
-            List<String> valueList = result.stream().map(IAutocompleteChoice::getValue).collect(Collectors.toList());
+            List<String> valueList = result.stream().map(IAutoCompleteChoice::getValue).toList();
             List<String> alreadyAdded = new ArrayList<>();
             if (hasSearchEntries) {
                 List<SearchEntry> searchEntries = getSearchHistory(event.getMember().getIdLong(), true);
@@ -258,11 +258,11 @@ public class PlayCommand extends SlashCommand {
             ytMusicResults.stream()
                     .filter(x -> !alreadyAdded.contains(x.toLowerCase(Locale.ROOT)))
                     .limit(Util.zeroIfNegative(25 - result.size() - alreadyAdded.size()))
-                    .forEach(x -> result.add(new BasicAutocompletionChoice(x, x)));
+                    .forEach(x -> result.add(new BasicAutoCompletionChoice(x, x)));
             if (result.size() == 0 && query.getValue().length() <= 100)
-                result.add(new BasicAutocompletionChoice(query.getValue(), query.getValue()));
+                result.add(new BasicAutoCompletionChoice(query.getValue(), query.getValue()));
             event.replyChoices(
-                    result.stream().map(IAutocompleteChoice::toCommandAutocompleteChoice).collect(Collectors.toList())
+                    result.stream().map(IAutoCompleteChoice::toChoice).collect(Collectors.toList())
             ).queue(s ->
             {
             }, e ->
@@ -328,18 +328,13 @@ public class PlayCommand extends SlashCommand {
     }
 
     private void handleDismissableContent(DismissableContentManager contentManager, long userId, boolean hasBookmarks, InteractionHook hook) {
-        if (!contentManager.hasProgress(userId, BookmarkDismissableContent.class)) {
+        if (!contentManager.hasState(userId, Feature.BOOKMARK)) {
             if (hasBookmarks) {
-                contentManager.createDismissableContent(userId, BookmarkDismissableContent.class, DismissableState.AWARE);
+                contentManager.setState(userId, Feature.BOOKMARK, Status.AWARE);
             } else {
-                DismissableProgress progress = contentManager.createDismissableContent(
-                        userId, BookmarkDismissableContent.class, DismissableState.SEEN
-                );
-
-                MessageEmbedDismissable dismissable = (MessageEmbedDismissable) progress.getDismissable();
-                hook.sendMessageEmbeds(dismissable.get())
-                        .setEphemeral(true)
-                        .queue();
+                var state = contentManager.setState(userId, Feature.BOOKMARK, Status.SEEN);
+                var content = (MessageEmbedDismissable) state.getContent();
+                hook.sendMessageEmbeds(content.getValue()).setEphemeral(true).queue();
             }
         }
     }
@@ -361,7 +356,7 @@ public class PlayCommand extends SlashCommand {
                     .build();
             DataObject body = config.getObject("innertube_request_body");
             body.put("input", query);
-            RequestBody requestBody = RequestBody.create(MediaType.get("application/json"), body.toString());
+            RequestBody requestBody = RequestBody.create(body.toString(), MediaType.get("application/json"));
             Request request = new Request.Builder()
                     .url(uri.toURL())
                     .post(requestBody)
@@ -374,7 +369,7 @@ public class PlayCommand extends SlashCommand {
             DataObject responseBody = DataObject.fromJson(response.body().string());
             response.close();
             Optional<DataArray> optContents = responseBody.optArray("contents");
-            if (!optContents.isPresent())
+            if (optContents.isEmpty())
                 return Collections.emptyList();
             DataObject renderer = optContents.get().getObject(0).getObject("searchSuggestionsSectionRenderer");
             DataArray contents = renderer.optArray("contents").orElse(DataArray.empty());

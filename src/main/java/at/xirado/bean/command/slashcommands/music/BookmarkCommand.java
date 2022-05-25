@@ -196,13 +196,13 @@ public class BookmarkCommand extends SlashCommand {
             if (input.isEmpty()) {
                 List<Bookmark> bookmarks = getBookmarks(userId, false);
                 event.replyChoices(
-                        bookmarks.stream().map(Bookmark::toCommandAutocompleteChoice).collect(Collectors.toList())
+                        bookmarks.stream().map(Bookmark::toChoice).collect(Collectors.toList())
                 ).queue();
                 return;
             }
             List<Bookmark> bookmarks = getMatchingBookmarks(userId, input, false);
             event.replyChoices(
-                    bookmarks.stream().map(Bookmark::toCommandAutocompleteChoice).collect(Collectors.toList())
+                    bookmarks.stream().map(Bookmark::toChoice).collect(Collectors.toList())
             ).queue();
         }
     }

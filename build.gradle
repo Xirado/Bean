@@ -85,6 +85,12 @@ processResources {
     }
 }
 
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
+    options.encoding = "UTF-8"
+}
+
 compileKotlin {
     kotlinOptions {
         jvmTarget = "16"

@@ -58,9 +58,7 @@ public class XPMessageListener extends ListenerAdapter {
         long userId = event.getAuthor().getIdLong();
         long guildId = event.getGuild().getIdLong();
         if (!timeout.containsKey(userId) || (System.currentTimeMillis() - timeout.get(userId)) > TIMEOUT) {
-            try (Connection connection = Database.getConnectionFromPool()) {
-                if (connection == null) return;
-
+            try (Connection connection = Database.getConnection()) {
                 // Current total amount of xp
                 long currentTotalXP = RankingSystem.getTotalXP(connection, guildId, userId);
 
@@ -116,8 +114,8 @@ public class XPMessageListener extends ListenerAdapter {
                     }
                 }
                 timeout.put(userId, System.currentTimeMillis());
-            } catch (Exception ex) {
-                LOGGER.error("Could not update XP!", ex);
+            } catch (Exception e) {
+                LOGGER.error("Could not update XP!", e);
             }
         }
     }

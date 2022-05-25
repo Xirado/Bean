@@ -51,18 +51,14 @@ public class RankCommand extends SlashCommand {
         long userId = event.getUser().getIdLong();
         DismissableContentManager contentManager = Bean.getInstance().getDismissableContentManager();
 
-        if (!contentManager.hasProgress(userId, RankCustomBackgroundDismissableContent.class)) {
+        if (!contentManager.hasState(userId, Feature.CUSTOM_RANK_BACKGROUND)) {
             if (!RankingSystem.getPreferredCard(event.getUser()).startsWith("card")) { // Default backgrounds
                 // They have a custom background so no need to show it to them.
-                contentManager.createDismissableContent(userId, RankCustomBackgroundDismissableContent.class, DismissableState.AWARE);
+                contentManager.setState(userId, Feature.CUSTOM_RANK_BACKGROUND, Status.AWARE);
             } else {
-                DismissableProgress progress = contentManager.createDismissableContent(
-                        userId, RankCustomBackgroundDismissableContent.class, DismissableState.SEEN
-                );
-                var dismissable = (MessageEmbedDismissable) progress.getDismissable();
-                commandHook.sendMessageEmbeds(dismissable.get())
-                        .setEphemeral(true)
-                        .queue();
+                var state = contentManager.setState(userId, Feature.CUSTOM_RANK_BACKGROUND, Status.SEEN);
+                var dismissable = (MessageEmbedDismissable) state.getContent();
+                commandHook.sendMessageEmbeds(dismissable.getValue()).setEphemeral(true).queue();
             }
         }
     }

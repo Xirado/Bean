@@ -3,7 +3,7 @@ package at.xirado.bean.command.slashcommands;
 import at.xirado.bean.Bean;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
-import at.xirado.bean.data.BasicAutocompletionChoice;
+import at.xirado.bean.data.BasicAutoCompletionChoice;
 import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -84,19 +84,19 @@ public class RedditCommand extends SlashCommand {
 
     @Override
     public void handleAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event) {
-        List<BasicAutocompletionChoice> choices = List.of(
-                new BasicAutocompletionChoice("r/memes", "memes"),
-                new BasicAutocompletionChoice("r/me_irl", "me_irl"),
-                new BasicAutocompletionChoice("r/ProgrammerHumor", "programmerhumor"),
-                new BasicAutocompletionChoice("r/dankmemes", "dankmemes"),
-                new BasicAutocompletionChoice("r/AdviceAnimals", "adviceanimals"),
-                new BasicAutocompletionChoice("r/interestingasfuck", "interestingasfuck")
+        List<BasicAutoCompletionChoice> choices = List.of(
+                new BasicAutoCompletionChoice("r/memes", "memes"),
+                new BasicAutoCompletionChoice("r/me_irl", "me_irl"),
+                new BasicAutoCompletionChoice("r/ProgrammerHumor", "programmerhumor"),
+                new BasicAutoCompletionChoice("r/dankmemes", "dankmemes"),
+                new BasicAutoCompletionChoice("r/AdviceAnimals", "adviceanimals"),
+                new BasicAutoCompletionChoice("r/interestingasfuck", "interestingasfuck")
         );
         event.replyChoices(
                 choices.stream()
                         .filter(value -> StringUtils.startsWithIgnoreCase(value.getName(), event.getFocusedOption().getValue())
                                 || StringUtils.startsWithIgnoreCase(value.getValue(), event.getFocusedOption().getValue()))
-                        .map(BasicAutocompletionChoice::toCommandAutocompleteChoice)
+                        .map(BasicAutoCompletionChoice::toChoice)
                         .toList()
         ).queue();
     }

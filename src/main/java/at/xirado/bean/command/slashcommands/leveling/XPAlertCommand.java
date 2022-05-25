@@ -81,7 +81,7 @@ public class XPAlertCommand extends SlashCommand {
 
 
     public static String getXPAlert(@Nonnull Guild guild) {
-        Connection connection = Database.getConnectionFromPool();
+        Connection connection = Database.getConnection();
         try (var ps = connection.prepareStatement("SELECT mode FROM xpAlerts WHERE guildID = ?")) {
             ps.setLong(1, guild.getIdLong());
             var rs = ps.executeQuery();
@@ -117,7 +117,7 @@ public class XPAlertCommand extends SlashCommand {
     }
 
     public static boolean setXPAlert(@Nonnull Guild guild, String modeOrChannelID) {
-        Connection connection = Database.getConnectionFromPool();
+        Connection connection = Database.getConnection();
         try (var ps = connection.prepareStatement("INSERT INTO xpAlerts (guildID, mode) VALUES (?,?) ON DUPLICATE KEY UPDATE mode = ?")) {
             ps.setLong(1, guild.getIdLong());
             ps.setString(2, modeOrChannelID);
