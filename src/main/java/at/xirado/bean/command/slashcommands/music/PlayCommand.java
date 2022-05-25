@@ -55,6 +55,12 @@ import java.util.stream.Collectors;
 public class PlayCommand extends SlashCommand {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayCommand.class);
 
+    private static final String YT_SEARCH_ERROR = """
+            Searching for Youtube Videos is currently not possible.
+            See [this link](<https://github.com/Walkyst/lavaplayer-fork/issues/49>) for more information.
+            In the meantime, you can use use direct links, or use the **Youtube Music** provider option on `/play`.
+            """;
+
     public PlayCommand() {
         setCommandData(Commands.slash("play", "Plays a track from YouTube, Soundcloud, Spotify, and more.")
                 .addOptions(new OptionData(OptionType.STRING, "query", "Youtube search term or a URL that is supported.", true).setAutoComplete(true))
@@ -107,6 +113,7 @@ public class PlayCommand extends SlashCommand {
         long channelId = event.getChannel().getIdLong();
         String rawQuery = event.getOption("query").getAsString();
         DismissableContentManager contentManager = Bean.getInstance().getDismissableContentManager();
+        boolean isYoutube = query.startsWith("ytsearch:");
         boolean hasBookmarks = !BookmarkCommand.getBookmarks(event.getUser().getIdLong(), false).isEmpty();
         link.getRestClient().loadItem(query, new AudioLoadResultHandler() {
 
@@ -188,7 +195,10 @@ public class PlayCommand extends SlashCommand {
 
             @Override
             public void noMatches() {
-                event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Sorry, i couldn't find anything matching your search!")).queue();
+                if (isYoutube)
+                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(YT_SEARCH_ERROR)).queue();
+                else
+                    event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("Sorry, i couldn't find anything matching your search!")).queue();
             }
 
             @Override
