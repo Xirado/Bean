@@ -5,6 +5,8 @@ import java.time.Instant
 
 application {
     mainClass.set("at.xirado.bean.Main")
+
+    tasks.run.get().workingDir = File(rootProject.projectDir, "build/libs")
 }
 
 group = "at.xirado"
@@ -26,17 +28,14 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("com.github.Xirado:JDA:bc50c87")
+    implementation("com.github.Xirado:JDA:6ac9d59")
     implementation("com.github.minndevelopment:jda-ktx:9f01b74")
     implementation("com.github.Topis-Lavalink-Plugins:Topis-Source-Managers:2.0.1")
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("club.minnced:discord-webhooks:0.7.5")
-    implementation("org.fusesource.jansi:jansi:2.4.0")
-    implementation("io.github.classgraph:classgraph:4.8.141")
+    implementation("io.github.classgraph:classgraph:4.8.146")
     implementation("ch.qos.logback:logback-classic:1.3.0-alpha14")
-    implementation("org.jline:jline:3.21.0")
-    implementation("org.codehaus.groovy:groovy-jsr223:3.0.8")
     implementation("commons-io:commons-io:2.11.0")
+    implementation("org.mariadb.jdbc:mariadb-java-client:2.7.3")
 }
 
 tasks {

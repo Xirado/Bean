@@ -6,16 +6,15 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.stream.Collectors
 
-class BeanConfiguration(dataObject: DataObject) {
+private val log = LoggerFactory.getLogger(BeanConfiguration::class.java) as Logger
 
-    companion object {
-        private val log = LoggerFactory.getLogger(BeanConfiguration::class.java) as Logger
-    }
+class BeanConfiguration(dataObject: DataObject) {
 
     val discordToken: String
     val devMode: Boolean
     val devGuilds: List<Long>
     val devUsers: List<Long>
+    val dbConfig: DataObject
 
     init {
         discordToken = dataObject.getStringOrThrow("discord_token")
@@ -33,7 +32,6 @@ class BeanConfiguration(dataObject: DataObject) {
         if (devMode && devGuilds.isEmpty())
             log.warn("Dev mode is enabled but no guilds are specified. You will not see any commands!")
 
-
+        dbConfig = dataObject.optObject("database").orElseGet(DataObject::empty)
     }
-
 }

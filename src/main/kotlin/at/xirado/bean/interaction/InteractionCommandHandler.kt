@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.CommandPermission
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction
 import net.dv8tion.jda.internal.utils.Checks
 import org.slf4j.Logger
@@ -19,16 +20,11 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Collectors
 
+private val log = LoggerFactory.getLogger(InteractionCommandHandler::class.java) as Logger
+
+private const val commandsPackage = "at.xirado.bean.interaction.command"
+
 class InteractionCommandHandler(private val application: Application) {
-
-    companion object {
-        val AUTOCOMPLETE_MAX_CHOICES = 25
-
-        private val log = LoggerFactory.getLogger(InteractionCommandHandler::class.java) as Logger
-
-        private const val commandsPackage = "at.xirado.bean.interaction.command"
-    }
-
     private val globalCommands: MutableList<GenericCommand> = Collections.synchronizedList(mutableListOf())
     private val guildCommands: MutableMap<Long, MutableList<GenericCommand>> = ConcurrentHashMap()
 
@@ -54,16 +50,16 @@ class InteractionCommandHandler(private val application: Application) {
         val command = getGenericCommand(guildId, event.name, event.commandType.id)?: return
         val member = event.member!!
 
-        if (command.hasCommandFlag(CommandFlag.DEVELOPER_ONLY)) {
+        if (CommandFlag.DEVELOPER_ONLY in command.commandFlags) {
             if (member.idLong !in application.config.devUsers) {
-                event.replyError("Hold up! You cannot use this :c").setEphemeral(true).await()
+                event.replyError("This maze isn't meant for you!", ephemeral = true).await()
                 return
             }
         }
 
         val missingUserPerms = getMissingPermissions(member, event.guildChannel, command.requiredUserPermissions)
 
-        if (!missingUserPerms.isEmpty()) {
+        if (missingUserPerms.isNotEmpty()) {
             val singular = missingUserPerms.size == 1
             val parsed = missingUserPerms.stream().map { "`${it}`" }.collect(Collectors.joining(", "))
             event.reply(":x: You are missing the following ${if (singular) "permission" else "permissions"}:\n$parsed").await()
@@ -73,7 +69,7 @@ class InteractionCommandHandler(private val application: Application) {
 
         val missingBotPerms = getMissingPermissions(guild.selfMember, event.guildChannel, command.requiredBotPermissions)
 
-        if (!missingBotPerms.isEmpty()) {
+        if (missingBotPerms.isNotEmpty()) {
             val singular = missingBotPerms.size == 1
             val parsed = missingBotPerms.stream().map { "`${it}`" }.collect(Collectors.joining(", "))
             event.reply(":x: I am missing the following ${if (singular) "permission" else "permissions"}:\n$parsed").await()
@@ -119,6 +115,9 @@ class InteractionCommandHandler(private val application: Application) {
     private fun registerCommand(action: CommandListUpdateAction, command: GenericCommand) {
         val config = application.config
         Checks.notNull(command, "Command")
+        if (command.requiredUserPermissions.isNotEmpty()) {
+            command.commandData.defaultPermissions = CommandPermission.enabledFor(command.requiredUserPermissions)
+        }
 
         if (command.global && !config.devMode) {
             globalCommands.add(command)

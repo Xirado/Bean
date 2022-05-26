@@ -6,9 +6,10 @@ import net.dv8tion.jda.api.utils.data.DataType
 class I18n(val name: String, val data: DataObject) {
 
     companion object {
+        @JvmStatic
         private fun format(layout: String, vararg attributes: Pair<String, Any>): String {
             var output = layout
-            attributes.forEach { output =  output.replace("{${it.first}}", it.second.toString()) }
+            attributes.forEach { output = output.replace("{${it.first}}", it.second.toString()) }
             return output
         }
     }

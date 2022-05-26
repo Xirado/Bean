@@ -1,5 +1,7 @@
 package at.xirado.bean.interaction
 
+import dev.minn.jda.ktx.interactions.Subcommand
+import dev.minn.jda.ktx.interactions.optionType
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -7,16 +9,15 @@ import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import net.dv8tion.jda.internal.utils.Checks
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import java.util.*
 
 abstract class SlashCommand(name: String, description: String) : GenericCommand {
-
     override val commandData = Commands.slash(name, description)
-    override val requiredUserPermissions = EnumSet.noneOf(Permission::class.java)
-    override val requiredBotPermissions = EnumSet.noneOf(Permission::class.java)
+    override val requiredUserPermissions: EnumSet<Permission> = EnumSet.noneOf(Permission::class.java)
+    override val requiredBotPermissions: EnumSet<Permission> = EnumSet.noneOf(Permission::class.java)
     override val enabledGuilds = HashSet<Long>()
-    override val commandFlags = EnumSet.noneOf(CommandFlag::class.java)
+    override val commandFlags: EnumSet<CommandFlag> = EnumSet.noneOf(CommandFlag::class.java)
 
     override val type: Command.Type
         get() = Command.Type.SLASH
@@ -24,49 +25,22 @@ abstract class SlashCommand(name: String, description: String) : GenericCommand 
     override val global: Boolean
         get() = enabledGuilds.isEmpty()
 
-    fun option(
-        type: OptionType,
-        name: String,
-        description: String,
-        required: Boolean = false,
-        autoComplete: Boolean = false,
-        vararg choices: Command.Choice
-    ) {
-        val optionData = OptionData(type, name, description, required, autoComplete)
-        choices.forEach { optionData.addChoices(it) }
-        commandData.addOptions(optionData)
+    fun devCommand() {
+        enabledGuilds.addAll(application.config.devGuilds)
+        commandFlags.add(CommandFlag.DEVELOPER_ONLY)
     }
 
-    override fun addRequiredUserPermissions(permission: Permission, vararg permissions: Permission) {
-        Checks.notNull(permission, "Permission")
-        Checks.noneNull(permissions, "Permission")
+    inline fun <reified T> option(name: String, description: String, required: Boolean = false, autocomplete: Boolean = false, builder: OptionData.() -> Unit = {}) {
+        val type = optionType<T>()
+        if (type == OptionType.UNKNOWN)
+            throw IllegalArgumentException("Cannot resolve type " + T::class.java.simpleName + " to OptionType!")
 
-        requiredUserPermissions.add(permission)
-        requiredUserPermissions.addAll(permissions.asList())
+        commandData.addOptions(OptionData(type, name, description).setRequired(required).setAutoComplete(autocomplete).apply(builder))
     }
 
-    override fun addRequiredBotPermissions(permission: Permission, vararg permissions: Permission) {
-        Checks.notNull(permission, "Permission")
-        Checks.noneNull(permissions, "Permission")
-
-        requiredBotPermissions.add(permission)
-        requiredBotPermissions.addAll(permissions.asList())
-    }
-
-    override fun setEnabledGuilds(vararg guildIds: Long) {
-        enabledGuilds.clear()
-        enabledGuilds.addAll(guildIds.toList())
-    }
-
-    override fun addCommandFlags(vararg commandFlags: CommandFlag) {
-        Checks.noneNull(commandFlags, "CommandFlags")
-
-        this.commandFlags.addAll(commandFlags.toList())
-    }
-
-    override fun hasCommandFlag(commandFlag: CommandFlag): Boolean {
-        return this.commandFlags.contains(commandFlag)
-    }
+    inline fun subcommand(name: String, description: String, builder: SubcommandData.() -> Unit = {}) = commandData.addSubcommands(
+        Subcommand(name, description, builder)
+    )
 
     abstract suspend fun execute(event: SlashCommandInteractionEvent)
 
