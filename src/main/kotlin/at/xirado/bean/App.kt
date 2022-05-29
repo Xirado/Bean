@@ -22,8 +22,10 @@ import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.slf4j.LoggerFactory
 import java.util.*
+import java.util.concurrent.Executors
 
 val coroutineScope = getDefaultScope()
+val executor = Executors.newFixedThreadPool(10)
 
 fun main(args: Array<String>) {
     if ("--noclear" !in args)

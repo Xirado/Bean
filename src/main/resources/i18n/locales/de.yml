@@ -3,3 +3,8 @@ general:
     unknown_error_occurred: |
         Es ist ein unerwarteter Fehler aufgetreten.
         Bitte versuche es später erneut
+commands:
+    setxpcard:
+        too_large: Datei ist zu groß! Die maximale Größe beträgt {size}.
+        success: Dein Hintergrund wurde aktualisiert!
+        invalid_upload: 'Ungültige Dateierweiterung! Unterstützt sind: {extensions}'

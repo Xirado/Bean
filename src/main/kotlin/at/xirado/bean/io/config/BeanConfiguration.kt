@@ -1,15 +1,13 @@
 package at.xirado.bean.io.config
 
+import at.xirado.bean.util.getLog
 import net.dv8tion.jda.api.utils.data.DataArray
 import net.dv8tion.jda.api.utils.data.DataObject
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.util.stream.Collectors
 
-private val log = LoggerFactory.getLogger(BeanConfiguration::class.java) as Logger
+private val log = getLog<BeanConfiguration>()
 
 class BeanConfiguration(dataObject: DataObject) {
-
     val discordToken: String
     val devMode: Boolean
     val devGuilds: List<Long>

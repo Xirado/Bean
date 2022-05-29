@@ -14,7 +14,7 @@ class GuildManager(val application: Application) {
         .expirationPolicy(ExpirationPolicy.ACCESSED)
         .build<Long, GuildData>()
 
-    suspend fun getGuildData(guildId: Long) = cache.computeSuspendIfAbsent(guildId) { retrieveGuildData(it) }
+    suspend fun getGuildData(guildId: Long): GuildData = cache.computeSuspendIfAbsent(guildId) { retrieveGuildData(it) }
 
     private suspend fun retrieveGuildData(guildId: Long): GuildData {
         return SQLBuilder("SELECT data FROM guild_data WHERE guild_id = ?", guildId).executeQuery {

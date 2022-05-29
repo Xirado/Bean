@@ -14,7 +14,7 @@ class I18n(val name: String, val data: DataObject) {
         }
     }
 
-    fun get(path: String, vararg attributes: Pair<String, Any>): String? {
+    fun get(path: String, vararg attributes: Pair<String, Any>): String {
         val paths = path.split(".")
 
         var current = data
@@ -36,6 +36,6 @@ class I18n(val name: String, val data: DataObject) {
 
             return format(current.getString(subPath), *attributes)
         }
-        return null
+        throw NoSuchFieldException("Path $path does not exist in locale $name!")
     }
 }

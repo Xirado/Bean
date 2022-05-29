@@ -1,14 +1,20 @@
 package at.xirado.bean.interaction.command.slash.rank
 
 import at.xirado.bean.Application
+import at.xirado.bean.getData
 import at.xirado.bean.interaction.SlashCommand
+import at.xirado.bean.util.replyErrorLocalized
+import at.xirado.bean.util.sendSuccessLocalized
+import dev.minn.jda.ktx.await
 import dev.minn.jda.ktx.interactions.choice
+import dev.minn.jda.ktx.interactions.getOption
 import net.dv8tion.jda.api.entities.Message.Attachment
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import java.io.File
 
 private val supportedExtensions = listOf("png", "jpg", "jpeg")
-private val imageDirectory by lazy { File("backgrounds").also { if (!it.exists()) it.mkdir() } }
+private val supportedExtensionsString = "`${supportedExtensions.joinToString(", ")}`"
+val imageDirectory by lazy { File("backgrounds").also { if (!it.exists()) it.mkdir() } }
 private val maxSize = 1000 * 1000 * 15 // 15MB
 
 class SetXPCardCommand(override val application: Application) : SlashCommand("setxpcard", "Update the background shown when using /rank") {
@@ -27,6 +33,30 @@ class SetXPCardCommand(override val application: Application) : SlashCommand("se
     }
 
     override suspend fun execute(event: SlashCommandInteractionEvent) {
-        TODO("Not yet implemented")
+        val attachment = event.getOption<Attachment>("background")!!
+        val extension = attachment.fileExtension
+        if (extension == null || extension !in supportedExtensions)
+            return event.replyErrorLocalized("commands.setxpcard.invalid_upload",
+                "extensions" to supportedExtensionsString, ephemeral = true).queue()
+
+        if (attachment.size > maxSize)
+            return event.replyErrorLocalized("commands.setxpcard.too_large",
+                "size" to "15MB", ephemeral = true).queue()
+
+        event.deferReply(true).queue()
+
+        val proxy = attachment.proxy
+
+        val fullName = "${event.interaction.idLong}.$extension"
+
+        val file = File(imageDirectory, fullName)
+        proxy.downloadToFile(file, 1200, 300).await()
+
+        event.user.getData().apply {
+            rankBackground = fullName
+            rankAccentColor = event.getOption<Int>("color")!!
+            update()
+            event.sendSuccessLocalized("commands.setxpcard.success").queue()
+        }
     }
 }

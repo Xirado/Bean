@@ -1,3 +1,8 @@
 general:
     support: Support
     unknown_error_occurred: An unexpected error occurred. Please try again later.
+commands:
+    setxpcard:
+        too_large: File is too large! The maximum allowed size is {size}.
+        success: Your background has been updated!
+        invalid_upload: 'Invalid file extension! Valid extensions are: {extensions}'
