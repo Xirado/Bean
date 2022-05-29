@@ -17,8 +17,7 @@ class LocalizationTest(override val application: Application) : SlashCommand("lo
     override suspend fun execute(event: SlashCommandInteractionEvent) {
         val tag = event.getOption<String>("tag")!!
         val localizationManager = application.localizationManager
-        val locale = localizationManager.getForLanguageTag(tag)?:
-            return event.replyError("Locale with tag \"$tag\" was not found!").queue()
+        val locale = localizationManager.getForLanguageTag(tag)
 
         val result = locale.get("general.info", "user" to event.user.asTag, "reason" to "Ehrenmann!")?:
             return event.replyError("Path \"general.info\" was not found!").queue()

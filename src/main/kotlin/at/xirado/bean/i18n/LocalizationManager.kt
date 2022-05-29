@@ -1,6 +1,7 @@
 package at.xirado.bean.i18n
 
 import at.xirado.bean.io.config.FileLoader
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.utils.data.DataArray
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -48,5 +49,9 @@ class LocalizationManager {
 
     fun getForLanguageTag(tag: String): I18n {
         return locales[tag]?: locales["en_US"]!!
+    }
+
+    fun getForGuild(guild: Guild): I18n {
+        return getForLanguageTag(guild.locale.toLanguageTag())
     }
 }

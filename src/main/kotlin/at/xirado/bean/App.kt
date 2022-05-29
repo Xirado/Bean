@@ -1,6 +1,8 @@
 @file:JvmName("Main")
 package at.xirado.bean
 
+import at.xirado.bean.data.GuildManager
+import at.xirado.bean.data.UserManager
 import at.xirado.bean.i18n.LocalizationManager
 import at.xirado.bean.interaction.InteractionCommandHandler
 import at.xirado.bean.io.config.BeanConfiguration
@@ -33,14 +35,19 @@ fun main(args: Array<String>) {
     Application()
 }
 
+lateinit var APPLICATION: Application
+
 class Application {
     val config = BeanConfiguration(FileLoader.loadFileAsYaml("config.yml", true))
     val shardManager: ShardManager
 
     val interactionCommandHandler: InteractionCommandHandler
     val localizationManager = LocalizationManager()
+    val guildManager = GuildManager(this)
+    val userData = UserManager(this)
 
     init {
+        APPLICATION = this
         val properties = Properties()
         properties.load(Application::class.java.getResourceAsStream("/app.properties"))
         VERSION = properties.getProperty("app-version")

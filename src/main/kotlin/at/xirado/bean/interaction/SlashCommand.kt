@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import java.util.*
 
 abstract class SlashCommand(name: String, description: String) : GenericCommand {
-    override val commandData = Commands.slash(name, description)
+    override val commandData = Commands.slash(name.lowercase(Locale.getDefault()), description)
     override val requiredUserPermissions: EnumSet<Permission> = EnumSet.noneOf(Permission::class.java)
     override val requiredBotPermissions: EnumSet<Permission> = EnumSet.noneOf(Permission::class.java)
     override val enabledGuilds = HashSet<Long>()
@@ -21,9 +21,6 @@ abstract class SlashCommand(name: String, description: String) : GenericCommand 
 
     override val type: Command.Type
         get() = Command.Type.SLASH
-
-    override val global: Boolean
-        get() = enabledGuilds.isEmpty()
 
     fun devCommand() {
         enabledGuilds.addAll(application.config.devGuilds)

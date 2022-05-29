@@ -1,7 +1,9 @@
 package at.xirado.bean.interaction
 
 import at.xirado.bean.Application
+import at.xirado.bean.util.SUPPORT_BUTTON
 import at.xirado.bean.util.replyError
+import at.xirado.bean.util.sendErrorMessage
 import dev.minn.jda.ktx.await
 import io.github.classgraph.ClassGraph
 import net.dv8tion.jda.api.Permission
@@ -99,9 +101,23 @@ class InteractionCommandHandler(private val application: Application) {
         when (command) {
             is SlashCommand -> {
                 val slashEvent = event as SlashCommandInteractionEvent
-                command.execute(slashEvent)
+                runCatching { command.execute(slashEvent) }.onFailure { handleError(event, it) }
             }
         }
+    }
+
+    private fun handleError(event: GenericCommandInteractionEvent, throwable: Throwable) {
+        log.error("An unhandled error was encountered", throwable)
+        val locale = application.localizationManager.getForGuild(event.guild!!)
+
+        val errorMessage = locale.get("general.unknown_error_occurred")?: "An unknown error occurred"
+        val supportMessage = locale.get("general.support")?: "Support"
+        val button = SUPPORT_BUTTON.withLabel(supportMessage)
+
+        if (event.isAcknowledged)
+            event.sendErrorMessage(errorMessage, ephemeral = true).addActionRow(button).queue()
+        else
+            event.replyError(errorMessage, ephemeral = true).addActionRow(button).queue()
     }
 
     private fun registerCommands() {
@@ -160,17 +176,17 @@ class InteractionCommandHandler(private val application: Application) {
     }
 
     private fun registerCommandsOfClass(clazz: Class<out GenericCommand>, action: CommandListUpdateAction) {
-        val scanResult = ClassGraph().acceptPackages(commandsPackage).enableClassInfo().scan()
-
-        scanResult.getSubclasses(clazz).loadClasses().forEach {
-            try {
-                log.debug("Found interaction-command ${it.name}")
-                registerCommand(action, it.getDeclaredConstructor(Application::class.java).newInstance(application) as GenericCommand)
-            } catch (ex: Exception) {
-                log.error("An error occurred while loading an interaction-command", ex)
+        ClassGraph().acceptPackages(commandsPackage).enableClassInfo().scan().use {
+            it.getSubclasses(clazz).loadClasses().forEach {
+                runCatching {
+                    log.debug("Found interaction-command ${it.name}")
+                    registerCommand(
+                        action,
+                        it.getDeclaredConstructor(Application::class.java).newInstance(application) as GenericCommand
+                    )
+                }.onFailure { ex -> log.error("An error occurred while loading an application-command", ex) }
             }
         }
-        scanResult.close()
     }
 
     fun getGuildCommands() : Map<Long, List<GenericCommand>> {
@@ -179,14 +195,14 @@ class InteractionCommandHandler(private val application: Application) {
 
     private fun getGenericCommand(name: String, type: Int) : GenericCommand? {
         return globalCommands.stream()
-            .filter { it.commandData.name.equals(name, true) && it.type.id == type}
+            .filter { it.commandData.name == name && it.type.id == type}
             .findFirst().orElse(null)
     }
 
     private fun getGenericCommand(guildId: Long, name: String, type: Int) : GenericCommand? {
         return guildCommands.getOrDefault(guildId, listOf())
             .stream()
-            .filter { it.commandData.name.equals(name, true) && it.type.id == type }
+            .filter { it.commandData.name == name && it.type.id == type }
             .findFirst()
             .orElse(getGenericCommand(name, type))
     }

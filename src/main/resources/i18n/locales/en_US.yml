@@ -1,2 +1,3 @@
 general:
-    info: '{user} is cool because {reason}'
+    support: Support
+    unknown_error_occurred: An unexpected error occurred. Please try again later.

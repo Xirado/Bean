@@ -1,11 +1,9 @@
 package at.xirado.bean.util
 
-import dev.minn.jda.ktx.Embed
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 
-private const val ERROR_EMOTE = "<:error:943524725487968298>"
 
-private fun errorEmbed(message: String) = Embed { description = "$ERROR_EMOTE $message"; color = 0x8b0000 }
+
 
 fun GenericCommandInteractionEvent.replyError(message: String, ephemeral: Boolean = false) = replyEmbeds(errorEmbed(message))
     .setEphemeral(ephemeral)

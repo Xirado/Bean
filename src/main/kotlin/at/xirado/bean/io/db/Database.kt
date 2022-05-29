@@ -3,15 +3,15 @@ package at.xirado.bean.io.db
 import at.xirado.bean.coroutineScope
 import at.xirado.bean.io.config.BeanConfiguration
 import at.xirado.bean.io.config.anyNull
+import at.xirado.bean.util.getLog
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.launch
-import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.sql.SQLException
 
 object Database : AutoCloseable {
-    private val logger = LoggerFactory.getLogger(this::class.java)
+    private val logger = getLog<Database>()
     private val isConnected get() = ds != null
     private var ds: HikariDataSource? = null
 
@@ -44,16 +44,11 @@ object Database : AutoCloseable {
             val database = details.getString("database")
 
             val hikariConfig = HikariConfig().apply {
-                driverClassName = "org.mariadb.jdbc.Driver"
-                jdbcUrl = "jdbc:mariadb://$host:$port/$database"
+                driverClassName = "org.postgresql.Driver"
+                jdbcUrl = "jdbc:postgresql://$host:$port/$database"
                 username = details.getString("username")
                 password = details.getString("password")
                 maximumPoolSize = 10
-                addDataSourceProperty("cachePrepStmts", "true")
-                addDataSourceProperty("prepStmtCacheSize", "250")
-                addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
-                addDataSourceProperty("characterEncoding", "utf8")
-                addDataSourceProperty("useUnicode", "true")
             }
             ds = HikariDataSource(hikariConfig)
             executeQueries()
@@ -69,21 +64,17 @@ object Database : AutoCloseable {
 
     private fun executeQueries() {
         val statements = listOf(
-            "CREATE TABLE IF NOT EXISTS levels (guild_id BIGINT, user_id BIGINT, xp_total BIGINT, name VARCHAR(256), discriminator VARCHAR(4), avatar VARCHAR(128), PRIMARY KEY(guild_id, user_id)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
-            "CREATE TABLE IF NOT EXISTS guild_settings (guild_id BIGINT PRIMARY KEY, data JSON CHECK (JSON_VALID(data)))",
-            "CREATE TABLE IF NOT EXISTS user_settings (user_id BIGINT PRIMARY KEY, data JSON CHECK (JSON_VALID(data)))",
-            "CREATE TABLE IF NOT EXISTS xp_alerts (guild_id BIGINT PRIMARY KEY, mode VARCHAR(128))",
-            "CREATE TABLE IF NOT EXISTS wildcard_settings (user_id BIGINT PRIMARY KEY, card VARCHAR(128) NOT NULL, accent INT)",
-            "CREATE TABLE IF NOT EXISTS search_queries (user_id BIGINT, searched_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
-            "CREATE TABLE IF NOT EXISTS user_balance (guild_id BIGINT, user_id BIGINT, balance BIGINT, PRIMARY KEY(guild_id, user_id))",
-            "CREATE TABLE IF NOT EXISTS bookmarks (user_id BIGINT, added_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL, PRIMARY KEY(user_id, value)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
+            "CREATE TABLE IF NOT EXISTS experience (guild_id BIGINT NOT NULL, user_id BIGINT NOT NULL, experience BIGINT NOT NULL, name VARCHAR(256), discriminator CHAR(4), avatar VARCHAR(128), PRIMARY KEY(guild_id, user_id))",
+            "CREATE TABLE IF NOT EXISTS guild_data (guild_id BIGINT NOT NULL PRIMARY KEY, data JSONB NOT NULL)",
+            "CREATE TABLE IF NOT EXISTS user_data (user_id BIGINT NOT NULL PRIMARY KEY, data JSONB NOT NULL)",
+            "CREATE TABLE IF NOT EXISTS search_queries (user_id BIGINT, searched_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL)",
+            "CREATE TABLE IF NOT EXISTS bookmarks (user_id BIGINT, added_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL, PRIMARY KEY(user_id, value))",
             "CREATE TABLE IF NOT EXISTS dismissable_contents (user_id BIGINT, identifier VARCHAR(128), state VARCHAR(128), PRIMARY KEY(user_id, identifier))",
-            "CREATE TABLE IF NOT EXISTS banned_guilds (guild_id BIGINT PRIMARY KEY, reason VARCHAR(256))"
         )
         connection.use { connection ->
             try {
                 for (statement in statements) {
-                    connection.prepareStatement(statement).use { it.execute() }
+                    kotlin.runCatching { connection.prepareStatement(statement).use { it.execute() } }.onFailure { logger.error("Failed to run statement \"$statement\"", it) }
                 }
             } catch (e: SQLException) {
                 logger.error("Failed to execute the statement", e)

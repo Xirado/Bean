@@ -35,7 +35,9 @@ dependencies {
     implementation("io.github.classgraph:classgraph:4.8.146")
     implementation("ch.qos.logback:logback-classic:1.3.0-alpha14")
     implementation("commons-io:commons-io:2.11.0")
-    implementation("org.mariadb.jdbc:mariadb-java-client:2.7.3")
+    implementation("org.postgresql:postgresql:42.3.6")
+    implementation("net.jodah:expiringmap:0.5.10")
+    implementation("com.github.Xirado:SimpleJSON:7327b3b")
 }
 
 tasks {
