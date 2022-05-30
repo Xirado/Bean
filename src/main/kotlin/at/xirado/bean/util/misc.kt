@@ -1,4 +1,4 @@
-package at.xirado.bean
+package at.xirado.bean.util
 
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
