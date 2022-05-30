@@ -1,6 +1,7 @@
 package at.xirado.bean.interaction
 
 import at.xirado.bean.Application
+import at.xirado.bean.getUserI18n
 import at.xirado.bean.util.SUPPORT_BUTTON
 import at.xirado.bean.util.replyError
 import at.xirado.bean.util.sendErrorMessage
@@ -108,10 +109,10 @@ class InteractionCommandHandler(private val application: Application) {
 
     private fun handleError(event: GenericCommandInteractionEvent, throwable: Throwable) {
         log.error("An unhandled error was encountered", throwable)
-        val locale = application.localizationManager.getForGuild(event.guild!!)
+        val locale = event.getUserI18n()
 
-        val errorMessage = locale.get("general.unknown_error_occurred")?: "An unknown error occurred"
-        val supportMessage = locale.get("general.support")?: "Support"
+        val errorMessage = locale.get("general.unknown_error_occurred")
+        val supportMessage = locale.get("general.support")
         val button = SUPPORT_BUTTON.withLabel(supportMessage)
 
         if (event.isAcknowledged)
