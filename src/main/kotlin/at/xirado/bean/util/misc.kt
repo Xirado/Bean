@@ -1,5 +1,6 @@
 package at.xirado.bean.util
 
+import at.xirado.bean.APPLICATION
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
