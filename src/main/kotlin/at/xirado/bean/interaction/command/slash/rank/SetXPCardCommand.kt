@@ -1,8 +1,8 @@
 package at.xirado.bean.interaction.command.slash.rank
 
 import at.xirado.bean.Application
-import at.xirado.bean.getData
 import at.xirado.bean.interaction.SlashCommand
+import at.xirado.bean.util.getData
 import at.xirado.bean.util.replyErrorLocalized
 import at.xirado.bean.util.sendSuccessLocalized
 import dev.minn.jda.ktx.await

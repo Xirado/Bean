@@ -1,8 +1,8 @@
 package at.xirado.bean.interaction
 
 import at.xirado.bean.Application
-import at.xirado.bean.getUserI18n
 import at.xirado.bean.util.SUPPORT_BUTTON
+import at.xirado.bean.util.getUserI18n
 import at.xirado.bean.util.replyError
 import at.xirado.bean.util.sendErrorMessage
 import dev.minn.jda.ktx.await

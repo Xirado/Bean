@@ -3,9 +3,9 @@ package at.xirado.bean.manager
 import at.xirado.bean.Application
 import at.xirado.bean.coroutineScope
 import at.xirado.bean.executor
-import at.xirado.bean.getData
 import at.xirado.bean.interaction.command.slash.rank.imageDirectory
 import at.xirado.bean.io.db.SQLBuilder
+import at.xirado.bean.util.getData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext

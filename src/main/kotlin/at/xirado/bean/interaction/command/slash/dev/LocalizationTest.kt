@@ -9,7 +9,6 @@ class LocalizationTest(override val application: Application) : SlashCommand("lo
 
     init {
         devCommand()
-
         option<String>(name = "tag", description = "Locale tag", required = true)
     }
 

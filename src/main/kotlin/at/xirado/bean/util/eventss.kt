@@ -1,6 +1,5 @@
 package at.xirado.bean.util
 
-import at.xirado.bean.getUserI18n
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 
 fun GenericCommandInteractionEvent.replyError(message: String, ephemeral: Boolean = false) = replyEmbeds(errorEmbed(message))

@@ -1,8 +1,8 @@
 package at.xirado.bean.data
 
 import at.xirado.bean.Application
-import at.xirado.bean.computeSuspendIfAbsent
 import at.xirado.bean.io.db.SQLBuilder
+import at.xirado.bean.util.computeSuspendIfAbsent
 import at.xirado.simplejson.JSONObject
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
