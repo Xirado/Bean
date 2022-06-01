@@ -169,7 +169,7 @@ public class AudioScheduler extends PlayerEventListenerAdapter {
         if (endReason.mayStartNext) {
             nextTrack();
         }
-        if (endReason == AudioTrackEndReason.STOPPED || endReason == AudioTrackEndReason.LOAD_FAILED) {
+        if (endReason == AudioTrackEndReason.STOPPED || endReason == AudioTrackEndReason.LOAD_FAILED || endReason == AudioTrackEndReason.FINISHED) {
             if (guildAudioPlayer.getOpenPlayer() != null) {
                 CachedMessage message = guildAudioPlayer.getOpenPlayer();
                 TextChannel channel = message.getChannel();
