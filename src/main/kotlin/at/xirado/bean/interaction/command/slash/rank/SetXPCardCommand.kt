@@ -52,11 +52,11 @@ class SetXPCardCommand(override val application: Application) : SlashCommand("se
         val file = File(imageDirectory, fullName)
         proxy.downloadToFile(file, 1200, 300).await()
 
-        event.user.getData().apply {
+        event.user.getData().update {
             rankBackground = fullName
             rankAccentColor = event.getOption<Int>("color")!!
-            update()
-            event.sendSuccessLocalized("commands.setxpcard.success").queue()
         }
+
+        event.sendSuccessLocalized("commands.setxpcard.success").queue()
     }
 }

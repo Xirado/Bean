@@ -15,7 +15,9 @@ class UserData(val userId: Long, val jsonObject: JSONObject) {
         get() = jsonObject.getUnsignedInt("rank_accent_color", 0x0C71E0)
         set(value) { jsonObject.put("rank_accent_color", value) }
 
-    suspend fun update(): UserData {
+    suspend fun update(block: UserData.() -> Unit) = update()
+
+    private suspend fun update(): UserData {
         val sql = SQLBuilder("INSERT INTO user_data(user_id, data) values(?, ?::JSONB) ON CONFLICT(user_id) DO UPDATE SET data = excluded.data")
         sql.addParameter(userId, jsonObject.toString())
         sql.execute()

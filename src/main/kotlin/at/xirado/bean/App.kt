@@ -9,6 +9,7 @@ import at.xirado.bean.io.config.BeanConfiguration
 import at.xirado.bean.io.config.FileLoader
 import at.xirado.bean.io.db.Database
 import at.xirado.bean.listener.InteractionListener
+import at.xirado.bean.listener.LevelingListener
 import at.xirado.bean.listener.ReadyListener
 import ch.qos.logback.classic.Level
 import dev.minn.jda.ktx.CoroutineEventManager
@@ -61,7 +62,7 @@ class Application {
             .setActivity(Activity.playing("bean.bz"))
             .enableCache(CacheFlag.VOICE_STATE)
             .setBulkDeleteSplittingEnabled(false)
-            .addEventListeners(InteractionListener(this), ReadyListener(this))
+            .addEventListeners(InteractionListener(this), ReadyListener(this), LevelingListener(this))
             .setChunkingFilter(ChunkingFilter.NONE)
             .setGatewayEncoding(GatewayEncoding.ETF)
             .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER)
