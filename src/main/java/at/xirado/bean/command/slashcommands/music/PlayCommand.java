@@ -1,6 +1,7 @@
 package at.xirado.bean.command.slashcommands.music;
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.command.AutoComplete;
 import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
@@ -199,8 +200,8 @@ public class PlayCommand extends SlashCommand {
         });
     }
 
-    @Override
-    public void handleAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event) throws Exception {
+    @AutoComplete(optionName = "query")
+    public void onQueryAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event) {
         long userId = event.getUser().getIdLong();
         if (event.getFocusedOption().getName().equals("query")) {
             AutoCompleteQuery query = event.getFocusedOption();

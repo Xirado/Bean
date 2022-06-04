@@ -1,6 +1,7 @@
 package at.xirado.bean.command.slashcommands;
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.command.AutoComplete;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.BasicAutocompletionChoice;
@@ -82,8 +83,8 @@ public class RedditCommand extends SlashCommand {
         }
     }
 
-    @Override
-    public void handleAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event) {
+    @AutoComplete(optionName = "subreddit")
+    public void onSubredditAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event) {
         List<BasicAutocompletionChoice> choices = List.of(
                 new BasicAutocompletionChoice("r/memes", "memes"),
                 new BasicAutocompletionChoice("r/me_irl", "me_irl"),

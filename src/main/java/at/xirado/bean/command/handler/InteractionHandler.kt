@@ -1,10 +1,7 @@
 package at.xirado.bean.command.handler
 
 import at.xirado.bean.Bean
-import at.xirado.bean.command.CommandFlag
-import at.xirado.bean.command.GenericCommand
-import at.xirado.bean.command.SlashCommand
-import at.xirado.bean.command.SlashCommandContext
+import at.xirado.bean.command.*
 import at.xirado.bean.misc.EmbedUtil
 import at.xirado.bean.misc.Metrics
 import at.xirado.bean.misc.Util
@@ -58,12 +55,19 @@ class InteractionHandler(val bean: Bean) {
         if (missingPerms.isNotEmpty())
             return
 
-        Bean.getInstance().commandExecutor.submit {
-            when (command) {
-                is SlashCommand -> {
-                    command.handleAutocomplete(event)
-                }
-            }
+        command::class.java.methods.forEach { method ->
+            if (!method.isAnnotationPresent(AutoComplete::class.java))
+                return@forEach
+
+            if (method.parameterCount != 1 || CommandAutoCompleteInteractionEvent::class.java !in method.parameterTypes)
+                return@forEach
+
+            val annotation = method.getAnnotation(AutoComplete::class.java) as AutoComplete
+            if (annotation.optionName != event.focusedOption.name)
+                return@forEach
+
+            Bean.getInstance().commandExecutor.execute { method.invoke(command, event) }
+            return
         }
     }
 

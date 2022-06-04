@@ -2,7 +2,6 @@ package at.xirado.bean.command;
 
 import at.xirado.bean.Bean;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandPermission;
@@ -84,10 +83,4 @@ public abstract class SlashCommand implements GenericCommand {
      * @param ctx   Helpful methods in context of the event
      */
     public abstract void executeCommand(@Nonnull SlashCommandInteractionEvent event, @Nonnull SlashCommandContext ctx);
-
-    public void handleAutocomplete(@Nonnull CommandAutoCompleteInteractionEvent event) throws Exception {
-    }
-
-    ;
-
 }

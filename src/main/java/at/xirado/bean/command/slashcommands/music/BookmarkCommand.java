@@ -1,6 +1,7 @@
 package at.xirado.bean.command.slashcommands.music;
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.command.AutoComplete;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.Bookmark;
@@ -183,28 +184,26 @@ public class BookmarkCommand extends SlashCommand {
         }
     }
 
-    @Override
-    public void handleAutocomplete(@NotNull CommandAutoCompleteInteractionEvent event) throws Exception {
+    @AutoComplete(optionName = "bookmark")
+    public void onBookmarkRemoveAutocomplete(CommandAutoCompleteInteractionEvent event) {
         long userId = event.getUser().getIdLong();
-        if (event.getFocusedOption().getName().equals("bookmark")) {
-            var mapping = event.getFocusedOption();
-            if (!hasBookmarks(userId)) {
-                event.replyChoices(Collections.emptyList()).queue();
-                return;
-            }
-            String input = mapping.getValue();
-            if (input.isEmpty()) {
-                List<Bookmark> bookmarks = getBookmarks(userId, false);
-                event.replyChoices(
-                        bookmarks.stream().map(Bookmark::toCommandAutocompleteChoice).collect(Collectors.toList())
-                ).queue();
-                return;
-            }
-            List<Bookmark> bookmarks = getMatchingBookmarks(userId, input, false);
+        var mapping = event.getFocusedOption();
+        if (!hasBookmarks(userId)) {
+            event.replyChoices(Collections.emptyList()).queue();
+            return;
+        }
+        String input = mapping.getValue();
+        if (input.isEmpty()) {
+            List<Bookmark> bookmarks = getBookmarks(userId, false);
             event.replyChoices(
                     bookmarks.stream().map(Bookmark::toCommandAutocompleteChoice).collect(Collectors.toList())
             ).queue();
+            return;
         }
+        List<Bookmark> bookmarks = getMatchingBookmarks(userId, input, false);
+        event.replyChoices(
+                bookmarks.stream().map(Bookmark::toCommandAutocompleteChoice).collect(Collectors.toList())
+        ).queue();
     }
 
     public static Bookmark getBookmark(long userId, String url) {

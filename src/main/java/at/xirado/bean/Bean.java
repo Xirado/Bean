@@ -39,6 +39,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Properties;
 import java.util.Set;
@@ -161,8 +162,10 @@ public class Bean {
         Thread.currentThread().setName("Main");
         try {
             loadPropertiesFile();
-            Shell.startShell();
-            Shell.awaitReady();
+            if (!Arrays.asList(args).contains("--nojline")) {
+                Shell.startShell();
+                Shell.awaitReady();
+            }
             new Bean();
         } catch (Exception e) {
             if (e instanceof LoginException ex) {
