@@ -111,7 +111,7 @@ public class DJCommand extends SlashCommand {
                 djRoles.forEach(x -> builder.append(x.getAsMention()).append("\n"));
                 builder.append("\n");
                 djMembers.forEach(x -> builder.append("<@").append(x).append(">\n"));
-                event.replyEmbeds(EmbedUtil.defaultEmbed(builder.toString().trim()));
+                event.replyEmbeds(EmbedUtil.defaultEmbed(builder.toString().trim())).queue();
             }
         }
     }
