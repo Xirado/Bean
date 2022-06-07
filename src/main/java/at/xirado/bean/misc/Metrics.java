@@ -48,4 +48,10 @@ public class Metrics {
             .labelNames("type")
             .register();
 
+    public static final Gauge DISCORD_GATEWAY_PING = Gauge.build()
+            .name("bean_ws_ping")
+            .help("Discord Gateway Ping")
+            .labelNames("shard_id")
+            .register();
+
 }

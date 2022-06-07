@@ -29,6 +29,11 @@ public class MetricsJob extends Thread {
             Metrics.BUSY_THREADS.labels("command").set(busyCommandThreads);
             Metrics.BUSY_THREADS.labels("command_total").set(totalCommandThreads);
             Metrics.PLAYING_MUSIC_PLAYERS.set(activePlayers);
+            instance.getShardManager().getShards().forEach(shard -> {
+                Metrics.DISCORD_GATEWAY_PING.labels(
+                        String.valueOf(shard.getShardInfo().getShardId()),
+                        String.valueOf(shard.getGatewayPing()));
+            });
 
             runs++;
 
