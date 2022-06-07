@@ -235,7 +235,11 @@ public class RankingSystem {
         var query = new SQLBuilder("SELECT accent FROM wildcardSettings WHERE userID = ?")
                 .addParameter(user.getIdLong());
         try (var rs = query.executeQuery()) {
-            return rs.next() ? rs.getInt("accent") : 0x0C71E0;
+            return rs.next()
+                    ? rs.getInt("accent") == 0
+                        ? 0x0C71E0
+                        : rs.getInt("accent")
+                    : 0x0C71E0;
         } catch (SQLException ex) {
             LOGGER.error("Could not get user preferred wildcard background (user {})", user.getIdLong(), ex);
             return 0x0C71E0;
