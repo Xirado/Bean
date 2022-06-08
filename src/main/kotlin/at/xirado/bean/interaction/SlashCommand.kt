@@ -3,7 +3,6 @@ package at.xirado.bean.interaction
 import dev.minn.jda.ktx.interactions.Subcommand
 import dev.minn.jda.ktx.interactions.optionType
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -35,13 +34,10 @@ abstract class SlashCommand(name: String, description: String) : GenericCommand 
         commandData.addOptions(OptionData(type, name, description).setRequired(required).setAutoComplete(autocomplete).apply(builder))
     }
 
-    inline fun subcommand(name: String, description: String, builder: SubcommandData.() -> Unit = {}) = commandData.addSubcommands(
+    inline fun subCommand(name: String, description: String, builder: SubcommandData.() -> Unit = {}) = commandData.addSubcommands(
         Subcommand(name, description, builder)
     )
 
-    abstract suspend fun execute(event: SlashCommandInteractionEvent)
-
-    open suspend fun onAutoComplete(event: CommandAutoCompleteInteractionEvent) {}
-
+    open suspend fun baseCommand(event: SlashCommandInteractionEvent) {}
 
 }

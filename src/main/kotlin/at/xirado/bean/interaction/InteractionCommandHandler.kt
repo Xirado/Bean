@@ -22,6 +22,9 @@ import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Collectors
+import kotlin.reflect.full.callSuspend
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 
 private val log = LoggerFactory.getLogger(InteractionCommandHandler::class.java) as Logger
 
@@ -40,11 +43,14 @@ class InteractionCommandHandler(private val application: Application) {
         val guildId = guild.idLong
         val command = getGenericCommand(guildId, event.name, event.commandType.id)?: return
 
-        when (command) {
-            is SlashCommand -> {
-                command.onAutoComplete(event)
-            }
-        }
+        if (getMissingPermissions(event.member!!, event.guildChannel, command.requiredUserPermissions).isNotEmpty())
+            return
+
+        val method = command::class.members
+            .filter { it.hasAnnotation<AutoComplete>() }
+            .firstOrNull { it.findAnnotation<AutoComplete>()?.option == event.focusedOption.name }
+
+        method?.callSuspend(command, event)
     }
 
     suspend fun handleCommand(event: GenericCommandInteractionEvent) {
@@ -99,10 +105,18 @@ class InteractionCommandHandler(private val application: Application) {
             }
         }
 
+        if (event.subcommandName != null) {
+            val method = command::class.members
+                .filter { it.hasAnnotation<SubCommand>() }
+                .firstOrNull { it.findAnnotation<SubCommand>()?.name == event.subcommandName }
+
+            runCatching { method?.callSuspend(command, event) }.onFailure { handleError(event, it) }
+            return
+        }
         when (command) {
             is SlashCommand -> {
                 val slashEvent = event as SlashCommandInteractionEvent
-                runCatching { command.execute(slashEvent) }.onFailure { handleError(event, it) }
+                runCatching { command.baseCommand(slashEvent) }.onFailure { handleError(event, it) }
             }
         }
     }

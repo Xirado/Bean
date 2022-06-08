@@ -32,7 +32,7 @@ class SetXPCardCommand(override val application: Application) : SlashCommand("se
         }
     }
 
-    override suspend fun execute(event: SlashCommandInteractionEvent) {
+    override suspend fun baseCommand(event: SlashCommandInteractionEvent) {
         val attachment = event.getOption<Attachment>("background")!!
         val extension = attachment.fileExtension
         if (extension == null || extension !in supportedExtensions)

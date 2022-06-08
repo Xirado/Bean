@@ -37,7 +37,8 @@ dependencies {
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.postgresql:postgresql:42.3.6")
     implementation("net.jodah:expiringmap:0.5.10")
-    implementation("com.github.Xirado:SimpleJSON:7327b3b")
+    implementation("com.github.xirado:SimpleJSON:7327b3b")
+    implementation(kotlin("reflect"))
 }
 
 tasks {
