@@ -1,13 +1,11 @@
 package at.xirado.bean.interaction.command.slash.music
 
 import at.xirado.bean.Application
-import at.xirado.bean.audio.PlaylistInfo
-import at.xirado.bean.audio.TrackInfo
-import at.xirado.bean.audio.getPlayConfirmationEmbed
-import at.xirado.bean.audio.getYoutubeMusicSearchResults
+import at.xirado.bean.audio.*
 import at.xirado.bean.interaction.AutoComplete
 import at.xirado.bean.interaction.CommandFlag
 import at.xirado.bean.interaction.SlashCommand
+import at.xirado.bean.interaction.components.IAutocompleteChoice
 import at.xirado.bean.util.isUrl
 import at.xirado.bean.util.replyError
 import at.xirado.bean.util.sendErrorMessage
@@ -74,6 +72,10 @@ class PlayCommand(override val application: Application) : SlashCommand("play", 
                     result.userData = TrackInfo(member.idLong, null)
                     player.scheduler.queue(result)
                     event.hook.sendMessageEmbeds(getPlayConfirmationEmbed(result, addedToQueue)).queue()
+                    if (lavaPlayerQuery.length <= 100) {
+                        val title = "${result.info.title} - ${result.info.author}"
+                        addSearchHistoryEntry(member.idLong, title, lavaPlayerQuery, false)
+                    }
                 }
 
                 is AudioPlaylist -> {
@@ -82,6 +84,7 @@ class PlayCommand(override val application: Application) : SlashCommand("play", 
                         track.userData = TrackInfo(member.idLong, null)
                         player.scheduler.queue(track)
                         event.hook.sendMessageEmbeds(getPlayConfirmationEmbed(track, addedToQueue)).queue()
+                        addSearchHistoryEntry(member.idLong, query, query, false)
                     } else {
                         val playlistInfo = PlaylistInfo(result.name, lavaPlayerQuery)
                         result.tracks.forEach {
@@ -89,6 +92,8 @@ class PlayCommand(override val application: Application) : SlashCommand("play", 
                             player.scheduler.queue(it)
                         }
                         event.hook.sendMessageEmbeds(getPlayConfirmationEmbed(result, addedToQueue)).queue()
+                        if (lavaPlayerQuery.length <= 100)
+                            addSearchHistoryEntry(member.idLong, result.name, lavaPlayerQuery, true)
                     }
 
                 }
@@ -103,15 +108,21 @@ class PlayCommand(override val application: Application) : SlashCommand("play", 
     @AutoComplete(option = "query")
     suspend fun queryAutocomplete(event: CommandAutoCompleteInteractionEvent) {
         if (event.focusedOption.value.isEmpty())
-            return event.replyChoices(emptyList()).queue()
+            return event.replyChoices(
+                retrieveSearchHistory(event.user.idLong, null).map { it.toChoice() }
+            ).queue()
 
         val locale = event.userLocale
 
         val languageString = locale.language
         val countryString = locale.country.ifEmpty { localeMap[languageString]?: "US" }
+        val choices = mutableListOf<IAutocompleteChoice>()
+
+        choices.addAll(retrieveSearchHistory(event.user.idLong, event.focusedOption.value))
+        choices.addAll(getYoutubeMusicSearchResults(application, event.focusedOption.value, countryString, languageString).take(25 - choices.size))
 
         event.replyChoices(
-            getYoutubeMusicSearchResults(application, event.focusedOption.value, countryString, languageString).map { it.toChoice() }
+            choices.map { it.toChoice() }
         ).queue()
     }
 }

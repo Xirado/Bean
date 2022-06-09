@@ -67,7 +67,7 @@ object Database : AutoCloseable {
             "CREATE TABLE IF NOT EXISTS experience (guild_id BIGINT NOT NULL, user_id BIGINT NOT NULL, experience BIGINT NOT NULL, name VARCHAR(256), discriminator CHAR(4), avatar VARCHAR(128), PRIMARY KEY(guild_id, user_id))",
             "CREATE TABLE IF NOT EXISTS guild_data (guild_id BIGINT NOT NULL PRIMARY KEY, data JSONB NOT NULL)",
             "CREATE TABLE IF NOT EXISTS user_data (user_id BIGINT NOT NULL PRIMARY KEY, data JSONB NOT NULL)",
-            "CREATE TABLE IF NOT EXISTS search_queries (user_id BIGINT, searched_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL)",
+            "CREATE TABLE IF NOT EXISTS search_queries (user_id BIGINT, searched_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL, PRIMARY KEY(user_id, value))",
             "CREATE TABLE IF NOT EXISTS bookmarks (user_id BIGINT, added_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL, PRIMARY KEY(user_id, value))",
             "CREATE TABLE IF NOT EXISTS dismissable_contents (user_id BIGINT, identifier VARCHAR(128), state VARCHAR(128), PRIMARY KEY(user_id, identifier))",
         )
