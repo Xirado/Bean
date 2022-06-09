@@ -5,7 +5,6 @@ import dev.minn.jda.ktx.interactions.optionType
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
-import net.dv8tion.jda.api.interactions.commands.CommandPermission
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
@@ -26,7 +25,7 @@ abstract class SlashCommand(name: String, description: String) : GenericCommand 
         enabledGuilds.addAll(application.config.devGuilds)
         commandFlags.add(CommandFlag.DEVELOPER_ONLY)
         if (requiresAdmin)
-            commandData.defaultPermissions = CommandPermission.DISABLED
+            requiredUserPermissions.add(Permission.ADMINISTRATOR)
     }
 
     inline fun <reified T> option(name: String, description: String, required: Boolean = false, autocomplete: Boolean = false, builder: OptionData.() -> Unit = {}) {

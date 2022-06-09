@@ -14,6 +14,7 @@ class BeanConfiguration(dataObject: DataObject) {
     val devUsers: List<Long>
     val dbConfig: DataObject
     val spotifyConfig: DataObject
+    val ytConfig: DataObject
 
     init {
         discordToken = dataObject.getStringOrThrow("discord_token")
@@ -33,5 +34,6 @@ class BeanConfiguration(dataObject: DataObject) {
 
         dbConfig = dataObject.optObject("database").orElseGet(DataObject::empty)
         spotifyConfig = dataObject.optObject("spotify").orElseGet(DataObject::empty)
+        ytConfig = dataObject.optObject("youtube").orElseGet(DataObject::empty)
     }
 }

@@ -59,13 +59,6 @@ class InteractionCommandHandler(private val application: Application) {
         val command = getGenericCommand(guildId, event.name, event.commandType.id)?: return
         val member = event.member!!
 
-        if (CommandFlag.DEVELOPER_ONLY in command.commandFlags) {
-            if (member.idLong !in application.config.devUsers) {
-                event.replyError("This maze isn't meant for you!", ephemeral = true).await()
-                return
-            }
-        }
-
         val missingUserPerms = getMissingPermissions(member, event.guildChannel, command.requiredUserPermissions)
 
         if (missingUserPerms.isNotEmpty()) {
@@ -86,24 +79,9 @@ class InteractionCommandHandler(private val application: Application) {
             return
         }
 
-        if (CommandFlag.VOICE_CHANNEL_ONLY in command.commandFlags) {
-            val voiceState = member.voiceState!!
-            if (voiceState.channel == null) {
-                event.reply("You must be listening in a voice-channel to use this command!").await()
-                return
-            }
-        }
+        if (!command.commandFlags.all { it.filter.invoke(event) })
+            return
 
-        if (CommandFlag.SAME_VOICE_CHANNEL_ONLY in command.commandFlags) {
-            val userVoiceState = member.voiceState!!
-            val botVoiceState = guild.selfMember.voiceState!!
-            if (botVoiceState.channel != null) {
-                if (userVoiceState.channel != botVoiceState.channel) {
-                    event.reply("You must be listening in ${botVoiceState.channel!!.asMention} to use this command!").await()
-                    return
-                }
-            }
-        }
 
         if (event.subcommandName != null) {
             val method = command::class.members

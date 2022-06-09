@@ -7,6 +7,7 @@ import com.github.topislavalinkplugins.topissourcemanagers.spotify.SpotifyConfig
 import com.github.topislavalinkplugins.topissourcemanagers.spotify.SpotifySourceManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeHttpContextFilter
 import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.ConcurrentHashMap
 
@@ -17,10 +18,10 @@ class AudioManager(val application: Application) {
     val audioPlayers = ConcurrentHashMap<Long, GuildPlayer>()
 
     init {
-        val config = application.config.spotifyConfig
-        if (config.noneNull("client_id", "client_secret")) {
-            val id = config.getString("client_id")
-            val secret = config.getString("client_secret")
+        val spotifyConfigObject = application.config.spotifyConfig
+        if (spotifyConfigObject.noneNull("client_id", "client_secret")) {
+            val id = spotifyConfigObject.getString("client_id")
+            val secret = spotifyConfigObject.getString("client_secret")
             val spotifyConfig = SpotifyConfig().apply {
                 clientId = id
                 clientSecret = secret
@@ -30,6 +31,11 @@ class AudioManager(val application: Application) {
             log.info("Registered SpotifySourceManager")
         } else {
             log.warn("Could not register SpotifySourceManager because of missing credentials!")
+        }
+        val youtubeConfig = application.config.ytConfig
+        if (youtubeConfig.noneNull("papisid", "psid")) {
+            YoutubeHttpContextFilter.setPAPISID(youtubeConfig.getString("papisid"))
+            YoutubeHttpContextFilter.setPSID(youtubeConfig.getString("psid"))
         }
         AudioSourceManagers.registerRemoteSources(playerManager)
     }

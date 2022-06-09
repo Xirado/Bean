@@ -25,3 +25,29 @@ fun GenericCommandInteractionEvent.replySuccessLocalized(path: String, vararg at
 
 fun GenericCommandInteractionEvent.sendSuccessLocalized(path: String, vararg attributes: Pair<String, Any>, ephemeral: Boolean = false) =
     hook.sendMessageEmbeds(successEmbed(getUserI18n().get(path, *attributes))).setEphemeral(ephemeral)
+
+fun GenericCommandInteractionEvent.replyDefault(message: String, ephemeral: Boolean = false) = replyEmbeds(defaultEmbed(message))
+    .setEphemeral(ephemeral)
+
+fun GenericCommandInteractionEvent.sendDefaultMessage(message: String, ephemeral: Boolean = false) =
+    hook.sendMessageEmbeds(defaultEmbed(message))
+        .setEphemeral(ephemeral)
+
+fun GenericCommandInteractionEvent.replyDefaultLocalized(path: String, vararg attributes: Pair<String, Any>, ephemeral: Boolean = false)
+        = replyDefault(getUserI18n().get(path, *attributes), ephemeral = ephemeral)
+
+fun GenericCommandInteractionEvent.sendDefaultLocalized(path: String, vararg attributes: Pair<String, Any>, ephemeral: Boolean = false) =
+    hook.sendMessageEmbeds(defaultEmbed(getUserI18n().get(path, *attributes))).setEphemeral(ephemeral)
+
+fun GenericCommandInteractionEvent.replyWarning(message: String, ephemeral: Boolean = false) = replyEmbeds(warningEmbed(message))
+    .setEphemeral(ephemeral)
+
+fun GenericCommandInteractionEvent.sendWarningMessage(message: String, ephemeral: Boolean = false) =
+    hook.sendMessageEmbeds(warningEmbed(message))
+        .setEphemeral(ephemeral)
+
+fun GenericCommandInteractionEvent.replyWarningLocalized(path: String, vararg attributes: Pair<String, Any>, ephemeral: Boolean = false)
+        = replyWarning(getUserI18n().get(path, *attributes), ephemeral = ephemeral)
+
+fun GenericCommandInteractionEvent.sendWarningLocalized(path: String, vararg attributes: Pair<String, Any>, ephemeral: Boolean = false) =
+    hook.sendMessageEmbeds(warningEmbed(getUserI18n().get(path, *attributes))).setEphemeral(ephemeral)

@@ -1,7 +1,13 @@
 general:
+    must_be_listening_in_vc: You must be listening in a Voice-Channel to use this
+        command!
+    must_be_listening_in_bot_vc: You must be listening in {channel} to use this command!
     support: Support
     unknown_error_occurred: An unexpected error occurred. Please try again later.
 commands:
+    rank:
+        not_ranked: This user is not yet ranked!
+        not_ranked_self: You are not yet ranked!
     setxpcard:
         too_large: File is too large! The maximum allowed size is {size}.
         success: Your background has been updated!

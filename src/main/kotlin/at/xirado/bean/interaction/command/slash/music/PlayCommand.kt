@@ -34,8 +34,8 @@ class PlayCommand(override val application: Application) : SlashCommand("play", 
             choice("SoundCloud", "scsearch:")
         }
         commandFlags.apply {
-            add(CommandFlag.VOICE_CHANNEL_ONLY)
-            add(CommandFlag.SAME_VOICE_CHANNEL_ONLY)
+            add(CommandFlag.USER_MUST_JOIN_VC)
+            add(CommandFlag.MUST_JOIN_BOT_VC)
         }
     }
 

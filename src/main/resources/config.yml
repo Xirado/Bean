@@ -1,10 +1,20 @@
-discord_token: ""
-dev_mode: true
-dev_guilds: []
-dev_users: []
-database:
+discord_token: "YOUR_TOKEN" # Your Discord Bot-Token
+dev_mode: true # Whether to enable the development mode (Disable this in production)
+dev_guilds: [815597207617142814] # Private dev-commands will be registered here
+dev_users: [184654964122058752] # dev users are allowed to execute commands with the DEVELOPER_ONLY CommandFlag
+database: # Postgres' credentials. Required for the bot to operate
   host: localhost
   database: bean
   username: bean
   password: password
-  port: 3306
+  port: 5432
+
+# Needed to play tracks/playlists/albums from Spotify. https://developer.spotify.com/dashboard/login
+#spotify:
+#  client_id: "CLIENT_ID"
+#  client_secret: "CLIENT_SECRET"
+
+# Needed to play age-restricted videos. https://github.com/Walkyst/lavaplayer-fork/issues/18
+#youtube:
+#  papisid: "PAPISID"
+#  psid: "PSID"

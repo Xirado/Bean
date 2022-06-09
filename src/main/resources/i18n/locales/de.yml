@@ -1,9 +1,16 @@
 general:
+    must_be_listening_in_vc: Du musst dich in einem Sprachkanal befinden, um diesen
+        Befehl nutzen zu können!
+    must_be_listening_in_bot_vc: Du musst dich in {channel} befinden, um diesen Befehl
+        nutzen zu können!
     support: Support
     unknown_error_occurred: |
         Es ist ein unerwarteter Fehler aufgetreten.
         Bitte versuche es später erneut
 commands:
+    rank:
+        not_ranked: Dieser Nutzer hat noch keinen Rang!
+        not_ranked_self: Du hast noch keinen Rang!
     setxpcard:
         too_large: Datei ist zu groß! Die maximale Größe beträgt {size}.
         success: Dein Hintergrund wurde aktualisiert!
