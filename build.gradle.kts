@@ -38,6 +38,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.3.6")
     implementation("net.jodah:expiringmap:0.5.10")
     implementation("com.github.xirado:SimpleJSON:7327b3b")
+    implementation("com.github.walkyst:lavaplayer-fork:1.3.97.1")
     implementation(kotlin("reflect"))
 }
 

@@ -1,6 +1,7 @@
 @file:JvmName("Main")
 package at.xirado.bean
 
+import at.xirado.bean.audio.AudioManager
 import at.xirado.bean.data.GuildManager
 import at.xirado.bean.data.UserManager
 import at.xirado.bean.i18n.LocalizationManager
@@ -21,6 +22,7 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.sharding.ShardManager
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.cache.CacheFlag
+import okhttp3.OkHttpClient
 import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.concurrent.Executors
@@ -43,11 +45,12 @@ lateinit var APPLICATION: Application
 class Application {
     val config = BeanConfiguration(FileLoader.loadFileAsYaml("config.yml", true))
     val shardManager: ShardManager
-
+    val httpClient = OkHttpClient()
     val interactionCommandHandler: InteractionCommandHandler
     val localizationManager = LocalizationManager()
     val guildManager = GuildManager(this)
     val userData = UserManager(this)
+    val audioManager = AudioManager(this)
 
     init {
         APPLICATION = this
