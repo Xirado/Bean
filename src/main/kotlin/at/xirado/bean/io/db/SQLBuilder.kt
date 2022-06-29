@@ -22,7 +22,7 @@ class SQLBuilder(@Language("SQL") val sqlString: String, vararg parameters: Any)
         return this
     }
 
-    suspend fun <T> executeQuery(result: (ResultSet) -> T?): T? {
+    suspend fun <T> executeQuery(result: suspend (ResultSet) -> T?): T? {
         Database.connection.use { connection ->
             connection.prepareStatement(sqlString).use {
                 parameterList.forEachIndexed { index, param -> it.setObject(index+1, param) }

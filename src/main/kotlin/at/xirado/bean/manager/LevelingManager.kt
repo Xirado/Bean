@@ -2,6 +2,8 @@ package at.xirado.bean.manager
 
 import at.xirado.bean.Application
 import at.xirado.bean.coroutineScope
+import at.xirado.bean.data.Rank
+import at.xirado.bean.data.getUserRank
 import at.xirado.bean.executor
 import at.xirado.bean.interaction.command.slash.rank.imageDirectory
 import at.xirado.bean.io.db.SQLBuilder
@@ -33,6 +35,7 @@ private const val CARD_RATIO = CARD_WIDTH / CARD_HEIGHT
 
 private const val FONT_SIZE = 60f
 private const val DISCRIMINATOR_FONT_SIZE = (FONT_SIZE / 1.5f)
+private const val RANK_FONT_SIZE = (DISCRIMINATOR_FONT_SIZE / 1.5f)
 
 private const val RAW_AVATAR_SIZE = 512
 private const val RAW_AVATAR_BORDER_SIZE = RAW_AVATAR_SIZE / 64
@@ -57,8 +60,9 @@ suspend fun generateCard(user: User, guild: Guild): ByteArray {
     val accentColor = user.getData().rankAccentColor
     val xpTotal = retrieveTotalExperience(guild.idLong, user.idLong)
     val rank = retrieveRank(user.idLong, guild.idLong)
+    val userRank = getUserRank(user.idLong)
 
-    val callable = Callable { drawImage(avatar, background, user, accentColor, xpTotal, rank) }
+    val callable = Callable { drawImage(avatar, background, user, accentColor, xpTotal, rank, userRank) }
 
     return withContext(Dispatchers.IO) {
         executor.submit(callable).get()
@@ -133,7 +137,7 @@ private suspend fun getDefaultBackground() = withContext(Dispatchers.IO) {
     ImageIO.read(Application::class.java.getResourceAsStream("/assets/wildcards/default.jpg"))
 }
 
-private fun drawImage(avatar: BufferedImage, background: BufferedImage, user: User, accentColor: Int, experience: Int, rank: Int): ByteArray {
+private fun drawImage(avatar: BufferedImage, background: BufferedImage, user: User, accentColor: Int, experience: Int, rank: Int, userRank: Rank?): ByteArray {
     val roundAvatar = BufferedImage(RAW_AVATAR_SIZE, RAW_AVATAR_SIZE, BufferedImage.TYPE_INT_ARGB)
     roundAvatar.createGraphics().apply {
         color = Color.white
@@ -203,11 +207,25 @@ private fun drawImage(avatar: BufferedImage, background: BufferedImage, user: Us
 
     val c = Color(accentColor)
 
-    g.color = Color.white.darker()
+    g.color = g.color.darker()
 
     val nameWidth = g.fontMetrics.stringWidth(userString)
     g.font = g.font.deriveFont(DISCRIMINATOR_FONT_SIZE).deriveFont(Font.BOLD)
-    g.drawString("#${user.discriminator}", AVATAR_SIZE + BORDER_SIZE * 2 + nameWidth, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT)
+    val discriminator = "#${user.discriminator}"
+    val discriminatorSize = g.fontMetrics.getStringBounds(discriminator, g)
+    val discriminatorWidth = discriminatorSize.width.toInt()
+    g.drawString(discriminator, AVATAR_SIZE + BORDER_SIZE * 2 + nameWidth, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT)
+
+    if (userRank != null) {
+        g.font = g.font.deriveFont(RANK_FONT_SIZE).deriveFont(Font.BOLD)
+        val addedSize = AVATAR_SIZE + BORDER_SIZE * 2 + nameWidth + discriminatorWidth
+        g.color = Color(userRank.color)
+        val padding = 10
+        val rankSize = g.fontMetrics.getStringBounds(userRank.display, g)
+        g.fillRoundRect(addedSize + 10, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT - (rankSize.height.toInt()) + 4, rankSize.width.toInt() + (2 * padding), rankSize.height.toInt(), rankSize.height.toInt(), rankSize.height.toInt())
+        g.color = Color.white
+        g.drawString(userRank.display, addedSize + padding + 10, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT - 4)
+    }
 
     val currentLevel = getLevel(experience)
     val neededXP = getExperienceToLevelUp(currentLevel)

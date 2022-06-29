@@ -2,25 +2,30 @@ package at.xirado.bean.data
 
 import at.xirado.bean.io.db.SQLBuilder
 import at.xirado.simplejson.JSONObject
+import org.intellij.lang.annotations.Language
 import java.nio.file.Files
 import java.nio.file.Path
 
-class UserData(val userId: Long, val jsonObject: JSONObject) {
+@Language("SQL")
+private val updateSqlStatement = """
+    INSERT INTO user_data(user_id, data) values(?, ?::JSONB)
+    ON CONFLICT(user_id) DO UPDATE SET data = excluded.data
+""".trimIndent()
+
+class UserData(val userId: Long, json: String) : JSONObject(json) {
 
     var rankBackground: String
-        get() = jsonObject.getString("rank_background", "default")
-        set(value) { deleteOldBackground().also { jsonObject.put("rank_background", value) } }
+        get() = getString("rank_background", "default")
+        set(value) { deleteOldBackground().also { put("rank_background", value) } }
 
     var rankAccentColor: Int
-        get() = jsonObject.getUnsignedInt("rank_accent_color", 0x0C71E0)
-        set(value) { jsonObject.put("rank_accent_color", value) }
+        get() = getUnsignedInt("rank_accent_color", 0x0C71E0)
+        set(value) { put("rank_accent_color", value) }
 
-    suspend fun update(block: UserData.() -> Unit) = update()
+    suspend fun update(block: UserData.() -> Unit) = apply(block).update()
 
     private suspend fun update(): UserData {
-        val sql = SQLBuilder("INSERT INTO user_data(user_id, data) values(?, ?::JSONB) ON CONFLICT(user_id) DO UPDATE SET data = excluded.data")
-        sql.addParameter(userId, jsonObject.toString())
-        sql.execute()
+        SQLBuilder(updateSqlStatement, userId, toString()).execute()
         return this
     }
 

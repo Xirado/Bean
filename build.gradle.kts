@@ -37,9 +37,12 @@ dependencies {
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.postgresql:postgresql:42.3.6")
     implementation("net.jodah:expiringmap:0.5.10")
-    implementation("com.github.xirado:SimpleJSON:7327b3b")
+    implementation("com.github.xirado:SimpleJSON:d5c54fe")
     implementation("com.github.walkyst:lavaplayer-fork:1.3.97.1")
     implementation(kotlin("reflect"))
+    implementation("com.facebook:ktfmt:0.36")
+
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223:1.6.21")
 }
 
 tasks {

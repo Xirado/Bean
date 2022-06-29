@@ -13,7 +13,7 @@ private val updateSqlStatement = """
     ON CONFLICT(guild_id) DO UPDATE SET data = excluded.data
 """.trimIndent()
 
-class GuildData(val guildId: Long, jsonObject: JSONObject) : JSONObject(jsonObject.toMap()) {
+class GuildData(val guildId: Long, json: String) : JSONObject(json) {
 
     var minimumExperience: Int
        get() =      getInt("experience_min", 15)
@@ -27,12 +27,14 @@ class GuildData(val guildId: Long, jsonObject: JSONObject) : JSONObject(jsonObje
         get() =      arrayOrEmpty("blacklisted_leveling_channels").stream(JSONArray::getLong).collect(Collectors.toSet())
         set(value) { put("blacklisted_leveling_channels", value) }
 
-    suspend fun update(block: GuildData.() -> Unit) = update()
+    var djRoles: Set<Long>
+        get() =      arrayOrEmpty("dj_roles").stream(JSONArray::getLong).collect(Collectors.toSet())
+        set(value) { put("dj_roles", value) }
+
+    suspend fun update(block: GuildData.() -> Unit) = apply(block).update()
 
     private suspend fun update(): GuildData {
-        val sql = SQLBuilder(updateSqlStatement)
-        sql.addParameter(guildId, toString())
-        sql.execute()
+        SQLBuilder(updateSqlStatement, guildId, toString()).execute()
         return this
     }
 }

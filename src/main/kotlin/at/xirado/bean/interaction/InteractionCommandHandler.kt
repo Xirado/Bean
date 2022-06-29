@@ -1,10 +1,8 @@
 package at.xirado.bean.interaction
 
 import at.xirado.bean.Application
-import at.xirado.bean.util.SUPPORT_BUTTON
-import at.xirado.bean.util.getUserI18n
-import at.xirado.bean.util.replyError
-import at.xirado.bean.util.sendErrorMessage
+import at.xirado.bean.executor
+import at.xirado.bean.util.*
 import dev.minn.jda.ktx.await
 import io.github.classgraph.ClassGraph
 import net.dv8tion.jda.api.Permission
@@ -19,6 +17,8 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction
 import net.dv8tion.jda.internal.utils.Checks
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Collectors
@@ -82,24 +82,24 @@ class InteractionCommandHandler(private val application: Application) {
         if (!command.commandFlags.all { it.filter.invoke(event) })
             return
 
-
         if (event.subcommandName != null) {
             val method = command::class.members
                 .filter { it.hasAnnotation<SubCommand>() }
                 .firstOrNull { it.findAnnotation<SubCommand>()?.name == event.subcommandName }
 
-            runCatching { method?.callSuspend(command, event) }.onFailure { handleError(event, it) }
+            runCatching { method?.callSuspend(command, event) }.onFailure { handleError(command, event, it) }
             return
         }
+
         when (command) {
             is SlashCommand -> {
                 val slashEvent = event as SlashCommandInteractionEvent
-                runCatching { command.baseCommand(slashEvent) }.onFailure { handleError(event, it) }
+                runCatching { command.baseCommand(slashEvent) }.onFailure { handleError(command, event, it) }
             }
         }
     }
 
-    private fun handleError(event: GenericCommandInteractionEvent, throwable: Throwable) {
+    private fun handleError(command: GenericCommand, event: GenericCommandInteractionEvent, throwable: Throwable) {
         log.error("An unhandled error was encountered", throwable)
         val locale = event.getUserI18n()
 
@@ -107,10 +107,31 @@ class InteractionCommandHandler(private val application: Application) {
         val supportMessage = locale.get("general.support")
         val button = SUPPORT_BUTTON.withLabel(supportMessage)
 
+        val stackTrace = if (event.user.idLong in application.config.devUsers) parseThrowable(throwable) else null
+        val date = LocalDateTime.now()
+        val format = DateTimeFormatter.ofPattern("YYYY-MM-dd--HH-mm-ss")
+        val formattedDate = date.format(format)
+
+        val fileName = "stacktrace_${event.name}_$formattedDate.ansi"
         if (event.isAcknowledged)
-            event.sendErrorMessage(errorMessage, ephemeral = true).addActionRow(button).queue()
+            event.sendErrorMessage(errorMessage, ephemeral = true).addActionRow(button).apply {
+                if (stackTrace != null)
+                    addFile(stackTrace.toByteArray(), fileName)
+            }.queue()
         else
-            event.replyError(errorMessage, ephemeral = true).addActionRow(button).queue()
+            event.replyError(errorMessage, ephemeral = true).addActionRow(button).apply {
+                if (stackTrace != null)
+                    addFile(stackTrace.toByteArray(), fileName)
+            }.queue()
+    }
+
+    private fun parseThrowable(throwable: Throwable): String {
+        return buildAnsi {
+            reset()
+            fg(AnsiForegroundColor.RED)
+            append(throwable.stackTraceToString())
+            reset()
+        }
     }
 
     private fun registerCommands() {
@@ -131,11 +152,13 @@ class InteractionCommandHandler(private val application: Application) {
         if (command.global && !config.devMode) {
             globalCommands.add(command)
             action.addCommands(command.commandData)
+            executor.execute { application.listenerManager.registerListeners(command) }
             return
         }
 
         val enabledGuilds = if (config.devMode) config.devGuilds else command.enabledGuilds
         enabledGuilds.forEach { addGuildCommand(it, command) }
+        executor.execute { application.listenerManager.registerListeners(command) }
     }
 
     private fun addGuildCommand(guildId: Long, command: GenericCommand) {

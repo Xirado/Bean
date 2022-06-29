@@ -2,14 +2,17 @@
 package at.xirado.bean
 
 import at.xirado.bean.audio.AudioManager
+import at.xirado.bean.command.LegacyCommandHandler
 import at.xirado.bean.data.GuildManager
 import at.xirado.bean.data.UserManager
 import at.xirado.bean.i18n.LocalizationManager
 import at.xirado.bean.interaction.InteractionCommandHandler
+import at.xirado.bean.interaction.ListenerManager
 import at.xirado.bean.io.config.BeanConfiguration
 import at.xirado.bean.io.config.FileLoader
 import at.xirado.bean.io.db.Database
 import at.xirado.bean.listener.InteractionListener
+import at.xirado.bean.listener.LegacyCommandListener
 import at.xirado.bean.listener.LevelingListener
 import at.xirado.bean.listener.ReadyListener
 import ch.qos.logback.classic.Level
@@ -49,8 +52,10 @@ class Application {
     val interactionCommandHandler: InteractionCommandHandler
     val localizationManager = LocalizationManager()
     val guildManager = GuildManager(this)
-    val userData = UserManager(this)
+    val userManager = UserManager(this)
     val audioManager = AudioManager(this)
+    val listenerManager = ListenerManager(this)
+    val legacyCommandHandler = LegacyCommandHandler(this)
 
     init {
         APPLICATION = this
@@ -65,7 +70,8 @@ class Application {
             .setActivity(Activity.playing("bean.bz"))
             .enableCache(CacheFlag.VOICE_STATE)
             .setBulkDeleteSplittingEnabled(false)
-            .addEventListeners(InteractionListener(this), ReadyListener(this), LevelingListener(this))
+            .addEventListeners(InteractionListener(this), ReadyListener(this),
+                LevelingListener(this), listenerManager, LegacyCommandListener(this))
             .setChunkingFilter(ChunkingFilter.NONE)
             .setGatewayEncoding(GatewayEncoding.ETF)
             .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER)

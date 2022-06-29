@@ -63,7 +63,7 @@ class PlayCommand(override val application: Application) : SlashCommand("play", 
 
         val query = event.getOption<String>("query")!!
         val prefix = event.getOption<String>("provider")?: "ytsearch:"
-        val lavaPlayerQuery = if (isUrl(query)) query else prefix + query
+        val lavaPlayerQuery = if (query.isUrl()) query else prefix + query
         val addedToQueue = player.player.playingTrack != null
 
         try {
@@ -111,6 +111,9 @@ class PlayCommand(override val application: Application) : SlashCommand("play", 
             return event.replyChoices(
                 retrieveSearchHistory(event.user.idLong, null).map { it.toChoice() }
             ).queue()
+
+        if (event.focusedOption.value.isUrl())
+            return event.replyChoices(emptyList()).queue()
 
         val locale = event.userLocale
 
