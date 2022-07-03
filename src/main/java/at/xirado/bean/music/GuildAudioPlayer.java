@@ -85,13 +85,17 @@ public class GuildAudioPlayer {
     }
 
     public void playerSetup(GuildMessageChannel channel, AudioTrack track, Consumer<Message> onSuccess, Consumer<Throwable> onError) {
-        channel.sendMessageEmbeds(MusicUtil.getPlayerEmbed(track == null ? player.getPlayingTrack() : track))
-                .setActionRows(MusicUtil.getPlayerButtons(this))
-                .queue(message -> {
-                    setOpenPlayer(new CachedMessage(message));
-                    if (onSuccess != null)
-                        onSuccess.accept(message);
-                }, onError != null ? onError : (ex) -> {});
+        try {
+            channel.sendMessageEmbeds(MusicUtil.getPlayerEmbed(track == null ? player.getPlayingTrack() : track))
+                    .setActionRows(MusicUtil.getPlayerButtons(this))
+                    .queue(message -> {
+                        setOpenPlayer(new CachedMessage(message));
+                        if (onSuccess != null)
+                            onSuccess.accept(message);
+                    }, onError != null ? onError : (ex) -> {});
+        } catch (Throwable throwable) {
+            if (onError != null) onError.accept(throwable);
+        }
     }
 
     public void forcePlayerUpdate() {
