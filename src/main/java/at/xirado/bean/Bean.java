@@ -132,7 +132,7 @@ public class Bean {
                 .addEventListeners(new JDAReadyListener(), new SlashCommandListener(), new MessageCreateListener(),
                         new XPMessageListener(), new MessageReactionAddListener(), new MessageReactionRemoveListener(), new VoiceUpdateListener(),
                         eventWaiter, new GuildMemberJoinListener(), lavalink, new DismissableContentButtonListener(), new GuildJoinListener(),
-                        new MusicPlayerButtonListener(), new MessageDeleteListener())
+                        new MusicPlayerButtonListener(), new MessageDeleteListener(), EvalListener.INSTANCE)
                 .build();
         audioManager = new AudioManager();
         authenticator = new Authenticator();
