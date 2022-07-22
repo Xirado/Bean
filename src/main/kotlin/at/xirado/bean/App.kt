@@ -61,8 +61,8 @@ class Application {
         APPLICATION = this
         val properties = Properties()
         properties.load(Application::class.java.getResourceAsStream("/app.properties"))
-        VERSION = properties.getProperty("app-version")
-        BUILD_DATE = properties.getProperty("build-time").toLong()
+        VERSION = if (config.devMode) "DEV" else properties.getProperty("app-version")
+        BUILD_DATE = if (config.devMode) 0L else properties.getProperty("build-time").toLong()
         shardManager = DefaultShardManagerBuilder.createDefault(config.discordToken)
             .setEnabledIntents(GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.DIRECT_MESSAGES)
             .setShardsTotal(-1)

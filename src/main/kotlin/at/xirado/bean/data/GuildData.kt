@@ -15,21 +15,21 @@ private val updateSqlStatement = """
 
 class GuildData(val guildId: Long, json: String) : JSONObject(json) {
 
-    var minimumExperience: Int
-       get() =      getInt("experience_min", 15)
-       set(value) { put("experience_min", value) }
+    var minimumExperience: Int by JSONDelegate("experience_min", 15)
 
-    var maximumExperience: Int
-        get() =      getInt("experience_max", 25)
-        set(value) { put("experience_max", value) }
+    var maximumExperience: Int by JSONDelegate("experience_max", 25)
 
-    var blacklistedLevelingChannels: Set<Long>
-        get() =      arrayOrEmpty("blacklisted_leveling_channels").stream(JSONArray::getLong).collect(Collectors.toSet())
-        set(value) { put("blacklisted_leveling_channels", value) }
+    var blacklistedLevelingChannels: Set<Long> by JSONDelegate(
+        "blacklisted_leveling_channels",
+        emptySet(),
+        mapArrayToLongSet()
+    )
 
-    var djRoles: Set<Long>
-        get() =      arrayOrEmpty("dj_roles").stream(JSONArray::getLong).collect(Collectors.toSet())
-        set(value) { put("dj_roles", value) }
+    var djRoles: Set<Long> by JSONDelegate(
+        "dj_roles",
+        emptySet(),
+        mapArrayToLongSet()
+    )
 
     suspend fun update(block: GuildData.() -> Unit) = apply(block).update()
 
@@ -37,4 +37,6 @@ class GuildData(val guildId: Long, json: String) : JSONObject(json) {
         SQLBuilder(updateSqlStatement, guildId, toString()).execute()
         return this
     }
+
+    private inline fun <reified T> mapArrayToLongSet(): (JSONDelegate<T>) -> T = { arrayOrEmpty(it.key).stream(JSONArray::getLong).collect(Collectors.toSet()) as T }
 }
