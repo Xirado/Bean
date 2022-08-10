@@ -28,7 +28,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("com.github.Xirado:JDA:6ac9d59")
+    implementation("net.dv8tion:JDA:5.0.0-alpha.17")
     implementation("com.github.minndevelopment:jda-ktx:9f01b74")
     implementation("com.github.Topis-Lavalink-Plugins:Topis-Source-Managers:2.0.1")
     implementation("com.zaxxer:HikariCP:5.0.1")
@@ -37,7 +37,7 @@ dependencies {
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.postgresql:postgresql:42.3.6")
     implementation("net.jodah:expiringmap:0.5.10")
-    implementation("com.github.xirado:SimpleJSON:d5c54fe")
+    implementation("com.github.Xirado:SimpleJSON:72574be")
     implementation("com.github.walkyst:lavaplayer-fork:1.3.97.1")
     implementation(kotlin("reflect"))
     implementation("com.facebook:ktfmt:0.36")

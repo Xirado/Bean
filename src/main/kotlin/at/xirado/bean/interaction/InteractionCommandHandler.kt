@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.CommandPermission
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction
 import net.dv8tion.jda.internal.utils.Checks
 import org.slf4j.Logger
@@ -146,7 +146,7 @@ class InteractionCommandHandler(private val application: Application) {
         val config = application.config
         Checks.notNull(command, "Command")
         if (command.requiredUserPermissions.isNotEmpty()) {
-            command.commandData.defaultPermissions = CommandPermission.enabledFor(command.requiredUserPermissions)
+            command.commandData.defaultPermissions = DefaultMemberPermissions.enabledFor(command.requiredUserPermissions)
         }
 
         if (command.global && !config.devMode) {

@@ -1,6 +1,7 @@
 package at.xirado.bean.data
 
 import at.xirado.bean.io.db.SQLBuilder
+import at.xirado.simplejson.FileType
 import at.xirado.simplejson.JSONObject
 import org.intellij.lang.annotations.Language
 import java.nio.file.Files
@@ -12,7 +13,7 @@ private val updateSqlStatement = """
     ON CONFLICT(user_id) DO UPDATE SET data = excluded.data
 """.trimIndent()
 
-class UserData(val userId: Long, json: String) : JSONObject(json) {
+class UserData(val userId: Long, json: String) : JSONObject(json, FileType.JSON) {
 
     var rankBackground: String
         get() = getString("rank_background", "default")

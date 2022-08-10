@@ -2,6 +2,7 @@ package at.xirado.bean.data
 
 import at.xirado.bean.io.db.SQLBuilder
 import at.xirado.bean.util.arrayOrEmpty
+import at.xirado.simplejson.FileType
 import at.xirado.simplejson.JSONArray
 import at.xirado.simplejson.JSONObject
 import org.intellij.lang.annotations.Language
@@ -13,7 +14,7 @@ private val updateSqlStatement = """
     ON CONFLICT(guild_id) DO UPDATE SET data = excluded.data
 """.trimIndent()
 
-class GuildData(val guildId: Long, json: String) : JSONObject(json) {
+class GuildData(val guildId: Long, json: String) : JSONObject(json, FileType.JSON) {
 
     var minimumExperience: Int by JSONDelegate("experience_min", 15)
 

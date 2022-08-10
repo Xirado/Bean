@@ -115,10 +115,10 @@ class PlayCommand(override val application: Application) : SlashCommand("play", 
         if (event.focusedOption.value.isUrl())
             return event.replyChoices(emptyList()).queue()
 
-        val locale = event.userLocale
+        val userLocale = event.userLocale
 
-        val languageString = locale.language
-        val countryString = locale.country.ifEmpty { localeMap[languageString]?: "US" }
+        val languageString = if (userLocale.locale.contains('-')) userLocale.locale.split('-')[0] else userLocale.locale
+        val countryString = if (userLocale.locale.contains('-')) userLocale.locale.split('-')[1] else localeMap[languageString]?: "US"
         val choices = mutableListOf<IAutocompleteChoice>()
 
         choices.addAll(retrieveSearchHistory(event.user.idLong, event.focusedOption.value))

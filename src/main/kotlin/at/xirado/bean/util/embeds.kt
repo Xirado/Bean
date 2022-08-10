@@ -1,7 +1,7 @@
 package at.xirado.bean.util
 
 import dev.minn.jda.ktx.Embed
-import net.dv8tion.jda.api.entities.Emoji
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -11,7 +11,7 @@ const val SUCCESS_EMOTE = "✅"
 const val WARNING_EMOTE = "⚠"
 
 const val SUPPORT_GUILD_INVITE_URL = "https://discord.com/invite/7WEjttJtKa"
-val BEAN_LOGO_EMOTE = Emoji.fromEmote("Bean", 922866602628743188L, false)
+val BEAN_LOGO_EMOTE = Emoji.fromCustom("Bean", 922866602628743188L, false)
 val SUPPORT_BUTTON = Button.link(SUPPORT_GUILD_INVITE_URL, BEAN_LOGO_EMOTE)
 
 fun errorEmbed(message: String) = Embed {

@@ -1,39 +1,39 @@
 package at.xirado.bean.io.config
 
 import at.xirado.bean.util.getLog
-import net.dv8tion.jda.api.utils.data.DataArray
-import net.dv8tion.jda.api.utils.data.DataObject
+import at.xirado.simplejson.JSONArray
+import at.xirado.simplejson.JSONObject
 import java.util.stream.Collectors
 
 private val log = getLog<BeanConfiguration>()
 
-class BeanConfiguration(dataObject: DataObject) {
+class BeanConfiguration(jsonObject: JSONObject) {
     val discordToken: String
     val devMode: Boolean
     val devGuilds: List<Long>
     val devUsers: List<Long>
-    val dbConfig: DataObject
-    val spotifyConfig: DataObject
-    val ytConfig: DataObject
+    val dbConfig: JSONObject
+    val spotifyConfig: JSONObject
+    val ytConfig: JSONObject
 
     init {
-        discordToken = dataObject.getStringOrThrow("discord_token")
-        devMode = dataObject.getBoolean("dev_mode", false)
-        devGuilds = dataObject.optArray("dev_guilds")
-            .orElseGet(DataArray::empty)
-            .stream(DataArray::getLong)
+        discordToken = jsonObject.getStringOrThrow("discord_token")
+        devMode = jsonObject.getBoolean("dev_mode", false)
+        devGuilds = jsonObject.optArray("dev_guilds")
+            .orElseGet(JSONArray::empty)
+            .stream(JSONArray::getLong)
             .collect(Collectors.toUnmodifiableList())
 
-        devUsers = dataObject.optArray("dev_users")
-            .orElseGet(DataArray::empty)
-            .stream(DataArray::getLong)
+        devUsers = jsonObject.optArray("dev_users")
+            .orElseGet(JSONArray::empty)
+            .stream(JSONArray::getLong)
             .collect(Collectors.toUnmodifiableList())
 
         if (devMode && devGuilds.isEmpty())
             log.warn("Dev mode is enabled but no guilds are specified. You will not see any commands!")
 
-        dbConfig = dataObject.optObject("database").orElseGet(DataObject::empty)
-        spotifyConfig = dataObject.optObject("spotify").orElseGet(DataObject::empty)
-        ytConfig = dataObject.optObject("youtube").orElseGet(DataObject::empty)
+        dbConfig = jsonObject.optObject("database").orElseGet(JSONObject::empty)
+        spotifyConfig = jsonObject.optObject("spotify").orElseGet(JSONObject::empty)
+        ytConfig = jsonObject.optObject("youtube").orElseGet(JSONObject::empty)
     }
 }

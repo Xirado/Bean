@@ -1,14 +1,13 @@
 package at.xirado.bean.i18n
 
 import at.xirado.bean.io.config.FileLoader
+import at.xirado.bean.util.getLog
+import at.xirado.simplejson.JSONArray
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.utils.data.DataArray
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.*
 
-private val log = LoggerFactory.getLogger(LocalizationManager::class.java) as Logger
+private val log = getLog<LocalizationManager>()
 
 class LocalizationManager {
 
@@ -22,8 +21,8 @@ class LocalizationManager {
         try {
             val config = FileLoader.loadResourceAsYaml("i18n/locale_config.yml")
 
-            config.optArray("locales").orElseGet(DataArray::empty)
-                .stream(DataArray::getString)
+            config.optArray("locales").orElseGet(JSONArray::empty)
+                .stream(JSONArray::getString)
                 .map { it.trim() }
                 .forEach(localeNames::add)
         } catch (ex: IOException) {
@@ -52,6 +51,6 @@ class LocalizationManager {
     }
 
     fun getForGuild(guild: Guild): I18n {
-        return getForLanguageTag(guild.locale.toLanguageTag())
+        return getForLanguageTag(guild.locale.locale)
     }
 }

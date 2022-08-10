@@ -1,9 +1,9 @@
 package at.xirado.bean.i18n
 
-import net.dv8tion.jda.api.utils.data.DataObject
-import net.dv8tion.jda.api.utils.data.DataType
+import at.xirado.simplejson.DataType
+import at.xirado.simplejson.JSONObject
 
-class I18n(val name: String, val data: DataObject) {
+class I18n(val name: String, val data: JSONObject) {
 
     companion object {
         @JvmStatic

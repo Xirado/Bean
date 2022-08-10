@@ -74,7 +74,7 @@ class Application {
                 LevelingListener(this), listenerManager, LegacyCommandListener(this))
             .setChunkingFilter(ChunkingFilter.NONE)
             .setGatewayEncoding(GatewayEncoding.ETF)
-            .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER)
+            .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOJI, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER)
             .build()
 
         interactionCommandHandler = InteractionCommandHandler(this)

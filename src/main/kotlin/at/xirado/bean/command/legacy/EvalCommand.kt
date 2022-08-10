@@ -16,7 +16,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import net.dv8tion.jda.api.entities.Emoji
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -52,8 +52,8 @@ private val defaultImports = listOf(
     "java.time.*"
 )
 
-private val ERROR_EMOJI = Emoji.fromEmote("error", 943524725487968298, false)
-private val REPEAT_EMOJI = Emoji.fromEmote("repeat", 940204537355063346, false)
+private val ERROR_EMOJI = Emoji.fromCustom("error", 943524725487968298, false)
+private val REPEAT_EMOJI = Emoji.fromCustom("repeat", 940204537355063346, false)
 private val SOURCE_EMOJI = Emoji.fromUnicode("\uD83D\uDCDC")
 private val RESULT_EMOJI = Emoji.fromUnicode("\uD83D\uDEE0")
 private val DELETE_EMOJI = Emoji.fromUnicode("\uD83D\uDDD1")

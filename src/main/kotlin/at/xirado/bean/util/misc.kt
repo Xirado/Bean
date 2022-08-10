@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.requests.RestAction
-import net.dv8tion.jda.api.utils.data.DataObject
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -32,12 +31,12 @@ suspend fun <K, V> MutableMap<K, V>.computeSuspendIfAbsent(key: K, block: suspen
 suspend fun User.getData() = APPLICATION.userManager.getUserData(idLong)
 suspend fun Guild.getData() = APPLICATION.guildManager.getGuildData(idLong)
 
-fun GenericCommandInteractionEvent.getUserI18n() = APPLICATION.localizationManager.getForLanguageTag(userLocale.toLanguageTag())
-fun GenericCommandInteractionEvent.getGuildI18n() = APPLICATION.localizationManager.getForLanguageTag(guildLocale.toLanguageTag())
+fun GenericCommandInteractionEvent.getUserI18n() = APPLICATION.localizationManager.getForLanguageTag(userLocale.locale)
+fun GenericCommandInteractionEvent.getGuildI18n() = APPLICATION.localizationManager.getForLanguageTag(guildLocale.locale)
 
 fun JSONObject.arrayOrEmpty(key: String): JSONArray = optArray(key).orElseGet(JSONArray::empty)
 
-fun DataObject.noneNull(vararg keys: String): Boolean = keys.none { isNull(it) }
+fun JSONObject.noneNull(vararg keys: String): Boolean = keys.none { isNull(it) }
 
 fun String.isUrl() = try { URL(this); true; } catch (ex: Exception) { false }
 
