@@ -3,8 +3,8 @@ package at.xirado.bean
 
 import at.xirado.bean.audio.AudioManager
 import at.xirado.bean.command.LegacyCommandHandler
-import at.xirado.bean.data.GuildManager
-import at.xirado.bean.data.UserManager
+import at.xirado.bean.data.guild.GuildManager
+import at.xirado.bean.data.user.UserManager
 import at.xirado.bean.i18n.LocalizationManager
 import at.xirado.bean.interaction.InteractionCommandHandler
 import at.xirado.bean.interaction.ListenerManager

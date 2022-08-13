@@ -1,4 +1,4 @@
-package at.xirado.bean.data
+package at.xirado.bean.data.guild
 
 import at.xirado.bean.Application
 import at.xirado.bean.io.db.SQLBuilder

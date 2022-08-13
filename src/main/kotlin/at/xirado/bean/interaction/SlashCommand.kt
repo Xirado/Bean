@@ -17,6 +17,7 @@ abstract class SlashCommand(name: String, description: String) : GenericCommand 
     override val requiredBotPermissions: EnumSet<Permission> = EnumSet.noneOf(Permission::class.java)
     override val enabledGuilds = HashSet<Long>()
     override val commandFlags: EnumSet<CommandFlag> = EnumSet.noneOf(CommandFlag::class.java)
+    override var disabled: Boolean = false
 
     override val type: Command.Type
         get() = Command.Type.SLASH

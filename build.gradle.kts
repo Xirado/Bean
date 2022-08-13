@@ -37,7 +37,7 @@ dependencies {
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.postgresql:postgresql:42.3.6")
     implementation("net.jodah:expiringmap:0.5.10")
-    implementation("com.github.Xirado:SimpleJSON:72574be")
+    implementation("com.github.Xirado:SimpleJSON:7488469")
     implementation("com.github.walkyst:lavaplayer-fork:1.3.97.1")
     implementation(kotlin("reflect"))
     implementation("com.facebook:ktfmt:0.36")

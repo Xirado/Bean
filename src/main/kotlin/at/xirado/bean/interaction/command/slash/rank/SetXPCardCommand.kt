@@ -23,12 +23,12 @@ class SetXPCardCommand(override val application: Application) : SlashCommand("se
         option<Attachment>("background", "The image to upload. (1200x300 is ideal, 15MB max)", required = true)
         option<Int>("color", "Primary accent color of the rank-card", required = true) {
             choice("Red", 0xD0312D)
-                choice("Green", 0x32CD32)
-                choice("Blue", 0x0C71E0)
-                choice("Purple", 0x842BD7)
-                choice("Pink", 0xf542ec)
-                choice("Mint", 0x42f58d)
-                choice("Orange", 0xd48e15)
+            choice("Green", 0x32CD32)
+            choice("Blue", 0x0C71E0)
+            choice("Purple", 0x842BD7)
+            choice("Pink", 0xf542ec)
+            choice("Mint", 0x42f58d)
+            choice("Orange", 0xd48e15)
         }
     }
 
@@ -52,9 +52,15 @@ class SetXPCardCommand(override val application: Application) : SlashCommand("se
         val file = File(imageDirectory, fullName)
         proxy.downloadToFile(file, 1200, 300).await()
 
-        event.user.getData().update {
-            rankBackground = fullName
-            rankAccentColor = event.getOption<Int>("color")!!
+        val userData = event.user.getData()
+
+        userData.rankCardConfig.deleteBackground()
+
+        userData.update {
+            rankCardConfig.apply {
+                background = fullName
+                accentColor = event.getOption<Int>("color")!!
+            }
         }
 
         event.sendSuccessLocalized("commands.setxpcard.success").queue()

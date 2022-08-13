@@ -3,6 +3,7 @@ package at.xirado.bean.util
 import at.xirado.bean.APPLICATION
 import at.xirado.simplejson.JSONArray
 import at.xirado.simplejson.JSONObject
+import at.xirado.simplejson.get
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
@@ -37,6 +38,12 @@ fun GenericCommandInteractionEvent.getGuildI18n() = APPLICATION.localizationMana
 fun JSONObject.arrayOrEmpty(key: String): JSONArray = optArray(key).orElseGet(JSONArray::empty)
 
 fun JSONObject.noneNull(vararg keys: String): Boolean = keys.none { isNull(it) }
+
+inline fun <reified T> JSONObject.getNullable(key: String): T? {
+    if (isNull(key))
+        return null
+    return get<T>(key)
+}
 
 fun String.isUrl() = try { URL(this); true; } catch (ex: Exception) { false }
 

@@ -16,4 +16,14 @@ interface GenericCommand : Command {
     val commandFlags: EnumSet<CommandFlag>
     val global: Boolean
         get() = enabledGuilds.isEmpty()
+
+    var disabled: Boolean
+
+    fun addUserPermissions(vararg permissions: Permission) {
+        requiredUserPermissions.addAll(permissions)
+    }
+
+    fun addBotPermissions(vararg permissions: Permission) {
+        requiredBotPermissions.addAll(permissions)
+    }
 }

@@ -49,14 +49,14 @@ class LevelingListener(val application: Application) : CoroutineEventListener {
         val userId = user.idLong
         val guildId = guild.idLong
 
-        if (event.channel.idLong in data.blacklistedLevelingChannels)
+        if (event.channel.idLong in data.levelingConfig.blacklistedChannels)
             return
 
         if (isTimeout(userId))
             return
 
-        val minExperience = data.minimumExperience
-        val maxExperience = data.maximumExperience
+        val minExperience = data.levelingConfig.minExperience
+        val maxExperience = data.levelingConfig.maxExperience
 
         val difference = maxExperience - minExperience
 

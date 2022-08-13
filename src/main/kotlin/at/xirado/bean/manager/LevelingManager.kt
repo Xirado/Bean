@@ -2,8 +2,6 @@ package at.xirado.bean.manager
 
 import at.xirado.bean.Application
 import at.xirado.bean.coroutineScope
-import at.xirado.bean.data.Rank
-import at.xirado.bean.data.getUserRank
 import at.xirado.bean.executor
 import at.xirado.bean.interaction.command.slash.rank.imageDirectory
 import at.xirado.bean.io.db.SQLBuilder
@@ -57,12 +55,11 @@ suspend fun generateCard(user: User, guild: Guild): ByteArray {
     val avatar = avatarDeferred.await()
     val background = backgroundDeferred.await()
 
-    val accentColor = user.getData().rankAccentColor
+    val accentColor = user.getData().rankCardConfig.accentColor
     val xpTotal = retrieveTotalExperience(guild.idLong, user.idLong)
     val rank = retrieveRank(user.idLong, guild.idLong)
-    val userRank = getUserRank(user.idLong)
 
-    val callable = Callable { drawImage(avatar, background, user, accentColor, xpTotal, rank, userRank) }
+    val callable = Callable { drawImage(avatar, background, user, accentColor, xpTotal, rank) }
 
     return withContext(Dispatchers.IO) {
         executor.submit(callable).get()
@@ -118,7 +115,7 @@ suspend fun setExperience(guildId: Long, userId: Long, newAmount: Int, name: Str
 }
 
 private suspend fun getUserBackground(user: User): BufferedImage {
-    val background = user.getData().rankBackground
+    val background = user.getData().rankCardConfig.background
 
     return if (background == "default") {
         getDefaultBackground()
@@ -137,7 +134,7 @@ private suspend fun getDefaultBackground() = withContext(Dispatchers.IO) {
     ImageIO.read(Application::class.java.getResourceAsStream("/assets/wildcards/default.jpg"))
 }
 
-private fun drawImage(avatar: BufferedImage, background: BufferedImage, user: User, accentColor: Int, experience: Int, rank: Int, userRank: Rank?): ByteArray {
+private fun drawImage(avatar: BufferedImage, background: BufferedImage, user: User, accentColor: Int, experience: Int, rank: Int): ByteArray {
     val roundAvatar = BufferedImage(RAW_AVATAR_SIZE, RAW_AVATAR_SIZE, BufferedImage.TYPE_INT_ARGB)
     roundAvatar.createGraphics().apply {
         color = Color.white
@@ -213,19 +210,19 @@ private fun drawImage(avatar: BufferedImage, background: BufferedImage, user: Us
     g.font = g.font.deriveFont(DISCRIMINATOR_FONT_SIZE).deriveFont(Font.BOLD)
     val discriminator = "#${user.discriminator}"
     val discriminatorSize = g.fontMetrics.getStringBounds(discriminator, g)
-    val discriminatorWidth = discriminatorSize.width.toInt()
+//    val discriminatorWidth = discriminatorSize.width.toInt()
     g.drawString(discriminator, AVATAR_SIZE + BORDER_SIZE * 2 + nameWidth, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT)
 
-    if (userRank != null) {
-        g.font = g.font.deriveFont(RANK_FONT_SIZE).deriveFont(Font.BOLD)
-        val addedSize = AVATAR_SIZE + BORDER_SIZE * 2 + nameWidth + discriminatorWidth
-        g.color = Color(userRank.color)
-        val padding = 10
-        val rankSize = g.fontMetrics.getStringBounds(userRank.display, g)
-        g.fillRoundRect(addedSize + 10, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT - (rankSize.height.toInt()) + 4, rankSize.width.toInt() + (2 * padding), rankSize.height.toInt(), rankSize.height.toInt(), rankSize.height.toInt())
-        g.color = Color.white
-        g.drawString(userRank.display, addedSize + padding + 10, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT - 4)
-    }
+//    if (userRank != null) {
+//        g.font = g.font.deriveFont(RANK_FONT_SIZE).deriveFont(Font.BOLD)
+//        val addedSize = AVATAR_SIZE + BORDER_SIZE * 2 + nameWidth + discriminatorWidth
+//        g.color = Color(userRank.color)
+//        val padding = 10
+//        val rankSize = g.fontMetrics.getStringBounds(userRank.display, g)
+//        g.fillRoundRect(addedSize + 10, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT - (rankSize.height.toInt()) + 4, rankSize.width.toInt() + (2 * padding), rankSize.height.toInt(), rankSize.height.toInt(), rankSize.height.toInt())
+//        g.color = Color.white
+//        g.drawString(userRank.display, addedSize + padding + 10, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT - 4)
+//    }
 
     val currentLevel = getLevel(experience)
     val neededXP = getExperienceToLevelUp(currentLevel)

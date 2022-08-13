@@ -143,6 +143,9 @@ class InteractionCommandHandler(private val application: Application) {
     }
 
     private fun registerCommand(action: CommandListUpdateAction, command: GenericCommand) {
+        if (command.disabled)
+            return
+
         val config = application.config
         Checks.notNull(command, "Command")
         if (command.requiredUserPermissions.isNotEmpty()) {
