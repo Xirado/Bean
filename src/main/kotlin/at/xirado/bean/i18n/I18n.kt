@@ -14,7 +14,18 @@ class I18n(val name: String, val data: JSONObject) {
         }
     }
 
-    fun get(path: String, vararg attributes: Pair<String, Any>): String {
+    fun get(path: String, vararg attributes: Pair<String, Any>): String? {
+        return try {
+            getValue(path, *attributes)
+        } catch (ex: Throwable) {
+            if (ex is NullPointerException || ex is NoSuchFieldException)
+                null
+            else
+                throw ex
+        }
+    }
+
+    fun getValue(path: String, vararg attributes: Pair<String, Any>): String {
         val paths = path.split(".")
 
         var current = data

@@ -9,10 +9,10 @@ fun GenericCommandInteractionEvent.sendErrorMessage(message: String, ephemeral: 
     .setEphemeral(ephemeral)
 
 fun GenericCommandInteractionEvent.replyErrorLocalized(path: String, vararg attributes: Pair<String, Any>, ephemeral: Boolean = false)
-    = replyError(getUserI18n().get(path, *attributes), ephemeral = ephemeral)
+    = replyError(getUserI18n().getValue(path, *attributes), ephemeral = ephemeral)
 
 fun GenericCommandInteractionEvent.sendErrorLocalized(path: String, vararg attributes: Pair<String, Any>, ephemeral: Boolean = false) =
-    hook.sendMessageEmbeds(errorEmbed(getUserI18n().get(path, *attributes))).setEphemeral(ephemeral)
+    hook.sendMessageEmbeds(errorEmbed(getUserI18n().getValue(path, *attributes))).setEphemeral(ephemeral)
 
 fun GenericCommandInteractionEvent.replySuccess(message: String, ephemeral: Boolean = false) = replyEmbeds(successEmbed(message))
     .setEphemeral(ephemeral)
@@ -21,10 +21,10 @@ fun GenericCommandInteractionEvent.sendSuccessMessage(message: String, ephemeral
     .setEphemeral(ephemeral)
 
 fun GenericCommandInteractionEvent.replySuccessLocalized(path: String, vararg attributes: Pair<String, Any>, ephemeral: Boolean = false)
-        = replySuccess(getUserI18n().get(path, *attributes), ephemeral = ephemeral)
+        = replySuccess(getUserI18n().getValue(path, *attributes), ephemeral = ephemeral)
 
 fun GenericCommandInteractionEvent.sendSuccessLocalized(path: String, vararg attributes: Pair<String, Any>, ephemeral: Boolean = false) =
-    hook.sendMessageEmbeds(successEmbed(getUserI18n().get(path, *attributes))).setEphemeral(ephemeral)
+    hook.sendMessageEmbeds(successEmbed(getUserI18n().getValue(path, *attributes))).setEphemeral(ephemeral)
 
 fun GenericCommandInteractionEvent.replyDefault(message: String, ephemeral: Boolean = false) = replyEmbeds(defaultEmbed(message))
     .setEphemeral(ephemeral)
@@ -34,10 +34,10 @@ fun GenericCommandInteractionEvent.sendDefaultMessage(message: String, ephemeral
         .setEphemeral(ephemeral)
 
 fun GenericCommandInteractionEvent.replyDefaultLocalized(path: String, vararg attributes: Pair<String, Any>, ephemeral: Boolean = false)
-        = replyDefault(getUserI18n().get(path, *attributes), ephemeral = ephemeral)
+        = replyDefault(getUserI18n().getValue(path, *attributes), ephemeral = ephemeral)
 
 fun GenericCommandInteractionEvent.sendDefaultLocalized(path: String, vararg attributes: Pair<String, Any>, ephemeral: Boolean = false) =
-    hook.sendMessageEmbeds(defaultEmbed(getUserI18n().get(path, *attributes))).setEphemeral(ephemeral)
+    hook.sendMessageEmbeds(defaultEmbed(getUserI18n().getValue(path, *attributes))).setEphemeral(ephemeral)
 
 fun GenericCommandInteractionEvent.replyWarning(message: String, ephemeral: Boolean = false) = replyEmbeds(warningEmbed(message))
     .setEphemeral(ephemeral)
@@ -47,7 +47,7 @@ fun GenericCommandInteractionEvent.sendWarningMessage(message: String, ephemeral
         .setEphemeral(ephemeral)
 
 fun GenericCommandInteractionEvent.replyWarningLocalized(path: String, vararg attributes: Pair<String, Any>, ephemeral: Boolean = false)
-        = replyWarning(getUserI18n().get(path, *attributes), ephemeral = ephemeral)
+        = replyWarning(getUserI18n().getValue(path, *attributes), ephemeral = ephemeral)
 
 fun GenericCommandInteractionEvent.sendWarningLocalized(path: String, vararg attributes: Pair<String, Any>, ephemeral: Boolean = false) =
-    hook.sendMessageEmbeds(warningEmbed(getUserI18n().get(path, *attributes))).setEphemeral(ephemeral)
+    hook.sendMessageEmbeds(warningEmbed(getUserI18n().getValue(path, *attributes))).setEphemeral(ephemeral)

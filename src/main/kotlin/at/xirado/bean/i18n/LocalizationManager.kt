@@ -4,6 +4,7 @@ import at.xirado.bean.io.config.FileLoader
 import at.xirado.bean.util.getLog
 import at.xirado.simplejson.JSONArray
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.io.IOException
 import java.util.*
 
@@ -52,5 +53,21 @@ class LocalizationManager {
 
     fun getForGuild(guild: Guild): I18n {
         return getForLanguageTag(guild.locale.locale)
+    }
+
+    fun getDiscordLocalizations(path: String, vararg attributes: Pair<String, Any>): Map<DiscordLocale, String> {
+        val map = mutableMapOf<DiscordLocale, String>()
+        locales.forEach { (name, locale) ->
+            val discordLocale = DiscordLocale.from(name)
+
+            if (discordLocale == DiscordLocale.UNKNOWN)
+                return@forEach
+
+            val result = locale.get(path, *attributes) ?: return@forEach
+
+            map[discordLocale] = result
+        }
+
+        return map
     }
 }

@@ -34,7 +34,17 @@ abstract class SlashCommand(name: String, description: String) : GenericCommand 
         if (type == OptionType.UNKNOWN)
             throw IllegalArgumentException("Cannot resolve type " + T::class.java.simpleName + " to OptionType!")
 
-        commandData.addOptions(OptionData(type, name, description).setRequired(required).setAutoComplete(autocomplete).apply(builder))
+        val nameLocalizations = application.localizationManager.getDiscordLocalizations("commands.slash.${commandData.name}.options.$name.name")
+        val descriptionLocalizations = application.localizationManager.getDiscordLocalizations("commands.slash.${commandData.name}.options.$name.description")
+
+        commandData.addOptions(
+            OptionData(type, name, description)
+                .setRequired(required)
+                .setAutoComplete(autocomplete)
+                .setNameLocalizations(nameLocalizations)
+                .setDescriptionLocalizations(descriptionLocalizations)
+                .apply(builder)
+        )
     }
 
     inline fun subCommand(name: String, description: String, builder: SubcommandData.() -> Unit = {}) = commandData.addSubcommands(

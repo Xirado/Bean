@@ -12,7 +12,9 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction
 import net.dv8tion.jda.internal.utils.Checks
 import org.slf4j.Logger
@@ -103,8 +105,8 @@ class InteractionCommandHandler(private val application: Application) {
         log.error("An unhandled error was encountered", throwable)
         val locale = event.getUserI18n()
 
-        val errorMessage = locale.get("general.unknown_error_occurred")
-        val supportMessage = locale.get("general.support")
+        val errorMessage = locale.getValue("general.unknown_error_occurred")
+        val supportMessage = locale.getValue("general.support")
         val button = SUPPORT_BUTTON.withLabel(supportMessage)
 
         val stackTrace = if (event.user.idLong in application.config.devUsers) parseThrowable(throwable) else null
@@ -142,15 +144,40 @@ class InteractionCommandHandler(private val application: Application) {
         updateAction.queue()
     }
 
+    private val commandTypes = mapOf(
+        Command.Type.SLASH to "slash",
+        Command.Type.MESSAGE to "message",
+        Command.Type.USER to "user"
+    )
+
+    private fun registerLocalizations(command: GenericCommand) {
+        val commandData = command.commandData
+        val type = commandTypes[commandData.type] ?: return
+        val prefix = "commands.$type.${commandData.name}"
+
+        commandData.setNameLocalizations(
+            application.localizationManager.getDiscordLocalizations("$prefix.name")
+        )
+
+        if (commandData is SlashCommandData) {
+            commandData.setDescriptionLocalizations(
+                application.localizationManager.getDiscordLocalizations("$prefix.description")
+            )
+        }
+    }
+
     private fun registerCommand(action: CommandListUpdateAction, command: GenericCommand) {
+        val config = application.config
+        Checks.notNull(command, "Command")
+
         if (command.disabled)
             return
 
-        val config = application.config
-        Checks.notNull(command, "Command")
         if (command.requiredUserPermissions.isNotEmpty()) {
             command.commandData.defaultPermissions = DefaultMemberPermissions.enabledFor(command.requiredUserPermissions)
         }
+
+        registerLocalizations(command)
 
         if (command.global && !config.devMode) {
             globalCommands.add(command)
