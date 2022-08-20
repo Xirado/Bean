@@ -2,19 +2,19 @@ package at.xirado.bean.i18n
 
 import at.xirado.bean.io.config.FileLoader
 import at.xirado.bean.util.getLog
+import at.xirado.bean.util.getNullable
 import at.xirado.simplejson.JSONArray
-import net.dv8tion.jda.api.entities.Guild
+import at.xirado.simplejson.collect
 import net.dv8tion.jda.api.interactions.DiscordLocale
+import okhttp3.internal.toImmutableMap
 import java.io.IOException
-import java.util.*
 
 private val log = getLog<LocalizationManager>()
 
 class LocalizationManager {
 
-    private var locales = mutableMapOf<String, I18n>()
-
-    val localeNames = mutableListOf<String>()
+    val locales: Map<String, I18n>
+    val default: I18n
 
     init {
         val map = mutableMapOf<String, I18n>()
@@ -22,37 +22,36 @@ class LocalizationManager {
         try {
             val config = FileLoader.loadResourceAsYaml("i18n/locale_config.yml")
 
-            config.optArray("locales").orElseGet(JSONArray::empty)
-                .stream(JSONArray::getString)
-                .map { it.trim() }
-                .forEach(localeNames::add)
+            default = config.getNullable<String>("default")
+                ?.let { loadLocale(it) } ?: throw IllegalStateException("No default locale defined!")
+
+            map[default.tag] = default
+
+            config.getNullable<JSONArray>("locales")
+                ?.collect<String>()
+                ?.mapNotNull { file ->
+                    kotlin.runCatching {
+                        loadLocale(file.trim())
+                    }.onFailure {
+                        log.error("Failed to load translation-file \"$file\"!", it)
+                    }.getOrNull() }
+                ?.forEach { map[it.tag] = it }
+
+            locales = map.toImmutableMap()
         } catch (ex: IOException) {
             log.error("Could not initialize localization manager", ex)
             throw ExceptionInInitializerError(ex)
         }
+    }
 
-        localeNames.forEach { lang ->
-            try {
-                val file = FileLoader.loadResourceAsYaml("i18n/locales/$lang")
-                val name = lang.removeSuffix(".yml")
-                map[name] = I18n(name, file)
-                log.info("Loaded locale $lang")
-            } catch (ex: Exception) {
-                log.error("Could not load locale $lang", ex)
-            }
-        }
-        if ("en_US.yml" !in localeNames) {
-            log.error("Default locale \"en_US\" was not found!")
-        }
-        locales = Collections.unmodifiableMap(map)
+    private fun loadLocale(fileName: String): I18n {
+        val file = FileLoader.loadResourceAsYaml("i18n/locales/$fileName")
+        val name = fileName.removeSuffix(".yml")
+        return I18n(name, fileName, file, this)
     }
 
     fun getForLanguageTag(tag: String): I18n {
-        return locales[tag]?: locales["en_US"]!!
-    }
-
-    fun getForGuild(guild: Guild): I18n {
-        return getForLanguageTag(guild.locale.locale)
+        return locales[tag]?: default
     }
 
     fun getDiscordLocalizations(path: String, vararg attributes: Pair<String, Any>): Map<DiscordLocale, String> {

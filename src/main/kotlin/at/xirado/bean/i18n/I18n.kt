@@ -2,8 +2,9 @@ package at.xirado.bean.i18n
 
 import at.xirado.simplejson.DataType
 import at.xirado.simplejson.JSONObject
+import at.xirado.simplejson.get
 
-class I18n(val name: String, val data: JSONObject) {
+class I18n(val tag: String, val fileName: String, val data: JSONObject, private val localizationManager: LocalizationManager) {
 
     companion object {
         @JvmStatic
@@ -12,6 +13,17 @@ class I18n(val name: String, val data: JSONObject) {
             attributes.forEach { output = output.replace("{${it.first}}", it.second.toString()) }
             return output
         }
+    }
+
+    fun localizedMessage(path: String, vararg attributes: Pair<String, Any>): LocalizedMessage {
+
+        val layout = get(path)
+            ?: localizationManager.getForLanguageTag("en_US").getValue(path)
+
+        val formatted = get(path, *attributes)
+            ?: localizationManager.getForLanguageTag("en_US").getValue(path, *attributes)
+
+        return LocalizedMessage(this, path, layout, formatted)
     }
 
     fun get(path: String, vararg attributes: Pair<String, Any>): String? {
@@ -38,15 +50,15 @@ class I18n(val name: String, val data: JSONObject) {
                 throw IllegalArgumentException("Provided path \"$path\" is not a string!")
 
             if (current.isType(subPath, DataType.OBJECT)) {
-                current = current.getObject(subPath)
+                current = current.get<JSONObject>(subPath)
                 return@forEachIndexed
             }
 
             if (!current.isType(subPath, DataType.STRING))
                 throw IllegalArgumentException("Provided path \"$path\" is not a string!")
 
-            return format(current.getString(subPath), *attributes)
+            return format(current.get<String>(subPath), *attributes)
         }
-        throw NoSuchFieldException("Path $path does not exist in locale $name!")
+        throw NoSuchFieldException("Path $path does not exist in locale $tag!")
     }
 }

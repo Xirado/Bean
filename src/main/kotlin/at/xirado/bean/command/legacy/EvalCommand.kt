@@ -49,7 +49,8 @@ private val defaultImports = listOf(
     "java.math.*",
     "java.util.*",
     "java.util.concurrent.*",
-    "java.time.*"
+    "java.time.*",
+    "at.xirado.bean.util.*"
 )
 
 private val ERROR_EMOJI = Emoji.fromCustom("error", 943524725487968298, false)
@@ -59,7 +60,7 @@ private val RESULT_EMOJI = Emoji.fromUnicode("\uD83D\uDEE0")
 private val DELETE_EMOJI = Emoji.fromUnicode("\uD83D\uDDD1")
 
 private val EDIT_BUTTON = Button.primary("edit_and_rerun", "Edit & Re-run code").withEmoji(REPEAT_EMOJI)
-private val DELETE_BUTTON = Button.danger("delete_eval_message", "Delete message").withEmoji(DELETE_EMOJI)
+private val DELETE_BUTTON = Button.danger("delete_eval_message", "Delete messages").withEmoji(DELETE_EMOJI)
 
 class EvalCommand(override val application: Application) : LegacyCommand("eval") {
     init {
@@ -158,7 +159,7 @@ class EvalCommand(override val application: Application) : LegacyCommand("eval")
     @EventCondition("componentId == `edit_and_rerun`")
     fun onEdit(event: ButtonInteractionEvent) {
         if (event.user.idLong !in application.config.devUsers)
-            return event.reply("This maze isn't meant for you!").queue()
+            return event.reply("This maze isn't meant for you!").setEphemeral(true).queue()
         val message = event.message
         val messageId = message.idLong
 
@@ -181,7 +182,7 @@ class EvalCommand(override val application: Application) : LegacyCommand("eval")
     @EventCondition("componentId == `delete_eval_message`")
     fun onDelete(event: ButtonInteractionEvent) {
         if (event.user.idLong !in application.config.devUsers)
-            return event.reply("This maze isn't meant for you!").queue()
+            return event.reply("This maze isn't meant for you!").setEphemeral(true).queue()
 
         val messageId = event.messageIdLong
 

@@ -4,11 +4,10 @@ import at.xirado.bean.Application
 import at.xirado.bean.executor
 import at.xirado.bean.util.*
 import dev.minn.jda.ktx.await
+import dev.minn.jda.ktx.interactions.getOption
 import io.github.classgraph.ClassGraph
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.GuildChannel
-import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -24,9 +23,9 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Collectors
-import kotlin.reflect.full.callSuspend
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.KParameter
+import kotlin.reflect.KType
+import kotlin.reflect.full.*
 
 private val log = LoggerFactory.getLogger(InteractionCommandHandler::class.java) as Logger
 
@@ -95,9 +94,45 @@ class InteractionCommandHandler(private val application: Application) {
 
         when (command) {
             is SlashCommand -> {
-                val slashEvent = event as SlashCommandInteractionEvent
-                runCatching { command.baseCommand(slashEvent) }.onFailure { handleError(command, event, it) }
+                event as SlashCommandInteractionEvent
+                runCatching { handleSlashCommandReflective(command, event) }.onFailure { handleError(command, event, it) }
             }
+        }
+    }
+
+    private suspend fun handleSlashCommandReflective(command: SlashCommand, event: SlashCommandInteractionEvent) {
+        if (event.subcommandName == null) {
+            val function = command.baseCommand ?: return
+            val eventParameter = function.valueParameters.first()
+            val map = mutableMapOf<KParameter, Any?>()
+            map[eventParameter] = event
+            function.valueParameters
+                .filter { it.name != null && it != eventParameter }
+                .forEach { param ->
+                    val value = getParameter(param.name!!.snakeCase(), event, param.type)
+                    if (param.isOptional && value == null)
+                        return@forEach
+
+                    map[param] = value
+                }
+            function.callSuspendBy(map)
+        }
+    }
+
+    fun getParameter(name: String, event: SlashCommandInteractionEvent, targetType: KType): Any? {
+        return when (targetType.classifier) {
+            String::class -> event.getOption<String>(name)
+            Boolean::class -> event.getOption<Boolean>(name)
+            Int::class -> event.getOption<Int>(name)
+            Double::class -> event.getOption<Double>(name)
+            Long::class -> event.getOption<Long>(name)
+            IMentionable::class -> event.getOption<IMentionable>(name)
+            User::class -> event.getOption<User>(name)
+            Member::class -> event.getOption<Member>(name)
+            Message.Attachment::class -> event.getOption<Message.Attachment>(name)
+            GuildChannel::class -> event.getOption<GuildChannel>(name)
+            Role::class -> event.getOption<Role>(name)
+            else -> throw IllegalStateException("Invalid parameter of type ${targetType.classifier}")
         }
     }
 
@@ -115,16 +150,16 @@ class InteractionCommandHandler(private val application: Application) {
         val formattedDate = date.format(format)
 
         val fileName = "stacktrace_${event.name}_$formattedDate.ansi"
-        if (event.isAcknowledged)
-            event.sendErrorMessage(errorMessage, ephemeral = true).addActionRow(button).apply {
-                if (stackTrace != null)
-                    addFile(stackTrace.toByteArray(), fileName)
-            }.queue()
-        else
-            event.replyError(errorMessage, ephemeral = true).addActionRow(button).apply {
-                if (stackTrace != null)
-                    addFile(stackTrace.toByteArray(), fileName)
-            }.queue()
+//        if (event.isAcknowledged)
+//            event.sendErrorMessage(errorMessage, ephemeral = true).addActionRow(button).apply {
+//                if (stackTrace != null)
+//                    addFile(stackTrace.toByteArray(), fileName)
+//            }.queue()
+//        else
+//            event.replyError(errorMessage, ephemeral = true).addActionRow(button).apply {
+//                if (stackTrace != null)
+//                    addFile(stackTrace.toByteArray(), fileName)
+//            }.queue()
     }
 
     private fun parseThrowable(throwable: Throwable): String {
@@ -153,7 +188,7 @@ class InteractionCommandHandler(private val application: Application) {
     private fun registerLocalizations(command: GenericCommand) {
         val commandData = command.commandData
         val type = commandTypes[commandData.type] ?: return
-        val prefix = "commands.$type.${commandData.name}"
+        val prefix = "interaction.$type.${commandData.name}"
 
         commandData.setNameLocalizations(
             application.localizationManager.getDiscordLocalizations("$prefix.name")
@@ -175,6 +210,11 @@ class InteractionCommandHandler(private val application: Application) {
 
         if (command.requiredUserPermissions.isNotEmpty()) {
             command.commandData.defaultPermissions = DefaultMemberPermissions.enabledFor(command.requiredUserPermissions)
+        }
+
+        if (command is SlashCommand) {
+            if (command.baseCommand == null)
+                log.error("SlashCommand \"${command.commandData.name}\" does not have a specified Base-Command!")
         }
 
         registerLocalizations(command)

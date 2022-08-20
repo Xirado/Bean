@@ -20,6 +20,7 @@ import dev.minn.jda.ktx.CoroutineEventManager
 import dev.minn.jda.ktx.getDefaultScope
 import net.dv8tion.jda.api.GatewayEncoding
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.sharding.ShardManager
@@ -58,6 +59,7 @@ class Application {
     val legacyCommandHandler = LegacyCommandHandler(this)
 
     init {
+        Message.suppressContentIntentWarning()
         APPLICATION = this
         val properties = Properties()
         properties.load(Application::class.java.getResourceAsStream("/app.properties"))

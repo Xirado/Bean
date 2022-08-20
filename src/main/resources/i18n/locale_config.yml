@@ -1,2 +1,4 @@
+default: en_US.yml
+
 locales:
-  - en_US.yml
+  - de.yml

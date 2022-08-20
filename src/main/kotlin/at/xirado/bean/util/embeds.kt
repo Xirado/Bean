@@ -1,38 +1,43 @@
 package at.xirado.bean.util
 
+import at.xirado.bean.i18n.LocalizedMessage
 import dev.minn.jda.ktx.Embed
+import dev.minn.jda.ktx.InlineEmbed
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-const val ERROR_EMOTE = "<:error:943524725487968298>"
-const val SUCCESS_EMOTE = "✅"
-const val WARNING_EMOTE = "⚠"
+enum class ResponseType(val key: String, val default: String, val iconUrl: String, val color: ColorPalette) {
+    ERROR("general.header.error", "Error", "https://bean.bz/assets/icons/error.png", ColorPalette.DANGER),
+    SUCCESS("general.header.success", "Success", "https://bean.bz/assets/icons/success.png", ColorPalette.SUCCESS),
+    WARNING("general.header.warning", "Warning", "https://bean.bz/assets/icons/warning.png", ColorPalette.WARNING)
+}
+
+fun createResponseEmbed(responseType: ResponseType,
+                        content: CharSequence,
+                        builder: InlineEmbed.() -> Unit = {}): MessageEmbed {
+    return Embed {
+        if (content is LocalizedMessage) {
+            author(
+                name = content.i18n.get(responseType.key) ?: responseType.default,
+                iconUrl = responseType.iconUrl
+            )
+        } else {
+            author(name = responseType.default, iconUrl = responseType.iconUrl)
+        }
+
+        color = responseType.color.rgb
+        description = content.toString()
+        apply(builder)
+    }
+}
+
 
 const val SUPPORT_GUILD_INVITE_URL = "https://discord.com/invite/7WEjttJtKa"
 val BEAN_LOGO_EMOTE = Emoji.fromCustom("Bean", 922866602628743188L, false)
 val SUPPORT_BUTTON = Button.link(SUPPORT_GUILD_INVITE_URL, BEAN_LOGO_EMOTE)
-
-fun errorEmbed(message: String) = Embed {
-    description = "$ERROR_EMOTE $message"
-    color = ColorPalette.DANGER.rgb
-}
-
-fun warningEmbed(message: String) = Embed {
-    description = "$WARNING_EMOTE $message"
-    color = ColorPalette.WARNING.rgb
-}
-
-fun successEmbed(message: String) = Embed {
-    description = "$SUCCESS_EMOTE $message"
-    color = ColorPalette.SUCCESS.rgb
-}
-
-fun defaultEmbed(message: String) = Embed {
-    description = message
-    color = ColorPalette.PRIMARY.rgb
-}
 
 inline fun <reified T> getLog() = LoggerFactory.getLogger(T::class.java) as Logger
 

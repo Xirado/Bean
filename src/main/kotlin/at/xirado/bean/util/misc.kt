@@ -1,9 +1,12 @@
 package at.xirado.bean.util
 
 import at.xirado.bean.APPLICATION
+import at.xirado.bean.data.guild.GuildData
+import at.xirado.bean.data.user.UserData
 import at.xirado.simplejson.JSONArray
 import at.xirado.simplejson.JSONObject
 import at.xirado.simplejson.get
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
@@ -32,6 +35,12 @@ suspend fun <K, V> MutableMap<K, V>.computeSuspendIfAbsent(key: K, block: suspen
 suspend fun User.getData() = APPLICATION.userManager.getUserData(idLong)
 suspend fun Guild.getData() = APPLICATION.guildManager.getGuildData(idLong)
 
+val Guild.data: GuildData
+    get() = runBlocking { getData() }
+
+val User.data: UserData
+    get() = runBlocking { getData() }
+
 fun GenericCommandInteractionEvent.getUserI18n() = APPLICATION.localizationManager.getForLanguageTag(userLocale.locale)
 fun GenericCommandInteractionEvent.getGuildI18n() = APPLICATION.localizationManager.getForLanguageTag(guildLocale.locale)
 
@@ -44,6 +53,8 @@ inline fun <reified T> JSONObject.getNullable(key: String): T? {
         return null
     return get<T>(key)
 }
+
+fun String.snakeCase() = map { if (it.isUpperCase()) "_${it.lowercase()}" else it }.joinToString(separator = "")
 
 fun String.isUrl() = try { URL(this); true; } catch (ex: Exception) { false }
 

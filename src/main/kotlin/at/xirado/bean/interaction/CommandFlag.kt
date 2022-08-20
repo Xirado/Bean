@@ -1,8 +1,6 @@
 package at.xirado.bean.interaction
 
 import at.xirado.bean.APPLICATION
-import at.xirado.bean.util.replyError
-import at.xirado.bean.util.replyWarningLocalized
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 
 enum class CommandFlag(val filter: suspend (GenericCommandInteractionEvent) -> Boolean) {
@@ -10,7 +8,7 @@ enum class CommandFlag(val filter: suspend (GenericCommandInteractionEvent) -> B
         val user = event.user
         val devUsers = APPLICATION.config.devUsers
 
-        (user.idLong in devUsers).ifFalse { event.replyError("This maze isn't meant for you!", ephemeral = true).queue() }
+        (user.idLong in devUsers).ifFalse { event.reply("This maze isn't meant for you!").queue() }
     }),
 
     USER_MUST_JOIN_VC({ event ->
@@ -18,7 +16,7 @@ enum class CommandFlag(val filter: suspend (GenericCommandInteractionEvent) -> B
         val voiceState = member.voiceState!!
 
         (voiceState.channel != null).ifFalse {
-            event.replyWarningLocalized("general.must_be_listening_in_vc", ephemeral = true).queue()
+            event.reply("general.must_be_listening_in_vc").queue()
         }
     }),
 
@@ -29,10 +27,12 @@ enum class CommandFlag(val filter: suspend (GenericCommandInteractionEvent) -> B
         val botVoiceState = guild.selfMember.voiceState!!
         (botVoiceState.channel == null || userVoiceState.channel == botVoiceState.channel)
             .ifFalse {
-                event.replyWarningLocalized(
-                    "general.must_be_listening_in_bot_vc",
-                    "channel" to botVoiceState.channel!!.asMention,
-                    ephemeral = true).queue()
+                event.reply(
+                    "general.must_be_listening_in_bot_vc"
+//                    ,
+//                    "channel" to botVoiceState.channel!!.asMention,
+//                    ephemeral = true
+                ).queue()
             }
     })
 }

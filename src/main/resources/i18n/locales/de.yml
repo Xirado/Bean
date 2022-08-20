@@ -1,0 +1,30 @@
+general:
+  must_be_listening_in_vc: Du musst dich in einem Sprachkanal befinden, um diesen
+    Befehl nutzen zu können!
+  must_be_listening_in_bot_vc: Du musst {channel} beigetreten sein, um diesen Befehl
+    nutzen zu können!
+  header:
+    success: Erfolg
+    warning: Warnung
+    error: Fehler
+  support: Support
+  unknown_error_occurred: Ein unerwarteter Fehler ist aufgetreten. Bitte versuche
+    es später erneut.
+interaction:
+  slash:
+    rank:
+      name: rang
+      options:
+        user:
+          name: mitglied
+          description: Ruft die Rangkarte eines anderen Mitglieds ab.
+      description: Ruft deine Rangkarte ab.
+commands:
+  rank:
+    not_ranked: Dieser Nutzer hat noch keinen Rang!
+    not_ranked_self: Du hast noch keinen Rang!
+  setxpcard:
+    too_large: Datei ist zu groß! Die maximale Dateigröße beträgt {size}.
+    success: Dein Hintergrund wurde aktualisiert!
+    invalid_upload: 'Ungültige Dateierweiterung! Erlaubte Erweiterungen sind:
+        {extensions}'
