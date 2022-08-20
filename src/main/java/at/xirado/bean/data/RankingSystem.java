@@ -274,7 +274,7 @@ public class RankingSystem {
 
             // prepare level card
             String card = getPreferredCard(user);
-            if (!card.startsWith("card") && !new File(SetXPBackgroundCommand.DIRECTORY, card).exists()) {
+            if (card == null || (!card.startsWith("card") && !new File(SetXPBackgroundCommand.DIRECTORY, card).exists())) {
                 card = "card1";
             }
             var rankCard = new BufferedImage(CARD_WIDTH, CARD_HEIGHT, BufferedImage.TYPE_INT_ARGB);

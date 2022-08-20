@@ -183,7 +183,7 @@ public class Bean {
             VERSION = properties.getProperty("app-version");
             BUILD_TIME = Long.parseLong(properties.getProperty("build-time"));
         } catch (Exception e) {
-            LOGGER.error("An error occurred while reading app.properties file!", e);
+            LOGGER.error("An error occurred while reading app.properties file!");
             VERSION = "0.0.0";
             BUILD_TIME = 0L;
         }
