@@ -4,7 +4,7 @@ import at.xirado.simplejson.DataType
 import at.xirado.simplejson.JSONObject
 import at.xirado.simplejson.get
 
-class I18n(val tag: String, val fileName: String, val data: JSONObject, private val localizationManager: LocalizationManager) {
+class I18n(val tag: String, val fileName: String, val data: JSONObject, val manager: LocalizationManager) {
 
     companion object {
         @JvmStatic
@@ -18,10 +18,10 @@ class I18n(val tag: String, val fileName: String, val data: JSONObject, private 
     fun localizedMessage(path: String, vararg attributes: Pair<String, Any>): LocalizedMessage {
 
         val layout = get(path)
-            ?: localizationManager.getForLanguageTag("en_US").getValue(path)
+            ?: manager.getForLanguageTag("en_US").getValue(path)
 
         val formatted = get(path, *attributes)
-            ?: localizationManager.getForLanguageTag("en_US").getValue(path, *attributes)
+            ?: manager.getForLanguageTag("en_US").getValue(path, *attributes)
 
         return LocalizedMessage(this, path, layout, formatted)
     }

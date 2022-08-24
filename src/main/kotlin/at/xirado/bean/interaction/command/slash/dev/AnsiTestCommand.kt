@@ -6,6 +6,7 @@ import at.xirado.bean.util.AnsiBackgroundColor
 import at.xirado.bean.util.AnsiForegroundColor
 import at.xirado.bean.util.ansi
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.utils.FileUpload
 
 class AnsiTestCommand(override val application: Application) : SlashCommand("ansi_test", "Send ANSI-Formatted messages") {
     init {
@@ -33,7 +34,7 @@ class AnsiTestCommand(override val application: Application) : SlashCommand("ans
         val result = ansi(foreground, background, bold, underline) { text }
 
         if (sendAsFile)
-            event.replyFile(result.toByteArray(), "result.ansi").queue()
+            event.replyFiles(FileUpload.fromData(result.toByteArray(), "result.ansi")).queue()
         else
             event.reply("```ansi\n$result```").queue()
     }

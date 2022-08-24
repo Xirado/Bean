@@ -28,7 +28,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("net.dv8tion:JDA:5.0.0-alpha.17")
+    implementation("com.github.dv8fromtheworld:JDA:67566a8")
     implementation("com.github.minndevelopment:jda-ktx:9f01b74")
     implementation("com.github.Topis-Lavalink-Plugins:Topis-Source-Managers:2.0.1")
     implementation("com.zaxxer:HikariCP:5.0.1")

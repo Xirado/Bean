@@ -1,18 +1,27 @@
 general:
-  must_be_listening_in_vc: You must be listening in a Voice-Channel to use this
-    command!
-  must_be_listening_in_bot_vc: You must be listening in {channel} to use this command!
+  must_be_listening_in_vc: 'You must be listening in a Voice-Channel to use this
+    command!'
+  must_be_listening_in_bot_vc: 'You must be listening in {channel} to use this command!'
   header:
-    success: Success
-    warning: Warning
-    error: Error
-  support: Support
-  unknown_error_occurred: An unexpected error occurred. Please try again later.
+    success: 'Success'
+    warning: 'Warning'
+    error: 'Error'
+  support: 'Support'
+  unknown_error_occurred: 'An unexpected error occurred. Please try again later.'
 commands:
+  play:
+    foo: 'Test'
+    no_matches: 'I could not find anything under this search!'
+    no_permissions: 'I do not have permission to join this channel!'
+  clear_messages:
+    none_found: |-
+      I could not find any messages!
+      Due to a Discord limitation, messages older than 2 weeks cannot be deleted.
+    success: 'Cleared {amount} messages!'
   rank:
-    not_ranked: This user is not yet ranked!
-    not_ranked_self: You are not yet ranked!
+    not_ranked: 'This user is not yet ranked!'
+    not_ranked_self: 'You are not yet ranked!'
   setxpcard:
-    too_large: File is too large! The maximum allowed size is {size}.
-    success: Your background has been updated!
+    too_large: 'File is too large! The maximum allowed size is {size}.'
+    success: 'Your background has been updated!'
     invalid_upload: 'Invalid file extension! Valid extensions are: {extensions}'

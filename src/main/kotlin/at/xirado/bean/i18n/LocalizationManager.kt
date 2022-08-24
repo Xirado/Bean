@@ -26,7 +26,8 @@ class LocalizationManager {
                 ?.let { loadLocale(it) } ?: throw IllegalStateException("No default locale defined!")
 
             map[default.tag] = default
-
+            LocalizedMessageReference.default = default
+            log.info("Registered default-locale ${default.tag}!")
             config.getNullable<JSONArray>("locales")
                 ?.collect<String>()
                 ?.mapNotNull { file ->
@@ -34,6 +35,8 @@ class LocalizationManager {
                         loadLocale(file.trim())
                     }.onFailure {
                         log.error("Failed to load translation-file \"$file\"!", it)
+                    }.onSuccess {
+                        log.info("Registered locale ${it.tag}!")
                     }.getOrNull() }
                 ?.forEach { map[it.tag] = it }
 
