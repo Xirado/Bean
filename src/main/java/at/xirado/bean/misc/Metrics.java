@@ -54,6 +54,11 @@ public class Metrics {
             .labelNames("type")
             .register();
 
+    public static final Gauge DISCORD_REST_PING = Gauge.build()
+            .name("bean_rest_ping")
+            .help("Discord REST Ping")
+            .register();
+
     public static final Gauge DISCORD_GATEWAY_PING = Gauge.build()
             .name("bean_ws_ping")
             .help("Discord Gateway Ping")
