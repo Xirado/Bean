@@ -5,6 +5,7 @@ import at.xirado.bean.backend.WebServer;
 import at.xirado.bean.command.ConsoleCommandManager;
 import at.xirado.bean.command.handler.CommandHandler;
 import at.xirado.bean.command.handler.InteractionHandler;
+import at.xirado.bean.data.OkHttpInterceptor;
 import at.xirado.bean.data.content.DismissableContentManager;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.event.*;
@@ -30,6 +31,7 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,6 +128,7 @@ public class Bean {
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setBulkDeleteSplittingEnabled(false)
                 .setChunkingFilter(ChunkingFilter.NONE)
+                .setHttpClientBuilder(IOUtil.newHttpClientBuilder().addInterceptor(new OkHttpInterceptor()))
                 .setGatewayEncoding(GatewayEncoding.ETF)
                 .setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor())
                 .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER)

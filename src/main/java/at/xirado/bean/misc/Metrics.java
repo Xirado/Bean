@@ -20,6 +20,12 @@ public class Metrics {
             .labelNames("type")
             .register();
 
+    public static final Counter DISCORD_API_REQUESTS = Counter.build()
+            .name("bean_discord_requests")
+            .help("Total API requests to Discord")
+            .labelNames("response_code")
+            .register();
+
     public static final Counter REQUESTS = Counter.build()
             .name("bean_requests_total")
             .help("Requests")
