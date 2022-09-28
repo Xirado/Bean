@@ -5,12 +5,13 @@ import at.xirado.bean.coroutineScope
 import at.xirado.bean.executor
 import at.xirado.bean.interaction.command.slash.rank.imageDirectory
 import at.xirado.bean.io.db.SQLBuilder
-import at.xirado.bean.util.getData
+import at.xirado.bean.util.retrieveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
+import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import java.awt.AlphaComposite
 import java.awt.Color
 import java.awt.Font
@@ -48,6 +49,7 @@ private const val XP_BAR_HEIGHT = CARD_HEIGHT / 5
 private val RESCALE_OP = RescaleOp(.5f, 0f, null)
 private val FONT = Font.createFont(Font.TRUETYPE_FONT, Application::class.java.getResourceAsStream("/assets/fonts/NotoSans.ttf"))
 
+context(Application)
 suspend fun generateCard(user: User, guild: Guild): ByteArray {
     val avatarDeferred = coroutineScope.async(context = Dispatchers.IO) { ImageIO.read(URL(user.effectiveAvatarUrl + "?size=" + RAW_AVATAR_SIZE)) }
     val backgroundDeferred = coroutineScope.async(context = Dispatchers.IO) { getUserBackground(user) }
@@ -55,14 +57,16 @@ suspend fun generateCard(user: User, guild: Guild): ByteArray {
     val avatar = avatarDeferred.await()
     val background = backgroundDeferred.await()
 
-    val accentColor = user.getData().rankCardConfig.accentColor
+    val accentColor = user.retrieveData().rankCardConfig.accentColor
     val xpTotal = retrieveTotalExperience(guild.idLong, user.idLong)
     val rank = retrieveRank(user.idLong, guild.idLong)
 
     val callable = Callable { drawImage(avatar, background, user, accentColor, xpTotal, rank) }
 
     return withContext(Dispatchers.IO) {
-        executor.submit(callable).get()
+        val (time, card) = measureTimeMillisWithResult { executor.submit(callable).get() }
+        println("$time ms")
+        return@withContext card
     }
 }
 
@@ -114,8 +118,9 @@ suspend fun setExperience(guildId: Long, userId: Long, newAmount: Int, name: Str
     query.execute()
 }
 
+context(Application)
 private suspend fun getUserBackground(user: User): BufferedImage {
-    val background = user.getData().rankCardConfig.background
+    val background = user.retrieveData().rankCardConfig.background
 
     return if (background == "default") {
         getDefaultBackground()

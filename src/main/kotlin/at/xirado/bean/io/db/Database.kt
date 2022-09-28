@@ -70,7 +70,8 @@ object Database : AutoCloseable {
             "CREATE TABLE IF NOT EXISTS search_queries (user_id BIGINT, searched_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL, PRIMARY KEY(user_id, value))",
             "CREATE TABLE IF NOT EXISTS bookmarks (user_id BIGINT, added_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL, PRIMARY KEY(user_id, value))",
             "CREATE TABLE IF NOT EXISTS dismissable_contents (user_id BIGINT, identifier VARCHAR(128), state VARCHAR(128), PRIMARY KEY(user_id, identifier))",
-            "CREATE TABLE IF NOT EXISTS ranks (name VARCHAR(64) NOT NULL PRIMARY KEY, color integer, display VARCHAR(128))"
+            "CREATE TABLE IF NOT EXISTS ranks (name VARCHAR(64) NOT NULL PRIMARY KEY, color integer, display VARCHAR(128))",
+            "CREATE TABLE IF NOT EXISTS embed_presets (guild_id BIGINT NOT NULL, name VARCHAR(64) NOT NULL, embed JSONB NOT NULL, PRIMARY KEY(guild_id, name))"
         )
         connection.use { connection ->
             try {

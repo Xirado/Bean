@@ -6,7 +6,7 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
-import dev.minn.jda.ktx.Embed
+import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.entities.MessageEmbed
 import kotlin.math.roundToLong
 
@@ -56,7 +56,7 @@ fun getPlayConfirmationEmbed(audioItem: AudioItem, addedToQueue: Boolean): Messa
     }
 }
 
-private fun getArtworkUrl(track: AudioTrack) = when (track) {
+fun getArtworkUrl(track: AudioTrack) = when (track) {
     is YoutubeAudioTrack -> "https://img.youtube.com/vi/${track.info.identifier}/maxresdefault.jpg"
     is ISRCAudioTrack -> track.artworkURL
     else -> null

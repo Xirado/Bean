@@ -2,21 +2,19 @@ package at.xirado.bean.interaction.command.slash.music
 
 import at.xirado.bean.Application
 import at.xirado.bean.audio.*
-import at.xirado.bean.i18n.LocalizedMessageReference
-import at.xirado.bean.interaction.AutoComplete
-import at.xirado.bean.interaction.CommandFlag
-import at.xirado.bean.interaction.SlashCommand
 import at.xirado.bean.interaction.components.IAutocompleteChoice
+import at.xirado.bean.interaction.slash.AutoComplete
+import at.xirado.bean.interaction.slash.BaseCommand
+import at.xirado.bean.interaction.slash.SlashCommand
 import at.xirado.bean.util.ResponseType
 import at.xirado.bean.util.isUrl
-import at.xirado.bean.util.send
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
-import dev.minn.jda.ktx.interactions.choice
+import dev.minn.jda.ktx.interactions.commands.choice
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.exceptions.PermissionException
@@ -24,28 +22,26 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class PlayCommand(override val application: Application) : SlashCommand("play", "Plays a track from YouTube, Soundcloud, Spotify, and more.") {
+class PlayCommand(override val app: Application) : SlashCommand("play") {
+    override var description = "Plays a track from YouTube, Soundcloud, Spotify, and more."
 
-    val errorOccurred = LocalizedMessageReference.of("general.unknown_error_occurred")
-    val noPermissions = LocalizedMessageReference.of("commands.play.no_permissions")
-    val noMatches = LocalizedMessageReference.of("commands.play.no_matches")
+    private val errorOccurred = messageReference("general.unknown_error_occurred")
+    private val noPermissions = messageReference("commands.play.no_permissions")
+    private val noMatches = messageReference("commands.play.no_matches")
 
     init {
-        option<String>(name = "query", description = "Search term or URL that is supported", required = true, autocomplete = true)
-        option<String>(name = "provider", description = "Provider for searching") {
-            choice("Youtube (Default)", "ytsearch:")
-            choice("Youtube Music", "ytmsearch:")
-            choice("Spotify", "spsearch:")
-            choice("SoundCloud", "scsearch:")
+        options {
+            option<String>(name = "query", description = "Search term or URL that is supported", required = true, autocomplete = true)
+            option<String>(name = "provider", description = "Provider for searching") {
+                choice("Youtube (Default)", "ytsearch:")
+                choice("Youtube Music", "ytmsearch:")
+                choice("Spotify", "spsearch:")
+                choice("SoundCloud", "scsearch:")
+            }
         }
-        commandFlags.apply {
-            add(CommandFlag.USER_MUST_JOIN_VC)
-            add(CommandFlag.MUST_JOIN_BOT_VC)
-        }
-
-        baseCommand = ::execute
     }
 
+    @BaseCommand
     suspend fun execute(event: SlashCommandInteractionEvent, query: String, provider: String? = "ytsearch:") {
         val guild = event.guild!!
         val member = event.member!!
@@ -53,7 +49,7 @@ class PlayCommand(override val application: Application) : SlashCommand("play", 
 
         val channel = voiceState.channel!!
 
-        val audioManager = application.audioManager
+        val audioManager = app.audioManager
         val player = audioManager.getPlayer(guild)
         val playerManager = audioManager.playerManager
         val guildManager = guild.audioManager
@@ -77,6 +73,7 @@ class PlayCommand(override val application: Application) : SlashCommand("play", 
                     result.userData = TrackInfo(member.idLong, null)
                     player.scheduler.queue(result)
                     event.hook.sendMessageEmbeds(getPlayConfirmationEmbed(result, addedToQueue)).queue()
+                    player.scheduler.playerSetup(event.channel.asGuildMessageChannel())
                     if (lavaPlayerQuery.length <= 100) {
                         val title = "${result.info.title} - ${result.info.author}"
                         addSearchHistoryEntry(member.idLong, title, lavaPlayerQuery, false)
@@ -89,6 +86,7 @@ class PlayCommand(override val application: Application) : SlashCommand("play", 
                         track.userData = TrackInfo(member.idLong, null)
                         player.scheduler.queue(track)
                         event.hook.sendMessageEmbeds(getPlayConfirmationEmbed(track, addedToQueue)).queue()
+                        player.scheduler.playerSetup(event.channel.asGuildMessageChannel())
                         addSearchHistoryEntry(member.idLong, query, query, false)
                     } else {
                         val playlistInfo = PlaylistInfo(result.name, lavaPlayerQuery)
@@ -97,6 +95,7 @@ class PlayCommand(override val application: Application) : SlashCommand("play", 
                             player.scheduler.queue(it)
                         }
                         event.hook.sendMessageEmbeds(getPlayConfirmationEmbed(result, addedToQueue)).queue()
+                        player.scheduler.playerSetup(event.channel.asGuildMessageChannel())
                         if (lavaPlayerQuery.length <= 100)
                             addSearchHistoryEntry(member.idLong, result.name, lavaPlayerQuery, true)
                     }
@@ -127,7 +126,7 @@ class PlayCommand(override val application: Application) : SlashCommand("play", 
         val choices = mutableListOf<IAutocompleteChoice>()
 
         choices.addAll(retrieveSearchHistory(event.user.idLong, event.focusedOption.value))
-        choices.addAll(getYoutubeMusicSearchResults(application, event.focusedOption.value, countryString, languageString).take(25 - choices.size))
+        choices.addAll(getYoutubeMusicSearchResults(app, event.focusedOption.value, countryString, languageString).take(25 - choices.size))
 
         event.replyChoices(
             choices.map { it.toChoice() }

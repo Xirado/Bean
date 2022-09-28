@@ -2,18 +2,34 @@ package at.xirado.bean.audio
 
 import at.xirado.bean.Application
 import at.xirado.bean.interaction.components.SearchSuggestion
-import at.xirado.bean.util.await
 import at.xirado.simplejson.JSONArray
 import at.xirado.simplejson.JSONObject
+import at.xirado.simplejson.json
+import dev.minn.jda.ktx.util.await
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.hc.core5.net.URIBuilder
 import java.net.URL
 
-
 fun getBody(query: String, country: String, locale: String): String {
-    return "{\"input\":\"$query\",\"context\":{\"client\":{\"gl\":\"$country\",\"hl\":\"$locale\",\"deviceMake\":\"\",\"deviceModel\":\"\",\"userAgent\":\"Mozilla/5.0\",\"clientName\":\"WEB_REMIX\",\"clientVersion\":\"1.20220330.01.00\",\"osName\":\"Windows\",\"osVersion\":\"10.0\",\"originalUrl\":\"https://music.youtube.com/\"}}}"
+    return json {
+        "input" by query
+        "context" by {
+            "client" by {
+                "gl" by country
+                "hl" by locale
+                "deviceMake" by ""
+                "deviceModel" by ""
+                "userAgent" by "Mozilla/5.0"
+                "clientName" by "WEB_REMIX"
+                "clientVersion" by "1.20220330.01.00"
+                "osName" by "Windows"
+                "osVersion" by "10.0"
+                "originalUrl" by "https://music.youtube.com/"
+            }
+        }
+    }.toString().also { println(it) }
 }
 
 suspend fun getYoutubeMusicSearchResults(application: Application, query: String, country: String, locale: String) : List<SearchSuggestion> {
@@ -27,6 +43,8 @@ suspend fun getYoutubeMusicSearchResults(application: Application, query: String
 
     val requestBody = getBody(query, country, locale).toRequestBody("application/json".toMediaType())
 
+
+
     val request = Request.Builder()
         .url(URL(uri.toString()))
         .post(requestBody)
@@ -39,6 +57,7 @@ suspend fun getYoutubeMusicSearchResults(application: Application, query: String
     val response = httpClient.newCall(request).await()
     val responseBody = JSONObject.fromJson(response.body!!.string())
     response.close()
+    println(responseBody)
 
     val optContents = responseBody.optArray("contents")
     if (!optContents.isPresent)

@@ -4,19 +4,18 @@ import at.xirado.bean.Application
 import at.xirado.bean.command.Arguments
 import at.xirado.bean.command.LegacyCommand
 import at.xirado.bean.coroutineScope
-import at.xirado.bean.interaction.EventCondition
-import at.xirado.bean.interaction.EventListener
 import at.xirado.bean.util.getLog
 import at.xirado.bean.util.postHaste
 import at.xirado.bean.util.queueSilently
 import com.facebook.ktfmt.format.Formatter
 import com.facebook.ktfmt.format.ParseError
-import dev.minn.jda.ktx.await
+import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -36,7 +35,7 @@ private val CODE_BLOCK_REGEX = "\\A```(?:kotlin|kt)?\\s+([\\s\\S]+)```\\Z".toReg
 
 private val defaultImports = listOf(
     "kotlinx.coroutines.async",
-    "dev.minn.jda.ktx.await",
+    "dev.minn.jda.ktx.coroutines.await",
     "net.dv8tion.jda.api.managers.*",
     "net.dv8tion.jda.api.entities.*",
     "net.dv8tion.jda.api.*",
@@ -62,7 +61,7 @@ private val DELETE_EMOJI = Emoji.fromUnicode("\uD83D\uDDD1")
 private val EDIT_BUTTON = Button.primary("edit_and_rerun", "Edit & Re-run code").withEmoji(REPEAT_EMOJI)
 private val DELETE_BUTTON = Button.danger("delete_eval_message", "Delete messages").withEmoji(DELETE_EMOJI)
 
-class EvalCommand(override val application: Application) : LegacyCommand("eval") {
+class EvalCommand(override val app: Application) : LegacyCommand("eval") {
     init {
         devOnly = true
     }
@@ -110,7 +109,8 @@ class EvalCommand(override val application: Application) : LegacyCommand("eval")
             "bot" to event.jda.selfUser,
             "selfUser" to event.jda.selfUser,
             "selfMember" to event.guild.selfMember,
-            "log" to getLog<Application>()
+            "log" to getLog<Application>(),
+            "app" to app
         )
 
         val context = SimpleScriptContext()
@@ -155,10 +155,23 @@ class EvalCommand(override val application: Application) : LegacyCommand("eval")
         }
     }
 
-    @EventListener(ButtonInteractionEvent::class)
-    @EventCondition("componentId == `edit_and_rerun`")
-    fun onEdit(event: ButtonInteractionEvent) {
-        if (event.user.idLong !in application.config.devUsers)
+    override suspend fun onEvent(event: GenericEvent) {
+        when (event) {
+            is ButtonInteractionEvent -> {
+                when (event.componentId) {
+                    "edit_and_rerun" -> onEdit(event)
+                    "delete_eval_message" -> onDelete(event)
+                }
+            }
+            is ModalInteractionEvent -> {
+                if (event.modalId.startsWith("eval:"))
+                    onModal(event)
+            }
+        }
+    }
+
+    private fun onEdit(event: ButtonInteractionEvent) {
+        if (event.user.idLong !in app.config.devUsers)
             return event.reply("This maze isn't meant for you!").setEphemeral(true).queue()
         val message = event.message
         val messageId = message.idLong
@@ -178,10 +191,8 @@ class EvalCommand(override val application: Application) : LegacyCommand("eval")
         event.replyModal(modal).queue()
     }
 
-    @EventListener(ButtonInteractionEvent::class)
-    @EventCondition("componentId == `delete_eval_message`")
-    fun onDelete(event: ButtonInteractionEvent) {
-        if (event.user.idLong !in application.config.devUsers)
+    private fun onDelete(event: ButtonInteractionEvent) {
+        if (event.user.idLong !in app.config.devUsers)
             return event.reply("This maze isn't meant for you!").setEphemeral(true).queue()
 
         val messageId = event.messageIdLong
@@ -197,8 +208,6 @@ class EvalCommand(override val application: Application) : LegacyCommand("eval")
         event.message.delete().queue()
     }
 
-    @EventListener(ModalInteractionEvent::class)
-    @EventCondition("modalId.startsWith(`eval:`)")
     suspend fun onModal(event: ModalInteractionEvent) {
         val source = event.getValue("source_code")?.asString ?: return
 

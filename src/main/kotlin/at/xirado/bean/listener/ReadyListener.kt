@@ -1,7 +1,7 @@
 package at.xirado.bean.listener
 
 import at.xirado.bean.Application
-import dev.minn.jda.ktx.CoroutineEventListener
+import dev.minn.jda.ktx.events.CoroutineEventListener
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import java.util.concurrent.atomic.AtomicBoolean

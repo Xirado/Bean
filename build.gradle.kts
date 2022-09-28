@@ -5,7 +5,6 @@ import java.time.Instant
 
 application {
     mainClass.set("at.xirado.bean.Main")
-
     tasks.run.get().workingDir = File(rootProject.projectDir, "build/libs")
 }
 
@@ -13,7 +12,7 @@ group = "at.xirado"
 version = "1.0.0"
 
 plugins {
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version "1.7.10"
     id("com.github.johnrengelman.shadow") version "7.1.1"
     application
 }
@@ -28,8 +27,8 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("com.github.dv8fromtheworld:JDA:67566a8")
-    implementation("com.github.minndevelopment:jda-ktx:9f01b74")
+    implementation("net.dv8tion:JDA:5.0.0-alpha.18")
+    implementation("com.github.minndevelopment:jda-ktx:081a177")
     implementation("com.github.Topis-Lavalink-Plugins:Topis-Source-Managers:2.0.1")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("io.github.classgraph:classgraph:4.8.146")
@@ -37,12 +36,12 @@ dependencies {
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.postgresql:postgresql:42.3.6")
     implementation("net.jodah:expiringmap:0.5.10")
-    implementation("com.github.Xirado:SimpleJSON:7488469")
+    implementation("com.github.Xirado:SimpleJSON:1638777")
     implementation("com.github.walkyst:lavaplayer-fork:1.3.97.1")
     implementation(kotlin("reflect"))
     implementation("com.facebook:ktfmt:0.36")
 
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223:1.6.21")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223:1.7.20-RC")
 }
 
 tasks {
@@ -79,5 +78,6 @@ tasks.build {
 
 compileKotlin.kotlinOptions.apply {
     jvmTarget = "16"
+    freeCompilerArgs = listOf("-Xcontext-receivers")
 }
 

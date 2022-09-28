@@ -1,31 +1,32 @@
 package at.xirado.bean.interaction.command.slash.moderation
 
 import at.xirado.bean.Application
-import at.xirado.bean.i18n.LocalizedMessageReference
-import at.xirado.bean.interaction.SlashCommand
+import at.xirado.bean.interaction.slash.BaseCommand
+import at.xirado.bean.interaction.slash.SlashCommand
 import at.xirado.bean.util.ResponseType
-import at.xirado.bean.util.send
-import dev.minn.jda.ktx.await
+import dev.minn.jda.ktx.coroutines.await
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import java.time.OffsetDateTime
 
-class ClearCommand(override val application: Application) : SlashCommand("clear-messages", "Clears recent messages that are not older than 2 weeks") {
+class ClearCommand(override val app: Application) : SlashCommand("clear-messages") {
+    override var description = "Clears recent messages that are not older than 2 weeks"
 
-    private val noneFound = LocalizedMessageReference.of("commands.clear_messages.none_found")
-    private val success = LocalizedMessageReference.of("commands.clear_messages.success")
+    private val noneFound = messageReference("commands.clear_messages.none_found")
+    private val success = messageReference("commands.clear_messages.success")
 
     init {
-        option<Int>(name = "amount", description = "How many messages to delete", required = true) { setRequiredRange(1, 100) }
-        option<User>(name = "user", description = "Optionally, delete only messages by this user")
+        options {
+            option<Int>(name = "amount", description = "How many messages to delete", required = true) { setRequiredRange(1, 100) }
+            option<User>(name = "user", description = "Optionally, delete only messages by this user")
+        }
 
         addBotPermissions(Permission.MESSAGE_MANAGE)
         addUserPermissions(Permission.MESSAGE_MANAGE)
-
-        baseCommand = ::execute
     }
 
+    @BaseCommand
     suspend fun execute(event: SlashCommandInteractionEvent, amount: Int, user: User?) {
         val channel = event.guildChannel
         event.deferReply(true).queue()

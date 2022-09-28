@@ -36,3 +36,11 @@ commands:
     success: 'Dein Hintergrund wurde aktualisiert!'
     invalid_upload: 'Ungültige Dateierweiterung! Erlaubte Erweiterungen sind:
         {extensions}'
+  avatar:
+    title: 'Avatar von {user}'
+  reddit:
+    not_available: |-
+      Dieser Service ist momentan nicht verfügbar.
+      Bitte versuche es später erneut.
+    nsfw: 'Dieser Post ist NSFW (Not safe for work), und kann deshalb nur in NSFW-Kanälen angezeigt werden!'
+    source: 'Quelle'

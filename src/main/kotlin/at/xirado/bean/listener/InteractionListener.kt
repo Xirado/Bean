@@ -1,8 +1,7 @@
 package at.xirado.bean.listener
 
 import at.xirado.bean.Application
-import dev.minn.jda.ktx.CoroutineEventListener
-import dev.minn.jda.ktx.await
+import dev.minn.jda.ktx.events.CoroutineEventListener
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -16,10 +15,9 @@ class InteractionListener(private val application: Application) : CoroutineEvent
     }
 
     private suspend fun onSlashCommand(event: SlashCommandInteractionEvent, application: Application) {
-        if (!event.isFromGuild) {
-            event.reply("You can only execute this command from a guild!").await()
-            return
-        }
+        if (!event.isFromGuild)
+            return event.reply("You can only execute this command from a guild!").queue()
+
         application.interactionCommandHandler.handleCommand(event)
     }
 

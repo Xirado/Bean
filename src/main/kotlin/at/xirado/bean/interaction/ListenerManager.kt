@@ -3,7 +3,7 @@ package at.xirado.bean.interaction
 import at.xirado.bean.Application
 import at.xirado.bean.coroutineScope
 import at.xirado.bean.util.getLog
-import dev.minn.jda.ktx.CoroutineEventListener
+import dev.minn.jda.ktx.events.CoroutineEventListener
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -25,7 +25,6 @@ class ListenerManager(val application: Application) : CoroutineEventListener {
 
     override suspend fun onEvent(event: GenericEvent) {
         val listeners = listeners[event.javaClass] ?: return
-
         val jdaEvent = event.javaClass.cast(event)
 
         listeners.forEach { listener ->
@@ -33,13 +32,13 @@ class ListenerManager(val application: Application) : CoroutineEventListener {
                 if (listener.condition == null)
                     return@launch kotlin.run { listener.method.callSuspend(listener.instance, jdaEvent) }
                 val context = SimpleScriptContext()
-                mutex.withLock {
+                val result = mutex.withLock {
                     listener.compiledScript!!.eval(context)
                     engine.context = context
-                    val result = (engine as Invocable).invokeFunction("check", jdaEvent)
-                    if (result is Boolean && result)
-                        listener.method.callSuspend(listener.instance, jdaEvent)
+                    (engine as Invocable).invokeFunction("check", jdaEvent)
                 }
+                if (result is Boolean && result)
+                    listener.method.callSuspend(listener.instance, jdaEvent).also { log.info("END") }
             }
         }
     }

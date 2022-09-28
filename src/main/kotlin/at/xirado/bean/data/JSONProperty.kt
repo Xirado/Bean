@@ -21,7 +21,6 @@ class JSONProperty<T>(val key: String,
             if (default == null)
                 throw IllegalArgumentException("Non-Null json properties need a default value!")
             NotNullJSONProperty(this)
-
         }
 
         @Suppress("UNCHECKED_CAST")

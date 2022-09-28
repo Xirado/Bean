@@ -25,3 +25,11 @@ commands:
     too_large: 'File is too large! The maximum allowed size is {size}.'
     success: 'Your background has been updated!'
     invalid_upload: 'Invalid file extension! Valid extensions are: {extensions}'
+  avatar:
+    title: '{user}''s avatar'
+  reddit:
+    not_available: |-
+      This service is currently not available.
+      Please try again later.
+    nsfw: 'This post is marked as NSFW (Not safe for work), and can only be shown in NSFW-channels!'
+    source: 'Source'

@@ -8,10 +8,13 @@ import at.xirado.simplejson.collect
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import okhttp3.internal.toImmutableMap
 import java.io.IOException
+import java.util.*
 
 private val log = getLog<LocalizationManager>()
 
 class LocalizationManager {
+
+    val messageReferences = Collections.synchronizedList(mutableListOf<LocalizedMessageReference>())
 
     val locales: Map<String, I18n>
     val default: I18n
@@ -26,7 +29,6 @@ class LocalizationManager {
                 ?.let { loadLocale(it) } ?: throw IllegalStateException("No default locale defined!")
 
             map[default.tag] = default
-            LocalizedMessageReference.default = default
             log.info("Registered default-locale ${default.tag}!")
             config.getNullable<JSONArray>("locales")
                 ?.collect<String>()

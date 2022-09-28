@@ -3,8 +3,8 @@ package at.xirado.bean.listener
 import at.xirado.bean.Application
 import at.xirado.bean.coroutineScope
 import at.xirado.bean.manager.addExperience
-import at.xirado.bean.util.getData
-import dev.minn.jda.ktx.CoroutineEventListener
+import at.xirado.bean.util.retrieveData
+import dev.minn.jda.ktx.events.CoroutineEventListener
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.GenericEvent
@@ -44,7 +44,7 @@ class LevelingListener(val application: Application) : CoroutineEventListener {
             return
 
         val guild = event.guild
-        val data = guild.getData()
+        val data = with(application) { guild.retrieveData() }
         val user = event.author
         val userId = user.idLong
         val guildId = guild.idLong

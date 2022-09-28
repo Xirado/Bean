@@ -37,6 +37,10 @@ class I18n(val tag: String, val fileName: String, val data: JSONObject, val mana
         }
     }
 
+    fun getOrDefault(path: String, vararg attributes: Pair<String, Any>): String {
+        return get(path, *attributes) ?: manager.default.getValue(path, *attributes)
+    }
+
     fun getValue(path: String, vararg attributes: Pair<String, Any>): String {
         val paths = path.split(".")
 

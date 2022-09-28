@@ -1,27 +1,28 @@
 package at.xirado.bean.interaction.command.slash.rank
 
 import at.xirado.bean.Application
-import at.xirado.bean.i18n.LocalizedMessageReference
-import at.xirado.bean.interaction.SlashCommand
+import at.xirado.bean.interaction.slash.BaseCommand
+import at.xirado.bean.interaction.slash.SlashCommand
 import at.xirado.bean.manager.generateCard
 import at.xirado.bean.manager.retrieveTotalExperience
 import at.xirado.bean.util.ResponseType
-import at.xirado.bean.util.send
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.utils.FileUpload
 
-class RankCommand(override val application: Application) : SlashCommand("rank", "Displays the rank-card of a user.") {
+class RankCommand(override val app: Application) : SlashCommand("rank") {
+    override var description = "Displays the rank-card of a user."
 
-    private val notRankedSelf = LocalizedMessageReference.of("commands.rank.not_ranked_self")
-    private val notRanked = LocalizedMessageReference.of("commands.rank.not_ranked")
+    private val notRankedSelf = messageReference("commands.rank.not_ranked_self")
+    private val notRanked = messageReference("commands.rank.not_ranked")
 
     init {
-        option<User>(name = "user", description = "User to display the rank-card of.")
-
-        baseCommand = ::execute
+        options {
+            option<User>(name = "user", description = "User to display the rank-card of.")
+        }
     }
 
+    @BaseCommand
     suspend fun execute(event: SlashCommandInteractionEvent, user: User = event.user) {
         val experience = retrieveTotalExperience(event.guild!!.idLong, user.idLong)
         if (experience < 100)
@@ -32,7 +33,7 @@ class RankCommand(override val application: Application) : SlashCommand("rank", 
 
         event.deferReply().queue()
 
-        val rankCard = generateCard(user, event.guild!!)
+        val rankCard = with(app) { generateCard(user, event.guild!!) }
 
         event.hook.sendFiles(FileUpload.fromData(rankCard, "card.png")).queue()
     }

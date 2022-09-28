@@ -29,6 +29,9 @@ class DiscordAnsiParser {
             if (underline)
                 values.add(AnsiStyle.UNDERLINE.value)
 
+            if (values.isEmpty())
+                return text
+
             val valuesMerged = values.joinToString(";") { it.toString() }
             return "${ESCAPE_CHAR}[${valuesMerged}m$text${if (appendReset) RESET else ""}"
         }
