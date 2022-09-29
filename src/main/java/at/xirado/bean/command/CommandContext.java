@@ -6,9 +6,11 @@ import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.awt.*;
 import java.time.Instant;
@@ -88,7 +90,7 @@ public class CommandContext {
 
     public void replyInLogChannel(Message message) {
         TextChannel logChannel = getGuildData().getLogChannel();
-        if (logChannel != null) logChannel.sendMessage(message).queue();
+        if (logChannel != null) logChannel.sendMessage(MessageCreateData.fromMessage(message)).queue();
     }
 
     public void replyInLogChannel(MessageEmbed message) {
@@ -140,15 +142,15 @@ public class CommandContext {
     }
 
     public void reply(Message message, Consumer<Message> success, Consumer<Throwable> failure) {
-        event.getChannel().sendMessage(message).queue(success, failure);
+        event.getChannel().sendMessage(MessageCreateData.fromMessage(message)).queue(success, failure);
     }
 
     public void reply(Message message, Consumer<Message> success) {
-        event.getChannel().sendMessage(message).queue(success);
+        event.getChannel().sendMessage(MessageCreateData.fromMessage(message)).queue(success);
     }
 
     public void reply(Message message) {
-        event.getChannel().sendMessage(message).queue();
+        event.getChannel().sendMessage(MessageCreateData.fromMessage(message)).queue();
     }
 
     public void reply(String message, Consumer<Message> success, Consumer<Throwable> failure) {
@@ -180,7 +182,7 @@ public class CommandContext {
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(message).queue(success, failure);
+                    pc.sendMessage(MessageCreateData.fromMessage(message)).queue(success, failure);
                 }
         );
     }
@@ -190,7 +192,7 @@ public class CommandContext {
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(message).queue(success, new ErrorHandler()
+                    pc.sendMessage(MessageCreateData.fromMessage(message)).queue(success, new ErrorHandler()
                             .ignore(EnumSet.allOf(ErrorResponse.class)));
                 }
         );
@@ -201,7 +203,7 @@ public class CommandContext {
         user.openPrivateChannel().queue(
                 (pc) ->
                 {
-                    pc.sendMessage(message).queue(null, new ErrorHandler()
+                    pc.sendMessage(MessageCreateData.fromMessage(message)).queue(null, new ErrorHandler()
                             .ignore(EnumSet.allOf(ErrorResponse.class)));
                 }
         );

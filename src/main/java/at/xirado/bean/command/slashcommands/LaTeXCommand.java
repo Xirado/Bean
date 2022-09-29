@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.NotNull;
 import org.scilab.forge.jlatexmath.ParseException;
 import org.scilab.forge.jlatexmath.TeXConstants;
@@ -55,6 +56,6 @@ public class LaTeXCommand extends SlashCommand {
             hook.sendMessageEmbeds(EmbedUtil.errorEmbed("An error occurred!")).queue();
             return;
         }
-        hook.sendMessage("").addFile(baos.toByteArray(), "card.png").queue();
+        hook.sendMessage("").addFiles(FileUpload.fromData(baos.toByteArray(), "card.png")).queue();
     }
 }

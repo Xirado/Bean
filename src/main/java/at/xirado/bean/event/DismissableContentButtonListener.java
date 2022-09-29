@@ -28,7 +28,7 @@ public class DismissableContentButtonListener extends ListenerAdapter {
 
         progress.setState(DismissableState.ACKNOWLEDGED).update();
         event.editMessageEmbeds(CONFIRMATION_EMBED)
-                .setActionRows(Collections.emptyList())
+                .setComponents(Collections.emptyList())
                 .queue();
     }
 }

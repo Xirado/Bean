@@ -4,7 +4,14 @@ import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.ReactionRole;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -32,7 +39,7 @@ public class ReactionRoleCommand extends SlashCommand {
                         .addOption(OptionType.STRING, "emote", "Emote/Emoji used for reacting.", true)
                 )
                 .addSubcommands(new SubcommandData("remove", "Removes reaction roles.")
-                        .addOption(OptionType.CHANNEL, "channel", "Channel which contains the message.", true)
+                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "Channel which contains the message.", true).setChannelTypes(ChannelType.TEXT))
                         .addOption(OptionType.STRING, "message_id", "ID of the message you want to have reaction roles removed on.", true)
                 )
         );
@@ -51,7 +58,7 @@ public class ReactionRoleCommand extends SlashCommand {
             return;
         }
         if (subcommand.equalsIgnoreCase("remove")) {
-            TextChannel channel = (TextChannel) event.getOption("channel").getAsGuildChannel();
+            TextChannel channel = event.getOption("channel").getAsChannel().asTextChannel();
             if (channel == null) {
                 ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("commands.channel_not_exists")).setEphemeral(true).queue();
                 return;
@@ -82,7 +89,7 @@ public class ReactionRoleCommand extends SlashCommand {
                             })
             );
         } else if (subcommand.equalsIgnoreCase("create")) {
-            TextChannel channel = (TextChannel) event.getOption("channel").getAsGuildChannel();
+            TextChannel channel = event.getOption("channel").getAsChannel().asTextChannel();
             if (channel == null) {
                 ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("commands.channel_not_exists")).setEphemeral(true).queue();
                 return;
@@ -103,18 +110,19 @@ public class ReactionRoleCommand extends SlashCommand {
                             return;
                         }
                         String emoticon = event.getOption("emote").getAsString();
-                        String emote = emoticon;
-                        Pattern pattern = Message.MentionType.EMOTE.getPattern();
+                        Emoji emoji;
+                        Pattern pattern = Message.MentionType.EMOJI.getPattern();
                         Matcher matcher = pattern.matcher(emoticon);
                         if (matcher.matches()) {
-                            emoticon = "emote:" + matcher.group(2);
-                            emote = matcher.group(2);
+                            emoji = Emoji.fromCustom(matcher.group(1), Long.parseLong(matcher.group(2)), emoticon.startsWith("<a:"));
+                        } else {
+                            emoji = Emoji.fromUnicode(emoticon);
                         }
-                        String finalEmote = emote;
-                        message.addReaction(emoticon).queue(
+                        String saved = emoji.getType() == Emoji.Type.CUSTOM ? ((CustomEmoji) emoji).getId() : emoji.getName();
+                        message.addReaction(emoji).queue(
                                 (success) ->
                                 {
-                                    ReactionRole reactionRole = new at.xirado.bean.data.ReactionRole(finalEmote, message.getIdLong(), role.getIdLong());
+                                    ReactionRole reactionRole = new ReactionRole(saved, message.getIdLong(), role.getIdLong());
                                     ctx.getGuildData().addReactionRoles(reactionRole).update();
                                     ctx.reply(SlashCommandContext.SUCCESS + " " + ctx.getLocalized("commands.reactionroles.added_success")).setEphemeral(true).queue();
                                 },

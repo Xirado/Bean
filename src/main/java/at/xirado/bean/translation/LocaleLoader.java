@@ -2,11 +2,13 @@ package at.xirado.bean.translation;
 
 import at.xirado.bean.data.LinkedDataObject;
 import net.dv8tion.jda.api.entities.Guild;
-import org.apache.commons.io.IOUtils;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +27,7 @@ public class LocaleLoader {
             if (is == null) {
                 throw new ExceptionInInitializerError("Could not initialize Language loader because list.txt does not exist!");
             }
-            for (var lang : IOUtils.toString(is, StandardCharsets.UTF_8).trim().split("\n")) {
+            for (var lang : new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8)).lines().toList()) {
                 var language = lang.trim();
                 LANGUAGES.add(language);
             }
@@ -64,8 +66,8 @@ public class LocaleLoader {
     }
 
     public static LinkedDataObject ofGuild(Guild guild) {
-        Locale locale = guild.getLocale();
-        String tag = locale.toLanguageTag();
+        DiscordLocale locale = guild.getLocale();
+        String tag = locale.getLocale();
         if (LANGUAGE_MAP.containsKey(tag)) {
             return LANGUAGE_MAP.get(tag);
         } else {

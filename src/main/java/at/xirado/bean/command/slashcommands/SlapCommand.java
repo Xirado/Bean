@@ -8,7 +8,8 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
+import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class SlapCommand extends SlashCommand {
         event.deferReply().queue();
         try {
             byte[] image = generateImage(slapper, victim);
-            WebhookMessageAction<Message> action = event.getHook().sendFile(image, "slap.png");
+            WebhookMessageCreateAction<Message> action = event.getHook().sendFiles(FileUpload.fromData(image, "slap.png"));
             if (reversed)
                 action.setContent("Lol, better luck next time.");
             action.queue();

@@ -2,8 +2,9 @@ package at.xirado.bean.event;
 
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
-import net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -36,8 +37,8 @@ public class MessageReactionRemoveListener extends ListenerAdapter {
             return;
         if (GuildJoinListener.isGuildBanned(e.getGuild().getIdLong()))
             return;
-        ReactionEmote reactionemote = e.getReactionEmote();
-        String reacted = reactionemote.isEmoji() ? reactionemote.getAsReactionCode() : reactionemote.getEmote().getId();
+        EmojiUnion emoji = e.getEmoji();
+        String reacted = emoji.getType() == Emoji.Type.UNICODE ? emoji.getAsReactionCode() : emoji.asCustom().getId();
         GuildData data = GuildManager.getGuildData(e.getGuild());
         data.getReactionRoles().stream()
                 .filter(x -> x.getMessageId() == e.getMessageIdLong() && x.getEmote().equals(reacted))

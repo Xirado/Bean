@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.NotNull;
 
 public class RankCommand extends SlashCommand {
@@ -46,7 +47,7 @@ public class RankCommand extends SlashCommand {
             return;
         }
 
-        commandHook.sendFile(rankCard, "card.png").queue();
+        commandHook.sendFiles(FileUpload.fromData(rankCard, "card.png")).queue();
 
         long userId = event.getUser().getIdLong();
         DismissableContentManager contentManager = Bean.getInstance().getDismissableContentManager();

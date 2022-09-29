@@ -8,10 +8,10 @@ import at.xirado.bean.ktx.await
 import at.xirado.bean.misc.Hastebin
 import com.facebook.ktfmt.format.Formatter
 import com.facebook.ktfmt.format.ParseError
-import dev.minn.jda.ktx.await
+import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.Deferred
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.Emoji
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -313,15 +313,15 @@ private fun generateResult(content: String): Button {
 }
 
 private fun resultLinkButton(url: String, label: String) =
-    Button.link(url, label).withEmoji(Emoji.fromMarkdown("\uD83D\uDEE0"))
+    Button.link(url, label).withEmoji(Emoji.fromUnicode("\uD83D\uDEE0"))
 
-private fun deleteMessageButton() = Button.danger("deletemsg", "Delete").withEmoji(Emoji.fromMarkdown("\uD83D\uDDD1"))
+private fun deleteMessageButton() = Button.danger("deletemsg", "Delete").withEmoji(Emoji.fromUnicode("\uD83D\uDDD1"))
 
 private fun editCodeButton(messageId: Long) = Button.primary("eval-$messageId", "Edit & Re-run Code")
-    .withEmoji(Emoji.fromEmote("repeat", 940204537355063346, false))
+    .withEmoji(Emoji.fromCustom("repeat", 940204537355063346, false))
 
 private fun errorLinkButton(url: String, label: String) =
-    Button.link(url, label).withEmoji(Emoji.fromEmote("error", 943524725487968298, false))
+    Button.link(url, label).withEmoji(Emoji.fromCustom("error", 943524725487968298, false))
 
 private fun sourceLinkButton(url: String, label: String) =
-    Button.link(url, label).withEmoji(Emoji.fromMarkdown("\uD83D\uDCDD"))
+    Button.link(url, label).withEmoji(Emoji.fromUnicode("\uD83D\uDCDD"))

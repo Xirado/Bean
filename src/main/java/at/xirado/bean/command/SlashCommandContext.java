@@ -1,23 +1,22 @@
 package at.xirado.bean.command;
 
-import at.xirado.bean.Bean;
 import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.translation.LocaleLoader;
-import lavalink.client.io.LavalinkSocket;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import javax.annotation.CheckReturnValue;
 import java.awt.*;
 import java.util.Arrays;
-import java.util.Locale;
 
 public class SlashCommandContext {
 
@@ -31,32 +30,15 @@ public class SlashCommandContext {
     public SlashCommandContext(GenericCommandInteractionEvent event) {
         this.event = event;
         if (event.getGuild() != null) {
-            Locale serverLocale = event.getGuild().getLocale();
-            if (LocaleLoader.getForLanguage(serverLocale.toLanguageTag()) == null) {
+            DiscordLocale serverLocale = event.getGuild().getLocale();
+            if (LocaleLoader.getForLanguage(serverLocale.getLocale()) == null) {
                 this.language = "en_US";
             } else {
-                this.language = serverLocale.toLanguageTag();
+                this.language = serverLocale.getLocale();
             }
         } else {
             language = "en_US";
         }
-    }
-
-    public boolean isLavalinkNodeAvailable() {
-        boolean available = false;
-        for (LavalinkSocket sock : Bean.getInstance().getLavalink().getNodes()) {
-            if (sock.isAvailable())
-                return true;
-        }
-        return false;
-    }
-
-    public LavalinkSocket getAvailableNode() {
-        for (LavalinkSocket sock : Bean.getInstance().getLavalink().getNodes()) {
-            if (sock.isAvailable())
-                return sock;
-        }
-        return null;
     }
 
     public GuildData getGuildData() {
@@ -103,20 +85,20 @@ public class SlashCommandContext {
     }
 
     public ReplyCallbackAction reply(String content) {
-        return event.reply(content).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
+        return event.reply(content).setAllowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOJI, Message.MentionType.USER));
     }
 
     public ReplyCallbackAction reply(Message message) {
-        return event.reply(message).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
+        return event.reply(MessageCreateData.fromMessage(message)).setAllowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOJI, Message.MentionType.USER));
     }
 
     @CheckReturnValue
     public ReplyCallbackAction reply(MessageEmbed embed, MessageEmbed... embeds) {
-        return event.replyEmbeds(embed, embeds).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
+        return event.replyEmbeds(embed, embeds).setAllowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOJI, Message.MentionType.USER));
     }
 
     public ReplyCallbackAction replyFormat(String format, Object... args) {
-        return event.replyFormat(format, args).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
+        return event.replyFormat(format, args).setAllowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOJI, Message.MentionType.USER));
     }
 
     @CheckReturnValue
@@ -125,7 +107,7 @@ public class SlashCommandContext {
                 .setColor(Color.RED)
                 .setDescription(ERROR + " " + content);
 
-        return event.replyEmbeds(builder.build()).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
+        return event.replyEmbeds(builder.build()).setAllowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOJI, Message.MentionType.USER));
     }
 
     public ReplyCallbackAction replyErrorFormat(String format, Object... args) {
@@ -133,7 +115,7 @@ public class SlashCommandContext {
                 .setColor(Color.RED)
                 .setDescription(ERROR + " " + String.format(format, args));
 
-        return event.replyEmbeds(builder.build()).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
+        return event.replyEmbeds(builder.build()).setAllowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOJI, Message.MentionType.USER));
     }
 
     public String parseDuration(long seconds, String delimiter) {

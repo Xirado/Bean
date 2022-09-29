@@ -8,7 +8,11 @@ import at.xirado.bean.moderation.CaseType;
 import at.xirado.bean.moderation.ModCase;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -16,6 +20,8 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 public class BanCommand extends SlashCommand {
 
@@ -74,7 +80,7 @@ public class BanCommand extends SlashCommand {
                 .flatMap(hook -> targetUser.openPrivateChannel())
                 .flatMap((c) -> c.sendMessageEmbeds(dmEmbed.build()))
                 .mapToResult()
-                .flatMap((result) -> guild.ban(targetUser, delDays, reason))
+                .flatMap((result) -> guild.ban(targetUser, delDays, TimeUnit.DAYS).reason(reason))
                 .queue((x) ->
                 {
                     ModCase modCase = ModCase.createModCase(CaseType.BAN, guild.getIdLong(), targetUser.getIdLong(), sender.getIdLong(), reason);

@@ -8,8 +8,8 @@ import at.xirado.bean.mee6.MEE6Request;
 import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -62,7 +62,7 @@ public class Mee6TransferCommand extends SlashCommand {
 
                                         queue.addRequest(new MEE6Request(guild.getIdLong(), event.getUser().getIdLong()));
 
-                                        e.editMessageEmbeds(embedBuilder.build()).setActionRows(Collections.emptyList()).queue();
+                                        e.editMessageEmbeds(embedBuilder.build()).setComponents(Collections.emptyList()).queue();
                                     },
                                     30, TimeUnit.SECONDS,
                                     () ->

@@ -7,7 +7,12 @@ import at.xirado.bean.data.database.Database;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -62,7 +67,7 @@ public class XPAlertCommand extends SlashCommand {
             }
 
             case "channel" -> {
-                GuildChannel channel = event.getOption("targetchannel").getAsGuildChannel();
+                GuildChannel channel = event.getOption("targetchannel").getAsChannel();
                 if (channel.getType() != ChannelType.TEXT) {
                     ctx.replyError("Can only use text-channels as XP alert target!").setEphemeral(true).queue();
                     return;

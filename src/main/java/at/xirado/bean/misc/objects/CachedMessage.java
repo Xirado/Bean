@@ -2,7 +2,7 @@ package at.xirado.bean.misc.objects;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -31,7 +31,7 @@ public class CachedMessage {
 
     @Nonnull
     public RestAction<Message> retrieveMessage() {
-        TextChannel channel = getChannel();
+        MessageChannel channel = getChannel();
         Checks.check(channel != null, "Channel no longer exists!");
         return channel.retrieveMessageById(messageId);
     }
@@ -45,8 +45,8 @@ public class CachedMessage {
     }
 
     @Nullable
-    public TextChannel getChannel() {
-        return jda.getTextChannelById(channelId);
+    public MessageChannel getChannel() {
+        return jda.getChannelById(MessageChannel.class, channelId);
     }
 
     public long getMessageId() {

@@ -33,6 +33,37 @@ repositories {
     jcenter()
 }
 
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation 'net.dv8tion:JDA:5.0.0-alpha.20'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation 'com.sparkjava:spark-core:2.9.3'
+    implementation 'org.codehaus.groovy:groovy-jsr223:3.0.8'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
+    implementation 'ch.qos.logback:logback-classic:1.3.0-alpha5'
+    implementation 'com.zaxxer:HikariCP:5.0.0'
+    implementation 'org.fusesource.jansi:jansi:2.4.0'
+    implementation 'com.google.guava:guava:31.0.1-jre'
+    implementation 'pw.chew:jda-chewtils:1.20.2'
+    implementation 'org.scilab.forge:jlatexmath:1.0.7'
+    implementation "club.minnced:discord-webhooks:0.7.5"
+    implementation 'io.github.classgraph:classgraph:4.8.146'
+    implementation 'com.github.minndevelopment:jda-ktx:fc7d7de'
+    implementation 'net.jodah:expiringmap:0.5.10'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+    implementation 'org.jline:jline-style:3.21.0'
+
+    // Prometheus
+    implementation "io.prometheus:simpleclient:0.14.1"
+    implementation "io.prometheus:simpleclient_hotspot:0.14.1"
+    implementation "io.prometheus:simpleclient_httpserver:0.14.1"
+    implementation 'com.facebook:ktfmt:0.36'
+
+    runtimeOnly 'org.jetbrains.kotlin:kotlin-scripting-jsr223:1.6.21'
+
+}
+
 /**
  * Clears resources folder for processResources task
  */
@@ -43,37 +74,6 @@ tasks.create("clearResources") {
 tasks.build {
     dependsOn(tasks.clearResources)
     dependsOn(tasks.shadowJar)
-}
-
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation 'com.github.Xirado:JDA:6ac9d59'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
-    implementation 'com.sparkjava:spark-core:2.9.3'
-    implementation 'org.codehaus.groovy:groovy-jsr223:3.0.8'
-    implementation 'org.jline:jline:3.20.0'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
-    implementation 'ch.qos.logback:logback-classic:1.3.0-alpha5'
-    implementation 'com.zaxxer:HikariCP:5.0.0'
-    implementation 'org.fusesource.jansi:jansi:2.4.0'
-    implementation 'com.google.guava:guava:31.0.1-jre'
-    implementation 'pw.chew:jda-chewtils:1.20.2'
-    implementation 'org.scilab.forge:jlatexmath:1.0.7'
-    implementation 'com.github.Xirado:Lavalink-Client:6da17b6'
-    implementation "club.minnced:discord-webhooks:0.7.5"
-    implementation 'io.github.classgraph:classgraph:4.8.146'
-    implementation 'com.github.minndevelopment:jda-ktx:9f01b74'
-    implementation 'net.jodah:expiringmap:0.5.10'
-
-    // Prometheus
-    implementation "io.prometheus:simpleclient:0.14.1"
-    implementation "io.prometheus:simpleclient_hotspot:0.14.1"
-    implementation "io.prometheus:simpleclient_httpserver:0.14.1"
-    implementation 'com.facebook:ktfmt:0.36'
-
-    runtimeOnly 'org.jetbrains.kotlin:kotlin-scripting-jsr223:1.6.21'
-
 }
 
 processResources {
@@ -88,5 +88,13 @@ processResources {
 compileKotlin {
     kotlinOptions {
         jvmTarget = "16"
+    }
+}
+
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xmaxerrs" << "5000"
+        }
     }
 }

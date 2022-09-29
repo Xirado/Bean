@@ -7,7 +7,7 @@ import at.xirado.bean.command.CommandContext
 import at.xirado.bean.command.CommandFlag
 import at.xirado.bean.command.commands.EvalCommand
 import at.xirado.bean.data.GuildManager
-import dev.minn.jda.ktx.getDefaultScope
+import dev.minn.jda.ktx.events.getDefaultScope
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.slf4j.LoggerFactory

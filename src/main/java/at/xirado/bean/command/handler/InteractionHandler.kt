@@ -9,8 +9,8 @@ import io.github.classgraph.ClassGraph
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.GuildChannel
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -111,13 +111,6 @@ class InteractionHandler(val bean: Bean) {
             }
         }
 
-        if (CommandFlag.DJ_ONLY in command.commandFlags) {
-            if (!context.guildData.isDJ(member)) {
-                event.replyEmbeds(EmbedUtil.noEntryEmbed("You must be a DJ to do this!")).setEphemeral(true).queue()
-                return
-            }
-        }
-
         if (CommandFlag.MUST_BE_IN_SAME_VC in command.commandFlags) {
             val userVoiceState = member.voiceState!!
             val botVoiceState = guild.selfMember.voiceState!!
@@ -127,15 +120,6 @@ class InteractionHandler(val bean: Bean) {
                         .queue()
                     return
                 }
-            }
-        }
-
-        if (CommandFlag.REQUIRES_LAVALINK_NODE in command.commandFlags) {
-            if (!context.isLavalinkNodeAvailable) {
-                event.replyEmbeds(EmbedUtil.errorEmbed("There are currently no voice nodes available!\nIf the issue persists, please leave a message on our support server!"))
-                    .addActionRow(Util.getSupportButton())
-                    .queue()
-                return;
             }
         }
 
@@ -184,7 +168,7 @@ class InteractionHandler(val bean: Bean) {
             .setColor(EmbedUtil.ERROR_COLOR)
         event.jda.openPrivateChannelById(Bean.OWNER_ID)
             .flatMap {
-                it.sendMessageEmbeds(builder.build()).content("```fix\n${ExceptionUtils.getStackTrace(exception)}```")
+                it.sendMessageEmbeds(builder.build()).setContent("```fix\n${ExceptionUtils.getStackTrace(exception)}```")
             }
             .queue()
     }

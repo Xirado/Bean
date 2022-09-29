@@ -4,7 +4,7 @@ import at.xirado.bean.Bean;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.CommandPermission;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
@@ -34,7 +34,7 @@ public abstract class SlashCommand implements GenericCommand {
     }
 
     public void addRequiredUserPermissions(Permission... permissions) {
-        commandData.setDefaultPermissions(CommandPermission.enabledFor(permissions));
+        commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(permissions));
         requiredUserPermissions.addAll(Arrays.asList(permissions));
     }
 

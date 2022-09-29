@@ -4,8 +4,9 @@ import at.xirado.bean.data.GuildData;
 import at.xirado.bean.data.GuildManager;
 import at.xirado.bean.data.ReactionRole;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -25,8 +26,8 @@ public class MessageReactionAddListener extends ListenerAdapter {
             if (e.getMember().getUser().isBot()) return;
             Guild g = e.getGuild();
             long id = e.getMessageIdLong();
-            ReactionEmote reactionemote = e.getReactionEmote();
-            String reacted = reactionemote.isEmoji() ? reactionemote.getAsReactionCode() : reactionemote.getEmote().getId();
+            EmojiUnion emoji = e.getEmoji();
+            String reacted = emoji.getType() == Emoji.Type.UNICODE ? emoji.getAsReactionCode() : emoji.asCustom().getId();
             GuildData data = GuildManager.getGuildData(e.getGuild());
             ReactionRole reactionRole = data.getReactionRoles().stream()
                     .filter(x -> x.getMessageId() == id && x.getEmote().equals(reacted))

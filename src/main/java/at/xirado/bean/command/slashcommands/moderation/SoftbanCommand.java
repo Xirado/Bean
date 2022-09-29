@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -19,6 +19,8 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 public class SoftbanCommand extends SlashCommand {
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
@@ -75,7 +77,7 @@ public class SoftbanCommand extends SlashCommand {
                 .flatMap(hook -> member.getUser().openPrivateChannel())
                 .flatMap(channel -> channel.sendMessageEmbeds(dmEmbed.build()))
                 .mapToResult()
-                .flatMap(message -> guild.ban(member, 7))
+                .flatMap(message -> guild.ban(member, 7, TimeUnit.DAYS))
                 .flatMap(x -> guild.unban(member))
                 .queue(x ->
                 {

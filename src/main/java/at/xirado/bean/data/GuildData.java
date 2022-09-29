@@ -1,11 +1,14 @@
 package at.xirado.bean.data;
 
-
 import at.xirado.bean.Bean;
 import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.objects.RoleReward;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -182,81 +185,6 @@ public class GuildData {
         if (member.hasPermission(Permission.ADMINISTRATOR)) return true;
         List<Role> roles = getModeratorRoles();
         return CollectionUtils.containsAny(roles, member.getRoles());
-    }
-
-    public List<Role> getDJRoles(boolean includeMods) {
-        List<Role> roles = new ArrayList<>();
-        if (includeMods) roles.addAll(getModeratorRoles());
-        if (dataObject.isNull("dj_roles"))
-            return roles;
-        Long[] roleIds = dataObject.getArray("dj_roles").stream(DataArray::getLong).toArray(Long[]::new);
-        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
-        if (guild == null) return roles;
-        for (long roleId : roleIds) {
-            Role role = guild.getRoleById(roleId);
-            if (role != null) roles.add(role);
-        }
-        return roles;
-    }
-
-    @CheckReturnValue
-    public GuildData addDJRoles(Role... roles) {
-        Checks.notEmpty(roles, "Roles");
-        List<Role> djRoles = getDJRoles(false);
-        djRoles.addAll(Arrays.asList(roles));
-        dataObject.put("dj_roles", DataArray.fromCollection(djRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toList())));
-        return this;
-    }
-
-    @CheckReturnValue
-    public GuildData removeDJRoles(Role... roles) {
-        Checks.notEmpty(roles, "Roles");
-        List<Role> djRoles = getDJRoles(false);
-        Arrays.asList(roles).forEach(djRoles::remove);
-        dataObject.put("dj_roles", DataArray.fromCollection(djRoles.stream().map(ISnowflake::getIdLong).collect(Collectors.toList())));
-        return this;
-    }
-
-    public boolean isDJ(Member member) {
-        if (member.hasPermission(Permission.ADMINISTRATOR)) return true;
-        List<Role> roles = getDJRoles(true);
-        if (CollectionUtils.containsAny(roles, member.getRoles())) return true;
-        if (getDJMembers().contains(member.getIdLong())) return true;
-        GuildVoiceState guildVoiceState = member.getVoiceState();
-        if (guildVoiceState == null || guildVoiceState.getChannel() == null) return false;
-        AudioChannel channel = guildVoiceState.getChannel();
-        return channel.getMembers().size() == 2 && channel.getMembers().contains(member.getGuild().getSelfMember());
-    }
-
-    public boolean isDJ(Role role) {
-        return getDJRoles(false).contains(role);
-    }
-
-    public List<Long> getDJMembers() {
-        if (dataObject.isNull("dj_members"))
-            return new ArrayList<>();
-        return dataObject.getArray("dj_members")
-                .stream(DataArray::getLong)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
-
-    @CheckReturnValue
-    public GuildData addDJMembers(Member... members) {
-        Checks.noneNull(members, "Members");
-        List<Long> djMembers = getDJMembers();
-        djMembers.addAll(Arrays.stream(members).map(Member::getIdLong).collect(Collectors.toSet()));
-        dataObject.put("dj_members", DataArray.fromCollection(djMembers.stream().toList()));
-        return this;
-    }
-
-    @CheckReturnValue
-    public GuildData removeDJMembers(Member... members) {
-        Checks.notEmpty(members, "Members");
-        List<Long> djMembers = getDJMembers();
-        Arrays.asList(members).stream().map(ISnowflake::getIdLong).forEach(djMembers::remove);
-        dataObject.put("dj_members", DataArray.fromCollection(djMembers.stream().toList()));
-        return this;
     }
 
     public List<RoleReward> getRoleRewards() {

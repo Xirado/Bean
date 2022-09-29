@@ -7,6 +7,7 @@ import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.BasicAutocompletionChoice;
 import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -66,7 +67,8 @@ public class RedditCommand extends SlashCommand {
                 return;
             }
 
-            if (object.getBoolean("nsfw") && !event.getTextChannel().isNSFW()) {
+            boolean nsfw = event.getChannel() instanceof IAgeRestrictedChannel nsfwChannel && nsfwChannel.isNSFW();
+            if (object.getBoolean("nsfw") && !nsfw) {
                 hook.sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("commands.meme.is_nsfw"))).setEphemeral(true).queue();
                 return;
             }
