@@ -26,7 +26,7 @@ import kotlin.time.Duration.Companion.minutes
 
 private val defaultImports = listOf(
     "kotlinx.coroutines.async",
-    "dev.minn.jda.ktx.await",
+    "dev.minn.jda.ktx.coroutines.await",
     "net.dv8tion.jda.api.managers.*",
     "net.dv8tion.jda.api.entities.*",
     "net.dv8tion.jda.api.*",
