@@ -4,21 +4,32 @@
 name: Commit Validation
 
 on:
-    push:
-        branches:
-            - master
-            - development
+  push:
+    branches:
+      - master
+      - development
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-        steps:
-            -   uses: actions/checkout@v2
-            -   uses: actions/setup-java@v1
-                with:
-                    java-version: 16
-            -   uses: gradle/gradle-build-action@v2
-                with:
-                    arguments: build
-                    gradle-version: wrapper
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 16
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Execute Gradle build
+        run: ./gradlew build
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Bean.jar
+          path: build/libs/Bean.jar
