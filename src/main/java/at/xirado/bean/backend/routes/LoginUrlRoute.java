@@ -21,7 +21,7 @@ public class LoginUrlRoute implements Route {
                 .addParameter("scope", "identify guilds")
                 .addParameter("permissions", "0")
                 .addParameter("redirect_uri", Bean.getInstance().getWebServer().getRedirectUri())
-                .addParameter("prompt", "consent");
+                .addParameter("prompt", "none");
         return DataObject.empty()
                 .put("url", builder.build().toString())
                 .toString();
