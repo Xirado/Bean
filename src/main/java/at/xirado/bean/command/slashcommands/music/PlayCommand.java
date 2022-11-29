@@ -11,18 +11,15 @@ import at.xirado.bean.data.SearchEntry;
 import at.xirado.bean.data.content.*;
 import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.lavaplayer.SpotifyTrack;
-import at.xirado.bean.misc.EmbedUtil;
-import at.xirado.bean.misc.FormatUtil;
-import at.xirado.bean.misc.MusicUtil;
-import at.xirado.bean.misc.Util;
+import at.xirado.bean.misc.*;
 import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
@@ -38,19 +35,17 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.URIBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class PlayCommand extends SlashCommand {
@@ -72,14 +67,13 @@ public class PlayCommand extends SlashCommand {
 
     @Override
     public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
-        JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
         event.deferReply(true).queue();
         Member member = event.getMember();
         GuildVoiceState voiceState = member.getVoiceState();
         AudioManager manager = event.getGuild().getAudioManager();
         if (manager.getConnectedChannel() == null) {
             try {
-                link.connect(voiceState.getChannel());
+                manager.openAudioConnection(voiceState.getChannel());
             } catch (PermissionException exception) {
                 event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
                 return;
@@ -88,6 +82,7 @@ public class PlayCommand extends SlashCommand {
                 event.getGuild().requestToSpeak();
             }
         }
+        AudioPlayerManager playerManager = Bean.getInstance().getAudioManager().getPlayerManager();
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         if (event.getOption("shuffle") != null)
             guildAudioPlayer.getScheduler().setShuffle(event.getOption("shuffle").getAsBoolean());
@@ -110,7 +105,7 @@ public class PlayCommand extends SlashCommand {
         DismissableContentManager contentManager = Bean.getInstance().getDismissableContentManager();
         boolean isYoutube = query.startsWith("ytsearch:");
         boolean hasBookmarks = !BookmarkCommand.getBookmarks(event.getUser().getIdLong(), false).isEmpty();
-        link.getRestClient().loadItem(query, new AudioLoadResultHandler() {
+        playerManager.loadItem(query, new AudioLoadResultHandler() {
 
             @Override
             public void trackLoaded(AudioTrack track) {
@@ -273,7 +268,7 @@ public class PlayCommand extends SlashCommand {
     }
 
     private List<SearchEntry> getSearchHistory(long userId, boolean all) {
-        try (ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM searchqueries WHERE user_id = ? ORDER BY searched_at desc" + (all ? "" : " LIMIT 25")).addParameter(userId).executeQuery()) {
+        try (ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM search_queries WHERE user_id = ? ORDER BY searched_at desc" + (all ? "" : " LIMIT 25")).addParameter(userId).executeQuery()) {
             List<SearchEntry> entries = new ArrayList<>();
             while (rs.next()) {
                 SearchEntry entry = new SearchEntry(rs.getString("name"), rs.getString("value"), rs.getBoolean("playlist"));
@@ -288,7 +283,7 @@ public class PlayCommand extends SlashCommand {
     }
 
     private List<SearchEntry> getMatchingEntries(long userId, String prefix, boolean all) {
-        try (ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM searchqueries WHERE user_id = ? AND name like ? ORDER BY searched_at desc" + (all ? "" : " LIMIT 25")).addParameters(userId, prefix + "%").executeQuery()) {
+        try (ResultSet rs = new SQLBuilder("SELECT name, value, playlist FROM search_queries WHERE user_id = ? AND name like ? ORDER BY searched_at desc" + (all ? "" : " LIMIT 25")).addParameters(userId, prefix + "%").executeQuery()) {
             List<SearchEntry> entries = new ArrayList<>();
             while (rs.next())
                 entries.add(new SearchEntry(rs.getString("name"), rs.getString("value"), rs.getBoolean("playlist")));
@@ -300,7 +295,7 @@ public class PlayCommand extends SlashCommand {
     }
 
     private boolean isDuplicate(long userId, String name) {
-        try (ResultSet rs = new SQLBuilder("SELECT 1 FROM searchqueries WHERE user_id = ? AND name = ?").addParameters(userId, name).executeQuery()) {
+        try (ResultSet rs = new SQLBuilder("SELECT 1 FROM search_queries WHERE user_id = ? AND name = ?").addParameters(userId, name).executeQuery()) {
             return rs.next();
         } catch (SQLException ex) {
             LOGGER.error("Could not check if duplicate exists! (User: {}, Term: {})", userId, name, ex);
@@ -309,7 +304,7 @@ public class PlayCommand extends SlashCommand {
     }
 
     private boolean hasSearchEntries(long userId) {
-        try (ResultSet rs = new SQLBuilder("SELECT 1 FROM searchqueries WHERE user_id = ?").addParameters(userId).executeQuery()) {
+        try (ResultSet rs = new SQLBuilder("SELECT 1 FROM search_queries WHERE user_id = ?").addParameters(userId).executeQuery()) {
             return rs.next();
         } catch (SQLException ex) {
             LOGGER.error("Could not check if user {} has search entries!", userId, ex);
@@ -319,7 +314,7 @@ public class PlayCommand extends SlashCommand {
 
     private void addSearchEntry(long userId, SearchEntry entry) {
         try {
-            new SQLBuilder("INSERT INTO searchqueries (user_id, searched_at, name, value, playlist) values (?,?,?,?,?)")
+            new SQLBuilder("INSERT INTO search_queries (user_id, searched_at, name, value, playlist) values (?,?,?,?,?)")
                     .addParameters(userId, System.currentTimeMillis(), entry.getName(), entry.getValue(), entry.isPlaylist())
                     .execute();
         } catch (SQLException ex) {
@@ -347,45 +342,7 @@ public class PlayCommand extends SlashCommand {
 
     public List<String> getYoutubeMusicSearchResults(String query) {
         try {
-            DataObject config = Bean.getInstance().getConfig();
-            if (config.isNull("innertube_api_key"))
-                return Collections.emptyList();
-            if (config.isNull("innertube_request_body")) {
-                LOGGER.warn("Missing innertube_request_body config property!");
-                return Collections.emptyList();
-            }
-            URI uri = new URIBuilder()
-                    .setScheme("https")
-                    .setHost("music.youtube.com")
-                    .setPath("/youtubei/v1/music/get_search_suggestions")
-                    .addParameter("key", config.getString("innertube_api_key"))
-                    .build();
-            DataObject body = config.getObject("innertube_request_body");
-            body.put("input", query);
-            RequestBody requestBody = RequestBody.create(MediaType.get("application/json"), body.toString());
-            Request request = new Request.Builder()
-                    .url(uri.toURL())
-                    .post(requestBody)
-                    .addHeader("referer", "https://music.youtube.com/")
-                    .addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
-                    .addHeader("content-type", "application/json")
-                    .build();
-            Call call = Bean.getInstance().getOkHttpClient().newCall(request);
-            Response response = call.execute();
-            DataObject responseBody = DataObject.fromJson(response.body().string());
-            response.close();
-            Optional<DataArray> optContents = responseBody.optArray("contents");
-            if (!optContents.isPresent())
-                return Collections.emptyList();
-            DataObject renderer = optContents.get().getObject(0).getObject("searchSuggestionsSectionRenderer");
-            DataArray contents = renderer.optArray("contents").orElse(DataArray.empty());
-            List<String> results = new ArrayList<>();
-            contents.stream(DataArray::getObject).forEach(content ->
-            {
-                String result = content.getObject("searchSuggestionRenderer").getObject("navigationEndpoint").getObject("searchEndpoint").getString("query");
-                if (result.length() <= 100)
-                    results.add(result);
-            });
+            List<String> results = YoutubeUtils.INSTANCE.getYoutubeMusicSearchResults(query);
             return results;
         } catch (Exception e) {
             LOGGER.warn("Innertube API is broken!", e);

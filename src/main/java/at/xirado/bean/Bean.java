@@ -1,27 +1,14 @@
 package at.xirado.bean;
 
-import at.xirado.bean.backend.Authenticator;
-import at.xirado.bean.backend.WebServer;
-import at.xirado.bean.command.ConsoleCommandManager;
-import at.xirado.bean.command.handler.CommandHandler;
 import at.xirado.bean.command.handler.InteractionHandler;
-import at.xirado.bean.data.OkHttpInterceptor;
 import at.xirado.bean.data.content.DismissableContentManager;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.event.*;
-import at.xirado.bean.lavaplayer.SpotifyAudioSource;
-import at.xirado.bean.log.Shell;
-import at.xirado.bean.mee6.MEE6Queue;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.music.AudioManager;
-import at.xirado.bean.prometheus.MetricsJob;
-import at.xirado.bean.prometheus.Prometheus;
-import club.minnced.discord.webhook.WebhookClient;
-import club.minnced.discord.webhook.WebhookClientBuilder;
+import ch.qos.logback.classic.Level;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import lavalink.client.LavalinkUtil;
-import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -31,7 +18,6 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +27,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -51,10 +37,8 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class Bean {
     public static final long OWNER_ID = 184654964122058752L;
-    public static final Long TEST_SERVER_ID = 815597207617142814L;
     public static final Set<Long> WHITELISTED_USERS = Set.of(184654964122058752L, 398610798315962408L);
     public static final String SUPPORT_GUILD_INVITE = "https://discord.com/invite/7WEjttJtKa";
-    public static final long START_TIME = System.currentTimeMillis() / 1000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
     private static String VERSION;
@@ -82,43 +66,24 @@ public class Bean {
                     .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the executor!", e))
                     .build());
 
-    private final ConsoleCommandManager consoleCommandManager;
     private final InteractionHandler interactionHandler;
-    private final CommandHandler commandHandler;
     private final AudioManager audioManager;
     private final EventWaiter eventWaiter;
     private final OkHttpClient okHttpClient;
-    private final WebServer webServer;
-    private final Authenticator authenticator;
-    private final JdaLavalink lavalink;
-    private final MEE6Queue mee6Queue;
     private final DismissableContentManager dismissableContentManager;
 
-    private WebhookClient webhookClient = null;
     private DataObject config = loadConfig();
 
     public Bean() throws Exception {
         instance = this;
-        LavalinkUtil.getPlayerManager().registerSourceManager(new SpotifyAudioSource());
         Database.connect();
         Database.awaitReady();
-        consoleCommandManager = new ConsoleCommandManager();
-        consoleCommandManager.registerAllCommands();
         debug = !config.isNull("debug") && config.getBoolean("debug");
         interactionHandler = new InteractionHandler(this);
-        commandHandler = new CommandHandler();
         eventWaiter = new EventWaiter();
-        Class.forName("at.xirado.bean.translation.LocaleLoader");
         okHttpClient = new OkHttpClient.Builder()
                 .build();
-        if (!config.isNull("webhook_url"))
-            webhookClient = new WebhookClientBuilder(config.getString("webhook_url"))
-                    .build();
-        lavalink = new JdaLavalink(
-                null,
-                1,
-                null
-        );
+
         if (config.isNull("token"))
             throw new IllegalStateException("Can not start without a token!");
         shardManager = DefaultShardManagerBuilder.create(config.getString("token"), getIntents())
@@ -128,23 +93,15 @@ public class Bean {
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setBulkDeleteSplittingEnabled(false)
                 .setChunkingFilter(ChunkingFilter.NONE)
-                .setHttpClientBuilder(IOUtil.newHttpClientBuilder().addInterceptor(new OkHttpInterceptor()))
                 .setGatewayEncoding(GatewayEncoding.ETF)
-                .setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor())
+                //.setAudioSendFactory(new NativeAudioSendFactory())
                 .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER)
-                .addEventListeners(new JDAReadyListener(), new SlashCommandListener(), new MessageCreateListener(),
-                        new XPMessageListener(), new MessageReactionAddListener(), new MessageReactionRemoveListener(), new VoiceUpdateListener(),
-                        eventWaiter, new GuildMemberJoinListener(), lavalink, new DismissableContentButtonListener(), new GuildJoinListener(),
-                        new MusicPlayerButtonListener(), new MessageDeleteListener(), EvalListener.INSTANCE)
+                .addEventListeners(new JDAReadyListener(), new SlashCommandListener(), new VoiceUpdateListener(),
+                        eventWaiter, new DismissableContentButtonListener(),
+                        new MusicPlayerButtonListener(), new MessageDeleteListener())
                 .build();
         audioManager = new AudioManager();
-        authenticator = new Authenticator();
-        webServer = new WebServer(8887);
         dismissableContentManager = new DismissableContentManager();
-        new Prometheus();
-        new MetricsJob().start();
-        mee6Queue = new MEE6Queue();
-        mee6Queue.start();
     }
 
     public static Bean getInstance() {
@@ -163,12 +120,10 @@ public class Bean {
 
     public static void main(String[] args) {
         Thread.currentThread().setName("Main");
+        if (!List.of(args).contains("--debug"))
+            ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("ROOT")).setLevel(Level.INFO);
         try {
             loadPropertiesFile();
-            if (!Arrays.asList(args).contains("--nojline")) {
-                Shell.startShell();
-                Shell.awaitReady();
-            }
             new Bean();
         } catch (Exception e) {
             if (e instanceof LoginException ex) {
@@ -190,10 +145,6 @@ public class Bean {
             VERSION = "0.0.0";
             BUILD_TIME = 0L;
         }
-    }
-
-    public WebhookClient getWebhookClient() {
-        return webhookClient;
     }
 
     public static void info(String msg) {
@@ -252,16 +203,8 @@ public class Bean {
         return shardManager;
     }
 
-    public ConsoleCommandManager getConsoleCommandManager() {
-        return consoleCommandManager;
-    }
-
     public InteractionHandler getInteractionHandler() {
         return interactionHandler;
-    }
-
-    public CommandHandler getCommandHandler() {
-        return commandHandler;
     }
 
     public AudioManager getAudioManager() {
@@ -274,10 +217,6 @@ public class Bean {
 
     public OkHttpClient getOkHttpClient() {
         return okHttpClient;
-    }
-
-    public Authenticator getAuthenticator() {
-        return authenticator;
     }
 
     public DismissableContentManager getDismissableContentManager() {
@@ -305,17 +244,4 @@ public class Bean {
         }
         return DataObject.empty();
     }
-
-    public WebServer getWebServer() {
-        return webServer;
-    }
-
-    public JdaLavalink getLavalink() {
-        return lavalink;
-    }
-
-    public MEE6Queue getMEE6Queue() {
-        return mee6Queue;
-    }
-
 }

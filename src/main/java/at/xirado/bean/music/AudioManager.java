@@ -1,11 +1,16 @@
 package at.xirado.bean.music;
 
-import at.xirado.bean.misc.Metrics;
+import at.xirado.bean.Bean;
 import at.xirado.bean.misc.objects.CachedMessage;
+import com.github.topisenpai.lavasrc.spotify.SpotifySourceManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.utils.TimeUtil;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
@@ -19,6 +24,16 @@ public class AudioManager {
     public AudioManager() {
         this.playerManager = new DefaultAudioPlayerManager();
         this.audioPlayers = new ConcurrentHashMap<>();
+        DataObject ytConfig = Bean.getInstance().getConfig().optObject("youtube").orElseGet(DataObject::empty);
+        String email = ytConfig.getString("email", null);
+        String password = ytConfig.getString("password", null);
+        DataObject spotify = Bean.getInstance().getConfig().optObject("spotify").orElseGet(DataObject::empty);
+        String clientId = spotify.getString("client_id", null);
+        String clientSecret = spotify.getString("client_secret", null);
+        playerManager.registerSourceManager(new YoutubeAudioSourceManager(true, email, password));
+        playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
+        if (clientId != null && clientSecret != null)
+            playerManager.registerSourceManager(new SpotifySourceManager(null, clientId, clientSecret, "US", playerManager));
         Thread t = new Thread(() ->
         {
             while (true) {
@@ -49,10 +64,6 @@ public class AudioManager {
                         guildAudioPlayer.forcePlayerUpdate();
                     }
                 }
-                int playingAudioPlayers = getAudioPlayers().stream()
-                        .mapToInt(pl -> pl.getPlayer().getPlayingTrack() == null ? 0 : 1)
-                        .sum();
-                Metrics.PLAYING_MUSIC_PLAYERS.set(playingAudioPlayers);
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException ignored) {}
@@ -65,9 +76,15 @@ public class AudioManager {
     public synchronized GuildAudioPlayer getAudioPlayer(long guildId) {
         if (audioPlayers.containsKey(guildId))
             return audioPlayers.get(guildId);
-        GuildAudioPlayer player = new GuildAudioPlayer(guildId);
+        GuildAudioPlayer player = new GuildAudioPlayer(playerManager, guildId);
+        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
+        guild.getAudioManager().setSendingHandler(player.getSendHandler());
         audioPlayers.put(guildId, player);
         return player;
+    }
+
+    public AudioPlayerManager getPlayerManager() {
+        return playerManager;
     }
 
     public Set<GuildAudioPlayer> getAudioPlayers() {

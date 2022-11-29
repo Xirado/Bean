@@ -3,67 +3,51 @@ package at.xirado.bean.music;
 import at.xirado.bean.Bean;
 import at.xirado.bean.misc.MusicUtil;
 import at.xirado.bean.misc.objects.CachedMessage;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import lavalink.client.io.jda.JdaLink;
-import lavalink.client.player.LavalinkPlayer;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.util.function.Consumer;
 
 public class GuildAudioPlayer {
-    private final LavalinkPlayer player;
+    private final AudioPlayer player;
     private final AudioScheduler scheduler;
-    private final JdaLink link;
+    private final SendHandler sendHandler;
     private final long guildId;
 
     private CachedMessage openPlayer;
     private long lastPlayerUpdate;
 
-    public GuildAudioPlayer(long guildId) {
+    public GuildAudioPlayer(AudioPlayerManager manager, long guildId) {
         this.guildId = guildId;
-        link = Bean.getInstance().getLavalink().getLink(String.valueOf(guildId));
-        player = link.getPlayer();
+        player = manager.createPlayer();
         scheduler = new AudioScheduler(player, guildId, this);
+        sendHandler = new SendHandler(player);
         player.addListener(scheduler);
         openPlayer = null;
         lastPlayerUpdate = 0;
-    }
-
-    public DataObject toJson() {
-        DataObject object = DataObject.empty()
-                .put("guild_id", guildId)
-                .put("repeat", scheduler.isRepeat())
-                .put("shuffle", scheduler.isShuffle())
-                .put("history", scheduler.serializeHistory())
-                .put("position", player.getTrackPosition())
-                .put("channel_id", Long.parseUnsignedLong(player.getLink().getChannel()))
-                .put("playing_track", LavalinkRestartController.toJson(player.getPlayingTrack()))
-                .put("tracks", scheduler.serializeQueue());
-
-        if (openPlayer != null)
-            object.put("player_channel_id", openPlayer.getChannelId());
-        return object;
     }
 
     public AudioScheduler getScheduler() {
         return scheduler;
     }
 
-    public LavalinkPlayer getPlayer() {
+    public AudioPlayer getPlayer() {
         return player;
+    }
+
+    public SendHandler getSendHandler() {
+        return sendHandler;
     }
 
     public long getGuildId() {
         return guildId;
-    }
-
-    public JdaLink getLink() {
-        return link;
     }
 
     public CachedMessage getOpenPlayer() {
@@ -120,9 +104,12 @@ public class GuildAudioPlayer {
     }
 
     public void destroy() {
+        Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
+        if (guild != null)
+            guild.getAudioManager().closeAudioConnection();
         setOpenPlayer(null);
         Bean.getInstance().getAudioManager().removePlayer(this);
-        link.destroy();
+        player.destroy();
         scheduler.destroy();
     }
 

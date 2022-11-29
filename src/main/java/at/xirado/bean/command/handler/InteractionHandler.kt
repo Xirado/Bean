@@ -3,7 +3,6 @@ package at.xirado.bean.command.handler
 import at.xirado.bean.Bean
 import at.xirado.bean.command.*
 import at.xirado.bean.misc.EmbedUtil
-import at.xirado.bean.misc.Metrics
 import at.xirado.bean.misc.Util
 import io.github.classgraph.ClassGraph
 import net.dv8tion.jda.api.EmbedBuilder
@@ -130,22 +129,12 @@ class InteractionHandler(val bean: Bean) {
             }
         }
 
-        if (CommandFlag.REQUIRES_LAVALINK_NODE in command.commandFlags) {
-            if (!context.isLavalinkNodeAvailable) {
-                event.replyEmbeds(EmbedUtil.errorEmbed("There are currently no voice nodes available!\nIf the issue persists, please leave a message on our support server!"))
-                    .addActionRow(Util.getSupportButton())
-                    .queue()
-                return;
-            }
-        }
-
         Bean.getInstance().commandExecutor.submit {
             try {
                 when (command) {
                     is SlashCommand -> {
                         val slashEvent = event as SlashCommandInteractionEvent
                         command.executeCommand(slashEvent, context)
-                        Metrics.COMMANDS.labels("success").inc()
                     }
                 }
             } catch (ex: Exception) {
@@ -155,7 +144,6 @@ class InteractionHandler(val bean: Bean) {
     }
 
     private fun handleError(event: GenericCommandInteractionEvent, exception: Exception) {
-        Metrics.COMMANDS.labels("failed").inc()
         log.error("An unhandled exception in a command occurred", exception)
         if (event.isAcknowledged) {
             event.hook.sendMessageEmbeds(ERROR_EMBED)

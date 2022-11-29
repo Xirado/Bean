@@ -44,7 +44,7 @@ public class JoinCommand extends SlashCommand {
         }
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         try {
-            audioPlayer.getLink().connect(voiceState.getChannel());
+            event.getGuild().getAudioManager().openAudioConnection(voiceState.getChannel());
         } catch (PermissionException exception) {
             event.replyEmbeds(EmbedUtil.errorEmbed("I do not have permission to join this channel!")).queue();
             return;

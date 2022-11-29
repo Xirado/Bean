@@ -4,11 +4,11 @@ import at.xirado.bean.Bean;
 import at.xirado.bean.lavaplayer.SpotifyTrack;
 import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
+import com.github.topisenpai.lavasrc.spotify.SpotifyAudioTrack;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -33,7 +33,7 @@ public class MusicUtil {
     }
 
     public static MessageEmbed getAddedToQueueMessage(GuildAudioPlayer player, AudioTrack track) {
-        LavalinkPlayer audioPlayer = player.getPlayer();
+        AudioPlayer audioPlayer = player.getPlayer();
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(0x452350);
         if (audioPlayer.getPlayingTrack() == null) {
@@ -58,7 +58,7 @@ public class MusicUtil {
             return builder.build();
         }
         TrackInfo info = track.getUserData(TrackInfo.class);
-        long position = Bean.getInstance().getLavalink().getExistingLink(info.getGuild()).getPlayer().getTrackPosition();
+        long position = track.getPosition();
         if (position < 0)
             position = 0;
         int percentage = (int) ((double) position / (double) track.getDuration() * 100);
@@ -91,12 +91,12 @@ public class MusicUtil {
 
                 length += s.length() + 1;
             }
-            builder.addField("Coming next", stringBuilder.toString(), false);
+            builder.addField("Queue", stringBuilder.toString(), false);
         }
 
         builder.setDescription(description);
 
-        if (track instanceof SpotifyTrack spotifyTrack)
+        if (track instanceof SpotifyAudioTrack spotifyTrack)
             builder.setThumbnail(spotifyTrack.getArtworkURL());
         else if (track instanceof YoutubeAudioTrack)
             builder.setThumbnail("https://img.youtube.com/vi/" + track.getIdentifier() + "/mqdefault.jpg");
@@ -172,14 +172,6 @@ public class MusicUtil {
     }
 
     public static ActionRow getPlayerButtons(GuildAudioPlayer player) {
-        ActionRow row = ActionRow.of(REWIND, player.getPlayer().isPaused() ? PLAY : PAUSE, SKIP, player.getScheduler().isRepeat() ? Util.getEnabledButton(REPEAT) : REPEAT, player.getScheduler().isShuffle() ? Util.getEnabledButton(SHUFFLE) : SHUFFLE);
-        ;
-        String channelId = player.getLink().getChannel();
-        if (channelId == null)
-            return row;
-        AudioChannel channel = Bean.getInstance().getShardManager().getVoiceChannelById(channelId);
-        if (channel == null)
-            return row;
-        return Util.getListeningUsers(channel) == 0 ? row.asDisabled() : row;
+        return ActionRow.of(REWIND, player.getPlayer().isPaused() ? PLAY : PAUSE, SKIP, player.getScheduler().isRepeat() ? Util.getEnabledButton(REPEAT) : REPEAT, player.getScheduler().isShuffle() ? Util.getEnabledButton(SHUFFLE) : SHUFFLE);
     }
 }

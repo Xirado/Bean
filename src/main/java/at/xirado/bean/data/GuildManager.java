@@ -55,7 +55,7 @@ public class GuildManager {
     }
 
     private static GuildData retrieveGuildData(long guildID) {
-        String sql = "SELECT data FROM guildSettings WHERE guildID = ?";
+        String sql = "SELECT data FROM guild_settings WHERE guildID = ?";
         var query = new SQLBuilder(sql)
                 .addParameter(guildID);
         try (var rs = query.executeQuery()) {
@@ -68,7 +68,7 @@ public class GuildManager {
     }
 
     private static void updateGuildData(long guildID, DataObject data) {
-        String sql = "INSERT INTO guildSettings (guildID, data) values (?,?) ON DUPLICATE KEY UPDATE data = ?";
+        String sql = "INSERT INTO guild_settings (guildID, data) values (?,?) ON DUPLICATE KEY UPDATE data = ?";
         try {
             String jsonString = data.toString();
             var query = new SQLBuilder(sql)

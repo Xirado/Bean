@@ -42,15 +42,14 @@ public class MusicPlayerButtonListener extends ListenerAdapter {
         GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
         GuildData guildData = GuildManager.getGuildData(event.getGuild());
 
-
         switch (event.getComponentId()) {
             case "player_previous" -> {
                 if (!guildData.isDJ(member)) {
                     event.reply("You must be a DJ to do this!").setEphemeral(true).queue();
                     return;
                 }
-                if (guildAudioPlayer.getPlayer().getPlayingTrack() != null && guildAudioPlayer.getPlayer().getTrackPosition() > 5000)
-                    Bean.getInstance().getLavalink().getExistingLink(event.getGuild()).getPlayer().seekTo(0L);
+                if (guildAudioPlayer.getPlayer().getPlayingTrack() != null && guildAudioPlayer.getPlayer().getPlayingTrack().getPosition() > 5000)
+                    guildAudioPlayer.getPlayer().getPlayingTrack().setPosition(0);
                 else
                     guildAudioPlayer.getScheduler().prevTrack();
             }

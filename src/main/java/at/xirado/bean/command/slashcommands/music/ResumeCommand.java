@@ -5,8 +5,7 @@ import at.xirado.bean.command.CommandFlag;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.music.GuildAudioPlayer;
-import lavalink.client.io.jda.JdaLink;
-import lavalink.client.player.LavalinkPlayer;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
@@ -19,19 +18,19 @@ public class ResumeCommand extends SlashCommand {
 
     @Override
     public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
-        JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
-        LavalinkPlayer player = link.getPlayer();
-        GuildAudioPlayer guildAudioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
+        GuildAudioPlayer guildPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
+        AudioPlayer audioPlayer = guildPlayer.getPlayer();
 
-        if (player.getPlayingTrack() == null) {
+        if (audioPlayer.getPlayingTrack() == null) {
             ctx.replyError("I'm currently not playing any music!").setEphemeral(true).queue();
+            return;
         }
-        if (!player.isPaused()) {
+        if (!audioPlayer.isPaused()) {
             ctx.replyError("The player is not paused!").setEphemeral(true).queue();
             return;
         }
-        player.setPaused(false);
-        guildAudioPlayer.forcePlayerComponentsUpdate();
+        audioPlayer.setPaused(false);
+        guildPlayer.forcePlayerComponentsUpdate();
         ctx.sendSimpleEphemeralEmbed("Resumed!");
     }
 }

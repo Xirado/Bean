@@ -3,7 +3,6 @@ package at.xirado.bean.data.database;
 import at.xirado.bean.Bean;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,12 +44,11 @@ public class Database {
                 config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
                 config.addDataSourceProperty("characterEncoding", "utf8");
                 config.addDataSourceProperty("useUnicode", "true");
-                config.setMetricsTrackerFactory(new PrometheusMetricsTrackerFactory());
                 ds = new HikariDataSource(config);
                 executeQueries();
             }
         };
-        Bean.getInstance().getExecutor().submit(r);
+        Bean.getInstance().getExecutor().execute(r);
     }
 
     public static Connection getConnectionFromPool() {
@@ -77,17 +75,11 @@ public class Database {
     }
 
     private static void executeQueries() {
-        String[] commands = new String[]{"CREATE TABLE IF NOT EXISTS modcases (uuid VARCHAR(36) PRIMARY KEY, caseType TINYINT, guild BIGINT, user BIGINT, moderator BIGINT, reason VARCHAR(256), createdAt BIGINT, duration BIGINT)",
-                "CREATE TABLE IF NOT EXISTS levels (guildID BIGINT, userID BIGINT, totalXP BIGINT, name VARCHAR(256), discriminator VARCHAR(4), avatar VARCHAR(128), PRIMARY KEY(guildID, userID)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
-                "CREATE TABLE IF NOT EXISTS guildsettings (guildID BIGINT PRIMARY KEY, data JSON CHECK (JSON_VALID(data)))",
-                "CREATE TABLE IF NOT EXISTS usersettings (userID BIGINT PRIMARY KEY, data JSON CHECK (JSON_VALID(data)))",
-                "CREATE TABLE IF NOT EXISTS xpalerts (guildID BIGINT PRIMARY KEY, mode VARCHAR(128))",
-                "CREATE TABLE IF NOT EXISTS wildcardsettings (userID BIGINT PRIMARY KEY, card VARCHAR(128) NOT NULL, accent INT)",
-                "CREATE TABLE IF NOT EXISTS searchqueries (user_id BIGINT, searched_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
-                "CREATE TABLE IF NOT EXISTS userBalance (guild_id BIGINT, user_id BIGINT, balance BIGINT, PRIMARY KEY(guild_id, user_id))",
+        String[] commands = new String[]{
+                "CREATE TABLE IF NOT EXISTS guild_settings (guildID BIGINT PRIMARY KEY, data JSON CHECK (JSON_VALID(data)))",
+                "CREATE TABLE IF NOT EXISTS search_queries (user_id BIGINT, searched_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
                 "CREATE TABLE IF NOT EXISTS bookmarks (user_id BIGINT, added_at BIGINT, name VARCHAR(256), value VARCHAR(256), playlist BOOL, PRIMARY KEY(user_id, value)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
-                "CREATE TABLE IF NOT EXISTS dismissable_contents (user_id BIGINT, identifier VARCHAR(128), state VARCHAR(128), PRIMARY KEY(user_id, identifier))",
-                "CREATE TABLE IF NOT EXISTS banned_guilds (guild_id BIGINT PRIMARY KEY, reason VARCHAR(256))"
+                "CREATE TABLE IF NOT EXISTS dismissable_contents (user_id BIGINT, identifier VARCHAR(128), state VARCHAR(128), PRIMARY KEY(user_id, identifier))"
         };
 
         try (Connection connection = Database.getConnectionFromPool()) {

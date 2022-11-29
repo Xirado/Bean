@@ -3,7 +3,7 @@ package at.xirado.bean.event;
 import at.xirado.bean.Bean;
 import at.xirado.bean.misc.MusicUtil;
 import at.xirado.bean.music.GuildAudioPlayer;
-import lavalink.client.player.LavalinkPlayer;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.events.guild.voice.*;
@@ -30,8 +30,6 @@ public class VoiceUpdateListener extends ListenerAdapter {
      */
     @Override
     public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event) {
-        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
-            return;
         if (event.getMember().equals(event.getGuild().getSelfMember())) {
             GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
             if (!event.getGuild().getSelfMember().getVoiceState().isGuildDeafened())
@@ -62,8 +60,6 @@ public class VoiceUpdateListener extends ListenerAdapter {
      */
     @Override
     public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
-        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
-            return;
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
@@ -88,12 +84,10 @@ public class VoiceUpdateListener extends ListenerAdapter {
      */
     @Override
     public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event) {
-        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
-            return;
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-        LavalinkPlayer player = audioPlayer.getPlayer();
+        AudioPlayer player = audioPlayer.getPlayer();
         player.setPaused(false);
         if (event.getChannelLeft() instanceof StageChannel stageChannel)
             if (stageChannel.getStageInstance() != null)
@@ -145,8 +139,6 @@ public class VoiceUpdateListener extends ListenerAdapter {
      */
     @Override
     public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
-        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
-            return;
         if (event.getChannelLeft() == null)
             return;
         if (event.getMember().equals(event.getGuild().getSelfMember()))
@@ -156,7 +148,7 @@ public class VoiceUpdateListener extends ListenerAdapter {
             if (state.getChannel().equals(event.getChannelLeft())) {
                 if (event.getChannelLeft().getMembers().size() == 1) {
                     GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
-                    LavalinkPlayer player = audioPlayer.getPlayer();
+                    AudioPlayer player = audioPlayer.getPlayer();
                     if (player.getPlayingTrack() != null) {
                         player.setPaused(true);
                         audioPlayer.forcePlayerUpdate();

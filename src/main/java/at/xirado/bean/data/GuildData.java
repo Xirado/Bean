@@ -25,18 +25,9 @@ public class GuildData {
     private final long guildId;
     private final DataObject dataObject;
 
-    private Set<ReactionRole> reactionRoles = new HashSet<>();
-
     public GuildData(long guildID, DataObject json) {
         this.guildId = guildID;
         this.dataObject = json;
-        ReactionRole[] reactions = json.isNull("reaction_roles") ? new ReactionRole[0] : json.getArray("reaction_roles")
-                .stream(DataArray::getObject)
-                .map(object -> new ReactionRole(object.getString("emote"), object.getLong("message_id"), object.getLong("role_id")))
-                .toArray(ReactionRole[]::new);
-
-        if (reactions.length > 0)
-            reactionRoles.addAll(Arrays.asList(reactions));
     }
 
     public GuildData put(String key, Object object) {
@@ -112,35 +103,6 @@ public class GuildData {
         if (dataObject.isNull("log_channel")) return null;
         long id = dataObject.getLong("log_channel");
         return Bean.getInstance().getShardManager().getTextChannelById(id);
-    }
-
-    public Set<ReactionRole> getReactionRoles() {
-        return reactionRoles;
-    }
-
-    @CheckReturnValue
-    public GuildData addReactionRoles(ReactionRole... reactionRoles) {
-        Checks.noneNull(reactionRoles, "Reaction roles");
-        this.reactionRoles.addAll(Arrays.asList(reactionRoles));
-        dataObject.put("reaction_roles", DataArray.fromCollection(this.reactionRoles));
-        return this;
-    }
-
-    @CheckReturnValue
-    public GuildData removeReactionRoles(ReactionRole... reactionRoles) {
-        Checks.noneNull(reactionRoles, "Reaction roles");
-        Arrays.asList(reactionRoles).forEach(this.reactionRoles::remove);
-        dataObject.put("reaction_roles", DataArray.fromCollection(this.reactionRoles));
-        return this;
-    }
-
-    @CheckReturnValue
-    public GuildData removeReactionRoles(long messageID) {
-        reactionRoles = reactionRoles.stream()
-                .filter(x -> x.getMessageId() != messageID)
-                .collect(Collectors.toSet());
-        dataObject.put("reaction_roles", DataArray.fromCollection(reactionRoles));
-        return this;
     }
 
     public List<Role> getModeratorRoles() {

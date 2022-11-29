@@ -8,12 +8,12 @@ import at.xirado.bean.data.Bookmark;
 import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.objects.TrackInfo;
+import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import lavalink.client.io.LavalinkSocket;
-import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -64,12 +64,12 @@ public class BookmarkCommand extends SlashCommand {
         switch (event.getSubcommandName().toLowerCase(Locale.ROOT)) {
             case "add" -> {
                 String url = event.getOption("url").getAsString();
-                LavalinkSocket socket = ctx.getAvailableNode();
                 if (isDuplicate(userId, url)) {
                     event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("You already have a bookmark for that URL!")).queue();
                     return;
                 }
-                socket.getRestClient().loadItem(url, new AudioLoadResultHandler() {
+                AudioPlayerManager manager = Bean.getInstance().getAudioManager().getPlayerManager();
+                manager.loadItem(url, new AudioLoadResultHandler() {
                     @Override
                     public void trackLoaded(AudioTrack track) {
                         Bookmark entry = new Bookmark(track.getInfo().title, url, false);
@@ -108,8 +108,8 @@ public class BookmarkCommand extends SlashCommand {
             }
 
             case "add_current" -> {
-                JdaLink link = Bean.getInstance().getLavalink().getLink(event.getGuild());
-                AudioTrack currentTrack = link.getPlayer().getPlayingTrack();
+                GuildAudioPlayer player = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
+                AudioTrack currentTrack = player.getPlayer().getPlayingTrack();
                 if (currentTrack == null) {
                     event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed("There is nothing playing!")).queue();
                     return;

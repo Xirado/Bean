@@ -16,8 +16,6 @@ public class DismissableContentButtonListener extends ListenerAdapter {
 
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
-        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
-            return;
         var componentId = event.getComponentId();
         if (!componentId.startsWith("dismissable:"))
             return;
