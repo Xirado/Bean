@@ -288,7 +288,13 @@ public class RankingSystem {
                 background = new FileInputStream(file);
             }
 
-            var backgroundImage = RESCALE_OP.filter(ImageIO.read(background), null);
+            BufferedImage backgroundImage;
+            try {
+                backgroundImage = RESCALE_OP.filter(ImageIO.read(background), null);
+            } finally {
+                background.close();
+            }
+
             var width = backgroundImage.getWidth();
             var height = backgroundImage.getHeight();
             if (width > 1200)
