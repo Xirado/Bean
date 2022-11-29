@@ -50,7 +50,7 @@ public class Database {
                 executeQueries();
             }
         };
-        Bean.getInstance().getExecutor().submit(r);
+        Bean.getInstance().getExecutor().execute(r);
     }
 
     public static Connection getConnectionFromPool() {
