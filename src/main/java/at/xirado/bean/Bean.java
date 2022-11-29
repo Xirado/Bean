@@ -166,7 +166,7 @@ public class Bean {
             properties.load(Bean.class.getClassLoader().getResourceAsStream("app.properties"));
             VERSION = properties.getProperty("app-version");
             BUILD_TIME = Long.parseLong(properties.getProperty("build-time"));
-        } catch (Exception e) {
+        } catch(Throwable e) {
             LOGGER.error("Could not read app.properties file!");
             VERSION = "0.0.0";
             BUILD_TIME = 0L;
