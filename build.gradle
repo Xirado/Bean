@@ -90,11 +90,3 @@ compileKotlin {
         jvmTarget = "16"
     }
 }
-
-allprojects {
-    gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xmaxerrs" << "5000"
-        }
-    }
-}
