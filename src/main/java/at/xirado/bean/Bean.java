@@ -9,6 +9,7 @@ import at.xirado.bean.music.AudioManager;
 import ch.qos.logback.classic.Level;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -94,8 +95,8 @@ public class Bean {
                 .setBulkDeleteSplittingEnabled(false)
                 .setChunkingFilter(ChunkingFilter.NONE)
                 .setGatewayEncoding(GatewayEncoding.ETF)
-                //.setAudioSendFactory(new NativeAudioSendFactory())
-                .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER)
+                .setAudioSendFactory(new NativeAudioSendFactory())
+                .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOJI, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER, CacheFlag.SCHEDULED_EVENTS)
                 .addEventListeners(new JDAReadyListener(), new SlashCommandListener(), new VoiceUpdateListener(),
                         eventWaiter, new DismissableContentButtonListener(),
                         new MusicPlayerButtonListener(), new MessageDeleteListener())

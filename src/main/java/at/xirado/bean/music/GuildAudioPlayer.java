@@ -7,9 +7,8 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 
@@ -56,7 +55,7 @@ public class GuildAudioPlayer {
 
     public void setOpenPlayer(CachedMessage openPlayer) {
         if (this.openPlayer != null) {
-            TextChannel channel = this.openPlayer.getChannel();
+            GuildMessageChannel channel = this.openPlayer.getChannel();
             if (channel != null)
                 channel.deleteMessageById(this.openPlayer.getMessageId())
                         .queue(null, new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE));
@@ -71,7 +70,7 @@ public class GuildAudioPlayer {
     public void playerSetup(GuildMessageChannel channel, AudioTrack track, Consumer<Message> onSuccess, Consumer<Throwable> onError) {
         try {
             channel.sendMessageEmbeds(MusicUtil.getPlayerEmbed(track == null ? player.getPlayingTrack() : track))
-                    .setActionRows(MusicUtil.getPlayerButtons(this))
+                    .setComponents(MusicUtil.getPlayerButtons(this))
                     .queue(message -> {
                         setOpenPlayer(new CachedMessage(message));
                         if (onSuccess != null)
@@ -87,9 +86,9 @@ public class GuildAudioPlayer {
         if (message == null || message.getChannel() == null)
             return;
 
-        TextChannel channel = message.getChannel();
+        GuildMessageChannel channel = message.getChannel();
         channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(player.getPlayingTrack()))
-                .setActionRows(MusicUtil.getPlayerButtons(this)).queue(null, e -> setOpenPlayer(null));
+                .setComponents(MusicUtil.getPlayerButtons(this)).queue(null, e -> setOpenPlayer(null));
 
     }
 
@@ -98,7 +97,7 @@ public class GuildAudioPlayer {
         if (message == null || message.getChannel() == null)
             return;
 
-        TextChannel channel = message.getChannel();
+        GuildMessageChannel channel = message.getChannel();
         channel.editMessageComponentsById(message.getMessageId(), MusicUtil.getPlayerButtons(this))
                 .queue(null, e -> setOpenPlayer(null));
     }

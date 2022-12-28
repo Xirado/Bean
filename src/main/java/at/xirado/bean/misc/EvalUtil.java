@@ -3,7 +3,7 @@ package at.xirado.bean.misc;
 import at.xirado.bean.Bean;
 import at.xirado.bean.interactions.ButtonPaginator;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -27,7 +27,7 @@ public class EvalUtil {
         return "```json\n" + result.toPrettyString() + "\n```";
     }
 
-    public static void testPaginator(TextChannel channel) {
+    public static void testPaginator(GuildMessageChannel channel) {
         ButtonPaginator.Builder builder = new ButtonPaginator.Builder(channel.getJDA())
                 .useNumberedItems(true)
                 .setItemsPerPage(10)

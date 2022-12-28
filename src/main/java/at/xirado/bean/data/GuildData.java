@@ -6,6 +6,8 @@ import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.misc.objects.RoleReward;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -99,7 +101,7 @@ public class GuildData {
         return dataObject.getString("command_prefix");
     }
 
-    public TextChannel getLogChannel() {
+    public GuildMessageChannel getLogChannel() {
         if (dataObject.isNull("log_channel")) return null;
         long id = dataObject.getLong("log_channel");
         return Bean.getInstance().getShardManager().getTextChannelById(id);

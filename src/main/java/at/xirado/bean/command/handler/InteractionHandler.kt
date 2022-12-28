@@ -8,8 +8,8 @@ import io.github.classgraph.ClassGraph
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.GuildChannel
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -155,7 +155,7 @@ class InteractionHandler(val bean: Bean) {
                 .setEphemeral(true).queue()
         }
 
-        val path = StringBuilder("/${event.commandPath.replace("/", " ")}")
+        val path = StringBuilder("/${event.fullCommandName}")
         for (option in event.options) {
             path.append(" *${option.name}* : `${option.asString}`")
         }
@@ -172,7 +172,7 @@ class InteractionHandler(val bean: Bean) {
             .setColor(EmbedUtil.ERROR_COLOR)
         event.jda.openPrivateChannelById(Bean.OWNER_ID)
             .flatMap {
-                it.sendMessageEmbeds(builder.build()).content("```fix\n${ExceptionUtils.getStackTrace(exception)}```")
+                it.sendMessageEmbeds(builder.build()).setContent("```fix\n${ExceptionUtils.getStackTrace(exception)}```")
             }
             .queue()
     }

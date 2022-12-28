@@ -9,10 +9,10 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.StageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,7 +133,7 @@ public class AudioScheduler extends AudioEventAdapter {
         }
         if (guildAudioPlayer.getOpenPlayer() != null && guildAudioPlayer.getLastPlayerUpdate() + 5000 < System.currentTimeMillis()) {
             CachedMessage message = guildAudioPlayer.getOpenPlayer();
-            TextChannel channel = message.getChannel();
+            GuildMessageChannel channel = message.getChannel();
             if (channel == null) {
                 guildAudioPlayer.setOpenPlayer(null);
                 return;
@@ -152,7 +152,7 @@ public class AudioScheduler extends AudioEventAdapter {
         if (endReason == AudioTrackEndReason.STOPPED || endReason == AudioTrackEndReason.LOAD_FAILED || endReason == AudioTrackEndReason.FINISHED) {
             if (guildAudioPlayer.getOpenPlayer() != null) {
                 CachedMessage message = guildAudioPlayer.getOpenPlayer();
-                TextChannel channel = message.getChannel();
+                GuildMessageChannel channel = message.getChannel();
                 if (channel == null) {
                     guildAudioPlayer.setOpenPlayer(null);
                     return;
@@ -172,7 +172,7 @@ public class AudioScheduler extends AudioEventAdapter {
         Guild guild = Bean.getInstance().getShardManager().getGuildById(guildId);
         if (guild == null)
             return;
-        TextChannel channel = guild.getTextChannelById(info.getChannelId());
+        GuildMessageChannel channel = guild.getChannelById(GuildMessageChannel.class, info.getChannelId());
         if (channel == null)
             return;
         log.warn("(Guild: {}) An error occurred while playing track \"{}\" by \"{}\"", guildId, track.getInfo().title, track.getInfo().author, exception);

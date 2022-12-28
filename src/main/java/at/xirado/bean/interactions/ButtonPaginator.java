@@ -4,15 +4,15 @@ import at.xirado.bean.misc.EmbedUtil;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -62,30 +62,30 @@ public class ButtonPaginator {
     public void paginate(Message message, int page) {
         this.page = page;
         if (title == null)
-            message.editMessageEmbeds(getEmbed(page)).setActionRows(getButtonLayout(page))
+            message.editMessageEmbeds(getEmbed(page)).setComponents(getButtonLayout(page))
                     .queue(m -> waitForEvent(m.getChannel().getIdLong(), m.getIdLong()));
         else
-            message.editMessage(title).setEmbeds(getEmbed(page)).setActionRows(getButtonLayout(page))
+            message.editMessage(title).setEmbeds(getEmbed(page)).setComponents(getButtonLayout(page))
                     .queue(m -> waitForEvent(m.getChannel().getIdLong(), m.getIdLong()));
     }
 
-    public void paginate(MessageAction messageAction, int page) {
+    public void paginate(MessageCreateAction messageAction, int page) {
         this.page = page;
         if (title == null)
-            messageAction.setEmbeds(getEmbed(page)).setActionRows(getButtonLayout(page))
+            messageAction.setEmbeds(getEmbed(page)).setComponents(getButtonLayout(page))
                     .queue(m -> waitForEvent(m.getChannel().getIdLong(), m.getIdLong()));
         else
-            messageAction.content(title).setEmbeds(getEmbed(page)).setActionRows(getButtonLayout(page))
+            messageAction.setContent(title).setEmbeds(getEmbed(page)).setComponents(getButtonLayout(page))
                     .queue(m -> waitForEvent(m.getChannel().getIdLong(), m.getIdLong()));
     }
 
-    public void paginate(WebhookMessageAction<Message> action, int page) {
+    public void paginate(WebhookMessageCreateAction<Message> action, int page) {
         this.page = page;
         if (title == null)
-            action.addEmbeds(getEmbed(page)).addActionRows(getButtonLayout(page))
+            action.addEmbeds(getEmbed(page)).addComponents(getButtonLayout(page))
                     .queue(m -> waitForEvent(m.getChannel().getIdLong(), m.getIdLong()));
         else
-            action.setContent(title).addEmbeds(getEmbed(page)).addActionRows(getButtonLayout(page))
+            action.setContent(title).addEmbeds(getEmbed(page)).addComponents(getButtonLayout(page))
                     .queue(m -> waitForEvent(m.getChannel().getIdLong(), m.getIdLong()));
     }
 
@@ -122,13 +122,13 @@ public class ButtonPaginator {
                         case "previous" -> {
                             page--;
                             if (page < 1) page = 1;
-                            event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
+                            event.editMessageEmbeds(getEmbed(this.page)).setComponents(getButtonLayout(page)).queue();
                             waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
                         }
                         case "next" -> {
                             page++;
                             if (page > pages) page = pages;
-                            event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
+                            event.editMessageEmbeds(getEmbed(this.page)).setComponents(getButtonLayout(page)).queue();
                             waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
                         }
                         case "stop" -> {
@@ -140,16 +140,16 @@ public class ButtonPaginator {
                                 {
                                 });
                             else
-                                event.editMessageEmbeds(getEmbed(page)).setActionRows(Collections.emptyList()).queue();
+                                event.editMessageEmbeds(getEmbed(page)).setComponents(Collections.emptyList()).queue();
                         }
                         case "first" -> {
                             page = 1;
-                            event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
+                            event.editMessageEmbeds(getEmbed(this.page)).setComponents(getButtonLayout(page)).queue();
                             waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
                         }
                         case "last" -> {
                             page = pages;
-                            event.editMessageEmbeds(getEmbed(this.page)).setActionRows(getButtonLayout(page)).queue();
+                            event.editMessageEmbeds(getEmbed(this.page)).setComponents(getButtonLayout(page)).queue();
                             waitForEvent(event.getChannel().getIdLong(), event.getMessageIdLong());
                         }
                     }
@@ -159,7 +159,7 @@ public class ButtonPaginator {
                 () ->
                 {
                     interactionStopped = true;
-                    TextChannel channel = jda.getTextChannelById(channelId);
+                    GuildMessageChannel channel = jda.getChannelById(GuildMessageChannel.class, channelId);
                     if (channel == null) return;
                     channel.retrieveMessageById(messageId)
                             .flatMap(m -> m.editMessageComponents(Collections.emptyList()))

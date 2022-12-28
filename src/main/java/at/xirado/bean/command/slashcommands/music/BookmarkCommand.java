@@ -151,27 +151,27 @@ public class BookmarkCommand extends SlashCommand {
                                         case "single" -> {
                                             if (getBookmark(userId, trackUrl) != null) {
                                                 e.editMessageEmbeds(EmbedUtil.errorEmbed("You already have this track bookmarked!"))
-                                                        .setActionRows(Collections.emptyList())
+                                                        .setComponents(Collections.emptyList())
                                                         .queue();
                                                 return;
                                             }
                                             Bookmark entry = new Bookmark(name, trackUrl, false);
                                             addBookmark(userId, entry);
                                             e.editMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + name + "**"))
-                                                    .setActionRows(Collections.emptyList())
+                                                    .setComponents(Collections.emptyList())
                                                     .queue();
                                         }
                                         case "playlist" -> {
                                             if (getBookmark(userId, playlistUrl) != null) {
                                                 e.editMessageEmbeds(EmbedUtil.errorEmbed("You already have this playlist bookmarked!"))
-                                                        .setActionRows(Collections.emptyList())
+                                                        .setComponents(Collections.emptyList())
                                                         .queue();
                                                 return;
                                             }
                                             Bookmark entry = new Bookmark(playlistName, playlistUrl, true);
                                             addBookmark(userId, entry);
                                             e.editMessageEmbeds(EmbedUtil.defaultEmbed("Added bookmark: **" + playlistName + "**"))
-                                                    .setActionRows(Collections.emptyList())
+                                                    .setComponents(Collections.emptyList())
                                                     .queue();
                                         }
                                     }

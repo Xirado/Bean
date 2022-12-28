@@ -9,8 +9,8 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
@@ -19,12 +19,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MusicUtil {
 
-    private static final Button REWIND = Button.secondary("player_previous", Emoji.fromEmote("previous", 940204537371840522L, false));
-    private static final Button PAUSE = Button.secondary("player_play", Emoji.fromEmote("pause", 940204537329877032L, false));
-    private static final Button PLAY = Button.secondary("player_play", Emoji.fromEmote("play", 940204537023725579L, false));
-    private static final Button SKIP = Button.secondary("player_next", Emoji.fromEmote("next", 940204536713314324L, false));
-    private static final Button REPEAT = Button.secondary("player_repeat", Emoji.fromEmote("repeat", 940204537355063346L, false));
-    private static final Button SHUFFLE = Button.secondary("player_shuffle", Emoji.fromEmote("shuffle", 940748348137304124L, false));
+    private static final Button REWIND = Button.secondary("player_previous", Emoji.fromCustom("previous", 940204537371840522L, false));
+    private static final Button PAUSE = Button.secondary("player_play", Emoji.fromCustom("pause", 940204537329877032L, false));
+    private static final Button PLAY = Button.secondary("player_play", Emoji.fromCustom("play", 940204537023725579L, false));
+    private static final Button SKIP = Button.secondary("player_next", Emoji.fromCustom("next", 940204536713314324L, false));
+    private static final Button REPEAT = Button.secondary("player_repeat", Emoji.fromCustom("repeat", 940204537355063346L, false));
+    private static final Button SHUFFLE = Button.secondary("player_shuffle", Emoji.fromCustom("shuffle", 940748348137304124L, false));
 
     public static String getStageTopicString(AudioTrack track) {
         if (track == null)

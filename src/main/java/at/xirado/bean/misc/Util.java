@@ -3,10 +3,10 @@ package at.xirado.bean.misc;
 import at.xirado.bean.Bean;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.AudioChannel;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class Util {
     private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
 
     public static Button getSupportButton() {
-        return Button.link(Bean.SUPPORT_GUILD_INVITE, "Support").withEmoji(Emoji.fromEmote("Bean", 922866602628743188L, false));
+        return Button.link(Bean.SUPPORT_GUILD_INVITE, "Support").withEmoji(Emoji.fromCustom("Bean", 922866602628743188L, false));
     }
 
     /**

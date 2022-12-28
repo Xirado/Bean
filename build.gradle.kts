@@ -26,7 +26,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("com.github.Xirado:JDA:6ac9d59")
+    implementation("net.dv8tion:JDA:5.0.0-beta.2")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.mariadb.jdbc:mariadb-java-client:2.7.3")
@@ -34,9 +34,9 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.0.0")
     implementation("com.google.guava:guava:31.0.1-jre")
     implementation("io.github.classgraph:classgraph:4.8.146")
-    implementation("com.github.minndevelopment:jda-ktx:9f01b74")
+    implementation("com.github.minndevelopment:jda-ktx:17eb77a138")
     implementation("net.jodah:expiringmap:0.5.10")
-    implementation("pw.chew:jda-chewtils:1.20.2")
+    implementation("com.github.chew:jda-chewtils:5e1a9f93f9")
     implementation("com.github.walkyst:lavaplayer-fork:1.3.99.1")
     implementation("com.github.TopiSenpai.LavaSrc:lavasrc:3.1.6")
     implementation("club.minnced:udpqueue-native-linux-x86-64:0.2.5") // adds linux 64bit

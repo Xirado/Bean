@@ -8,7 +8,7 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
@@ -55,7 +55,7 @@ public class AudioManager {
                             guildAudioPlayer.playerSetup(message.getChannel(), s -> {}, e -> {});
                             continue;
                         }
-                        TextChannel channel = message.getChannel();
+                        GuildMessageChannel channel = message.getChannel();
                         if (channel == null) {
                             guildAudioPlayer.setOpenPlayer(null);
                             continue;

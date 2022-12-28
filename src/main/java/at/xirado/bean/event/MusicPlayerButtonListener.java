@@ -110,7 +110,7 @@ public class MusicPlayerButtonListener extends ListenerAdapter {
                 }
             }
         }
-        event.deferEdit().setEmbeds(MusicUtil.getPlayerEmbed(guildAudioPlayer.getPlayer().getPlayingTrack())).setActionRows(MusicUtil.getPlayerButtons(guildAudioPlayer.getPlayer().isPaused(), guildAudioPlayer.getScheduler().isRepeat(), guildAudioPlayer.getScheduler().isShuffle())).queue();
+        event.deferEdit().setEmbeds(MusicUtil.getPlayerEmbed(guildAudioPlayer.getPlayer().getPlayingTrack())).setComponents(MusicUtil.getPlayerButtons(guildAudioPlayer.getPlayer().isPaused(), guildAudioPlayer.getScheduler().isRepeat(), guildAudioPlayer.getScheduler().isShuffle())).queue();
     }
 
     private boolean isRequester(Member member, AudioTrack track) {

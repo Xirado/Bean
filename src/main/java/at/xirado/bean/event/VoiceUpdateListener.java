@@ -5,8 +5,8 @@ import at.xirado.bean.misc.MusicUtil;
 import at.xirado.bean.music.GuildAudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.StageChannel;
-import net.dv8tion.jda.api.events.guild.voice.*;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -23,13 +23,33 @@ public class VoiceUpdateListener extends ListenerAdapter {
     public static final long TIME_UNTIL_AUTO_DISCONNECT = TimeUnit.MINUTES.toSeconds(1);
 
 
+    @Override
+    public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
+        if (event.getMember().equals(event.getGuild().getSelfMember())) {
+            if (event.getChannelLeft() == null) {
+                onBotJoin(event);
+                return;
+            }
+
+            if (event.getChannelJoined() == null) {
+                onBotLeave(event);
+                return;
+            }
+
+            onBotMove(event);
+            return;
+        }
+
+        if (event.getChannelLeft() != null)
+            onMemberMoveOrLeave(event);
+    }
+
     /**
      * For when the bot joins a channel
      *
      * @param event
      */
-    @Override
-    public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event) {
+    public void onBotJoin(@NotNull GuildVoiceUpdateEvent event) {
         if (event.getMember().equals(event.getGuild().getSelfMember())) {
             GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
             if (!event.getGuild().getSelfMember().getVoiceState().isGuildDeafened())
@@ -58,8 +78,7 @@ public class VoiceUpdateListener extends ListenerAdapter {
      *
      * @param event
      */
-    @Override
-    public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
+    public void onBotLeave(@NotNull GuildVoiceUpdateEvent event) {
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
@@ -82,8 +101,7 @@ public class VoiceUpdateListener extends ListenerAdapter {
      *
      * @param event
      */
-    @Override
-    public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event) {
+    public void onBotMove(@NotNull GuildVoiceUpdateEvent event) {
         if (!event.getMember().equals(event.getGuild().getSelfMember()))
             return;
         GuildAudioPlayer audioPlayer = Bean.getInstance().getAudioManager().getAudioPlayer(event.getGuild().getIdLong());
@@ -106,7 +124,7 @@ public class VoiceUpdateListener extends ListenerAdapter {
                 audioPlayer.forcePlayerUpdate();
             }
             Bean.getInstance().getEventWaiter().waitForEvent(
-                    GenericGuildVoiceUpdateEvent.class,
+                    GuildVoiceUpdateEvent.class,
                     e ->
                     {
                         if (e.getChannelJoined() == null)
@@ -137,8 +155,7 @@ public class VoiceUpdateListener extends ListenerAdapter {
      *
      * @param event
      */
-    @Override
-    public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
+    public void onMemberMoveOrLeave(@NotNull GuildVoiceUpdateEvent event) {
         if (event.getChannelLeft() == null)
             return;
         if (event.getMember().equals(event.getGuild().getSelfMember()))
@@ -158,7 +175,7 @@ public class VoiceUpdateListener extends ListenerAdapter {
                     }
                     final long channelId = event.getChannelLeft().getIdLong();
                     Bean.getInstance().getEventWaiter().waitForEvent(
-                            GenericGuildVoiceUpdateEvent.class,
+                            GuildVoiceUpdateEvent.class,
                             e ->
                             {
                                 if (e.getChannelJoined() == null)

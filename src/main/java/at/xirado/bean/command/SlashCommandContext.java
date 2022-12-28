@@ -42,21 +42,9 @@ public class SlashCommandContext {
         event.replyEmbeds(builder.build()).setEphemeral(true).queue();
     }
 
-    public ReplyCallbackAction reply(String content) {
-        return event.reply(content).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
-    }
-
-    public ReplyCallbackAction reply(Message message) {
-        return event.reply(message).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
-    }
-
     @CheckReturnValue
     public ReplyCallbackAction reply(MessageEmbed embed, MessageEmbed... embeds) {
-        return event.replyEmbeds(embed, embeds).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
-    }
-
-    public ReplyCallbackAction replyFormat(String format, Object... args) {
-        return event.replyFormat(format, args).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
+        return event.replyEmbeds(embed, embeds).setAllowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOJI, Message.MentionType.USER));
     }
 
     @CheckReturnValue
@@ -65,14 +53,6 @@ public class SlashCommandContext {
                 .setColor(Color.RED)
                 .setDescription(ERROR + " " + content);
 
-        return event.replyEmbeds(builder.build()).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
-    }
-
-    public ReplyCallbackAction replyErrorFormat(String format, Object... args) {
-        EmbedBuilder builder = new EmbedBuilder()
-                .setColor(Color.RED)
-                .setDescription(ERROR + " " + String.format(format, args));
-
-        return event.replyEmbeds(builder.build()).allowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOTE, Message.MentionType.USER));
+        return event.replyEmbeds(builder.build()).setAllowedMentions(Arrays.asList(Message.MentionType.CHANNEL, Message.MentionType.EMOJI, Message.MentionType.USER));
     }
 }
