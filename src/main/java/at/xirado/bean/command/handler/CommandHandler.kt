@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.ConcurrentSkipListMap
-import javax.annotation.Nonnull
 
 class CommandHandler {
 
@@ -74,7 +73,7 @@ class CommandHandler {
             .toList()
     }
 
-    fun handleCommandFromGuild(@Nonnull event: MessageReceivedEvent) {
+    fun handleCommandFromGuild(event: MessageReceivedEvent) {
         if (event.author.idLong !in Bean.WHITELISTED_USERS)
             return
 

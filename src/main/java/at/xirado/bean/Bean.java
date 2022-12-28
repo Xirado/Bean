@@ -116,7 +116,7 @@ public class Bean {
                 .setHttpClientBuilder(IOUtil.newHttpClientBuilder().addInterceptor(new OkHttpInterceptor()))
                 .setGatewayEncoding(GatewayEncoding.ETF)
                 .setEnableShutdownHook(false)
-                .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOJI, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER)
+                .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOJI, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER, CacheFlag.SCHEDULED_EVENTS)
                 .addEventListeners(new JDAReadyListener(), new SlashCommandListener(), new MessageCreateListener(),
                         new XPMessageListener(), new MessageReactionAddListener(), new MessageReactionRemoveListener(),
                         eventWaiter, new GuildMemberJoinListener(), new DismissableContentButtonListener(), new GuildJoinListener(),

@@ -151,7 +151,7 @@ class InteractionHandler(val bean: Bean) {
                 .setEphemeral(true).queue()
         }
 
-        val path = StringBuilder("/${event.commandPath.replace("/", " ")}")
+        val path = StringBuilder("/${event.fullCommandName}")
         for (option in event.options) {
             path.append(" *${option.name}* : `${option.asString}`")
         }

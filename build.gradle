@@ -35,7 +35,7 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation 'net.dv8tion:JDA:5.0.0-alpha.20'
+    implementation 'net.dv8tion:JDA:5.0.0-beta.2'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
     implementation 'com.sparkjava:spark-core:2.9.3'
     implementation 'org.codehaus.groovy:groovy-jsr223:3.0.8'
@@ -45,11 +45,11 @@ dependencies {
     implementation 'com.zaxxer:HikariCP:5.0.0'
     implementation 'org.fusesource.jansi:jansi:2.4.0'
     implementation 'com.google.guava:guava:31.0.1-jre'
-    implementation 'pw.chew:jda-chewtils:1.20.2'
+    implementation 'com.github.chew:jda-chewtils:5e1a9f93f9'
     implementation 'org.scilab.forge:jlatexmath:1.0.7'
     implementation "club.minnced:discord-webhooks:0.7.5"
     implementation 'io.github.classgraph:classgraph:4.8.146'
-    implementation 'com.github.minndevelopment:jda-ktx:fc7d7de'
+    implementation 'com.github.minndevelopment:jda-ktx:17eb77a138'
     implementation 'net.jodah:expiringmap:0.5.10'
     implementation 'org.apache.httpcomponents:httpclient:4.5.13'
     implementation 'org.jline:jline-style:3.21.0'
