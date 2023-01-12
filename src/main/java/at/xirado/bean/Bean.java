@@ -121,8 +121,18 @@ public class Bean {
 
     public static void main(String[] args) {
         Thread.currentThread().setName("Main");
-        if (!List.of(args).contains("--debug"))
-            ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("ROOT")).setLevel(Level.INFO);
+        String debugProperty = System.getenv("bean_debug");
+
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("ROOT")).setLevel(Level.INFO);
+        if (debugProperty != null) {
+            String[] packages = debugProperty.split("\\s+");
+
+            for (String pkg : packages) {
+                ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(pkg)).setLevel(Level.DEBUG);
+                LOGGER.info("Set logger \"{}\"'s loglevel to DEBUG", pkg);
+            }
+        }
+
         try {
             loadPropertiesFile();
             new Bean();

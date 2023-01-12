@@ -36,7 +36,6 @@ object YoutubeUtils {
 
         val response = httpClient.newCall(request).execute()
         val responseBody = DataObject.fromJson(response.body!!.string())
-        println("Got response ${response.code} - $responseBody")
         response.close()
 
         val optContents = responseBody.optArray("contents")

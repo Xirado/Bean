@@ -57,6 +57,7 @@ public class PlayCommand extends SlashCommand {
                 .addOptions(new OptionData(OptionType.STRING, "provider", "Provider to search in. (Ignore if you put a direct link)", false)
                         .addChoice("Youtube (Default)", "ytsearch:")
                         .addChoice("Spotify", "spsearch:")
+                        .addChoice("Deezer", "dzsearch:")
                         .addChoice("Soundcloud", "scsearch:")
                         .addChoice("Youtube Music", "ytmsearch:")
                 )

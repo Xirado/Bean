@@ -4,6 +4,7 @@ import at.xirado.bean.Bean;
 import at.xirado.bean.lavaplayer.SpotifyTrack;
 import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
+import ch.qos.logback.classic.spi.ThrowableProxyUtil;
 import com.github.topisenpai.lavasrc.spotify.SpotifyAudioTrack;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
@@ -13,6 +14,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,14 +43,13 @@ public class MusicUtil {
         } else {
             builder.setDescription("**Added** " + Util.titleMarkdown(track) + " **to the queue!** (**" + FormatUtil.formatTime(track.getDuration()) + "**)");
         }
-        if (track instanceof YoutubeAudioTrack)
-            builder.setThumbnail("https://img.youtube.com/vi/" + track.getIdentifier() + "/mqdefault.jpg");
-        else if (track instanceof SpotifyTrack spotifyTrack)
-            builder.setThumbnail(spotifyTrack.getArtworkURL());
+        builder.setThumbnail(track.getInfo().artworkUrl);
+
         return builder.build();
     }
 
     public static MessageEmbed getPlayerEmbed(AudioTrack track) {
+        String title = track == null ? "null" : track.getInfo().title;
         if (track == null) {
             EmbedBuilder builder = new EmbedBuilder()
                     .setTitle("No music playing", "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
@@ -95,11 +96,7 @@ public class MusicUtil {
         }
 
         builder.setDescription(description);
-
-        if (track instanceof SpotifyAudioTrack spotifyTrack)
-            builder.setThumbnail(spotifyTrack.getArtworkURL());
-        else if (track instanceof YoutubeAudioTrack)
-            builder.setThumbnail("https://img.youtube.com/vi/" + track.getIdentifier() + "/mqdefault.jpg");
+        builder.setThumbnail(track.getInfo().artworkUrl);
 
         return builder.build();
     }

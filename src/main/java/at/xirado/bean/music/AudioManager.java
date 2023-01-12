@@ -1,8 +1,11 @@
 package at.xirado.bean.music;
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.misc.Util;
 import at.xirado.bean.misc.objects.CachedMessage;
+import com.github.topisenpai.lavasrc.deezer.DeezerAudioSourceManager;
 import com.github.topisenpai.lavasrc.spotify.SpotifySourceManager;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
@@ -11,19 +14,35 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class AudioManager {
+    public static final String[] SPOTIFY_PROVIDERS = {
+            "dzisrc:%ISRC%",
+            "ytsearch:\"%ISRC%\"",
+            "ytsearch:%QUERY%",
+            "scsearch:%QUERY%"
+    };
+
     private final AudioPlayerManager playerManager;
     private final Map<Long, GuildAudioPlayer> audioPlayers;
+    private final ScheduledExecutorService executorService =
+            Executors.newSingleThreadScheduledExecutor(
+                    Util.newThreadFactory("Player Updater", LoggerFactory.getLogger(AudioManager.class), true)
+            );
 
     public AudioManager() {
         this.playerManager = new DefaultAudioPlayerManager();
         this.audioPlayers = new ConcurrentHashMap<>();
+        String deezerKey = Bean.getInstance().getConfig().getString("deezer_key", null);
         DataObject ytConfig = Bean.getInstance().getConfig().optObject("youtube").orElseGet(DataObject::empty);
         String email = ytConfig.getString("email", null);
         String password = ytConfig.getString("password", null);
@@ -32,45 +51,37 @@ public class AudioManager {
         String clientSecret = spotify.getString("client_secret", null);
         playerManager.registerSourceManager(new YoutubeAudioSourceManager(true, email, password));
         playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
+        if (deezerKey != null)
+            playerManager.registerSourceManager(new DeezerAudioSourceManager(deezerKey));
         if (clientId != null && clientSecret != null)
-            playerManager.registerSourceManager(new SpotifySourceManager(null, clientId, clientSecret, "US", playerManager));
-        Thread t = new Thread(() ->
-        {
-            while (true) {
-                for (GuildAudioPlayer guildAudioPlayer : getAudioPlayers()) {
-                    if (guildAudioPlayer.getPlayer().getPlayingTrack() == null)
-                        continue;
+            playerManager.registerSourceManager(new SpotifySourceManager(SPOTIFY_PROVIDERS, clientId, clientSecret, "US", playerManager));
 
-                    if (guildAudioPlayer.getPlayer().getPlayingTrack().getDuration() == Long.MAX_VALUE)
-                        continue;
-                    CachedMessage message = guildAudioPlayer.getOpenPlayer();
-                    if (message != null) {
-                        if (guildAudioPlayer.getPlayer().isPaused() || guildAudioPlayer.getPlayer().getPlayingTrack() == null)
-                            continue;
-                        if (guildAudioPlayer.getLastPlayerUpdate() + 5000 > System.currentTimeMillis())
-                            continue;
+        executorService.scheduleWithFixedDelay(() -> {
+            for (GuildAudioPlayer guildAudioPlayer : getAudioPlayers()) {
+                AudioPlayer player = guildAudioPlayer.getPlayer();
 
-                        OffsetDateTime created = TimeUtil.getTimeCreated(message.getMessageId());
-                        if (created.plusMinutes(30).isBefore(OffsetDateTime.now())) {
-                            guildAudioPlayer.playerSetup(message.getChannel(), s -> {}, e -> {});
-                            continue;
-                        }
-                        GuildMessageChannel channel = message.getChannel();
-                        if (channel == null) {
-                            guildAudioPlayer.setOpenPlayer(null);
-                            continue;
-                        }
-                        guildAudioPlayer.setLastPlayerUpdate(System.currentTimeMillis());
-                        guildAudioPlayer.forcePlayerUpdate();
-                    }
+                if (player.getPlayingTrack() == null || player.isPaused() || player.getPlayingTrack().getDuration() == Long.MAX_VALUE)
+                    continue;
+
+                CachedMessage message = guildAudioPlayer.getOpenPlayer();
+
+                if (message == null)
+                    continue;
+
+                OffsetDateTime created = TimeUtil.getTimeCreated(message.getMessageId());
+                GuildMessageChannel channel = message.getChannel();
+
+                if (channel == null)
+                    continue;
+
+                if (created.plusMinutes(30).isBefore(OffsetDateTime.now())) {
+                    guildAudioPlayer.playerSetup(channel, null, null);
+                    continue;
                 }
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ignored) {}
+
+                guildAudioPlayer.forcePlayerUpdate();
             }
-        });
-        t.setDaemon(true);
-        t.start();
+        }, 0, 5, TimeUnit.SECONDS);
     }
 
     public synchronized GuildAudioPlayer getAudioPlayer(long guildId) {
