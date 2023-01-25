@@ -17,7 +17,7 @@ public class Metrics {
     public static final Counter COMMANDS = Counter.build()
             .name("bean_commands_invocations_total")
             .help("Total commands invoked")
-            .labelNames("type")
+            .labelNames("type", "name")
             .register();
 
     public static final Counter DISCORD_API_REQUESTS = Counter.build()

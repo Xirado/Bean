@@ -129,7 +129,7 @@ class InteractionHandler(val bean: Bean) {
                     is SlashCommand -> {
                         val slashEvent = event as SlashCommandInteractionEvent
                         command.executeCommand(slashEvent, context)
-                        Metrics.COMMANDS.labels("success").inc()
+                        Metrics.COMMANDS.labels("success", command.commandData.name).inc()
                     }
                 }
             } catch (ex: Exception) {
@@ -139,7 +139,7 @@ class InteractionHandler(val bean: Bean) {
     }
 
     private fun handleError(event: GenericCommandInteractionEvent, exception: Exception) {
-        Metrics.COMMANDS.labels("failed").inc()
+        Metrics.COMMANDS.labels("failed", event.name).inc()
         log.error("An unhandled exception in a command occurred", exception)
         if (event.isAcknowledged) {
             event.hook.sendMessageEmbeds(ERROR_EMBED)
