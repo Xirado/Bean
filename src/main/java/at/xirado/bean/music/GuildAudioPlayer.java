@@ -21,7 +21,6 @@ public class GuildAudioPlayer {
     private final long guildId;
 
     private CachedMessage openPlayer;
-    private long lastPlayerUpdate;
 
     public GuildAudioPlayer(AudioPlayerManager manager, long guildId) {
         this.guildId = guildId;
@@ -30,7 +29,6 @@ public class GuildAudioPlayer {
         sendHandler = new SendHandler(player);
         player.addListener(scheduler);
         openPlayer = null;
-        lastPlayerUpdate = 0;
     }
 
     public AudioScheduler getScheduler() {
@@ -110,13 +108,5 @@ public class GuildAudioPlayer {
         Bean.getInstance().getAudioManager().removePlayer(this);
         player.destroy();
         scheduler.destroy();
-    }
-
-    public synchronized long getLastPlayerUpdate() {
-        return lastPlayerUpdate;
-    }
-
-    public synchronized void setLastPlayerUpdate(long lastPlayerUpdate) {
-        this.lastPlayerUpdate = lastPlayerUpdate;
     }
 }

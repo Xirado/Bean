@@ -33,6 +33,24 @@ public class Util {
         return Button.link(Bean.SUPPORT_GUILD_INVITE, "Support").withEmoji(Emoji.fromCustom("Bean", 922866602628743188L, false));
     }
 
+    public static String getStackTrace() {
+        StringBuilder sb = new StringBuilder();
+        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+        for (int i = 2; i < elements.length; i++) {
+            StackTraceElement s = elements[i];
+            sb.append("\tat ")
+                    .append(s.getClassName())
+                    .append(".")
+                    .append(s.getMethodName())
+                    .append("(")
+                    .append(s.getFileName())
+                    .append(":")
+                    .append(s.getLineNumber())
+                    .append(")\n");
+        }
+        return sb.toString();
+    }
+
     /**
      * Auto closes AutoClosables
      *

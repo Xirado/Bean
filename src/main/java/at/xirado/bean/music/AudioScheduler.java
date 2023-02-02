@@ -36,6 +36,7 @@ public class AudioScheduler extends AudioEventAdapter {
     private boolean repeat = false;
     private boolean shuffle = false;
     private AudioTrack lastTrack;
+    private long trackStartTime = 0;
 
     public AudioScheduler(AudioPlayer player, long guildId, GuildAudioPlayer guildAudioPlayer) {
         this.guildId = guildId;
@@ -67,11 +68,13 @@ public class AudioScheduler extends AudioEventAdapter {
             player.playTrack(track);
     }
 
-    public void nextTrack() {
+    public AudioTrack nextTrack() {
         if (repeat) {
-            player.playTrack(lastTrack.makeClone());
-            return;
+            AudioTrack track = lastTrack.makeClone();
+            player.playTrack(track);
+            return track;
         }
+
         lastTracks.add(lastTrack);
         AudioTrack track = queue.poll();
         if (track == null) {
@@ -86,6 +89,7 @@ public class AudioScheduler extends AudioEventAdapter {
         else
             player.stopTrack();
 
+        return track;
     }
 
     public boolean isRepeat() {
@@ -124,6 +128,7 @@ public class AudioScheduler extends AudioEventAdapter {
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         lastTrack = track;
         AudioChannel current = Bean.getInstance().getShardManager().getGuildById(guildId).getSelfMember().getVoiceState().getChannel();
+
         if (current instanceof StageChannel stageChannel) {
             if (stageChannel.getStageInstance() == null) {
                 stageChannel.createStageInstance(MusicUtil.getStageTopicString(track)).queue();
@@ -131,35 +136,39 @@ public class AudioScheduler extends AudioEventAdapter {
                 stageChannel.getStageInstance().getManager().setTopic(MusicUtil.getStageTopicString(track)).queue();
             }
         }
-        if (guildAudioPlayer.getOpenPlayer() != null && guildAudioPlayer.getLastPlayerUpdate() + 5000 < System.currentTimeMillis()) {
+
+        long duration = System.currentTimeMillis() - trackStartTime;
+
+        if (duration > 5000 && guildAudioPlayer.getOpenPlayer() != null) {
             CachedMessage message = guildAudioPlayer.getOpenPlayer();
             GuildMessageChannel channel = message.getChannel();
             if (channel == null) {
                 guildAudioPlayer.setOpenPlayer(null);
                 return;
             }
-            guildAudioPlayer.setLastPlayerUpdate(System.currentTimeMillis());
             channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(track)).queue(null, (e) -> guildAudioPlayer.setOpenPlayer(null));
         }
+
+        trackStartTime = System.currentTimeMillis();
     }
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         log.debug("Track {} stopped with reason {}", track.getInfo().title, endReason);
-        if (endReason.mayStartNext) {
-            nextTrack();
-        }
-        if (endReason == AudioTrackEndReason.STOPPED || endReason == AudioTrackEndReason.LOAD_FAILED || endReason == AudioTrackEndReason.FINISHED) {
-            if (guildAudioPlayer.getOpenPlayer() != null) {
-                CachedMessage message = guildAudioPlayer.getOpenPlayer();
-                GuildMessageChannel channel = message.getChannel();
-                if (channel == null) {
-                    guildAudioPlayer.setOpenPlayer(null);
-                    return;
-                }
+        if (!endReason.mayStartNext)
+            return;
 
-                channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(null)).queue(null, (e) -> guildAudioPlayer.setOpenPlayer(null));
+        AudioTrack next = nextTrack();
+
+        if (next == null && guildAudioPlayer.getOpenPlayer() != null) {
+            CachedMessage message = guildAudioPlayer.getOpenPlayer();
+            GuildMessageChannel channel = message.getChannel();
+            if (channel == null) {
+                guildAudioPlayer.setOpenPlayer(null);
+                return;
             }
+
+            channel.editMessageEmbedsById(message.getMessageId(), MusicUtil.getPlayerEmbed(null)).queue(null, (e) -> guildAudioPlayer.setOpenPlayer(null));
         }
     }
 
