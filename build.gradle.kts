@@ -17,6 +17,7 @@ group = "at.xirado"
 version = "5.0.0-musicOnly"
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven("https://m2.dv8tion.net/releases")
     maven("https://jitpack.io/")
@@ -26,8 +27,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-//    implementation("net.dv8tion:JDA:5.0.0-beta.2")
-    implementation("com.github.DV8FromTheWorld:JDA:b9dc72891")
+    implementation("net.dv8tion:JDA:5.0.0-beta.5")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.mariadb.jdbc:mariadb-java-client:2.7.3")
