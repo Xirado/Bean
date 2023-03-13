@@ -35,7 +35,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.0.0")
     implementation("com.google.guava:guava:31.0.1-jre")
     implementation("io.github.classgraph:classgraph:4.8.146")
-    implementation("com.github.minndevelopment:jda-ktx:17eb77a138")
+    implementation("com.github.minndevelopment:jda-ktx:17eb77a")
     implementation("net.jodah:expiringmap:0.5.10")
     implementation("com.github.chew:jda-chewtils:5e1a9f93f9")
     implementation("com.github.walkyst:lavaplayer-fork:e833a69")
