@@ -14,12 +14,9 @@ public class OkHttpInterceptor implements Interceptor {
     @Override
     public Response intercept(@NotNull Interceptor.Chain chain) throws IOException {
         Request request = chain.request();
-
-        long start = System.currentTimeMillis();
-
         Response response = chain.proceed(request);
 
-        long duration = System.currentTimeMillis() - start;
+        long duration = response.receivedResponseAtMillis() - response.sentRequestAtMillis();
 
         Metrics.DISCORD_API_REQUESTS.labels(getLabel(response.code())).inc();
         Metrics.DISCORD_REST_PING.set(duration);
