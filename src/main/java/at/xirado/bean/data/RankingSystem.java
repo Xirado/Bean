@@ -340,9 +340,11 @@ public class RankingSystem {
             g.setColor(Color.white.darker());
 
             // draw discriminator
-            var nameWidth = g.getFontMetrics().stringWidth(userString);
-            g.setFont(g.getFont().deriveFont(DISCRIMINATOR_FONT_SIZE).deriveFont(Font.BOLD));
-            g.drawString("#" + user.getDiscriminator(), AVATAR_SIZE + BORDER_SIZE * 2 + nameWidth, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT);
+            if (!user.getDiscriminator().equals("0000")) {
+                var nameWidth = g.getFontMetrics().stringWidth(userString);
+                g.setFont(g.getFont().deriveFont(DISCRIMINATOR_FONT_SIZE).deriveFont(Font.BOLD));
+                g.drawString("#" + user.getDiscriminator(), AVATAR_SIZE + BORDER_SIZE * 2 + nameWidth, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT);
+            }
 
             var totalXP = getTotalXP(guild.getIdLong(), user.getIdLong());
             var currentLevel = getLevel(totalXP);
