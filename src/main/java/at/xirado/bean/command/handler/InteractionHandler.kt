@@ -77,6 +77,12 @@ class InteractionHandler(val bean: Bean) {
         val command = getGenericCommand(guildId, event.name, event.commandType.id) ?: return
         val member = event.member!!
 
+        if (event.channel == null) {
+            event.reply("Cannot run commands in this channel.")
+            log.warn("Received command event from null channel ${event.channelIdLong}")
+            return
+        }
+
         val missingUserPerms = getMissingPermissions(member, event.guildChannel, command.requiredUserPermissions)
 
         if (!missingUserPerms.isEmpty()) {

@@ -12,7 +12,7 @@ public class OkHttpInterceptor implements Interceptor {
 
     @NotNull
     @Override
-    public Response intercept(@NotNull Interceptor.Chain chain) throws IOException {
+    public Response intercept(Interceptor.@NotNull Chain chain) throws IOException {
         Request request = chain.request();
         Response response = chain.proceed(request);
 

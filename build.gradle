@@ -34,8 +34,7 @@ repositories {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation 'net.dv8tion:JDA:5.0.0-beta.2'
+    implementation 'io.github.JDA-Fork:JDA:b90214d250'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
     implementation 'com.sparkjava:spark-core:2.9.3'
     implementation 'org.codehaus.groovy:groovy-jsr223:3.0.8'
