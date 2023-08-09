@@ -68,6 +68,11 @@ public class XPAlertCommand extends SlashCommand {
 
             case "channel" -> {
                 GuildChannel channel = event.getOption("targetchannel").getAsChannel();
+                if (channel == null) {
+                    ctx.replyError("Invalid channel").setEphemeral(true).queue();
+                    return;
+                }
+
                 if (channel.getType() != ChannelType.TEXT) {
                     ctx.replyError("Can only use text-channels as XP alert target!").setEphemeral(true).queue();
                     return;
