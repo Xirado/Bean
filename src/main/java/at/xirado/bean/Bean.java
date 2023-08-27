@@ -123,7 +123,10 @@ public class Bean {
                         EvalListener.INSTANCE)
                 .build();
         authenticator = new Authenticator();
-        webServer = new WebServer(8887);
+        String host = config.isNull("ip") ? "127.0.0.1" : config.getString("ip");
+        int port = config.isNull("port") ? 8887 : config.getInt("port");
+
+        webServer = new WebServer(host, port);
         dismissableContentManager = new DismissableContentManager();
         new Prometheus();
         new MetricsJob().start();

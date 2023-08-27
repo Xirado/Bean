@@ -19,14 +19,14 @@ public class WebServer {
 
     public static final String BASE_URL = "https://discord.com/api/v9";
 
-    public WebServer(int port) {
+    public WebServer(String host, int port) {
         DataObject config = Bean.getInstance().getConfig();
         if (config.isNull("client_id") || config.isNull("client_secret") || config.isNull("redirect_uri"))
             throw new IllegalStateException("Missing Discord Oauth2 configuration!");
         clientId = config.getString("client_id");
         clientSecret = config.getString("client_secret");
         redirectUri = config.getString("redirect_uri");
-        ipAddress("127.0.0.1");
+        ipAddress(host);
         port(port);
         enableCORS("*", "*", "*");
         before(((request, response) ->
