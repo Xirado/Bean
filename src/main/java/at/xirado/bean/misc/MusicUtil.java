@@ -68,9 +68,13 @@ public class MusicUtil {
         if (info.getVoteSkips().size() > 0)
             builder.setFooter(info.getVoteSkips().size() + " vote" + (info.getVoteSkips().size() == 1 ? "" : "s") + " to skip");
 
-        String description = getProgressBar(percentage) + "\n" + FormatUtil.formatTime(position) + " / " + FormatUtil.formatTime(track.getDuration());
-        if (track.getDuration() == Long.MAX_VALUE)
+        String description;
+
+        if (!track.getInfo().isStream)
+            description = getProgressBar(percentage) + "\n" + FormatUtil.formatTime(position) + " / " + FormatUtil.formatTime(track.getDuration());
+        else
             description = "\uD83D\uDD34 Live";
+
         Queue<AudioTrack> queue = guildAudioPlayer.getScheduler().getQueue();
 
         AtomicInteger index = new AtomicInteger();
