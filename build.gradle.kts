@@ -8,7 +8,7 @@ application {
 }
 
 plugins {
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.9.0"
     id("com.github.johnrengelman.shadow") version "7.1.1"
     application
 }
@@ -43,7 +43,8 @@ dependencies {
     implementation("net.jodah:expiringmap:0.5.10")
     implementation("com.github.chew:jda-chewtils:5e1a9f93f9")
     implementation("dev.arbjerg:lavaplayer:61089ffc1243812f5f4463294c9778548ce4696f-SNAPSHOT")
-    implementation("com.github.TopiSenpai.LavaSrc:lavasrc:7bd20fd")
+
+    implementation("com.github.topi314.lavasrc:lavasrc:4.0.0-beta.4")
     implementation("club.minnced:udpqueue-native-linux-x86-64:0.2.5") // adds linux 64bit
     implementation("club.minnced:udpqueue-native-win-x86-64:0.2.5") // adds windows 64bit
     implementation("com.sedmelluq:jda-nas:1.1.0") {

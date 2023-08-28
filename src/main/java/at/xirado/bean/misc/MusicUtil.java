@@ -1,20 +1,15 @@
 package at.xirado.bean.misc;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.lavaplayer.SpotifyTrack;
 import at.xirado.bean.misc.objects.TrackInfo;
 import at.xirado.bean.music.GuildAudioPlayer;
-import ch.qos.logback.classic.spi.ThrowableProxyUtil;
-import com.github.topisenpai.lavasrc.spotify.SpotifyAudioTrack;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
