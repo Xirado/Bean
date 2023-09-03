@@ -53,7 +53,8 @@
       "you_have_been_banned": "You have been banned from {}!",
       "could_not_ban_user": "Could not ban user!",
       "has_been_banned": "{} has been banned!",
-      "cannot_ban_self": "You cannot ban yourself!"
+      "cannot_ban_self": "You cannot ban yourself!",
+      "reason_too_long": "The reason you provided is too long!"
     },
     "casecmd": {
       "must_be_6_digit": "The Case-ID must be 6 characters long!\nExample: 4V8MNU",

@@ -69,6 +69,12 @@ public class BanCommand extends SlashCommand {
                 return;
             }
         }
+        if (reason != null && reason.length() > 256) {
+            ctx.reply(EmbedUtil.errorEmbed(ctx.getLocalized("commands.ban.reason_too_long")))
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        }
         String reasonString = reason == null ? ctx.getLocalized("commands.noreason") : reason;
         EmbedBuilder dmEmbed = new EmbedBuilder()
                 .setColor(CaseType.BAN.getEmbedColor())
