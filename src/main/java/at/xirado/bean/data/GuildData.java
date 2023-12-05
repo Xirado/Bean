@@ -177,7 +177,7 @@ public class GuildData {
         Arrays.asList(roles).forEach(modRoles::remove);
         DataArray array = DataArray.empty();
         modRoles.stream().map(ISnowflake::getIdLong).forEach(array::add);
-        dataObject.put("moderator_roles", modRoles);
+        dataObject.put("moderator_roles", array);
         return this;
     }
 
