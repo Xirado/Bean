@@ -71,7 +71,7 @@ public class Mee6TransferCommand extends SlashCommand {
                                                         .setColor(Color.RED)
                                                         .setDescription("Action timed out! Please try again!")
                                                         .build())
-                                                .setActionRow(Collections.emptyList()).queue();
+                                                .setComponents(Collections.emptyList()).queue();
                                     }
                             );
                         }
