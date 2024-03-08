@@ -89,6 +89,11 @@ tasks.withType<JavaCompile> {
     options.isIncremental = true
 }
 
+tasks.withType<JavaCompile> {
+    targetCompatibility = "16"
+    sourceCompatibility = "16"
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "16"
 }
