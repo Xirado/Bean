@@ -4,7 +4,8 @@ import org.apache.tools.ant.filters.ReplaceTokens
 import java.time.Instant
 
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.6.20'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.22'
+    id "org.jetbrains.kotlin.plugin.serialization" version "1.9.22"
     id 'java'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
@@ -13,7 +14,7 @@ plugins {
 mainClassName = 'at.xirado.bean.Bean'
 
 group 'at.xirado'
-version '5.0.0'
+version '5.1.0'
 
 shadowJar {
     archiveFileName = "Bean.jar"
@@ -60,8 +61,20 @@ dependencies {
     implementation "io.prometheus:simpleclient_httpserver:0.14.1"
     implementation 'com.facebook:ktfmt:0.36'
 
-    runtimeOnly 'org.jetbrains.kotlin:kotlin-scripting-jsr223:1.6.21'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3'
 
+    def ktorVersion = "2.3.9"
+
+    implementation "io.ktor:ktor-server-core:${ktorVersion}"
+    implementation "io.ktor:ktor-server-netty:${ktorVersion}"
+    implementation "io.ktor:ktor-server-content-negotiation:${ktorVersion}"
+    implementation "io.ktor:ktor-serialization-kotlinx-json:${ktorVersion}"
+    implementation "io.ktor:ktor-server-auth:${ktorVersion}"
+    implementation "io.ktor:ktor-server-auth-jwt:${ktorVersion}"
+    implementation "io.ktor:ktor-server-cors:${ktorVersion}"
+    implementation "io.ktor:ktor-server-status-pages:${ktorVersion}"
+
+    runtimeOnly 'org.jetbrains.kotlin:kotlin-scripting-jsr223:1.6.21'
 }
 
 /**
