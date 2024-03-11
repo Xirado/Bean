@@ -146,7 +146,7 @@ class DiscordAPI(private val config: OAuthConfig) {
         val request = Request.Builder().apply {
             url("$BASE_URL/users/@me/guilds")
             header("Authorization", "Bearer $accessToken")
-            header("User-Agent", "Anubis Discord Bot (1.0.0, https://xirado.dev)")
+            header("User-Agent", "Bean Discord Bot (1.0.0, https://bean.bz)")
         }.build()
 
         return withContext(virtualDispatcher) {
