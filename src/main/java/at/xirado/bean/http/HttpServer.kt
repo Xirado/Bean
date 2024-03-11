@@ -1,9 +1,10 @@
 package at.xirado.bean.http
 
 import at.xirado.bean.http.auth.AuthPrincipal
+import at.xirado.bean.http.error.APIError
+import at.xirado.bean.http.error.UnauthorizedError
 import at.xirado.bean.http.error.exception.APIException
 import at.xirado.bean.http.error.exception.createResponse
-import at.xirado.bean.http.model.ResponseUnauthorized
 import at.xirado.bean.http.routes.discordAuthorizeUrlRoute
 import at.xirado.bean.http.routes.discordOAuthCallbackRoute
 import at.xirado.bean.http.routes.guildsRoute
@@ -91,7 +92,7 @@ class HttpServer(private val config: HttpServerConfig) {
             }
 
             challenge { _, _ ->
-                call.respond(HttpStatusCode.Unauthorized, ResponseUnauthorized())
+                call.respond<APIError>(HttpStatusCode.Unauthorized, UnauthorizedError)
             }
         }
     }
