@@ -34,7 +34,7 @@ private const val BASE_URL = "https://discord.com/api/v10"
 private const val TOKEN_ENDPOINT = "$BASE_URL/oauth2/token"
 
 class DiscordAPI(private val config: OAuthConfig) {
-    val authorizeUrl = getAuthorizeUrl()
+    val authorizeUrl = buildAuthorizeUrl()
     private val json = Json { ignoreUnknownKeys = true }
     private val expiryScope = createCoroutineScope(virtualDispatcher)
     private lateinit var sessionCache: Cache<Long, DiscordOAuthSession>
@@ -193,7 +193,7 @@ class DiscordAPI(private val config: OAuthConfig) {
         }
     }
 
-    private fun getAuthorizeUrl() = url {
+    private fun buildAuthorizeUrl() = url {
         protocol = URLProtocol.HTTPS
         host = "discord.com"
         path("api", "oauth2", "authorize")
