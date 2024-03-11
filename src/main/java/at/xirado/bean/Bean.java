@@ -8,6 +8,8 @@ import at.xirado.bean.data.OkHttpInterceptor;
 import at.xirado.bean.data.content.DismissableContentManager;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.event.*;
+import at.xirado.bean.http.OAuthConfig;
+import at.xirado.bean.http.oauth.DiscordAPI;
 import at.xirado.bean.mee6.MEE6Queue;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.prometheus.MetricsJob;
@@ -38,6 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -89,6 +92,8 @@ public class Bean {
     private WebhookClient webhookClient = null;
     private DataObject config = loadConfig();
 
+    private final DiscordAPI discordApi;
+
     public Bean() throws Exception {
         instance = this;
         Message.suppressContentIntentWarning();
@@ -126,7 +131,16 @@ public class Bean {
         String host = config.isNull("ip") ? "127.0.0.1" : config.getString("ip");
         int port = config.isNull("port") ? 8887 : config.getInt("port");
 
+        long clientId = Long.parseLong(config.getString("client_id"));
+        String clientSecret = config.getString("client_secret");
+        String redirectUri = config.getString("redirect_uri");
+        List<String> scopes = List.of("identify", "guilds");
+
+        OAuthConfig oauthConfig = new OAuthConfig(clientId, clientSecret, redirectUri, scopes);
+
         webServer = new WebServer(host, port);
+        discordApi = new DiscordAPI(oauthConfig);
+
         dismissableContentManager = new DismissableContentManager();
         new Prometheus();
         new MetricsJob().start();
@@ -258,6 +272,10 @@ public class Bean {
 
     public DismissableContentManager getDismissableContentManager() {
         return dismissableContentManager;
+    }
+
+    public DiscordAPI getDiscordApi() {
+        return discordApi;
     }
 
     private DataObject loadConfig() {
