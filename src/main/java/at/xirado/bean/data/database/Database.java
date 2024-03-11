@@ -18,6 +18,7 @@ public class Database {
 
     private static final HikariConfig config = new HikariConfig();
     private static HikariDataSource ds;
+    private static org.jetbrains.exposed.sql.Database exposed;
 
     public static void connect() {
         Runnable r = () ->
@@ -48,6 +49,8 @@ public class Database {
                 config.setMetricsTrackerFactory(new PrometheusMetricsTrackerFactory());
                 ds = new HikariDataSource(config);
                 executeQueries();
+                exposed = ExposedMiddlemanKt.connectExposed(ds);
+                ExposedMiddlemanKt.createMissingTables();
             }
         };
         Bean.getInstance().getExecutor().execute(r);
@@ -60,6 +63,10 @@ public class Database {
             LOGGER.error("Could not get Connection from SQL-Pool!", throwables);
             return null;
         }
+    }
+
+    public static org.jetbrains.exposed.sql.Database getExposed() {
+        return exposed;
     }
 
     public static void awaitReady() {
