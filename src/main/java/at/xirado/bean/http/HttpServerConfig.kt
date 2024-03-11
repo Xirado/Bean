@@ -17,3 +17,11 @@ data class JWTConfig(
     val audience: String,
     val realm: String,
 )
+
+@Serializable
+data class OAuthConfig(
+    val clientId: Long,
+    val clientSecret: String,
+    val redirectUri: String,
+    val scopes: List<String>
+)

@@ -1,7 +1,12 @@
 package at.xirado.bean.http
 
 import at.xirado.bean.http.auth.AuthPrincipal
+import at.xirado.bean.http.error.exception.APIException
+import at.xirado.bean.http.error.exception.createResponse
 import at.xirado.bean.http.model.ResponseUnauthorized
+import at.xirado.bean.http.routes.discordAuthorizeUrlRoute
+import at.xirado.bean.http.routes.discordOAuthCallbackRoute
+import at.xirado.bean.http.routes.guildsRoute
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
@@ -13,6 +18,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
+import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -41,6 +47,14 @@ class HttpServer(private val config: HttpServerConfig) {
 
         installCors()
         installAuthentication()
+        routing()
+
+        install(StatusPages) {
+            exception<APIException> { call, exception ->
+                val errorResponse = exception.createResponse()
+                call.respond(HttpStatusCode.fromValue(errorResponse.code), errorResponse)
+            }
+        }
     }
 
     private fun Application.installCors() = install(CORS) {
@@ -83,6 +97,11 @@ class HttpServer(private val config: HttpServerConfig) {
     }
 
     private fun Application.routing() = routing {
+        discordOAuthCallbackRoute(config.jwt)
+        discordAuthorizeUrlRoute()
 
+        authenticate("jwt-discord-oauth") {
+            guildsRoute()
+        }
     }
 }
