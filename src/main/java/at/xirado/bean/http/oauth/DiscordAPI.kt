@@ -1,12 +1,16 @@
 package at.xirado.bean.http.oauth
 
 import at.xirado.bean.Bean
+import at.xirado.bean.OAuthConfig
 import at.xirado.bean.data.database.entity.DiscordOAuthSession
 import at.xirado.bean.data.database.table.DiscordOAuthSessions
 import at.xirado.bean.data.database.withTransaction
-import at.xirado.bean.http.OAuthConfig
 import at.xirado.bean.http.error.exception.APIException
+import at.xirado.bean.http.model.DiscordInviteUrlResponse
 import at.xirado.bean.http.model.DiscordLoginUrlResponse
+import at.xirado.bean.http.oauth.model.DiscordGuild
+import at.xirado.bean.http.oauth.model.DiscordUser
+import at.xirado.bean.http.oauth.model.OAuthTokenResponse
 import at.xirado.bean.misc.createCoroutineScope
 import com.sksamuel.aedile.core.Cache
 import com.sksamuel.aedile.core.cacheBuilder
@@ -19,9 +23,6 @@ import kotlinx.serialization.json.Json
 import okhttp3.FormBody
 import okhttp3.Request
 import okhttp3.Response
-import at.xirado.bean.http.oauth.model.DiscordGuild
-import at.xirado.bean.http.oauth.model.DiscordUser
-import at.xirado.bean.http.oauth.model.OAuthTokenResponse
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.upsert
 import java.util.concurrent.Executors
@@ -35,6 +36,7 @@ private const val TOKEN_ENDPOINT = "$BASE_URL/oauth2/token"
 
 class DiscordAPI(private val config: OAuthConfig) {
     val authorizeUrl = buildAuthorizeUrl()
+    val inviteUrl = buildInviteUrl()
     private val json = Json { ignoreUnknownKeys = true }
     private val expiryScope = createCoroutineScope(virtualDispatcher)
     private lateinit var sessionCache: Cache<Long, DiscordOAuthSession>
@@ -207,6 +209,18 @@ class DiscordAPI(private val config: OAuthConfig) {
             append("prompt", "none")
         }
     }.let { DiscordLoginUrlResponse(it) }
+
+    private fun buildInviteUrl() = url {
+        protocol = URLProtocol.HTTPS
+        host = "discord.com"
+        path("oauth2", "authorize")
+
+        parameters {
+            append("client_id", config.clientId.toString())
+            append("scope", "bot")
+            append("permissions", "275191770223")
+        }
+    }.let { DiscordInviteUrlResponse(it) }
 }
 
 private fun newApiException(response: Response): APIException {

@@ -1,13 +1,12 @@
 package at.xirado.bean.http
 
+import at.xirado.bean.HttpServerConfig
 import at.xirado.bean.http.auth.AuthPrincipal
 import at.xirado.bean.http.error.APIError
 import at.xirado.bean.http.error.UnauthorizedError
 import at.xirado.bean.http.error.exception.APIException
 import at.xirado.bean.http.error.exception.createResponse
-import at.xirado.bean.http.routes.discordAuthorizeUrlRoute
-import at.xirado.bean.http.routes.discordOAuthCallbackRoute
-import at.xirado.bean.http.routes.guildsRoute
+import at.xirado.bean.http.routes.*
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
@@ -99,6 +98,8 @@ class HttpServer(private val config: HttpServerConfig) {
 
     private fun Application.routing() = routing {
         discordOAuthCallbackRoute(config.jwt)
+        discordCommandsRoute()
+        discordInviteUrlRoute()
         discordAuthorizeUrlRoute()
 
         authenticate("jwt-discord-oauth") {

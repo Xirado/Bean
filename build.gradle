@@ -61,6 +61,7 @@ dependencies {
     implementation 'com.facebook:ktfmt:0.36'
 
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3'
+    implementation 'com.akuleshov7:ktoml-core:0.5.1'
 
     def ktorVersion = "2.3.9"
     def exposedVersion = "0.42.0"

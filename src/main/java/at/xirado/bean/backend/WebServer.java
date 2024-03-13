@@ -2,6 +2,9 @@ package at.xirado.bean.backend;
 
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.Config;
+import at.xirado.bean.HttpServerConfig;
+import at.xirado.bean.OAuthConfig;
 import at.xirado.bean.backend.routes.*;
 import at.xirado.bean.misc.Metrics;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -19,15 +22,16 @@ public class WebServer {
 
     public static final String BASE_URL = "https://discord.com/api/v9";
 
-    public WebServer(String host, int port) {
-        DataObject config = Bean.getInstance().getConfig();
-        if (config.isNull("client_id") || config.isNull("client_secret") || config.isNull("redirect_uri"))
-            throw new IllegalStateException("Missing Discord Oauth2 configuration!");
-        clientId = config.getString("client_id");
-        clientSecret = config.getString("client_secret");
-        redirectUri = config.getString("redirect_uri");
-        ipAddress(host);
-        port(port);
+    public WebServer(Config config) {
+        OAuthConfig oauth = config.getOauth();
+        HttpServerConfig httpConfig = config.getHttp();
+
+        clientId = String.valueOf(oauth.getClientId());
+        clientSecret = oauth.getClientSecret();
+        redirectUri = oauth.getRedirectUri();
+
+        ipAddress(httpConfig.getHost());
+        port(httpConfig.getPort());
         enableCORS("*", "*", "*");
         before(((request, response) ->
         {

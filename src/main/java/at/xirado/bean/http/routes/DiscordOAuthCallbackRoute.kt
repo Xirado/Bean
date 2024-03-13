@@ -1,16 +1,15 @@
 package at.xirado.bean.http.routes
 
 import at.xirado.bean.Bean
-import at.xirado.bean.http.HttpServer
-import at.xirado.bean.http.JWTConfig
+import at.xirado.bean.JWTConfig
+import at.xirado.bean.http.oauth.model.DiscordLoginResponse
+import at.xirado.bean.http.oauth.model.OAuthLoginRequest
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import at.xirado.bean.http.oauth.model.DiscordLoginResponse
-import at.xirado.bean.http.oauth.model.OAuthLoginRequest
 import java.util.*
 
 private val discordApi by lazy { Bean.getInstance().discordApi }

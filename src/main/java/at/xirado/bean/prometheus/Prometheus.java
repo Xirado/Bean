@@ -14,7 +14,7 @@ public class Prometheus {
     public Prometheus() {
         DefaultExports.initialize();
         try {
-            new HTTPServer(Bean.getInstance().getConfig().getInt("prometheus_port", 5123));
+            new HTTPServer(5123);
         } catch (IOException ex) {
             LOG.error("Could not initialize Prometheus HTTP Server!", ex);
         }

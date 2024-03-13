@@ -8,10 +8,9 @@ import at.xirado.bean.data.OkHttpInterceptor;
 import at.xirado.bean.data.content.DismissableContentManager;
 import at.xirado.bean.data.database.Database;
 import at.xirado.bean.event.*;
-import at.xirado.bean.http.OAuthConfig;
+import at.xirado.bean.http.HttpServer;
 import at.xirado.bean.http.oauth.DiscordAPI;
 import at.xirado.bean.mee6.MEE6Queue;
-import at.xirado.bean.misc.Util;
 import at.xirado.bean.prometheus.MetricsJob;
 import at.xirado.bean.prometheus.Prometheus;
 import club.minnced.discord.webhook.WebhookClient;
@@ -28,19 +27,13 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -85,33 +78,34 @@ public class Bean {
     private final EventWaiter eventWaiter;
     private final OkHttpClient okHttpClient;
     private final WebServer webServer;
+
+    private final HttpServer httpServer;
+
     private final Authenticator authenticator;
     private final MEE6Queue mee6Queue;
     private final DismissableContentManager dismissableContentManager;
 
     private WebhookClient webhookClient = null;
-    private DataObject config = loadConfig();
+    private final Config config = ConfigKt.readConfig(true);
 
     private final DiscordAPI discordApi;
 
     public Bean() throws Exception {
         instance = this;
         Message.suppressContentIntentWarning();
-        Database.connect();
+        Database.connect(config.getDb());
         Database.awaitReady();
-        debug = !config.isNull("debug") && config.getBoolean("debug");
+        debug = config.getDebugMode();
         interactionHandler = new InteractionHandler(this);
         commandHandler = new CommandHandler();
         eventWaiter = new EventWaiter();
         Class.forName("at.xirado.bean.translation.LocaleLoader");
         okHttpClient = new OkHttpClient.Builder()
                 .build();
-        if (!config.isNull("webhook_url"))
-            webhookClient = new WebhookClientBuilder(config.getString("webhook_url"))
-                    .build();
-        if (config.isNull("token"))
-            throw new IllegalStateException("Can not start without a token!");
-        shardManager = DefaultShardManagerBuilder.create(config.getString("token"), getIntents())
+        if (config.getWebhookUrl() != null)
+            webhookClient = new WebhookClientBuilder(config.getWebhookUrl()).build();
+
+        shardManager = DefaultShardManagerBuilder.create(config.getDiscordToken(), getIntents())
                 .setShardsTotal(-1)
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
                 .setActivity(Activity.playing("bean.bz"))
@@ -127,19 +121,15 @@ public class Bean {
                         eventWaiter, new GuildMemberJoinListener(), new DismissableContentButtonListener(), new GuildJoinListener(),
                         EvalListener.INSTANCE)
                 .build();
+
         authenticator = new Authenticator();
-        String host = config.isNull("ip") ? "127.0.0.1" : config.getString("ip");
-        int port = config.isNull("port") ? 8887 : config.getInt("port");
 
-        long clientId = Long.parseLong(config.getString("client_id"));
-        String clientSecret = config.getString("client_secret");
-        String redirectUri = config.getString("redirect_uri");
-        List<String> scopes = List.of("identify", "guilds");
+        HttpServerConfig serverConfig = config.getHttp();
+        OAuthConfig oauthConfig = config.getOauth();
 
-        OAuthConfig oauthConfig = new OAuthConfig(clientId, clientSecret, redirectUri, scopes);
-
-        webServer = new WebServer(host, port);
+        webServer = new WebServer(config);
         discordApi = new DiscordAPI(oauthConfig);
+        httpServer = new HttpServer(serverConfig);
 
         dismissableContentManager = new DismissableContentManager();
         new Prometheus();
@@ -222,12 +212,8 @@ public class Bean {
         return WHITELISTED_USERS.contains(userId);
     }
 
-    public synchronized DataObject getConfig() {
+    public synchronized Config getConfig() {
         return config;
-    }
-
-    public synchronized void updateConfig() {
-        this.config = loadConfig();
     }
 
     public ExecutorService getCommandExecutor() {
@@ -278,30 +264,12 @@ public class Bean {
         return discordApi;
     }
 
-    private DataObject loadConfig() {
-        File configFile = new File("config.json");
-        if (!configFile.exists()) {
-            InputStream inputStream = Bean.class.getResourceAsStream("/config.json");
-            if (inputStream == null) {
-                LOGGER.error("Could not copy config from resources folder!");
-                return DataObject.empty();
-            }
-            Path path = Paths.get(Util.getJarPath() + "/config.json");
-            try {
-                Files.copy(inputStream, path);
-            } catch (IOException e) {
-                LOGGER.error("Could not copy config file!", e);
-            }
-        }
-        try {
-            return DataObject.fromJson(new FileInputStream(configFile));
-        } catch (FileNotFoundException ignored) {
-        }
-        return DataObject.empty();
-    }
-
     public WebServer getWebServer() {
         return webServer;
+    }
+
+    public HttpServer getHttpServer() {
+        return httpServer;
     }
 
     public MEE6Queue getMEE6Queue() {

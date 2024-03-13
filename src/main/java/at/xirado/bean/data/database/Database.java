@@ -1,6 +1,8 @@
 package at.xirado.bean.data.database;
 
 import at.xirado.bean.Bean;
+import at.xirado.bean.Config;
+import at.xirado.bean.DatabaseConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory;
@@ -20,21 +22,15 @@ public class Database {
     private static HikariDataSource ds;
     private static org.jetbrains.exposed.sql.Database exposed;
 
-    public static void connect() {
+    public static void connect(DatabaseConfig dbConfig) {
         Runnable r = () ->
         {
             if (!isConnected()) {
-                DataObject dbConfig = Bean.getInstance().getConfig().optObject("database").orElse(DataObject.empty());
-                if (
-                        dbConfig.isNull("host") || dbConfig.isNull("database") || dbConfig.isNull("username")
-                                || dbConfig.isNull("password") || dbConfig.isNull("port")
-                )
-                    throw new IllegalStateException("Missing database configuration!");
-                String host = dbConfig.getString("host");
-                String database = dbConfig.getString("database");
-                String username = dbConfig.getString("username");
-                String password = dbConfig.getString("password");
-                int port = dbConfig.getInt("port");
+                String host = dbConfig.getHost();
+                String database = dbConfig.getDatabase();
+                String username = dbConfig.getUsername();
+                String password = dbConfig.getPassword();
+                int port = dbConfig.getPort();
                 config.setJdbcUrl("jdbc:mariadb://" + host + ":" + port + "/" + database);
                 config.setUsername(username);
                 config.setPassword(password);

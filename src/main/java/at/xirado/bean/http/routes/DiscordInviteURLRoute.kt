@@ -7,8 +7,8 @@ import io.ktor.server.routing.*
 
 private val discordApi by lazy { Bean.getInstance().discordApi }
 
-fun Routing.discordAuthorizeUrlRoute() {
-    get("/login") {
-        call.respond(discordApi.authorizeUrl)
+fun Routing.discordInviteUrlRoute() {
+    get("/invite") {
+        call.respond(discordApi.inviteUrl)
     }
 }
