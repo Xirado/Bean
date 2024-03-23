@@ -1,9 +1,7 @@
 package at.xirado.bean.data;
 
 import at.xirado.bean.command.slashcommands.leveling.SetXPBackgroundCommand;
-import at.xirado.bean.data.database.Database;
 import at.xirado.bean.data.database.SQLBuilder;
-import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -123,26 +121,6 @@ public class RankingSystem {
         } catch (Exception ex) {
             LOGGER.error("Could not get total xp! (guild {}, user {})", guildID, userID, ex);
             return -1L;
-        }
-    }
-
-    public static void addXP(long guildID, long userID, long addedAmount, String name, String discriminator) {
-        var connection = Database.getConnectionFromPool();
-        if (connection == null) {
-            LOGGER.error("Could not get connection from db pool!", new SQLException("Connection == null!"));
-            return;
-        }
-        var sql = "INSERT INTO levels (guildID, userID, totalXP, name, discriminator) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE totalXP = ?, name = ?, discriminator = ?";
-        var totalXP = getTotalXP(connection, guildID, userID) + addedAmount;
-        var query = new SQLBuilder(sql)
-                .useConnection(connection)
-                .addParameters(guildID, userID, totalXP, name, discriminator, totalXP, name, discriminator);
-        try {
-            query.execute();
-        } catch (SQLException e) {
-            LOGGER.error("Could not add XP!", e);
-        } finally {
-            Util.closeQuietly(connection);
         }
     }
 

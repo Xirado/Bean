@@ -1,21 +1,16 @@
 package at.xirado.bean.command;
 
-import at.xirado.bean.data.GuildData;
-import at.xirado.bean.data.GuildManager;
+import at.xirado.bean.Bean;
 import at.xirado.bean.data.LinkedDataObject;
+import at.xirado.bean.data.database.entity.DiscordGuild;
 import at.xirado.bean.translation.LocaleLoader;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.exceptions.ErrorHandler;
-import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
-import java.awt.*;
-import java.time.Instant;
-import java.util.EnumSet;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class CommandContext {
@@ -29,7 +24,6 @@ public class CommandContext {
     private final Member member;
     private final CommandArgument commandArgument;
 
-
     public CommandContext(MessageReceivedEvent event, CommandArgument commandArgument, Command command, Member member) {
         this.event = event;
         this.commandArgument = commandArgument;
@@ -37,8 +31,10 @@ public class CommandContext {
         this.member = member;
     }
 
-    public GuildData getGuildData() {
-        return GuildManager.getGuildData(event.getGuild());
+    public DiscordGuild getGuildData() {
+        return Bean.getInstance().getRepository()
+                .getGuildRepository()
+                .getGuildDataBlocking(event.getGuild().getIdLong());
     }
 
     public MessageReceivedEvent getEvent() {
@@ -55,90 +51,6 @@ public class CommandContext {
 
     public Member getMember() {
         return member;
-    }
-
-    public void replyError(String message) {
-        this.event.getChannel().sendMessageEmbeds(
-                new EmbedBuilder()
-                        .setColor(Color.red)
-                        .setDescription(ERROR_EMOTE + " " + message)
-                        .build()
-        ).queue();
-    }
-
-    public void deleteInvokeMessage() {
-        this.event.getMessage().delete().queue(s ->
-        {
-        }, e ->
-        {
-        });
-    }
-
-    public void replyInLogChannel(String message) {
-        TextChannel logChannel = getGuildData().getLogChannel();
-        if (logChannel != null) logChannel.sendMessage(message).queue();
-    }
-
-
-    public TextChannel getLogChannel() {
-        return getGuildData().getLogChannel();
-    }
-
-    public boolean hasLogChannel() {
-        return getGuildData().getLogChannel() != null;
-    }
-
-    public void replyInLogChannel(Message message) {
-        TextChannel logChannel = getGuildData().getLogChannel();
-        if (logChannel != null) logChannel.sendMessage(MessageCreateData.fromMessage(message)).queue();
-    }
-
-    public void replyInLogChannel(MessageEmbed message) {
-        TextChannel logChannel = getGuildData().getLogChannel();
-        if (logChannel != null) logChannel.sendMessageEmbeds(message).queue();
-    }
-
-    public void replyErrorUsage() {
-        EmbedBuilder builder = new EmbedBuilder()
-                .setColor(Color.red)
-                .setTitle(LocaleLoader.ofGuild(event.getGuild()).get("general.invalid_arguments", String.class))
-                .setTimestamp(Instant.now());
-        String usage = getGuildData().getPrefix() + getCommand().getUsage();
-        List<String> aliases = this.getCommand().getAliases();
-        StringBuilder sb = new StringBuilder();
-        String aliasesstring = null;
-        if (aliases.size() > 0) {
-            for (String alias : aliases) {
-                sb.append(alias).append(", ");
-            }
-            aliasesstring = sb.toString().trim();
-        }
-        String description = "`" + usage + "`\n" + this.getCommand().getDescription();
-        if (aliases.size() > 0 && aliasesstring != null) {
-            description += "\n" + LocaleLoader.ofGuild(event.getGuild()).get("general.aliases", String.class) + ": `" + aliasesstring + "`";
-        }
-        builder.setDescription(description);
-        event.getChannel().sendMessageEmbeds(builder.build()).queue();
-
-    }
-
-    public void replyWarning(String message) {
-        this.event.getChannel().sendMessageEmbeds(
-                new EmbedBuilder()
-                        .setColor(Color.yellow)
-                        .setTimestamp(Instant.now())
-                        .setDescription(WARNING_EMOTE + " " + message)
-                        .build()
-        ).queue();
-    }
-
-    public void replySuccess(String message) {
-        this.event.getChannel().sendMessageEmbeds(
-                new EmbedBuilder()
-                        .setColor(Color.green)
-                        .setDescription(SUCCESS_EMOTE + " " + message)
-                        .build()
-        ).queue();
     }
 
     public void reply(Message message, Consumer<Message> success, Consumer<Throwable> failure) {
@@ -177,112 +89,12 @@ public class CommandContext {
         event.getChannel().sendMessageEmbeds(embed).queue();
     }
 
-    public void replyInDM(Message message, Consumer<Message> success, Consumer<Throwable> failure) {
-        User user = this.event.getAuthor();
-        user.openPrivateChannel().queue(
-                (pc) ->
-                {
-                    pc.sendMessage(MessageCreateData.fromMessage(message)).queue(success, failure);
-                }
-        );
-    }
-
-    public void replyInDM(Message message, Consumer<Message> success) {
-        User user = this.event.getAuthor();
-        user.openPrivateChannel().queue(
-                (pc) ->
-                {
-                    pc.sendMessage(MessageCreateData.fromMessage(message)).queue(success, new ErrorHandler()
-                            .ignore(EnumSet.allOf(ErrorResponse.class)));
-                }
-        );
-    }
-
-    public void replyInDM(Message message) {
-        User user = this.event.getAuthor();
-        user.openPrivateChannel().queue(
-                (pc) ->
-                {
-                    pc.sendMessage(MessageCreateData.fromMessage(message)).queue(null, new ErrorHandler()
-                            .ignore(EnumSet.allOf(ErrorResponse.class)));
-                }
-        );
-    }
-
-    public void replyInDM(MessageEmbed embed, Consumer<Message> success, Consumer<Throwable> failure) {
-        User user = this.event.getAuthor();
-        user.openPrivateChannel().queue(
-                (pc) ->
-                {
-                    pc.sendMessageEmbeds(embed).queue(success, failure);
-                }
-        );
-    }
-
-    public void replyInDM(MessageEmbed embed, Consumer<Message> success) {
-        User user = this.event.getAuthor();
-        user.openPrivateChannel().queue(
-                (pc) ->
-                {
-                    pc.sendMessageEmbeds(embed).queue(success, new ErrorHandler()
-                            .ignore(EnumSet.allOf(ErrorResponse.class)));
-                }
-        );
-    }
-
-    public void replyInDM(MessageEmbed embed) {
-        User user = this.event.getAuthor();
-        user.openPrivateChannel().queue(
-                (pc) ->
-                {
-                    pc.sendMessageEmbeds(embed).queue(null, new ErrorHandler()
-                            .ignore(EnumSet.allOf(ErrorResponse.class)));
-                }
-        );
-    }
-
-    public void replyInDM(String message, Consumer<Message> success, Consumer<Throwable> failure) {
-        User user = this.event.getAuthor();
-        user.openPrivateChannel().queue(
-                (pc) ->
-                {
-                    pc.sendMessage(message).queue(success, failure);
-                }
-        );
-    }
-
     public LinkedDataObject getLanguage() {
         Guild g = event.getGuild();
         return LocaleLoader.ofGuild(g);
     }
 
-    public void replyInDM(String message, Consumer<Message> success) {
-        User user = this.event.getAuthor();
-        user.openPrivateChannel().queue(
-                (pc) ->
-                {
-                    pc.sendMessage(message).queue(success, new ErrorHandler()
-                            .ignore(EnumSet.allOf(ErrorResponse.class)));
-                }
-        );
-    }
-
     public String getLocalized(String query, Object... objects) {
         return String.format(LocaleLoader.ofGuild(event.getGuild()).get(query, String.class), objects);
-    }
-
-    public String parseDuration(long seconds, String delimiter) {
-        return LocaleLoader.parseDuration(seconds, getLanguage(), delimiter);
-    }
-
-    public void replyInDM(String message) {
-        User user = this.event.getMember().getUser();
-        user.openPrivateChannel().queue(
-                (pc) ->
-                {
-                    pc.sendMessage(message).queue(null, new ErrorHandler()
-                            .ignore(EnumSet.allOf(ErrorResponse.class)));
-                }
-        );
     }
 }

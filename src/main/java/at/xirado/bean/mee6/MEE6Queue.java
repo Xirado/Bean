@@ -3,7 +3,6 @@ package at.xirado.bean.mee6;
 import at.xirado.bean.Bean;
 import at.xirado.bean.data.MEE6Player;
 import at.xirado.bean.data.RankingSystem;
-import at.xirado.bean.data.database.Database;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.Guild;
@@ -154,7 +153,7 @@ public class MEE6Queue extends Thread {
 
             int entries = playersArray.length();
 
-            try (Connection connection = Database.getConnectionFromPool()) {
+            try (Connection connection = Bean.getInstance().getDatabase().getConnectionFromPool()) {
                 playersArray
                         .stream(DataArray::getObject)
                         .map(MEE6Player::fromData)

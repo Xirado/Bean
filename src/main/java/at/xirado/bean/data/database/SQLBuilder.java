@@ -1,5 +1,6 @@
 package at.xirado.bean.data.database;
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.slf4j.Logger;
@@ -48,9 +49,7 @@ public class SQLBuilder {
     }
 
     public ResultSet executeQuery() throws SQLException {
-        Connection connection = this.connection == null ? Database.getConnectionFromPool() : this.connection;
-        if (connection == null)
-            throw new SQLException("Could not acquire connection instance!");
+        Connection connection = this.connection == null ? Bean.getInstance().getDatabase().getConnectionFromPool() : this.connection;
         try (var ps = connection.prepareStatement(sqlString)) {
             if (!parameters.isEmpty()) {
                 int index = 1;
@@ -67,9 +66,7 @@ public class SQLBuilder {
     }
 
     public boolean execute() throws SQLException {
-        Connection connection = this.connection == null ? Database.getConnectionFromPool() : this.connection;
-        if (connection == null)
-            throw new SQLException("Could not acquire connection instance!");
+        Connection connection = this.connection == null ? Bean.getInstance().getDatabase().getConnectionFromPool() : this.connection;
         try (var ps = connection.prepareStatement(sqlString)) {
             if (!parameters.isEmpty()) {
                 int index = 1;

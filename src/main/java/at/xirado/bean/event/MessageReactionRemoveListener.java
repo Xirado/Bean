@@ -1,63 +1,57 @@
 package at.xirado.bean.event;
 
-import at.xirado.bean.data.GuildData;
-import at.xirado.bean.data.GuildManager;
+import at.xirado.bean.Bean;
+import at.xirado.bean.data.ReactionRole;
+import at.xirado.bean.data.database.entity.DiscordGuild;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MessageReactionRemoveListener extends ListenerAdapter {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessageReactionRemoveListener.class);
-
     @Override
-    public void onMessageReactionRemoveAll(MessageReactionRemoveAllEvent e) {
-        if (!e.isFromGuild())
+    public void onMessageReactionRemoveAll(MessageReactionRemoveAllEvent event) {
+        if (!event.isFromGuild())
             return;
-        if (GuildJoinListener.isGuildBanned(e.getGuild().getIdLong()))
-            return;
-        try {
-            long messageId = e.getMessageIdLong();
-            GuildData data = GuildManager.getGuildData(e.getGuild());
-            data.removeReactionRoles(messageId).update();
-        } catch (Exception exception) {
-            LOGGER.error("An error occured while executing GuildMessageReactionRemoveAllEvent!", exception);
-        }
+
+        Guild guild = event.getGuild();
+        long messageId = event.getMessageIdLong();
+
+        Bean.getInstance().getVirtualThreadExecutor().submit(() -> {
+            DiscordGuild guildData = Bean.getInstance().getRepository()
+                    .getGuildRepository().getGuildDataBlocking(guild.getIdLong());
+
+            guildData.removeReactionRoles(messageId);
+        });
     }
 
     @Override
-    public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent e) {
-        if (!e.isFromGuild())
+    public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
+        if (!event.isFromGuild() || event.getUser().isBot())
             return;
-        if (GuildJoinListener.isGuildBanned(e.getGuild().getIdLong()))
-            return;
-        EmojiUnion emoji = e.getEmoji();
-        String reacted = emoji.getType() == Emoji.Type.UNICODE ? emoji.getAsReactionCode() : emoji.asCustom().getId();
-        GuildData data = GuildManager.getGuildData(e.getGuild());
-        data.getReactionRoles().stream()
-                .filter(x -> x.getMessageId() == e.getMessageIdLong() && x.getEmote().equals(reacted))
-                .findFirst().ifPresent(reactionRole -> e.getGuild().retrieveMemberById(e.getUserId()).queue(
-                        (member) ->
-                        {
-                            if (member.getUser().isBot()) return;
-                            Role role = e.getGuild().getRoleById(reactionRole.getRoleId());
-                            if (role != null)
-                                e.getGuild().removeRoleFromMember(member, role).queue(s ->
-                                {
-                                }, ex ->
-                                {
-                                });
-                        },
-                        (error) ->
-                        {
-                        }
-                ));
 
+        Guild guild = event.getGuild();
+        EmojiUnion emoji = event.getEmoji();
+        long messageId = event.getMessageIdLong();
+        User user = event.getUser();
+        String reaction = emoji.getType() == Emoji.Type.UNICODE ? emoji.getAsReactionCode() : emoji.asCustom().getId();
+
+        Bean.getInstance().getVirtualThreadExecutor().submit(() -> {
+            DiscordGuild guildData = Bean.getInstance().getRepository()
+                    .getGuildRepository().getGuildDataBlocking(guild.getIdLong());
+
+            ReactionRole reactionRole = guildData.getReactionRole(messageId, reaction);
+            if (reactionRole == null) return;
+
+            Role role = event.getGuild().getRoleById(reactionRole.getRoleId());
+            if (role == null || !guild.getSelfMember().canInteract(role)) return;
+
+            event.getGuild().removeRoleFromMember(user, role).queue();
+        });
     }
 }

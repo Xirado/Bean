@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -74,8 +74,13 @@ public class KickCommand extends SlashCommand {
                 .queue(x ->
                 {
                     ModCase.createModCase(CaseType.KICK, guild.getIdLong(), member.getIdLong(), sender.getIdLong(), reason);
-                    if (ctx.getGuildData().getLogChannel() != null) {
-                        TextChannel logChannel = ctx.getGuildData().getLogChannel();
+
+                    Long logChannelId = ctx.getGuildData().getLogChannel();
+                    GuildMessageChannel logChannel = logChannelId == null
+                            ? null
+                            : event.getGuild().getChannelById(GuildMessageChannel.class, logChannelId);
+
+                    if (logChannel != null) {
                         MessageEmbed logEmbed = new EmbedBuilder()
                                 .setColor(CaseType.KICK.getEmbedColor())
                                 .setAuthor("Kick • " + member.getUser().getAsTag(), null, member.getUser().getEffectiveAvatarUrl())
@@ -83,11 +88,7 @@ public class KickCommand extends SlashCommand {
                                 .addField("Moderator", sender.getAsMention() + " (" + sender.getUser().getAsTag() + ")", true)
                                 .setFooter(ctx.getLocalized("commands.user_id", member.getIdLong()))
                                 .build();
-                        logChannel.sendMessageEmbeds(logEmbed).queue(s ->
-                        {
-                        }, e ->
-                        {
-                        });
+                        logChannel.sendMessageEmbeds(logEmbed).queue();
                     }
                 }, e -> event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).setEphemeral(true).queue());
     }

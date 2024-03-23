@@ -1,6 +1,6 @@
 package at.xirado.bean.moderation;
 
-import at.xirado.bean.data.database.Database;
+import at.xirado.bean.Bean;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public class ModCase {
     }
 
     public static ModCase createModCase(CaseType type, long guildId, long targetId, long moderatorId, long duration, String reason) {
-        try (Connection connection = Database.getConnectionFromPool();
+        try (Connection connection = Bean.getInstance().getDatabase().getConnectionFromPool();
              PreparedStatement ps = connection.prepareStatement("INSERT INTO modcases (uuid, caseType, guild, user, moderator, reason, createdAt, duration) values (?,?,?,?,?,?,?,?)")) {
             UUID uuid = generateUUID(connection);
             long creationTime = System.currentTimeMillis();
@@ -64,20 +64,6 @@ public class ModCase {
             return new ModCase(uuid, type, guildId, targetId, moderatorId, reason, creationTime, duration);
         } catch (Exception ex) {
             LOGGER.error("Could not create Mod-Case!", ex);
-            return null;
-        }
-    }
-
-    public static ModCase retrieveModCase(UUID uuid) {
-        try (Connection connection = Database.getConnectionFromPool();
-             PreparedStatement ps = connection.prepareStatement("SELECT * FROM modcases WHERE uuid = ?")) {
-            ps.setString(1, uuid.toString());
-            long creationTime = System.currentTimeMillis();
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) return null;
-            return new ModCase(uuid, CaseType.fromId(rs.getByte("caseType")), rs.getLong("guild"), rs.getLong("user"), rs.getLong("moderator"), rs.getString("reason"), rs.getLong("createdAt"), rs.getLong("duration"));
-        } catch (Exception ex) {
-            LOGGER.error("Could not retrieve Mod-Case!", ex);
             return null;
         }
     }

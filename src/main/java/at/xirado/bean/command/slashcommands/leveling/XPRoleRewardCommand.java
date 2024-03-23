@@ -2,9 +2,9 @@ package at.xirado.bean.command.slashcommands.leveling;
 
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
-import at.xirado.bean.data.GuildData;
+import at.xirado.bean.data.RoleReward;
+import at.xirado.bean.data.database.entity.DiscordGuild;
 import at.xirado.bean.misc.EmbedUtil;
-import at.xirado.bean.misc.objects.RoleReward;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
@@ -38,7 +38,7 @@ public class XPRoleRewardCommand extends SlashCommand {
 
     @Override
     public void executeCommand(@NotNull SlashCommandInteractionEvent event, @NotNull SlashCommandContext ctx) {
-        GuildData guildData = ctx.getGuildData();
+        DiscordGuild guildData = ctx.getGuildData();
         switch (event.getSubcommandName()) {
 
             case "create" -> {
@@ -55,11 +55,11 @@ public class XPRoleRewardCommand extends SlashCommand {
                     return;
                 }
                 if (guildData.hasRoleReward((int) level)) {
-                    guildData.addRoleReward((int) level, role.getIdLong(), persist, removeOnNextReward).update();
+                    guildData.addRoleReward((int) level, role.getIdLong(), persist, removeOnNextReward);
                     event.replyEmbeds(EmbedUtil.successEmbed("Role reward has been successfully updated!")).setEphemeral(true).queue();
                     return;
                 }
-                guildData.addRoleReward((int) level, role.getIdLong(), persist, removeOnNextReward).update();
+                guildData.addRoleReward((int) level, role.getIdLong(), persist, removeOnNextReward);
                 event.replyEmbeds(EmbedUtil.successEmbed("Role reward has been successfully created!")).setEphemeral(true).queue();
             }
 
@@ -69,7 +69,7 @@ public class XPRoleRewardCommand extends SlashCommand {
                     event.replyEmbeds(EmbedUtil.errorEmbed("I couldn't find a role reward with that level!")).setEphemeral(true).queue();
                     return;
                 }
-                guildData.removeRoleReward((int) level).update();
+                guildData.removeRoleReward((int) level);
                 event.replyEmbeds(EmbedUtil.successEmbed("Role reward has been successfully removed!")).setEphemeral(true).queue();
             }
 
@@ -86,10 +86,10 @@ public class XPRoleRewardCommand extends SlashCommand {
                 builder.append("`P - Persists on rejoin`\n`R - Gets removed on next reward`\n\n");
                 for (RoleReward reward : rewards) {
                     String properties = "";
-                    if (reward.isPersistant()) {
+                    if (reward.getPersistant()) {
                         properties = " - P";
                     }
-                    if (reward.doesRemoveOnNextReward()) {
+                    if (reward.getRemoveOnNextReward()) {
                         if (properties.isEmpty()) {
                             properties = " - R";
                         } else {

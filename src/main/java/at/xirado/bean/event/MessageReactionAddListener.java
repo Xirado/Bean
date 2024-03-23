@@ -1,8 +1,8 @@
 package at.xirado.bean.event;
 
-import at.xirado.bean.data.GuildData;
-import at.xirado.bean.data.GuildManager;
+import at.xirado.bean.Bean;
 import at.xirado.bean.data.ReactionRole;
+import at.xirado.bean.data.database.entity.DiscordGuild;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -10,39 +10,31 @@ import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MessageReactionAddListener extends ListenerAdapter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessageReactionAddListener.class);
-
     @Override
-    public void onMessageReactionAdd(@NotNull MessageReactionAddEvent e) {
-        if (!e.isFromGuild())
+    public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
+        if (!event.isFromGuild())
             return;
-        if (GuildJoinListener.isGuildBanned(e.getGuild().getIdLong()))
-            return;
-        try {
-            if (e.getMember().getUser().isBot()) return;
-            Guild g = e.getGuild();
-            long id = e.getMessageIdLong();
-            EmojiUnion emoji = e.getEmoji();
-            String reacted = emoji.getType() == Emoji.Type.UNICODE ? emoji.getAsReactionCode() : emoji.asCustom().getId();
-            GuildData data = GuildManager.getGuildData(e.getGuild());
-            ReactionRole reactionRole = data.getReactionRoles().stream()
-                    .filter(x -> x.getMessageId() == id && x.getEmote().equals(reacted))
-                    .findFirst().orElse(null);
-            if (reactionRole != null) {
-                Role role = e.getGuild().getRoleById(reactionRole.getRoleId());
-                if (role != null)
-                    g.addRoleToMember(e.getMember(), role).queue(s ->
-                    {
-                    }, ex ->
-                    {
-                    });
-            }
-        } catch (Exception e2) {
-            LOGGER.error("An error occured whilst executing reaction role event!", e2);
-        }
+
+        if (event.getUser().isBot()) return;
+
+        Guild guild = event.getGuild();
+        long messageId = event.getMessageIdLong();
+        EmojiUnion emoji = event.getEmoji();
+        String reaction = emoji.getType() == Emoji.Type.UNICODE ? emoji.getAsReactionCode() : emoji.asCustom().getId();
+
+        Bean.getInstance().getVirtualThreadExecutor().submit(() -> {
+            DiscordGuild guildData = Bean.getInstance().getRepository()
+                    .getGuildRepository().getGuildDataBlocking(guild.getIdLong());
+
+            ReactionRole reactionRole = guildData.getReactionRole(messageId, reaction);
+            if (reactionRole == null)
+                return;
+
+            Role role = event.getGuild().getRoleById(reactionRole.getRoleId());
+            if (role != null && guild.getSelfMember().canInteract(role))
+                guild.addRoleToMember(event.getMember(), role).queue();
+        });
     }
 }
