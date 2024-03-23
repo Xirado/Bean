@@ -11,8 +11,7 @@ private val discordApi by lazy { Bean.getInstance().discordApi }
 
 fun Route.guildsRoute() {
     get("/guilds") {
-        val principal = this.call.principal<AuthPrincipal>()!!
-
+        val principal = call.principal<AuthPrincipal>()!!
         val session = discordApi.prepareOAuth(principal.userId)
         val guilds = discordApi.retrieveGuilds(session.accessToken, onlyMutualGuilds = true)
 

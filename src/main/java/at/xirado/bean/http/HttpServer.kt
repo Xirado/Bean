@@ -1,6 +1,6 @@
 package at.xirado.bean.http
 
-import at.xirado.bean.HttpServerConfig
+import at.xirado.bean.Config
 import at.xirado.bean.http.auth.AuthPrincipal
 import at.xirado.bean.http.error.APIError
 import at.xirado.bean.http.error.UnauthorizedError
@@ -22,7 +22,7 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-class HttpServer(private val config: HttpServerConfig) {
+class HttpServer(private val config: Config) {
     private lateinit var engine: NettyApplicationEngine
 
     init {
@@ -30,7 +30,8 @@ class HttpServer(private val config: HttpServerConfig) {
     }
 
     private fun load() {
-        val (host, port) = config
+        val (host, port) = config.http
+
         engine = embeddedServer(Netty, host = host, port = port) {
             module()
         }
@@ -66,7 +67,7 @@ class HttpServer(private val config: HttpServerConfig) {
         allowHeader(HttpHeaders.Authorization)
         allowHeader(HttpHeaders.ContentType)
 
-        if (config.corsAllowAll)
+        if (config.http.corsAllowAll)
             anyHost()
     }
 

@@ -1,12 +1,11 @@
 package at.xirado.bean;
 
-import at.xirado.bean.backend.Authenticator;
-import at.xirado.bean.backend.WebServer;
 import at.xirado.bean.command.handler.CommandHandler;
 import at.xirado.bean.command.handler.InteractionHandler;
 import at.xirado.bean.data.OkHttpInterceptor;
 import at.xirado.bean.data.content.DismissableContentManager;
 import at.xirado.bean.data.database.Database;
+import at.xirado.bean.data.repository.Repository;
 import at.xirado.bean.event.*;
 import at.xirado.bean.http.HttpServer;
 import at.xirado.bean.http.oauth.DiscordAPI;
@@ -70,20 +69,26 @@ public class Bean {
     private final ExecutorService executor =
             Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
                     .setNameFormat("Bean Executor Thread")
-                    .setUncaughtExceptionHandler((t, e) -> LOGGER.error("An uncaught error occurred on the executor!", e))
+                    .setUncaughtExceptionHandler((t, e) -> LOGGER.error("Uncaught exception in executor", e))
+                    .build());
+
+    private final ExecutorService virtualThreadExecutor =
+            Executors.newThreadPerTaskExecutor(new ThreadFactoryBuilder()
+                    .setThreadFactory(Thread.ofVirtual().factory())
+                    .setUncaughtExceptionHandler((t, e) -> LOGGER.error("Uncaught exception in executor", e))
                     .build());
 
     private final InteractionHandler interactionHandler;
     private final CommandHandler commandHandler;
     private final EventWaiter eventWaiter;
     private final OkHttpClient okHttpClient;
-    private final WebServer webServer;
 
     private final HttpServer httpServer;
 
-    private final Authenticator authenticator;
     private final MEE6Queue mee6Queue;
     private final DismissableContentManager dismissableContentManager;
+    private final Database database;
+    private final Repository repository;
 
     private WebhookClient webhookClient = null;
     private final Config config = ConfigKt.readConfig(true);
@@ -93,8 +98,10 @@ public class Bean {
     public Bean() throws Exception {
         instance = this;
         Message.suppressContentIntentWarning();
-        Database.connect(config.getDb());
-        Database.awaitReady();
+
+        database = new Database(config.getDb());
+        repository = new Repository(database);
+
         debug = config.getDebugMode();
         interactionHandler = new InteractionHandler(this);
         commandHandler = new CommandHandler();
@@ -105,6 +112,7 @@ public class Bean {
         if (config.getWebhookUrl() != null)
             webhookClient = new WebhookClientBuilder(config.getWebhookUrl()).build();
 
+        setupShutdownHook();
         shardManager = DefaultShardManagerBuilder.create(config.getDiscordToken(), getIntents())
                 .setShardsTotal(-1)
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
@@ -122,14 +130,10 @@ public class Bean {
                         EvalListener.INSTANCE)
                 .build();
 
-        authenticator = new Authenticator();
-
-        HttpServerConfig serverConfig = config.getHttp();
         OAuthConfig oauthConfig = config.getOauth();
 
-        webServer = new WebServer(config);
         discordApi = new DiscordAPI(oauthConfig);
-        httpServer = new HttpServer(serverConfig);
+        httpServer = new HttpServer(config);
 
         dismissableContentManager = new DismissableContentManager();
         new Prometheus();
@@ -156,7 +160,6 @@ public class Bean {
         Thread.currentThread().setName("Main");
         try {
             loadPropertiesFile();
-            setupShutdownHook();
             new Bean();
         } catch (Exception e) {
             if (e instanceof LoginException ex) {
@@ -173,7 +176,7 @@ public class Bean {
             properties.load(Bean.class.getClassLoader().getResourceAsStream("app.properties"));
             VERSION = properties.getProperty("app-version");
             BUILD_TIME = Long.parseLong(properties.getProperty("build-time"));
-        } catch(Throwable e) {
+        } catch (Throwable e) {
             LOGGER.error("Could not read app.properties file!");
             VERSION = "0.0.0";
             BUILD_TIME = 0L;
@@ -228,6 +231,10 @@ public class Bean {
         return executor;
     }
 
+    public ExecutorService getVirtualThreadExecutor() {
+        return virtualThreadExecutor;
+    }
+
     public boolean isDebug() {
         return debug;
     }
@@ -252,20 +259,12 @@ public class Bean {
         return okHttpClient;
     }
 
-    public Authenticator getAuthenticator() {
-        return authenticator;
-    }
-
     public DismissableContentManager getDismissableContentManager() {
         return dismissableContentManager;
     }
 
     public DiscordAPI getDiscordApi() {
         return discordApi;
-    }
-
-    public WebServer getWebServer() {
-        return webServer;
     }
 
     public HttpServer getHttpServer() {
@@ -276,15 +275,24 @@ public class Bean {
         return mee6Queue;
     }
 
-    private static void setupShutdownHook() {
+    public Database getDatabase() {
+        return database;
+    }
+
+    public Repository getRepository() {
+        return repository;
+    }
+
+    private void setupShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LOGGER.info("Awaiting JDA ShardManager shutdown...");
-            getInstance().getShardManager().shutdown();
-            for (JDA jda : getInstance().getShardManager().getShards()) {
+            getShardManager().shutdown();
+            for (JDA jda : getShardManager().getShards()) {
                 while (jda.getStatus() != JDA.Status.SHUTDOWN) {
                     try {
                         Thread.sleep(20);
-                    } catch (InterruptedException ignored) {}
+                    } catch (InterruptedException ignored) {
+                    }
                 }
             }
             LOGGER.info("Stopped all shards");

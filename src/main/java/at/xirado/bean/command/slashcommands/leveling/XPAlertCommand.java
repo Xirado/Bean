@@ -1,9 +1,9 @@
 package at.xirado.bean.command.slashcommands.leveling;
 
+import at.xirado.bean.Bean;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
 import at.xirado.bean.data.LinkedDataObject;
-import at.xirado.bean.data.database.Database;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.Permission;
@@ -18,12 +18,15 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 public class XPAlertCommand extends SlashCommand {
+    private static Logger logger = LoggerFactory.getLogger(XPAlertCommand.class);
+
     public XPAlertCommand() {
         setCommandData(Commands.slash("setxpalerts", "Changes XP levelup alert behaviour.")
                 .addSubcommands(new SubcommandData("none", "Disables xp alerts entirely."))
@@ -89,19 +92,16 @@ public class XPAlertCommand extends SlashCommand {
         }
     }
 
-
     public static String getXPAlert(@Nonnull Guild guild) {
-        Connection connection = Database.getConnectionFromPool();
-        try (var ps = connection.prepareStatement("SELECT mode FROM xpAlerts WHERE guildID = ?")) {
+        try (var connection = Bean.getInstance().getDatabase().getConnectionFromPool();
+             var ps = connection.prepareStatement("SELECT mode FROM xpAlerts WHERE guildID = ?")) {
             ps.setLong(1, guild.getIdLong());
             var rs = ps.executeQuery();
             if (rs.next()) return rs.getString("mode");
             return "current";
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.error("Could not get level-up message mode of guild " + guild.getIdLong(), ex);
             return "none";
-        } finally {
-            Util.closeQuietly(connection);
         }
     }
 
@@ -127,18 +127,16 @@ public class XPAlertCommand extends SlashCommand {
     }
 
     public static boolean setXPAlert(@Nonnull Guild guild, String modeOrChannelID) {
-        Connection connection = Database.getConnectionFromPool();
-        try (var ps = connection.prepareStatement("INSERT INTO xpAlerts (guildID, mode) VALUES (?,?) ON DUPLICATE KEY UPDATE mode = ?")) {
+        try (var connection = Bean.getInstance().getDatabase().getConnectionFromPool();
+             var ps = connection.prepareStatement("INSERT INTO xpAlerts (guildID, mode) VALUES (?,?) ON DUPLICATE KEY UPDATE mode = ?")) {
             ps.setLong(1, guild.getIdLong());
             ps.setString(2, modeOrChannelID);
             ps.setString(3, modeOrChannelID);
             ps.execute();
             return true;
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.error("Could not set level-up message mode for guild " + guild.getIdLong(), ex);
             return false;
-        } finally {
-            Util.closeQuietly(connection);
         }
     }
 

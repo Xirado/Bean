@@ -73,12 +73,8 @@ public class ReactionRoleCommand extends SlashCommand {
             channel.retrieveMessageById(messageID).queue(
                     (message) ->
                     {
-                        ctx.getGuildData().removeReactionRoles(message.getIdLong()).update();
-                        message.clearReactions().queue(s ->
-                        {
-                        }, e ->
-                        {
-                        });
+                        ctx.getGuildData().removeReactionRoles(message.getIdLong());
+                        message.clearReactions().queue();
                         ctx.reply(SlashCommandContext.SUCCESS + " " + ctx.getLocalized("commands.reactionroles.removed_success")).setEphemeral(true).queue();
                     }, new ErrorHandler()
                             .handle(ErrorResponse.UNKNOWN_MESSAGE, (err) -> ctx.reply(SlashCommandContext.ERROR + " " + ctx.getLocalized("commands.message_not_exists")).setEphemeral(true).queue())
@@ -123,7 +119,7 @@ public class ReactionRoleCommand extends SlashCommand {
                                 (success) ->
                                 {
                                     ReactionRole reactionRole = new ReactionRole(saved, message.getIdLong(), role.getIdLong());
-                                    ctx.getGuildData().addReactionRoles(reactionRole).update();
+                                    ctx.getGuildData().addReactionRole(reactionRole);
                                     ctx.reply(SlashCommandContext.SUCCESS + " " + ctx.getLocalized("commands.reactionroles.added_success")).setEphemeral(true).queue();
                                 },
                                 new ErrorHandler()

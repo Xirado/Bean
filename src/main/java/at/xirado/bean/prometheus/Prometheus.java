@@ -1,6 +1,5 @@
 package at.xirado.bean.prometheus;
 
-import at.xirado.bean.Bean;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import org.slf4j.Logger;

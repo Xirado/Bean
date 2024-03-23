@@ -6,7 +6,6 @@ import at.xirado.bean.command.CommandArgument
 import at.xirado.bean.command.CommandContext
 import at.xirado.bean.command.CommandFlag
 import at.xirado.bean.command.commands.EvalCommand
-import at.xirado.bean.data.GuildManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -15,7 +14,6 @@ import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.ConcurrentSkipListMap
 
 class CommandHandler {
-
     val scope = getDefaultScope()
 
     private val registeredCommands: ConcurrentMap<String, Command> =
@@ -77,12 +75,11 @@ class CommandHandler {
         if (event.author.idLong !in Bean.WHITELISTED_USERS)
             return
 
+        if (!event.message.contentRaw.startsWith("<@" + event.jda.selfUser.idLong + "> "))
+            return
+
         try {
-            val guildData = GuildManager.getGuildData(event.guild)
-            val arguments = if (event.message.contentRaw.startsWith("<@" + event.jda.selfUser.idLong + "> "))
-                CommandArgument(event.message.contentRaw, event.jda.selfUser.idLong)
-            else
-                CommandArgument(event.message.contentRaw, guildData.prefix)
+            val arguments = CommandArgument(event.message.contentRaw, event.jda.selfUser.idLong)
 
             val name = arguments.commandName
             if (!registeredCommands.containsKey(name)) return

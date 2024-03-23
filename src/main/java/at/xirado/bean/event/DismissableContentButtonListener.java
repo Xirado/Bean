@@ -16,19 +16,20 @@ public class DismissableContentButtonListener extends ListenerAdapter {
 
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
-        if (GuildJoinListener.isGuildBanned(event.getGuild().getIdLong()))
-            return;
         var componentId = event.getComponentId();
         if (!componentId.startsWith("dismissable:"))
             return;
         var identifier = componentId.substring(12);
-        var progress = Bean.getInstance().getDismissableContentManager().getProgress(event.getUser().getIdLong(), identifier, true);
-        if (progress == null)
-            return;
 
-        progress.setState(DismissableState.ACKNOWLEDGED).update();
-        event.editMessageEmbeds(CONFIRMATION_EMBED)
-                .setComponents(Collections.emptyList())
-                .queue();
+        Bean.getInstance().getVirtualThreadExecutor().submit(() -> {
+            var progress = Bean.getInstance().getDismissableContentManager().getProgress(event.getUser().getIdLong(), identifier, true);
+            if (progress == null)
+                return;
+
+            progress.setState(DismissableState.ACKNOWLEDGED).update();
+            event.editMessageEmbeds(CONFIRMATION_EMBED)
+                    .setComponents(Collections.emptyList())
+                    .queue();
+        });
     }
 }

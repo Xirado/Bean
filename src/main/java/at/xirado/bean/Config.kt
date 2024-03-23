@@ -15,6 +15,7 @@ data class Config(
     val debugMode: Boolean = false,
     val webhookUrl: String? = null,
     val http: HttpServerConfig,
+    val jwt: JWTConfig,
     val db: DatabaseConfig,
     val oauth: OAuthConfig,
 )
@@ -23,7 +24,6 @@ data class Config(
 data class HttpServerConfig(
     val host: String,
     val port: Int,
-    val jwt: JWTConfig,
     val corsAllowAll: Boolean = false,
 )
 

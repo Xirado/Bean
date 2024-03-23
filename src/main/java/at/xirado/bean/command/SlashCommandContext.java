@@ -1,8 +1,8 @@
 package at.xirado.bean.command;
 
-import at.xirado.bean.data.GuildData;
-import at.xirado.bean.data.GuildManager;
+import at.xirado.bean.Bean;
 import at.xirado.bean.data.LinkedDataObject;
+import at.xirado.bean.data.database.entity.DiscordGuild;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -41,8 +41,12 @@ public class SlashCommandContext {
         }
     }
 
-    public GuildData getGuildData() {
-        return this.event.getGuild() == null ? null : GuildManager.getGuildData(this.event.getGuild());
+    public DiscordGuild getGuildData() {
+        return this.event.getGuild() == null
+                ? null
+                : Bean.getInstance().getRepository()
+                  .getGuildRepository()
+                  .getGuildDataBlocking(event.getGuild().getIdLong());
     }
 
     public String getLocalized(String query, Object... objects) {
