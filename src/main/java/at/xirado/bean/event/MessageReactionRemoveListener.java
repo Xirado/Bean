@@ -5,7 +5,7 @@ import at.xirado.bean.data.ReactionRole;
 import at.xirado.bean.data.database.entity.DiscordGuild;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
@@ -32,13 +32,12 @@ public class MessageReactionRemoveListener extends ListenerAdapter {
 
     @Override
     public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
-        if (!event.isFromGuild() || event.getUser().isBot())
+        if (!event.isFromGuild())
             return;
 
         Guild guild = event.getGuild();
         EmojiUnion emoji = event.getEmoji();
         long messageId = event.getMessageIdLong();
-        User user = event.getUser();
         String reaction = emoji.getType() == Emoji.Type.UNICODE ? emoji.getAsReactionCode() : emoji.asCustom().getId();
 
         Bean.getInstance().getVirtualThreadExecutor().submit(() -> {
@@ -51,7 +50,7 @@ public class MessageReactionRemoveListener extends ListenerAdapter {
             Role role = event.getGuild().getRoleById(reactionRole.getRoleId());
             if (role == null || !guild.getSelfMember().canInteract(role)) return;
 
-            event.getGuild().removeRoleFromMember(user, role).queue();
+            event.getGuild().removeRoleFromMember(UserSnowflake.fromId(event.getUserId()), role).queue();
         });
     }
 }

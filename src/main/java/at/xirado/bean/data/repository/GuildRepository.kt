@@ -9,6 +9,7 @@ import com.sksamuel.aedile.core.cacheBuilder
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.time.Duration.Companion.minutes
 
@@ -29,6 +30,15 @@ class GuildRepository(private val database: Database) : AutoCloseable {
                     DiscordGuild.findById(guildId)
                         ?: DiscordGuild.new(id = guildId) { }
                 }
+            }
+        }
+    }
+
+    suspend fun getGuildDataAsync(guildId: Long): DiscordGuild {
+        return guildCache.get(guildId) {
+            newSuspendedTransaction {
+                DiscordGuild.findById(guildId)
+                    ?: DiscordGuild.new(id = guildId) { }
             }
         }
     }

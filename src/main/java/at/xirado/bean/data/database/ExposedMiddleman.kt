@@ -7,7 +7,6 @@ import at.xirado.bean.data.database.table.DiscordOAuthSessions
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import java.nio.charset.StandardCharsets
@@ -50,14 +49,6 @@ class TransactionContext<E : Entity<*>>(private val entity: E) {
         val obj = property.get()
         block(obj)
         property.set(obj)
-    }
-}
-
-suspend inline fun <E : Entity<*>> E.withTransaction(crossinline block: context(E) TransactionContext<E>.() -> Unit) {
-    val entity = this
-    newSuspendedTransaction {
-        val context = TransactionContext(entity)
-        entity.block(context)
     }
 }
 

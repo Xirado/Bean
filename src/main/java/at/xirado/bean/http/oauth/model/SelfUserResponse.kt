@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SelfUserResponse(
     val user: DiscordUser,
-    val guilds: List<DiscordGuild>? = null,
+    val guilds: List<Guild>? = null,
 )

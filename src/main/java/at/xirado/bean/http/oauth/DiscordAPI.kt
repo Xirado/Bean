@@ -4,12 +4,11 @@ import at.xirado.bean.Bean
 import at.xirado.bean.OAuthConfig
 import at.xirado.bean.data.database.entity.DiscordOAuthSession
 import at.xirado.bean.data.database.table.DiscordOAuthSessions
-import at.xirado.bean.data.database.withTransaction
-import at.xirado.bean.http.error.exception.APIException
+import at.xirado.bean.http.exception.APIException
 import at.xirado.bean.http.model.DiscordInviteUrlResponse
 import at.xirado.bean.http.model.DiscordLoginUrlResponse
-import at.xirado.bean.http.oauth.model.DiscordGuild
 import at.xirado.bean.http.oauth.model.DiscordUser
+import at.xirado.bean.http.oauth.model.Guild
 import at.xirado.bean.http.oauth.model.OAuthTokenResponse
 import at.xirado.bean.misc.createCoroutineScope
 import com.sksamuel.aedile.core.Cache
@@ -41,10 +40,14 @@ class DiscordAPI(private val config: OAuthConfig) {
     private val expiryScope = createCoroutineScope(virtualDispatcher)
     private lateinit var sessionCache: Cache<Long, DiscordOAuthSession>
 
-    fun load() {
+    init {
+        load()
+    }
+
+    private fun load() {
         sessionCache = cacheBuilder<Long, DiscordOAuthSession> {
             scope = expiryScope
-            expireAfterAccess = 10.minutes
+            expireAfterWrite = 10.minutes
         }.build()
     }
 
@@ -68,7 +71,7 @@ class DiscordAPI(private val config: OAuthConfig) {
             val userId = user.id.toLong()
 
             newSuspendedTransaction {
-                DiscordOAuthSessions.upsert(DiscordOAuthSessions.id) {
+                DiscordOAuthSessions.upsert {
                     it[id] = userId
                     it[accessToken] = tokenResponse.accessToken
                     it[refreshToken] = tokenResponse.refreshToken
@@ -101,10 +104,12 @@ class DiscordAPI(private val config: OAuthConfig) {
 
         val response = refreshToken(session.refreshToken)
 
-        session.withTransaction {
-            accessToken = response.accessToken
-            refreshToken = response.refreshToken
-            expiry = (response.expiresIn * 1000) + System.currentTimeMillis()
+        newSuspendedTransaction {
+            session.apply {
+                accessToken = response.accessToken
+                refreshToken = response.refreshToken
+                expiry = (response.expiresIn * 1000) + System.currentTimeMillis()
+            }
         }
     }
 
@@ -125,7 +130,7 @@ class DiscordAPI(private val config: OAuthConfig) {
         return makeTokenRequest(request)
     }
 
-    suspend fun retrieveUser(accessToken: String): DiscordUser {
+    private suspend fun retrieveUser(accessToken: String): DiscordUser {
         val request = Request.Builder().apply {
             url("$BASE_URL/users/@me")
             header("Authorization", "Bearer $accessToken")
@@ -144,7 +149,13 @@ class DiscordAPI(private val config: OAuthConfig) {
         }
     }
 
-    suspend fun retrieveGuilds(accessToken: String, onlyMutualGuilds: Boolean = true): List<DiscordGuild> {
+    suspend fun retrieveUser(session: DiscordOAuthSession): DiscordUser {
+        val user = retrieveUser(session.accessToken)
+        session.user = user
+        return user
+    }
+
+    private suspend fun retrieveGuilds(accessToken: String, onlyMutualGuilds: Boolean = true): List<Guild> {
         val request = Request.Builder().apply {
             url("$BASE_URL/users/@me/guilds")
             header("Authorization", "Bearer $accessToken")
@@ -158,7 +169,7 @@ class DiscordAPI(private val config: OAuthConfig) {
 
                 val responseBodyString = it.body!!.string()
 
-                val guilds = json.decodeFromString<List<DiscordGuild>>(responseBodyString)
+                val guilds = json.decodeFromString<List<Guild>>(responseBodyString)
 
                 if (onlyMutualGuilds) {
                     guilds.filter { guild -> Bean.getInstance().shardManager.getGuildById(guild.id) != null }
@@ -167,6 +178,15 @@ class DiscordAPI(private val config: OAuthConfig) {
                 }
             }
         }
+    }
+
+    suspend fun retrieveGuilds(session: DiscordOAuthSession): List<Guild> {
+        session.guilds?.let { return it }
+
+        val guilds = retrieveGuilds(session.accessToken, false)
+        session.guilds = guilds
+
+        return guilds
     }
 
     private suspend fun refreshToken(refreshToken: String): OAuthTokenResponse {
@@ -200,7 +220,7 @@ class DiscordAPI(private val config: OAuthConfig) {
         host = "discord.com"
         path("api", "oauth2", "authorize")
 
-        parameters {
+        parameters.apply {
             append("response_type", "code")
             append("client_id", config.clientId.toString())
             append("scope", "identify guilds")
@@ -215,7 +235,7 @@ class DiscordAPI(private val config: OAuthConfig) {
         host = "discord.com"
         path("oauth2", "authorize")
 
-        parameters {
+        parameters.apply {
             append("client_id", config.clientId.toString())
             append("scope", "bot")
             append("permissions", "275191770223")

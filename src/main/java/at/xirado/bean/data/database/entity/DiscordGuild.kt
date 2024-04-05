@@ -10,11 +10,11 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class DiscordGuild(id: EntityID<Long>) : Entity<Long>(id) {
+    @UserMutable var silentLevelingChannels by DiscordGuilds.silentLevelingChannels
+    @UserMutable var logChannel by DiscordGuilds.logChannel
     var moderatorRoles by DiscordGuilds.moderatorRoles
-    var logChannel by DiscordGuilds.logChannel
     var reactionRoles by DiscordGuilds.reactionRoles
     var roleRewards by DiscordGuilds.roleRewards
-    var silentLevelingChannels by DiscordGuilds.silentLevelingChannels
 
     fun isModerator(member: Member) = member.roles.any { it.idLong in moderatorRoles }
 
@@ -110,3 +110,5 @@ class DiscordGuild(id: EntityID<Long>) : Entity<Long>(id) {
 
     companion object : EntityClass<Long, DiscordGuild>(DiscordGuilds)
 }
+
+annotation class UserMutable

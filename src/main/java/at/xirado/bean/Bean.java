@@ -9,13 +9,14 @@ import at.xirado.bean.data.repository.Repository;
 import at.xirado.bean.event.*;
 import at.xirado.bean.http.HttpServer;
 import at.xirado.bean.http.oauth.DiscordAPI;
+import at.xirado.bean.log.WebhookAppenderKt;
 import at.xirado.bean.mee6.MEE6Queue;
 import at.xirado.bean.prometheus.MetricsJob;
 import at.xirado.bean.prometheus.Prometheus;
 import club.minnced.discord.webhook.WebhookClient;
-import club.minnced.discord.webhook.WebhookClientBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
@@ -47,6 +48,7 @@ public class Bean {
     public static final long START_TIME = System.currentTimeMillis() / 1000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Bean.class);
+    private static final String WEBHOOK_APPENDER_LAYOUT = "%boldGreen(%-15.-15logger{0}) %highlight(%-4level) %msg%n";
     private static String VERSION;
     private static long BUILD_TIME;
     private static Bean instance;
@@ -102,20 +104,25 @@ public class Bean {
         database = new Database(config.getDb());
         repository = new Repository(database);
 
+        String webhookUrl = config.getWebhookUrl();
+
+        if (webhookUrl != null) {
+            WebhookAppenderKt.initWebhookLogger("info", webhookUrl, WEBHOOK_APPENDER_LAYOUT, 5000);
+        }
+
         debug = config.getDebugMode();
         interactionHandler = new InteractionHandler(this);
         commandHandler = new CommandHandler();
         eventWaiter = new EventWaiter();
         Class.forName("at.xirado.bean.translation.LocaleLoader");
+
         okHttpClient = new OkHttpClient.Builder()
                 .build();
-        if (config.getWebhookUrl() != null)
-            webhookClient = new WebhookClientBuilder(config.getWebhookUrl()).build();
 
         setupShutdownHook();
         shardManager = DefaultShardManagerBuilder.create(config.getDiscordToken(), getIntents())
                 .setShardsTotal(-1)
-                .setMemberCachePolicy(MemberCachePolicy.VOICE)
+                .setMemberCachePolicy(MemberCachePolicy.lru(500))
                 .setActivity(Activity.playing("bean.bz"))
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setBulkDeleteSplittingEnabled(false)
@@ -158,6 +165,7 @@ public class Bean {
 
     public static void main(String[] args) {
         Thread.currentThread().setName("Main");
+        DecoroutinatorRuntime.INSTANCE.load();
         try {
             loadPropertiesFile();
             new Bean();

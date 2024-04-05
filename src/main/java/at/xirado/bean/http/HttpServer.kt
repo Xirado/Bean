@@ -2,10 +2,10 @@ package at.xirado.bean.http
 
 import at.xirado.bean.Config
 import at.xirado.bean.http.auth.AuthPrincipal
-import at.xirado.bean.http.error.APIError
-import at.xirado.bean.http.error.UnauthorizedError
-import at.xirado.bean.http.error.exception.APIException
-import at.xirado.bean.http.error.exception.createResponse
+import at.xirado.bean.http.exception.APIException
+import at.xirado.bean.http.exception.createErrorResponse
+import at.xirado.bean.http.response.error.UnauthorizedError
+import at.xirado.bean.http.response.error.respondError
 import at.xirado.bean.http.routes.*
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
@@ -19,8 +19,10 @@ import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.slf4j.LoggerFactory
+
+private val logger = LoggerFactory.getLogger(HttpServer::class.java)
 
 class HttpServer(private val config: Config) {
     private lateinit var engine: NettyApplicationEngine
@@ -34,7 +36,7 @@ class HttpServer(private val config: Config) {
 
         engine = embeddedServer(Netty, host = host, port = port) {
             module()
-        }
+        }.start(false)
     }
 
     fun stop() {
@@ -52,8 +54,10 @@ class HttpServer(private val config: Config) {
 
         install(StatusPages) {
             exception<APIException> { call, exception ->
-                val errorResponse = exception.createResponse()
-                call.respond(HttpStatusCode.fromValue(errorResponse.code), errorResponse)
+                val errorResponse = exception.createErrorResponse()
+                logger.error("Encountered API exception", exception)
+
+                call.respondError(errorResponse)
             }
         }
     }
@@ -92,7 +96,7 @@ class HttpServer(private val config: Config) {
             }
 
             challenge { _, _ ->
-                call.respond<APIError>(HttpStatusCode.Unauthorized, UnauthorizedError)
+                call.respondError(UnauthorizedError)
             }
         }
     }
@@ -105,6 +109,7 @@ class HttpServer(private val config: Config) {
 
         authenticate("jwt-discord-oauth") {
             guildsRoute()
+            guildRoute()
         }
     }
 }
