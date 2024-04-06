@@ -101,14 +101,14 @@ public class Bean {
         instance = this;
         Message.suppressContentIntentWarning();
 
-        database = new Database(config.getDb());
-        repository = new Repository(database);
-
         String webhookUrl = config.getWebhookUrl();
 
         if (webhookUrl != null) {
             WebhookAppenderKt.initWebhookLogger("info", webhookUrl, WEBHOOK_APPENDER_LAYOUT, 5000);
         }
+
+        database = new Database(config.getDb());
+        repository = new Repository(database);
 
         debug = config.getDebugMode();
         interactionHandler = new InteractionHandler(this);
