@@ -17,7 +17,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.pipeline.*
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.serializer
@@ -40,6 +42,7 @@ private val noSuchGuildError = NotFoundError("No guild found with this id")
 private val noAccessError = ForbiddenError("You are not authorized to interact with this entity.")
 private val badBodyError = BadRequestError("Invalid body")
 
+@OptIn(ExperimentalSerializationApi::class)
 fun Route.guildRoute() {
     route("/guilds/{guild}") {
         get {
@@ -82,6 +85,9 @@ fun Route.guildRoute() {
             val properties = body.map { (key, element) ->
                 val (property, serializer) = allowedProperties.entries.find { it.key.name == key }
                     ?: return@patch call.respondError(BadRequestError("Invalid property named \"$key\""))
+
+                if (!serializer.descriptor.isNullable && element is JsonNull)
+                    return@patch call.respondError(BadRequestError("\"$key\" cannot be null"))
 
                 try {
                     property to Json.decodeFromJsonElement(serializer, element)
