@@ -1,5 +1,6 @@
 package at.xirado.bean.http.model
 
+import at.xirado.bean.http.oauth.model.BotMetadata
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import net.dv8tion.jda.api.entities.Guild
@@ -10,20 +11,29 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
 @Serializable
 data class GuildInfo(
-    val settings: JsonObject? = null,
-    val name: String,
     val id: String,
+    val name: String,
     val iconUrl: String?,
+    val settings: JsonObject? = null,
     val channels: List<GuildChannelInfo>? = null,
     val roles: List<GuildRoleInfo>? = null,
+    val botMetadata: BotMetadata? = null,
 ) {
     constructor(guild: Guild, deep: Boolean, settings: JsonObject? = null) : this(
-        settings,
-        guild.name,
         guild.id,
+        guild.name,
         guild.iconUrl,
-        deep.ifTrue { guild.channels.map(::GuildChannelInfo) },
-        deep.ifTrue { guild.roleCache.map(::GuildRoleInfo) },
+        settings = settings,
+        channels = deep.ifTrue { guild.channels.map(::GuildChannelInfo) },
+        roles = deep.ifTrue { guild.roleCache.map(::GuildRoleInfo) },
+        botMetadata = BotMetadata(joined = true)
+    )
+
+    constructor(guild: at.xirado.bean.http.oauth.model.Guild) : this(
+        guild.id,
+        guild.name,
+        guild.iconUrl,
+        botMetadata = guild.botMetadata,
     )
 }
 

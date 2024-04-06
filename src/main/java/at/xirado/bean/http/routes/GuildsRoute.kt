@@ -2,6 +2,7 @@ package at.xirado.bean.http.routes
 
 import at.xirado.bean.Bean
 import at.xirado.bean.http.auth.AuthPrincipal
+import at.xirado.bean.http.model.GuildInfo
 import at.xirado.bean.http.oauth.model.BotMetadata
 import at.xirado.bean.http.oauth.model.Guild
 import io.ktor.server.application.*
@@ -20,6 +21,7 @@ fun Route.guildsRoute() {
         val guilds = discordApi.retrieveGuilds(session)
             .filter(::isAdmin)
             .map(::applyBotMetadata)
+            .map(::GuildInfo)
 
         call.respond(guilds)
     }
