@@ -10,7 +10,6 @@ import at.xirado.bean.http.response.error.ForbiddenError
 import at.xirado.bean.http.response.error.NotFoundError
 import at.xirado.bean.http.response.error.respondError
 import dev.minn.jda.ktx.coroutines.await
-import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
@@ -27,6 +26,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.hasAnnotation
@@ -52,18 +52,9 @@ fun Route.guildRoute() {
             val includeSettings = call.request.queryParameters["withSettings"] == "true"
             val deep = call.request.queryParameters["deep"] == "true"
 
-            var guildSettingsJson: JsonObject? = null
-
-            if (includeSettings) {
+            val guildSettingsJson = includeSettings.ifTrue {
                 val guildData = Bean.getInstance().repository.guildRepository.getGuildDataAsync(guild.idLong)
-
-                guildSettingsJson = buildJsonObject {
-                    allowedProperties.forEach { (property, serializer) ->
-                        val obj = property.get(guildData)
-                        val jsonObject = Json.encodeToJsonElement(serializer, obj)
-                        put(property.name, jsonObject)
-                    }
-                }
+                createSanitizedGuildSettings(guildData)
             }
 
             call.respond(GuildInfo(guild, deep, guildSettingsJson))
@@ -102,7 +93,9 @@ fun Route.guildRoute() {
                 }
             }
 
-            call.respond(HttpStatusCode.NoContent)
+            val sanitizedSettings = createSanitizedGuildSettings(guildData)
+
+            call.respond(call.respond(GuildInfo(guild, deep = false, sanitizedSettings)))
         }
     }
 }
@@ -127,4 +120,12 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.checkAuthorization():
         return call.respondError(noAccessError).let { null }
 
     return member
+}
+
+private fun createSanitizedGuildSettings(guild: DiscordGuild) = buildJsonObject {
+    allowedProperties.forEach { (property, serializer) ->
+        val obj = property.get(guild)
+        val jsonObject = Json.encodeToJsonElement(serializer, obj)
+        put(property.name, jsonObject)
+    }
 }
