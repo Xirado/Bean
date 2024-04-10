@@ -42,8 +42,6 @@ fun Route.removeRankedMemberRoute() {
         if (!success)
             return@delete call.respondError(noSuchMemberError)
 
-        log.debug("")
-
         call.respond(HttpStatusCode.NoContent)
     }
 }
