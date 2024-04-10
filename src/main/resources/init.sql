@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS levels (
     name VARCHAR(256),
     discriminator VARCHAR(4),
     avatar VARCHAR(128),
-    deleted BOOLEAN DEFAULT FALSE,
     PRIMARY KEY(guildID, userID)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

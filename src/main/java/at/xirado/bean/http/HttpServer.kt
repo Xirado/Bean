@@ -107,9 +107,16 @@ class HttpServer(private val config: Config) {
         discordInviteUrlRoute()
         discordAuthorizeUrlRoute()
 
-        authenticate("jwt-discord-oauth") {
+        val authScope = "jwt-discord-oauth"
+
+        authenticate(authScope) {
             guildsRoute()
             guildRoute()
+            removeRankedMemberRoute()
+        }
+
+        authenticate(authScope, optional = true) {
+            leaderboardRoute()
         }
     }
 }

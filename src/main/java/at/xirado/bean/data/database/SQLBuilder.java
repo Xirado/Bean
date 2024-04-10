@@ -65,6 +65,23 @@ public class SQLBuilder {
         }
     }
 
+    public int executeUpdate() throws SQLException {
+        Connection connection = this.connection == null ? Bean.getInstance().getDatabase().getConnectionFromPool() : this.connection;
+        try (var ps = connection.prepareStatement(sqlString)) {
+            if (!parameters.isEmpty()) {
+                int index = 1;
+                for (Object object : parameters) {
+                    ps.setObject(index, object);
+                    index++;
+                }
+            }
+            return ps.executeUpdate();
+        } finally {
+            if (closeConnection)
+                Util.closeQuietly(connection);
+        }
+    }
+
     public boolean execute() throws SQLException {
         Connection connection = this.connection == null ? Bean.getInstance().getDatabase().getConnectionFromPool() : this.connection;
         try (var ps = connection.prepareStatement(sqlString)) {

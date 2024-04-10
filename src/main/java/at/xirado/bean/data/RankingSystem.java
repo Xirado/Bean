@@ -2,10 +2,9 @@ package at.xirado.bean.data;
 
 import at.xirado.bean.command.slashcommands.leveling.SetXPBackgroundCommand;
 import at.xirado.bean.data.database.SQLBuilder;
+import at.xirado.bean.http.routes.RankedMember;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +20,8 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RankingSystem {
 
@@ -145,6 +146,16 @@ public class RankingSystem {
             query.execute();
         } catch (SQLException e) {
             LOGGER.error("Could not add XP!", e);
+        }
+    }
+
+    public static boolean clearXP(long guildId, long userId) {
+        var query = new SQLBuilder("UPDATE levels SET totalXP = 0 WHERE guildID = ? AND userID = ?", guildId, userId);
+
+        try {
+            return query.executeUpdate() == 1;
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
         }
     }
 
@@ -407,31 +418,23 @@ public class RankingSystem {
         return output;
     }
 
-    public static DataArray getLeaderboard(long guildId, int page, int itemsPerPage) throws SQLException {
+    public static List<RankedMember> getLeaderboard(long guildId, int page, int itemsPerPage) throws SQLException {
         var start = page == 1 ? 0 : ((page - 1) * itemsPerPage);
         var query = new SQLBuilder("SELECT * FROM levels WHERE guildID = ? ORDER by totalXP DESC LIMIT ?, ?", guildId, start, itemsPerPage);
         try (var rs = query.executeQuery()) {
-            DataArray array = DataArray.empty();
-            while (rs.next()) {
-                array.add(
-                        DataObject.empty()
-                                .put("user", rs.getLong("userID"))
-                                .put("xp", rs.getLong("totalXP"))
-                                .put("name", rs.getString("name"))
-                                .put("discriminator", rs.getString("discriminator"))
-                                .put("avatar", rs.getString("avatar"))
-                );
-            }
-            return array;
-        }
-    }
+            List<RankedMember> members = new ArrayList<>();
 
-    public static int getDataCount(long guildId) throws SQLException {
-        var query = new SQLBuilder("SELECT COUNT(*) FROM levels WHERE guildID = ?", guildId);
-        try (var rs = query.executeQuery()) {
-            if (rs.next())
-                return rs.getInt("COUNT(*)");
-            return 0;
+            while (rs.next()) {
+                RankedMember member = new RankedMember(
+                        String.valueOf(rs.getLong("userID")),
+                        String.valueOf(rs.getLong("totalXP")),
+                        rs.getString("name"),
+                        rs.getString("discriminator"),
+                        rs.getString("avatar")
+                );
+                members.add(member);
+            }
+            return members;
         }
     }
 
