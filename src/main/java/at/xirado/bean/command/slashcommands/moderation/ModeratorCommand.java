@@ -2,7 +2,7 @@ package at.xirado.bean.command.slashcommands.moderation;
 
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
-import at.xirado.bean.data.GuildData;
+import at.xirado.bean.data.database.entity.DiscordGuild;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
@@ -13,10 +13,10 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Set;
 
 public class ModeratorCommand extends SlashCommand {
     public ModeratorCommand() {
@@ -38,12 +38,14 @@ public class ModeratorCommand extends SlashCommand {
         switch (subcommand) {
             case "add" -> {
                 Role role = event.getOption("role").getAsRole();
-                List<Role> moderatorRoles = ctx.getGuildData().getModeratorRoles();
-                if (moderatorRoles.contains(role)) {
+                Set<Long> moderatorRoles = ctx.getGuildData().getModeratorRoles();
+
+                if (moderatorRoles.contains(role.getIdLong())) {
                     ctx.sendSimpleEmbed(ctx.getLocalized("commands.moderator.already_added"));
                     return;
                 }
-                ctx.getGuildData().addModeratorRoles(role).update();
+
+                ctx.getGuildData().addModeratorRole(role.getIdLong());
                 EmbedBuilder builder = new EmbedBuilder()
                         .setColor(role.getColor())
                         .setDescription(ctx.getLocalized("commands.moderator.added", role.getAsMention()));
@@ -51,34 +53,43 @@ public class ModeratorCommand extends SlashCommand {
             }
             case "remove" -> {
                 Role role = event.getOption("role").getAsRole();
-                List<Role> allowedRoles = ctx.getGuildData().getModeratorRoles();
-                if (!allowedRoles.contains(role)) {
+                Set<Long> allowedRoles = ctx.getGuildData().getModeratorRoles();
+
+                if (!allowedRoles.contains(role.getIdLong())) {
                     ctx.sendSimpleEmbed(ctx.getLocalized("commands.moderator.not_added"));
                     return;
                 }
-                ctx.getGuildData().removeModeratorRoles(role).update();
+
+                ctx.getGuildData().removeModeratorRole(role.getIdLong());
                 EmbedBuilder builder = new EmbedBuilder()
                         .setColor(role.getColor())
                         .setDescription(ctx.getLocalized("commands.moderator.removed", role.getAsMention()));
                 ctx.reply(builder.build()).queue();
             }
             case "list" -> {
-                GuildData guildData = ctx.getGuildData();
-                List<Role> allowedRoles = guildData.getModeratorRoles();
-                if (allowedRoles == null || allowedRoles.isEmpty()) {
+                DiscordGuild guildData = ctx.getGuildData();
+                Set<Long> roleIds = guildData.getModeratorRoles();
+                List<Role> roles = roleIds.stream()
+                        .map(id -> event.getGuild().getRoleById(id))
+                        .filter(Objects::nonNull)
+                        .toList();
+
+                if (roles.isEmpty()) {
                     ctx.sendSimpleEmbed(ctx.getLocalized("commands.listmods.no_roles_found"));
                     return;
                 }
+
                 StringBuilder sb = new StringBuilder();
                 Color firstColor = null;
-                if (allowedRoles.size() > 1) {
-                    allowedRoles = allowedRoles.stream().sorted(Comparator.comparingInt(Role::getPosition)).collect(Collectors.toList());
-                    allowedRoles = allowedRoles.stream().sorted(Collections.reverseOrder()).collect(Collectors.toList());
-                }
-                for (Role r : allowedRoles) {
+
+                if (roles.size() > 1)
+                    roles = roles.stream().sorted(Comparator.comparingInt(Role::getPosition).reversed()).toList();
+
+                for (Role r : roles) {
                     if (firstColor == null) firstColor = r.getColor();
                     sb.append(r.getAsMention()).append(", ");
                 }
+
                 String description = sb.toString();
                 description = description.substring(0, description.length() - 2);
                 EmbedBuilder builder = new EmbedBuilder()

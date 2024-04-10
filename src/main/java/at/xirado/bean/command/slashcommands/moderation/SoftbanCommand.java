@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -88,8 +88,13 @@ public class SoftbanCommand extends SlashCommand {
                             .addField(ctx.getLocalized("commands.reason"), reasonString, true)
                             .build();
                     event.getHook().sendMessageEmbeds(confirmationEmbed).queue();
-                    if (ctx.getGuildData().getLogChannel() != null) {
-                        TextChannel logChannel = ctx.getGuildData().getLogChannel();
+
+                    Long logChannelId = ctx.getGuildData().getLogChannel();
+                    GuildMessageChannel logChannel = logChannelId == null
+                            ? null
+                            : event.getGuild().getChannelById(GuildMessageChannel.class, logChannelId);
+
+                    if (logChannel != null) {
                         MessageEmbed logEmbed = new EmbedBuilder()
                                 .setColor(CaseType.SOFTBAN.getEmbedColor())
                                 .setAuthor("Softban • " + member.getUser().getAsTag(), null, member.getUser().getEffectiveAvatarUrl())
@@ -97,11 +102,7 @@ public class SoftbanCommand extends SlashCommand {
                                 .addField("Moderator", sender.getAsMention() + " (" + sender.getUser().getAsTag() + ")", true)
                                 .setFooter(ctx.getLocalized("commands.user_id", member.getIdLong()))
                                 .build();
-                        logChannel.sendMessageEmbeds(logEmbed).queue(s ->
-                        {
-                        }, e ->
-                        {
-                        });
+                        logChannel.sendMessageEmbeds(logEmbed).queue();
                     }
                 }, e -> event.getHook().sendMessageEmbeds(EmbedUtil.errorEmbed(ctx.getLocalized("general.unknown_error_occured"))).setEphemeral(true).queue());
     }
