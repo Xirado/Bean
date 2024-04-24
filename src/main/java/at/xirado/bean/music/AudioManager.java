@@ -9,7 +9,8 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.clients.*;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.utils.TimeUtil;
@@ -44,12 +45,12 @@ public class AudioManager {
         this.audioPlayers = new ConcurrentHashMap<>();
         String deezerKey = Bean.getInstance().getConfig().getString("deezer_key", null);
         DataObject ytConfig = Bean.getInstance().getConfig().optObject("youtube").orElseGet(DataObject::empty);
-        String email = ytConfig.getString("email", null);
-        String password = ytConfig.getString("password", null);
+
         DataObject spotify = Bean.getInstance().getConfig().optObject("spotify").orElseGet(DataObject::empty);
         String clientId = spotify.getString("client_id", null);
         String clientSecret = spotify.getString("client_secret", null);
-        playerManager.registerSourceManager(new YoutubeAudioSourceManager(true, email, password));
+
+        playerManager.registerSourceManager(new YoutubeAudioSourceManager(true, new MusicWithThumbnail(), new WebWithThumbnail(), new AndroidWithThumbnail(), new TvHtml5EmbeddedWithThumbnail()));
         playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
         if (deezerKey != null)
             playerManager.registerSourceManager(new DeezerAudioSourceManager(deezerKey));

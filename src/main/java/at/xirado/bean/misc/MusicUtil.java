@@ -80,7 +80,7 @@ public class MusicUtil {
         AtomicInteger index = new AtomicInteger();
         String[] tracks = queue.stream()
                 .limit(10)
-                .map(queuedTrack -> "`" + (index.get() < 9 ? " " : "") + index.incrementAndGet() + "` [" + queuedTrack.getInfo().title + " - " + queuedTrack.getInfo().author + "](" + queuedTrack.getInfo().uri + ")").toArray(String[]::new);
+                .map(queuedTrack -> index.incrementAndGet() + ". [" + queuedTrack.getInfo().title + " - " + queuedTrack.getInfo().author + "](" + queuedTrack.getInfo().uri + ")").toArray(String[]::new);
 
         if (tracks.length > 0) {
             int length = 0;
@@ -91,7 +91,7 @@ public class MusicUtil {
 
                 length += s.length() + 1;
             }
-            builder.addField("Queue", stringBuilder.toString(), false);
+            builder.addField("Next", stringBuilder.toString(), false);
         }
 
         builder.setDescription(description);

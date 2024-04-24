@@ -31,7 +31,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("net.dv8tion:JDA:5.0.0-beta.20")
+    implementation("net.dv8tion:JDA:5.0.0-beta.23")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.mariadb.jdbc:mariadb-java-client:2.7.3")
@@ -42,7 +42,9 @@ dependencies {
     implementation("com.github.minndevelopment:jda-ktx:17eb77a")
     implementation("net.jodah:expiringmap:0.5.10")
     implementation("com.github.chew:jda-chewtils:5e1a9f93f9")
-    implementation("dev.arbjerg:lavaplayer:727959e9f621fc457b3a5adafcfffb55fdeaa538-SNAPSHOT")
+    implementation("dev.arbjerg:lavaplayer:4232036d5b1634570af19077f2a8eeedbc583087-SNAPSHOT")
+    implementation("com.github.lavalink-devs.youtube-source:common:1.0.5")
+    implementation("com.github.lavalink-devs.youtube-source:lldevs:1.0.5")
 
     implementation("com.github.topi314.lavasrc:lavasrc:4.0.0-beta.4")
     implementation("club.minnced:udpqueue-native-linux-x86-64:0.2.5") // adds linux 64bit
