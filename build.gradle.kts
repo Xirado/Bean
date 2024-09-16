@@ -107,6 +107,9 @@ jib {
             }
         }
     }
+    from {
+        image = "openjdk:21"
+    }
 }
 
 tasks.test {
