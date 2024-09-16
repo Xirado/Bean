@@ -8,17 +8,10 @@ import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import org.apache.http.client.utils.URIBuilder;
+import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Queue;
@@ -82,15 +75,16 @@ public class MEE6Queue extends Thread {
     private void makeCall(MEE6Request request) {
         currentRequestGuildId = request.getGuildId();
         try {
-            URI uri = new URIBuilder()
-                    .setScheme("https")
-                    .setHost("mee6.xyz")
-                    .setPath("/api/plugins/levels/leaderboard/" + request.getGuildId())
-                    .addParameter("page", String.valueOf(request.getPage()))
+            HttpUrl url = new HttpUrl.Builder()
+                    .scheme("https")
+                    .host("mee6.xyz")
+                    .addPathSegment("/api/plugins/levels/leaderboard/")
+                    .addPathSegment(Long.toUnsignedString(request.getGuildId()))
+                    .addQueryParameter("page", String.valueOf(request.getPage()))
                     .build();
 
             Request httpRequest = new Request.Builder()
-                    .url(uri.toURL())
+                    .url(url)
                     .get()
                     .build();
 
@@ -176,7 +170,7 @@ public class MEE6Queue extends Thread {
             else if (guild != null && entriesTotal == 0)
                 Util.sendDM(request.getAuthorId(), EmbedUtil.defaultEmbed("Hey! We tried to migrate MEE6 xp for all users on your guild **" + guild.getName() + "**, but we couldn't find any!"));
             currentRequestGuildId = 0L;
-        } catch (URISyntaxException | IOException exception) {
+        } catch (Exception exception) {
             LOGGER.error("Error occurred in MEE6Queue!", exception);
         }
     }

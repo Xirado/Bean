@@ -15,7 +15,6 @@ import at.xirado.bean.prometheus.MetricsJob;
 import at.xirado.bean.prometheus.Prometheus;
 import club.minnced.discord.webhook.WebhookClient;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDA;
@@ -82,7 +81,6 @@ public class Bean {
 
     private final InteractionHandler interactionHandler;
     private final CommandHandler commandHandler;
-    private final EventWaiter eventWaiter;
     private final OkHttpClient okHttpClient;
 
     private final HttpServer httpServer;
@@ -113,7 +111,6 @@ public class Bean {
         debug = config.getDebugMode();
         interactionHandler = new InteractionHandler(this);
         commandHandler = new CommandHandler();
-        eventWaiter = new EventWaiter();
         Class.forName("at.xirado.bean.translation.LocaleLoader");
 
         okHttpClient = new OkHttpClient.Builder()
@@ -133,7 +130,7 @@ public class Bean {
                 .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOJI, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER, CacheFlag.SCHEDULED_EVENTS)
                 .addEventListeners(new JDAReadyListener(), new SlashCommandListener(), new MessageCreateListener(),
                         new XPMessageListener(), new MessageReactionAddListener(), new MessageReactionRemoveListener(),
-                        eventWaiter, new GuildMemberJoinListener(), new DismissableContentButtonListener(), new GuildJoinListener(),
+                        new GuildMemberJoinListener(), new DismissableContentButtonListener(), new GuildJoinListener(),
                         EvalListener.INSTANCE)
                 .build();
 
@@ -257,10 +254,6 @@ public class Bean {
 
     public CommandHandler getCommandHandler() {
         return commandHandler;
-    }
-
-    public EventWaiter getEventWaiter() {
-        return eventWaiter;
     }
 
     public OkHttpClient getOkHttpClient() {

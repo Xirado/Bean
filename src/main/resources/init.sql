@@ -19,12 +19,12 @@ CREATE TABLE IF NOT EXISTS levels (
     PRIMARY KEY(guildID, userID)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS xpalerts (
+CREATE TABLE IF NOT EXISTS xpAlerts (
     guildID BIGINT PRIMARY KEY,
     mode VARCHAR(128)
 );
 
-CREATE TABLE IF NOT EXISTS wildcardsettings (
+CREATE TABLE IF NOT EXISTS wildcardSettings (
     userID BIGINT PRIMARY KEY,
     card VARCHAR(128) NOT NULL,
     accent INT

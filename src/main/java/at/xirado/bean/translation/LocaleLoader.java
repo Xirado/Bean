@@ -1,8 +1,9 @@
 package at.xirado.bean.translation;
 
-import at.xirado.bean.data.LinkedDataObject;
+import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,10 +19,10 @@ public class LocaleLoader {
     private static final Logger log = LoggerFactory.getLogger(LocaleLoader.class);
 
     public static final List<String> LANGUAGES = new ArrayList<>();
-    private static final Map<String, LinkedDataObject> LANGUAGE_MAP;
+    private static final Map<String, DataObject> LANGUAGE_MAP;
 
     static {
-        Map<String, LinkedDataObject> m = new HashMap<>();
+        Map<String, DataObject> m = new HashMap<>();
 
         try (var is = LocaleLoader.class.getResourceAsStream("/assets/languages/list.txt")) {
             if (is == null) {
@@ -37,12 +38,14 @@ public class LocaleLoader {
         }
 
         for (String lang : LANGUAGES) {
-
             try (var is = LocaleLoader.class.getResourceAsStream("/assets/languages/" + lang)) {
+                if (is == null) {
+                    log.error("Locale {} does not exist!", lang);
+                    continue;
+                }
                 var name = lang.replace(".json", "");
-                LinkedDataObject json = LinkedDataObject.parse(is);
-                if (json == null) continue;
-                m.put(name, json.setMetadata(new String[]{name}));
+                DataObject json = DataObject.fromJson(is);
+                m.put(name, json);
                 log.info("Successfully loaded locale {}", lang);
             } catch (Exception e) {
                 log.error("Could not load locale '{}'!", lang, e);
@@ -52,11 +55,7 @@ public class LocaleLoader {
         LANGUAGE_MAP = Collections.unmodifiableMap(m);
     }
 
-    public static String[] getLoadedLanguages() {
-        return (String[]) LANGUAGES.toArray();
-    }
-
-    public static LinkedDataObject getForLanguage(String language) {
+    public static DataObject getForLanguage(String language) {
         var lang = LANGUAGE_MAP.get(language);
         if (lang == null) {
             return LANGUAGE_MAP.get("en_US");
@@ -65,7 +64,7 @@ public class LocaleLoader {
         return lang;
     }
 
-    public static LinkedDataObject ofGuild(Guild guild) {
+    public static DataObject ofGuild(Guild guild) {
         DiscordLocale locale = guild.getLocale();
         String tag = locale.getLocale();
         if (LANGUAGE_MAP.containsKey(tag)) {
@@ -80,9 +79,9 @@ public class LocaleLoader {
     }
 
 
-    public static String parseDuration(long seconds, LinkedDataObject languageJSON, String delimiter) {
+    public static String parseDuration(long seconds, DataObject languageJSON, String delimiter) {
         if (seconds == -1) {
-            return languageJSON.getString("time.permanent");
+            return Util.getRecursive(languageJSON, "time.permanent");
         }
         long days = TimeUnit.SECONDS.toDays(seconds);
         long hours = TimeUnit.SECONDS.toHours(seconds) - (days * 24);
@@ -91,34 +90,33 @@ public class LocaleLoader {
         StringBuilder ges = new StringBuilder();
         if (days != 0) {
             if (days == 1) {
-                ges.append(days).append(" ").append(languageJSON.getString("time.day")).append(delimiter);
+                ges.append(days).append(" ").append(Util.getRecursive(languageJSON, "time.day")).append(delimiter);
             } else {
-                ges.append(days).append(" ").append(languageJSON.getString("time.days")).append(delimiter);
+                ges.append(days).append(" ").append(Util.getRecursive(languageJSON, "time.days")).append(delimiter);
             }
         }
         if (hours != 0) {
             if (hours == 1) {
-                ges.append(hours).append(" ").append(languageJSON.getString("time.hour")).append(delimiter);
+                ges.append(hours).append(" ").append(Util.getRecursive(languageJSON, "time.hour")).append(delimiter);
             } else {
-                ges.append(hours).append(" ").append(languageJSON.getString("time.hours")).append(delimiter);
+                ges.append(hours).append(" ").append(Util.getRecursive(languageJSON, "time.hours")).append(delimiter);
             }
         }
         if (minutes != 0) {
             if (minutes == 1) {
-                ges.append(minutes).append(" ").append(languageJSON.getString("time.minute")).append(delimiter);
+                ges.append(minutes).append(" ").append(Util.getRecursive(languageJSON, "time.minute")).append(delimiter);
             } else {
-                ges.append(minutes).append(" ").append(languageJSON.getString("time.minutes")).append(delimiter);
+                ges.append(minutes).append(" ").append(Util.getRecursive(languageJSON, "time.minutes")).append(delimiter);
             }
         }
         if (seconds1 != 0) {
             if (seconds1 == 1) {
-                ges.append(seconds1).append(" ").append(languageJSON.getString("time.second")).append(delimiter);
+                ges.append(seconds1).append(" ").append(Util.getRecursive(languageJSON, "time.second")).append(delimiter);
             } else {
-                ges.append(seconds1).append(" ").append(languageJSON.getString("time.seconds")).append(delimiter);
+                ges.append(seconds1).append(" ").append(Util.getRecursive(languageJSON, "time.seconds")).append(delimiter);
             }
         }
         String result = ges.toString();
         return result.substring(0, result.length() - delimiter.length());
     }
-
 }
