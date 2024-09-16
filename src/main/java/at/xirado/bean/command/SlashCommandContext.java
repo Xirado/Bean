@@ -1,7 +1,6 @@
 package at.xirado.bean.command;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.data.database.entity.DiscordGuild;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.translation.LocaleLoader;
@@ -12,6 +11,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import javax.annotation.CheckReturnValue;
@@ -50,13 +50,16 @@ public class SlashCommandContext {
     }
 
     public String getLocalized(String query, Object... objects) {
-        Guild g = event.getGuild();
-        if (g != null) {
-            String result = Util.format(LocaleLoader.ofGuild(g).get(query, String.class), objects);
-            if (result != null)
-                return result;
+        Guild guild = event.getGuild();
+        DataObject locale;
+        if (guild != null) {
+            locale = LocaleLoader.ofGuild(guild);
+        } else {
+            locale = LocaleLoader.getForLanguage("en_US");
         }
-        return Util.format(LocaleLoader.getForLanguage("en_US").get(query, String.class), objects);
+
+        String localized = Util.getRecursive(locale, query);
+        return Util.format(localized, objects);
     }
 
     public void sendSimpleEmbed(CharSequence content) {
@@ -80,9 +83,9 @@ public class SlashCommandContext {
                 .build();
     }
 
-    public LinkedDataObject getLanguage() {
+    public DataObject getLanguage() {
         Guild g = event.getGuild();
-        LinkedDataObject language;
+        DataObject language;
         if (g != null) language = LocaleLoader.ofGuild(g);
         else language = LocaleLoader.getForLanguage("en_US");
         return language;

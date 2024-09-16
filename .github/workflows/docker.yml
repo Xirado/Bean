@@ -1,0 +1,33 @@
+name: Build and Publish Docker Image
+
+on:
+  push:
+    branches:
+      - master
+      - feat/gradle-kts
+  release:
+    types: [created]
+
+jobs:
+  build:
+    environment: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Build and publish docker image
+        env:
+          docker_registry: ${{ secrets.DOCKER_REGISTRY }}
+          docker_user: ${{ secrets.DOCKER_USERNAME }}
+          docker_password: ${{ secrets.DOCKER_PASSWORD }}
+        run: ./gradlew jib

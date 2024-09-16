@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.DataPath;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,5 +110,9 @@ public class Util {
 
     public static String format(String text, Object... arguments) {
         return MessageFormatter.arrayFormat(text, arguments).getMessage();
+    }
+
+    public static String getRecursive(DataObject object, String path) {
+        return DataPath.getString(object, path);
     }
 }

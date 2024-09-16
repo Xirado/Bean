@@ -3,7 +3,6 @@ package at.xirado.bean.command.slashcommands.leveling;
 import at.xirado.bean.Bean;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
-import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.misc.Util;
 import at.xirado.bean.translation.LocaleLoader;
 import net.dv8tion.jda.api.Permission;
@@ -17,6 +16,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,23 +106,25 @@ public class XPAlertCommand extends SlashCommand {
     }
 
     public static void sendXPAlert(@Nonnull Member member, int level, MessageChannel current) {
-        LinkedDataObject json = LocaleLoader.ofGuild(member.getGuild());
+        DataObject json = LocaleLoader.ofGuild(member.getGuild());
         String mode = getXPAlert(member.getGuild());
         switch (mode) {
-            case "none":
-                return;
-            case "dm":
+            case "dm" -> {
                 String message = "**" + member.getGuild().getName() + "**: " + "Hey, you just ranked up to level **" + level + "**!";
                 Util.sendDM(member.getIdLong(), message);
-                return;
-            case "current":
+            }
+            case "current" -> {
                 if (current == null) return;
-                current.sendMessage(json.getString("commands.xp.ranked", member.getAsMention(), String.valueOf(level))).queue();
-                return;
-            default:
+                String localized = Util.getRecursive(json, "commands.xp.ranked");
+                current.sendMessage(Util.format(localized, member.getAsMention(), level)).queue();
+            }
+            case "none" -> { }
+            default -> {
                 TextChannel channel = member.getGuild().getTextChannelById(mode);
                 if (channel == null) return;
-                channel.sendMessage(json.getString("commands.xp.ranked", member.getAsMention(), String.valueOf(level))).queue();
+                String localized = Util.getRecursive(json, "commands.xp.ranked");
+                current.sendMessage(Util.format(localized, member.getAsMention(), level)).queue();
+            }
         }
     }
 

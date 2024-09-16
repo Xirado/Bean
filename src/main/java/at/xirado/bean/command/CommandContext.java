@@ -1,10 +1,7 @@
 package at.xirado.bean.command;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.data.LinkedDataObject;
 import at.xirado.bean.data.database.entity.DiscordGuild;
-import at.xirado.bean.translation.LocaleLoader;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -87,14 +84,5 @@ public class CommandContext {
 
     public void reply(MessageEmbed embed) {
         event.getChannel().sendMessageEmbeds(embed).queue();
-    }
-
-    public LinkedDataObject getLanguage() {
-        Guild g = event.getGuild();
-        return LocaleLoader.ofGuild(g);
-    }
-
-    public String getLocalized(String query, Object... objects) {
-        return String.format(LocaleLoader.ofGuild(event.getGuild()).get(query, String.class), objects);
     }
 }

@@ -9,6 +9,7 @@ import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -17,8 +18,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.time.Duration;
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
 public class Mee6TransferCommand extends SlashCommand {
     public Mee6TransferCommand() {
@@ -50,12 +51,17 @@ public class Mee6TransferCommand extends SlashCommand {
                 .queue(
                         (hook) ->
                         {
-                            Bean.getInstance().getEventWaiter().waitForEvent(
-                                    ButtonInteractionEvent.class,
-                                    e ->
-                                            e.getComponentId().equals("mee6transfer:" + event.getIdLong()),
-                                    e ->
-                                    {
+                            hook.getJDA().listenOnce(ButtonInteractionEvent.class)
+                                    .filter((e) -> e.getComponentId().equals("mee6transfer:" + event.getIdLong()))
+                                    .timeout(Duration.ofSeconds(30), () -> {
+                                        MessageEmbed embed = new EmbedBuilder()
+                                                .setColor(Color.RED)
+                                                .setDescription("Action timed out! Please try again!")
+                                                .build();
+
+                                        hook.editMessageEmbeds(embed).setComponents(Collections.emptyList()).queue();
+                                    })
+                                    .subscribe((e) -> {
                                         EmbedBuilder embedBuilder = new EmbedBuilder()
                                                 .setDescription("Thank you! We will notify you via DM when we're finished. (Make sure you have DMs turned on!)")
                                                 .setColor(0x452350);
@@ -63,17 +69,7 @@ public class Mee6TransferCommand extends SlashCommand {
                                         queue.addRequest(new MEE6Request(guild.getIdLong(), event.getUser().getIdLong()));
 
                                         e.editMessageEmbeds(embedBuilder.build()).setComponents(Collections.emptyList()).queue();
-                                    },
-                                    30, TimeUnit.SECONDS,
-                                    () ->
-                                    {
-                                        hook.editMessageEmbeds(new EmbedBuilder()
-                                                        .setColor(Color.RED)
-                                                        .setDescription("Action timed out! Please try again!")
-                                                        .build())
-                                                .setComponents(Collections.emptyList()).queue();
-                                    }
-                            );
+                                    });
                         }
                 );
     }

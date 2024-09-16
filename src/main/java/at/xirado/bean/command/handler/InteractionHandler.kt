@@ -16,7 +16,6 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction
 import net.dv8tion.jda.internal.utils.Checks
-import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -174,7 +173,7 @@ class InteractionHandler(val bean: Bean) {
             .setColor(EmbedUtil.ERROR_COLOR)
         event.jda.openPrivateChannelById(Bean.OWNER_ID)
             .flatMap {
-                it.sendMessageEmbeds(builder.build()).setContent("```fix\n${ExceptionUtils.getStackTrace(exception)}```")
+                it.sendMessageEmbeds(builder.build()).setContent("```fix\n${exception.stackTraceToString()}```")
             }
             .queue()
     }
