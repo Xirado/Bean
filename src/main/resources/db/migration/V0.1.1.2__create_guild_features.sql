@@ -1,0 +1,1 @@
+alter table guilds add column features integer default null;
