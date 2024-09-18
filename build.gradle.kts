@@ -4,7 +4,7 @@ plugins {
     kotlin("jvm") version "2.0.20"
     kotlin("plugin.serialization") version "2.0.20"
     id("com.google.cloud.tools.jib") version "3.4.2"
-    java
+    id("com.google.devtools.ksp") version "2.0.20-1.0.25"
     application
 }
 
@@ -29,21 +29,30 @@ println("Version: $version")
 
 repositories {
     mavenCentral()
+    maven("https://maven.xirado.dev/releases")
     maven("https://maven.xirado.dev/jitpack")
 }
 
 dependencies {
     // JDA
-    implementation("net.dv8tion:JDA:5.1.0")
+    implementation("io.github.JDA-Fork:JDA:ef41a9445d") // User app support
     implementation("club.minnced:jda-ktx:0.12.0")
     implementation("club.minnced:discord-webhooks:0.7.5")
+    implementation("at.xirado:JDUI:0.4.5")
 
     // Logging
     implementation("ch.qos.logback:logback-classic:1.5.8")
+    implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
 
     // Database
-    implementation("org.mariadb.jdbc:mariadb-java-client:3.3.3")
+    implementation("org.postgresql:postgresql:42.7.3")
     implementation("com.zaxxer:HikariCP:5.1.0")
+    implementation("org.flywaydb:flyway-core:10.14.0")
+    implementation("org.flywaydb:flyway-database-postgresql:10.14.0")
+
+    implementation("io.insert-koin:koin-core:4.0.0-RC1")
+    implementation("io.insert-koin:koin-annotations:1.4.0-RC4")
+    ksp("io.insert-koin:koin-ksp-compiler:1.3.1")
 
     implementation("org.scilab.forge:jlatexmath:1.0.7")
     implementation("io.github.classgraph:classgraph:4.8.146")
@@ -59,13 +68,14 @@ dependencies {
     implementation("dev.reformator.stacktracedecoroutinator:stacktrace-decoroutinator-jvm:2.4.4")
     implementation("com.sksamuel.aedile:aedile-core:1.3.1")
     implementation("org.jetbrains.kotlin:kotlin-scripting-jsr223:2.0.20")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.2")
     implementation("com.akuleshov7:ktoml-core:0.5.1")
 
     val ktorVersion = "2.3.9"
-    val exposedVersion = "0.48.0"
+    val exposedVersion = "0.54.0"
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
@@ -123,16 +133,14 @@ kotlin {
     }
 }
 
-tasks.compileJava {
-    sourceCompatibility = "21"
-    targetCompatibility = "21"
-    options.encoding = "UTF-8"
-}
-
 tasks.processResources {
     filesMatching("**/app.properties") {
         expand("version" to project.version, "buildTime" to Instant.now().toEpochMilli().toString())
     }
+}
+
+ksp {
+    arg("KOIN_CONFIG_CHECK","true")
 }
 
 tasks.build {
