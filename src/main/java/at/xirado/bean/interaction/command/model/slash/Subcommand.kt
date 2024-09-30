@@ -8,11 +8,11 @@ import kotlin.reflect.KFunction
 
 abstract class Subcommand(name: String, description: String) {
     val subcommandData = SubcommandData(name, description)
-    val function: KFunction<*> = findFunctionWithAnnotation<Handler>()
+    val handler: Pair<Handler, KFunction<*>> = findFunctionWithAnnotation<Handler>()
         ?: throw IllegalStateException("Missing handler function")
 
     context(AppCommandHandler)
     fun initialize() {
-        checkCommandFunctionParameters(function, subcommandData.options)
+        checkCommandFunctionParameters(handler.second, subcommandData.options)
     }
 }

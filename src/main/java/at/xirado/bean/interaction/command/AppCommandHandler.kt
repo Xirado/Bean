@@ -15,6 +15,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.GenericEvent
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
@@ -44,6 +45,7 @@ class AppCommandHandler(
     override suspend fun onEvent(event: GenericEvent) {
         when (event) {
             is GuildReadyEvent -> onReady(event)
+            is GuildJoinEvent -> onGuildJoin(event)
             is GenericCommandInteractionEvent -> onCommand(event)
         }
     }
@@ -53,6 +55,10 @@ class AppCommandHandler(
             updateGlobalCommands(event.jda)
         }
        updateGuildCommands(event.guild)
+    }
+
+    private suspend fun onGuildJoin(event: GuildJoinEvent) {
+        updateGuildCommands(event.guild)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -106,14 +112,20 @@ class AppCommandHandler(
         }
     }
 
-    private suspend fun updateGlobalCommands(jda: JDA) {
+    suspend fun updateGlobalCommands(jda: JDA, force: Boolean = false) {
         val globalCommands = commands.values.filter(AppCommand<*>::isGlobal)
-        val shouldUpdate = shouldUpdateGlobalCommands(globalCommands)
 
-        if (!shouldUpdate)
-            return log.info { "Global commands are up to date. Not updating" }
+        if (!force) {
+            val shouldUpdate = shouldUpdateGlobalCommands(globalCommands)
 
-        log.info { "Change in global commands detected. Updating" }
+            if (!shouldUpdate)
+                return log.info { "Global commands are up to date. Not updating" }
+
+            log.info { "Change in global commands detected. Updating" }
+        } else {
+            log.info { "Force updating global commands" }
+        }
+
         jda.updateCommands()
             .addCommands(globalCommands.map { it.commandData })
             .await()
@@ -139,16 +151,21 @@ class AppCommandHandler(
         }
     }
 
-    private suspend fun updateGuildCommands(jdaGuild: Guild) {
+    suspend fun updateGuildCommands(jdaGuild: Guild, force: Boolean = false) {
         val guild = guildCacheView.save(jdaGuild)
         val guildId = jdaGuild.idLong
         val guildCommands = commands.values.filter { it.isGuildCommandFor(guild, defaultFeatures) }
 
-        val shouldUpdate = shouldUpdateGuildCommands(guildId, guildCommands)
-        if (!shouldUpdate)
-            return log.debug { "Not updating guild commands for ${guild.name}, up to date." }
+        if (!force) {
+            val shouldUpdate = shouldUpdateGuildCommands(guildId, guildCommands)
+            if (!shouldUpdate)
+                return log.debug { "Not updating guild commands for ${guild.name} (${guild.id}), up to date." }
 
-        log.debug { "Updating guild commands for ${guild.name}" }
+            log.debug { "Updating guild commands for ${guild.name} (${guild.id})" }
+        } else {
+            log.info { "Force updating guild commands for ${guild.name} (${guild.id})" }
+        }
+
         jdaGuild.updateCommands()
             .addCommands(guildCommands.map { it.commandData })
             .await()

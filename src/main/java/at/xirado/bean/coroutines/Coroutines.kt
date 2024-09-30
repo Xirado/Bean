@@ -4,16 +4,17 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 val virtualExecutor: ExecutorService = Executors.newVirtualThreadPerTaskExecutor()
+val virtualScheduledExecutor: ScheduledExecutorService = Executors.newScheduledThreadPool(0, Thread.ofVirtual().factory())
+
 val virtualDispatcher = virtualExecutor.asCoroutineDispatcher()
 
 val Dispatchers.Virtual: CoroutineDispatcher
     get() = virtualDispatcher
-
-val virtualScheduledExecutor = Executors.newScheduledThreadPool(0, Thread.ofVirtual().factory())
 
 inline fun <reified T> newCoroutineScope(
     dispatcher: CoroutineDispatcher = Dispatchers.Default,

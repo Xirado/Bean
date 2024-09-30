@@ -1,0 +1,11 @@
+[success]
+template = "success"
+description = "The action was completed successfully!"
+
+[[success.fields]]
+name = "First field"
+value = "First field value blabla"
+
+[[success.fields]]
+name = "Second field"
+value = "First field value blabla"

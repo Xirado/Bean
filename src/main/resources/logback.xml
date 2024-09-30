@@ -4,28 +4,12 @@
         <encoder>
             <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} %boldCyan(%-15.-15thread) %boldGreen(%-15.-15logger{0}) %highlight(%-5level) %msg%n</pattern>
         </encoder>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-        </filter>
     </appender>
 
-    <appender name="FILE-AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/latest.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-            <fileNamePattern>logs/app.%i.log.zip</fileNamePattern>
-            <minIndex>1</minIndex>
-            <maxIndex>3</maxIndex>
-        </rollingPolicy>
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>5MB</maxFileSize>
-        </triggeringPolicy>
-        <encoder>
-            <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} %-15.-15thread %-15.-15logger{0} %-5level %msg%n</pattern>
-        </encoder>
-    </appender>
+    <logger name="net.dv8tion.jda" level="debug"/>
+    <logger name="at.xirado.bean" level="debug"/>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE-AUDIT"/>
     </root>
 </configuration>

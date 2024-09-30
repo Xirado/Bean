@@ -2,8 +2,7 @@ package at.xirado.bean
 
 import at.xirado.bean.database.DatabaseConfig
 import at.xirado.bean.jda.JDAConfig
-import com.akuleshov7.ktoml.Toml
-import kotlinx.serialization.decodeFromString
+import at.xirado.bean.util.tomlDecode
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
@@ -26,5 +25,5 @@ private fun readConfig(): Config {
         throw IllegalStateException("config.toml does not exist")
 
     val content = path.readText()
-    return Toml.decodeFromString(content)
+    return tomlDecode(content)
 }

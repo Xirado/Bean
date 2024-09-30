@@ -6,6 +6,10 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.utils.data.DataObject
 
+val EMBED_CHILDREN: Array<String> = arrayOf(
+    "footer", "image", "thumbnail", "video", "provider", "author", "fields"
+)
+
 @Serializable
 data class Embed(
     val title: String? = null,
@@ -23,6 +27,24 @@ data class Embed(
 )
 
 fun Embed.toDataObject() = DataObject.fromJson(Json.encodeToString(this))
+
+fun Embed.applyTemplate(template: Embed): Embed {
+    val title = this.title ?: template.title
+    val description = this.description ?: template.description
+    val url = this.url ?: template.url
+    val timestamp = this.timestamp ?: template.timestamp
+    val color = this.color ?: template.color
+    val footer = this.footer ?: template.footer
+    val image = this.image ?: template.image
+    val thumbnail = this.thumbnail ?: template.thumbnail
+    val author = this.author ?: template.author
+    val fields = template.fields + this.fields
+
+    return Embed(
+        title, description, url, timestamp, color, footer,
+        image, thumbnail, video, provider, author, fields
+    )
+}
 
 @Serializable
 data class Footer(

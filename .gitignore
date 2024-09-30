@@ -5,3 +5,6 @@ build/
 .gradle/
 lib/
 .idea/
+
+/dev
+/.kotlin

@@ -1,5 +1,6 @@
 package at.xirado.bean.interaction.command.model.slash
 
+import at.xirado.bean.interaction.autoDefer
 import at.xirado.bean.interaction.command.AppCommandHandler
 import at.xirado.bean.interaction.command.model.AppCommand
 import at.xirado.bean.model.GuildFeature
@@ -12,7 +13,9 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.util.*
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.callSuspendBy
 
@@ -26,42 +29,56 @@ abstract class SlashCommand(
     override val requiredGuildFlags: EnumSet<GuildFlag> = EnumSet.noneOf(GuildFlag::class.java)
     override val requiredUserFlags: EnumSet<UserFlag> = EnumSet.noneOf(UserFlag::class.java)
     override var feature: GuildFeature? = null
-    private val rootFunction: KFunction<*>? = findFunctionWithAnnotation<Handler>()
+    private val handler: Pair<Handler, KFunction<*>>? = findFunctionWithAnnotation<Handler>()
     private val subcommands = mutableMapOf<String, Subcommand>()
     private val subcommandGroups = mutableMapOf<String, SubcommandGroup>()
 
+    @Suppress("UNCHECKED_CAST")
     override suspend fun execute(event: SlashCommandInteractionEvent) {
         val subcommandName = event.subcommandName
         val subcommandGroup = event.subcommandGroup
 
-        val (function, instance) = when {
+        val (handlerPair, instance) = when {
             subcommandGroup != null -> {
                 val group = subcommandGroups[subcommandGroup]
                     ?: throw IllegalStateException("No such group $subcommandGroup")
 
                 val subcommand = group.getSubcommand(subcommandName!!)
 
-                subcommand.function to subcommand
+                subcommand.handler to subcommand
             }
             subcommandName != null -> {
                 val subcommand = subcommands[subcommandName]
                     ?: throw IllegalStateException("No such subcommand $subcommandName")
 
-                subcommand.function to subcommand
+                subcommand.handler to subcommand
             }
-            else -> rootFunction!! to this
+            else -> handler?.to(this)
+                ?: throw IllegalStateException("Command has no handler function but no subcommands!")
         }
 
+        val (handler, function) = handlerPair
+
         val args = getPopulatedCommandParameters(instance, event, function)
-        function.callSuspendBy(args)
+
+        val returnType = function.returnType.classifier as KClass<*>
+
+        if (returnType == MessageCreateData::class) {
+            function as KFunction<MessageCreateData>
+            event.autoDefer(ephemeral = handler.ephemeral) {
+                function.callSuspendBy(args)
+            }
+        } else {
+            function.callSuspendBy(args)
+        }
     }
 
     context(AppCommandHandler) override fun initialize() {
         if (subcommands.isEmpty() && subcommandGroups.isEmpty()) {
-            if (rootFunction == null)
+            if (handler == null)
                 throw IllegalStateException("Command has no handler function")
 
-            checkCommandFunctionParameters(rootFunction, commandData.options)
+            checkCommandFunctionParameters(handler.second, commandData.options)
         }
 
         subcommands.values.forEach { it.initialize() }
@@ -84,4 +101,4 @@ abstract class SlashCommand(
 }
 
 @Target(AnnotationTarget.FUNCTION)
-annotation class Handler
+annotation class Handler(val ephemeral: Boolean = false)

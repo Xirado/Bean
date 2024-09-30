@@ -11,7 +11,7 @@ abstract class SubcommandGroup(name: String, description: String) {
     context(AppCommandHandler)
     fun initialize() {
         subcommands.values.forEach {
-            checkCommandFunctionParameters(it.function, it.subcommandData.options)
+            checkCommandFunctionParameters(it.handler.second, it.subcommandData.options)
         }
     }
 

@@ -29,6 +29,7 @@ println("Version: $version")
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven("https://maven.xirado.dev/releases")
     maven("https://maven.xirado.dev/jitpack")
 }
@@ -69,10 +70,11 @@ dependencies {
     implementation("com.sksamuel.aedile:aedile-core:1.3.1")
     implementation("org.jetbrains.kotlin:kotlin-scripting-jsr223:2.0.20")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.2")
-    implementation("com.akuleshov7:ktoml-core:0.5.1")
+    implementation("org.tomlj:tomlj:1.1.1")
 
     val ktorVersion = "2.3.9"
     val exposedVersion = "0.54.0"
