@@ -6,9 +6,8 @@ import at.xirado.bean.interaction.command.model.slash.SlashCommand
 import at.xirado.bean.interaction.command.model.slash.dsl.option
 import at.xirado.bean.model.GuildFlag
 import at.xirado.bean.model.UserFlag
-import at.xirado.bean.model.toDataObject
+import at.xirado.bean.model.toMessageEmbed
 import dev.minn.jda.ktx.messages.MessageCreate
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import org.koin.core.annotation.Single
@@ -29,8 +28,7 @@ class EmbedTestCommand : SlashCommand("embed-test", "Tests embed preset function
     suspend fun run(event: SlashCommandInteractionEvent, embedName: String): MessageCreateData {
         val embed = embedService.getEmbed(embedName)
 
-        val embedData = embed.toDataObject()
-        val messageEmbed = EmbedBuilder.fromData(embedData).build()
+        val messageEmbed = embed.toMessageEmbed()
 
         return MessageCreate(embeds = listOf(messageEmbed))
     }

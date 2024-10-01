@@ -1,5 +1,7 @@
 package at.xirado.bean.embed
 
+import at.xirado.bean.interpolator.InterpolationContext
+import at.xirado.bean.interpolator.Interpolator
 import at.xirado.bean.model.*
 import kotlinx.serialization.Serializable
 
@@ -29,4 +31,12 @@ data class EmbedWithTemplate(
 
 fun EmbedWithTemplate.applyTemplate(template: Embed): Embed {
     return embed.applyTemplate(template)
+}
+
+fun EmbedWithTemplate.applyTemplate(
+    template: Embed,
+    interpolator: Interpolator,
+    interpolationContext: InterpolationContext,
+): Embed {
+    return embed.interpolate(interpolator, interpolationContext).applyTemplate(template.interpolate(interpolator, interpolationContext))
 }

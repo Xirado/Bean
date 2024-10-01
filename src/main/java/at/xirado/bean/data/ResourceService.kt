@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.io.path.isDirectory
 import kotlin.io.path.toPath
+import kotlin.streams.asSequence
 
 private val log = KotlinLogging.logger { }
 
@@ -58,13 +59,14 @@ class ResourceService {
     fun <T> getResourceFilesRecursively(
         path: String,
         filter: Path.() -> Boolean = { true },
-        map: (Path) -> T,
+        map: (Path) -> T?,
     ): List<T> = accessFileSystem { _ ->
         val rootPath = getResourcesRootPath()
         val realPath = rootPath.resolve(path)
         Files.walk(realPath).use { stream ->
-            stream.filter { !it.isDirectory() && filter(it.relativizeToResourcesRoot()) }
-                .map { map(it.relativizeToResourcesRoot()) }
+            stream.asSequence()
+                .filter { !it.isDirectory() && filter(it.relativizeToResourcesRoot()) }
+                .mapNotNull { map(it.relativizeToResourcesRoot()) }
                 .toList()
         }
     }

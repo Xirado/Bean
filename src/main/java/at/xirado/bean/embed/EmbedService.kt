@@ -1,13 +1,20 @@
 package at.xirado.bean.embed
 
 import at.xirado.bean.data.ResourceService
+import at.xirado.bean.interpolator.InterpolationContext
+import at.xirado.bean.interpolator.Interpolator
+import at.xirado.bean.interpolator.namespace.I18nExpressionNamespace
+import at.xirado.bean.interpolator.namespace.LOCALE_ENV_KEY
 import at.xirado.bean.model.Embed
 import at.xirado.bean.util.tomlToJsonObject
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import org.koin.core.annotation.Single
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import kotlin.io.path.extension
 import kotlin.io.path.isDirectory
 import kotlin.io.path.name
@@ -21,19 +28,35 @@ private val json = Json {
 @Single
 class EmbedService(
     private val resourceService: ResourceService,
-) {
+) : KoinComponent {
     private val templates: Map<String, Embed> = readTemplates()
     private val embeds: Map<String, EmbedWithTemplate> = readEmbeds()
+    private val interpolator by inject<Interpolator>()
 
     init {
         log.info { "Loaded ${embeds.size} embeds and ${templates.size} templates" }
     }
 
-    fun getEmbed(name: String): Embed {
+    fun getEmbed(
+        name: String,
+        interpolationContext: InterpolationContext? = null,
+    ): Embed {
         val embed = embeds[name]
             ?: throw IllegalArgumentException("Embed \"$name\" not found")
 
         val templateName = embed.template
+
+        if (interpolationContext != null) {
+            return when {
+                templateName == null -> embed.embed.interpolate(interpolator, interpolationContext)
+                else -> {
+                    val template = templates[templateName]
+                        ?: throw IllegalStateException("Template \"$templateName\" does not exist! (Defined on \"$name\")")
+
+                    embed.applyTemplate(template, interpolator, interpolationContext)
+                }
+            }
+        }
 
         return when {
             templateName == null -> embed.embed
@@ -44,6 +67,18 @@ class EmbedService(
                 embed.applyTemplate(template)
             }
         }
+    }
+
+    fun getLocalizedMessageEmbed(name: String, locale: DiscordLocale, vararg arguments: Pair<String, Any?>): Embed {
+        val context = InterpolationContext(
+            env = mapOf(
+                LOCALE_ENV_KEY to locale.locale
+            ),
+            namespaces = setOf(I18nExpressionNamespace::class),
+            arguments = arguments.toMap(),
+        )
+
+        return getEmbed(name, context)
     }
 
     private fun readEmbeds(): Map<String, EmbedWithTemplate> {

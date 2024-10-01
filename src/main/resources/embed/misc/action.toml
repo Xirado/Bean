@@ -8,4 +8,4 @@ value = "First field value blabla"
 
 [[success.fields]]
 name = "Second field"
-value = "First field value blabla"
+value = "Second field value blabla"
