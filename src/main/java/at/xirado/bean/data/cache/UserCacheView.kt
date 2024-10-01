@@ -5,13 +5,7 @@ import at.xirado.bean.database.entity.User
 import org.koin.core.annotation.Single
 import net.dv8tion.jda.api.entities.User as JDAUser
 
-private val populate: User.(JDAUser) -> Unit = {
-    avatar = it.avatarId
-    username = it.name
-    displayName = it.globalName
-}
-
-@Single
+@Single(createdAtStart = true)
 class UserCacheView(
     private val db: DBContext
 ) : CacheView<Long, User>(1000) {

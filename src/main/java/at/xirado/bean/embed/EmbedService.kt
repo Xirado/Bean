@@ -25,7 +25,7 @@ private val json = Json {
     ignoreUnknownKeys = true
 }
 
-@Single
+@Single(createdAtStart = true)
 class EmbedService(
     private val resourceService: ResourceService,
 ) : KoinComponent {

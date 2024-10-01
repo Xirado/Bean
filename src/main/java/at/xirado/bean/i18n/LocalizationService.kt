@@ -16,7 +16,7 @@ private val log = KotlinLogging.logger { }
 
 private val englishUS = Locale.forLanguageTag("en-US")
 
-@Single
+@Single(createdAtStart = true)
 class LocalizationService(
     private val resourceService: ResourceService,
 ) {

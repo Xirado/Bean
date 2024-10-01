@@ -21,12 +21,16 @@ import kotlin.time.toJavaDuration
 
 private val log = KotlinLogging.logger { }
 
-@Single
+@Single(createdAtStart = true)
 class JDAService(
     private val config: JDAConfig,
     private val eventManager: JDAEventManager,
 ) : KoinComponent {
     lateinit var shardManager: ShardManager
+
+    init {
+        initialize()
+    }
 
     fun initialize() {
         val token = config.token

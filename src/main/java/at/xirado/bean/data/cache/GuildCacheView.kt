@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.Guild as JDAGuild
 
 private val log = KotlinLogging.logger { }
 
-@Single
+@Single(createdAtStart = true)
 class GuildCacheView(
     private val db: DBContext
 ) : CacheView<Long, Guild>(1000), KoinComponent {

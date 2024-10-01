@@ -12,7 +12,7 @@ import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
 import java.util.*
 
-@Single
+@Single(createdAtStart = true)
 class JDAEventManager(
     scope: CoroutineScope = newCoroutineScope<JDAEventManager>(virtualDispatcher),
 ) : CoroutineEventManager(scope), KoinComponent {

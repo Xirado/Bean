@@ -23,7 +23,7 @@ import kotlin.time.Duration.Companion.seconds
 private val xpTimeout = 1.seconds.inWholeMilliseconds
 private val log = KotlinLogging.logger { }
 
-@Single
+@Single(createdAtStart = true)
 class LevelingService(
     private val memberCacheView: MemberCacheView,
     private val db: DBContext,

@@ -16,7 +16,7 @@ import kotlin.streams.asSequence
 
 private val log = KotlinLogging.logger { }
 
-@Single
+@Single(createdAtStart = true)
 class ResourceService {
     private val resourcesRoot = ResourceService::class.java.getResource("/logback.xml")
         ?: throw IllegalStateException("Could not get logback.xml! (Why??)")

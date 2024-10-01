@@ -4,7 +4,7 @@ import at.xirado.bean.data.DBContext
 import at.xirado.bean.database.entity.PersistentMessageView
 import org.koin.core.annotation.Single
 
-@Single
+@Single(createdAtStart = true)
 class PersistentMessageCacheView(
     private val db: DBContext
 ) : CacheView<Long, PersistentMessageView>(1000) {

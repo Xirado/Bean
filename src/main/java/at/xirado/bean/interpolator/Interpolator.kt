@@ -11,7 +11,7 @@ private const val INTERPOLATION_REGEX_STR = """(?<!\\)\$\{$EXPRESSION_REGEX_STR}
 private val EXPRESSION_REGEX = EXPRESSION_REGEX_STR.toRegex()
 private val INTERPOLATION_REGEX = INTERPOLATION_REGEX_STR.toRegex()
 
-@Single
+@Single(createdAtStart = true)
 class Interpolator : KoinComponent {
     private val namespaces = getNamespaces()
 

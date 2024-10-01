@@ -18,14 +18,4 @@ fun main() {
     }
 
     koin = app.koin
-
-    Application().initialize()
-}
-
-class Application : KoinComponent {
-    private val jdaService: JDAService by inject()
-
-    fun initialize() {
-        jdaService.initialize()
-    }
 }

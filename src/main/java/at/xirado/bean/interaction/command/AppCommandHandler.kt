@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 private val log = KotlinLogging.logger { }
 
-@Single
+@Single(createdAtStart = true)
 class AppCommandHandler(
     private val db: DBContext,
     private val guildCacheView: GuildCacheView,

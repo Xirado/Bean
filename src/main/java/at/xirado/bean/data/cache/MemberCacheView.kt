@@ -7,7 +7,7 @@ import org.jetbrains.exposed.dao.id.CompositeID
 import org.koin.core.annotation.Single
 import net.dv8tion.jda.api.entities.Member as JDAMember
 
-@Single
+@Single(createdAtStart = true)
 class MemberCacheView(
     private val userCacheView: UserCacheView,
     private val guildCacheView: GuildCacheView,

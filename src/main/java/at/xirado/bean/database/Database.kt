@@ -8,7 +8,7 @@ import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
 import java.sql.Connection
 
-@Single
+@Single(createdAtStart = true)
 class Database(
     private val config: DatabaseConfig
 ) : KoinComponent {
