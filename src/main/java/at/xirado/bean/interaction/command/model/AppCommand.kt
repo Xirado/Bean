@@ -2,6 +2,8 @@ package at.xirado.bean.interaction.command.model
 
 import at.xirado.bean.database.entity.Guild
 import at.xirado.bean.database.entity.User
+import at.xirado.bean.embed.EmbedService
+import at.xirado.bean.i18n.LocalizationService
 import at.xirado.bean.interaction.command.AppCommandHandler
 import at.xirado.bean.model.GuildFeature
 import at.xirado.bean.model.GuildFlag
@@ -83,3 +85,9 @@ fun GenericCommandInteractionEvent.getIdentifier() = when (this) {
     is UserContextInteractionEvent -> "user:$name"
     else -> throw IllegalStateException("Unsupported interaction")
 }
+
+val AppCommand<*>.embedService: EmbedService
+    get() = getKoin().get()
+
+val AppCommand<*>.localizationService: LocalizationService
+    get() = getKoin().get()

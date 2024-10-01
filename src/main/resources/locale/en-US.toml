@@ -1,2 +1,6 @@
 [action]
 success = "The action was completed successfully"
+
+[commands.avatar]
+userProfile = "{0}''s avatar"
+guildProfile = "{0}''s server-avatar"

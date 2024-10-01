@@ -4,9 +4,10 @@ import at.xirado.bean.interaction.command.model.slash.Handler
 import at.xirado.bean.interaction.command.model.slash.SlashCommand
 import at.xirado.bean.interaction.command.model.slash.dsl.option
 import at.xirado.bean.model.GuildFlag
+import at.xirado.bean.util.getLocalizedEmbed
+import at.xirado.bean.util.getLocalizedString
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.interactions.components.getOption
-import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -39,14 +40,17 @@ class AvatarCommand : SlashCommand("avatar", "Gets the avatar of a user") {
         }
 
         val embedTitle = if (serverProfile && asMember != null)
-            "${asMember.effectiveName}'s server-avatar"
+            event.getLocalizedString("commands.avatar.guildProfile", true, asMember.effectiveName)
         else
-            "${user.name}'s avatar"
+            event.getLocalizedString("commands.avatar.userProfile", true, user.name)
 
-        event.replyEmbeds(Embed {
-            title = embedTitle
-            color = embedColor
-            image = avatarUrl
-        }).await()
+        val embedArgs = mapOf(
+            "embedColor" to embedColor,
+            "title" to embedTitle,
+            "avatarUrl" to avatarUrl,
+        )
+
+        val embed = event.getLocalizedEmbed("command.misc.avatar", true, embedArgs)
+        event.replyEmbeds(embed).await()
     }
 }

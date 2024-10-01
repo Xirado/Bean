@@ -23,6 +23,7 @@ import kotlin.io.path.nameWithoutExtension
 private val log = KotlinLogging.logger { }
 private val json = Json {
     ignoreUnknownKeys = true
+    isLenient = true
 }
 
 @Single(createdAtStart = true)
@@ -69,16 +70,20 @@ class EmbedService(
         }
     }
 
-    fun getLocalizedMessageEmbed(name: String, locale: DiscordLocale, vararg arguments: Pair<String, Any?>): Embed {
+    fun getLocalizedMessageEmbed(name: String, locale: DiscordLocale, arguments: Map<String, Any?>): Embed {
         val context = InterpolationContext(
             env = mapOf(
                 LOCALE_ENV_KEY to locale.locale
             ),
             namespaces = setOf(I18nExpressionNamespace::class),
-            arguments = arguments.toMap(),
+            arguments = arguments,
         )
 
         return getEmbed(name, context)
+    }
+
+    fun getLocalizedMessageEmbed(name: String, locale: DiscordLocale, vararg arguments: Pair<String, Any?>): Embed {
+        return getLocalizedMessageEmbed(name, locale, arguments.toMap())
     }
 
     private fun readEmbeds(): Map<String, EmbedWithTemplate> {

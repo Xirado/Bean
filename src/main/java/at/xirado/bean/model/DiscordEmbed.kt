@@ -22,7 +22,7 @@ data class Embed(
     val description: String? = null,
     val url: String? = null,
     val timestamp: String? = null,
-    val color: Int? = null,
+    val color: String? = null,
     val footer: Footer? = null,
     val image: Image? = null,
     val thumbnail: Thumbnail? = null,
@@ -37,7 +37,7 @@ data class Embed(
             description = description?.let { interpolator.interpolate(it, context) },
             url = url?.let { interpolator.interpolate(it, context) },
             timestamp = timestamp?.let { interpolator.interpolate(it, context) },
-            color = color,
+            color = color?.let { interpolator.interpolate(it, context) },
             footer = footer?.interpolate(interpolator, context),
             image = image?.interpolate(interpolator, context),
             thumbnail = thumbnail?.interpolate(interpolator, context),
@@ -55,7 +55,7 @@ fun Embed.toMessageEmbed(): MessageEmbed = let {
         description = it.description
         url = it.url
         timestamp = it.timestamp?.let { Instant.parse(it) }
-        color = it.color
+        color = it.color?.toInt()
         it.footer?.let { footer(it.text, it.iconUrl) }
         image = it.image?.url
         thumbnail = it.thumbnail?.url

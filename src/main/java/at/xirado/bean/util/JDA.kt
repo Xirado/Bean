@@ -1,10 +1,15 @@
 package at.xirado.bean.util
 
+import at.xirado.bean.interaction.command.model.AppCommand
+import at.xirado.bean.interaction.command.model.embedService
+import at.xirado.bean.interaction.command.model.localizationService
+import at.xirado.bean.model.toMessageEmbed
 import dev.minn.jda.ktx.interactions.commands.optionType
 import dev.minn.jda.ktx.interactions.components.getOption
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import kotlin.reflect.*
@@ -123,4 +128,21 @@ fun SlashCommandInteractionEvent.getOptionByType(type: KType, name: String): Any
         Role::class -> getOption<Role>(name)
         else -> throw IllegalStateException("Invalid parameter of type ${type.classifier}")
     }
+}
+
+context(AppCommand<*>)
+fun Interaction.getLocalizedEmbed(name: String, useGuildLocale: Boolean = true, params: Map<String, Any?>): MessageEmbed {
+    val locale = if (useGuildLocale) guild?.locale ?: userLocale else userLocale
+    return embedService.getLocalizedMessageEmbed(name, locale, params).toMessageEmbed()
+}
+
+context(AppCommand<*>)
+fun Interaction.getLocalizedEmbed(name: String, useGuildLocale: Boolean = true, vararg params: Pair<String, Any?>): MessageEmbed {
+    return getLocalizedEmbed(name, useGuildLocale, params.toMap())
+}
+
+context(AppCommand<*>)
+fun Interaction.getLocalizedString(key: String, useGuildLocale: Boolean = true, vararg params: Any): String {
+    val locale = if (useGuildLocale) guild?.locale ?: userLocale else userLocale
+    return localizationService.getString(locale, key, *params)
 }
