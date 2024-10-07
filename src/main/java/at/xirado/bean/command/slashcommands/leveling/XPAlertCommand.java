@@ -139,7 +139,7 @@ public class XPAlertCommand extends SlashCommand {
                 TextChannel channel = member.getGuild().getTextChannelById(mode);
                 if (channel == null) return;
                 String localized = Util.getRecursive(json, "commands.xp.ranked");
-                current.sendMessage(Util.format(localized, member.getAsMention(), level)).queue();
+                channel.sendMessage(Util.format(localized, member.getAsMention(), level)).queue();
             }
         }
     }
