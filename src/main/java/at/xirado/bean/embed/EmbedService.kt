@@ -27,9 +27,7 @@ private val json = Json {
 }
 
 @Single(createdAtStart = true)
-class EmbedService(
-    private val resourceService: ResourceService,
-) : KoinComponent {
+class EmbedService : KoinComponent {
     private val templates: Map<String, Embed> = readTemplates()
     private val embeds: Map<String, EmbedWithTemplate> = readEmbeds()
     private val interpolator by inject<Interpolator>()
@@ -87,11 +85,11 @@ class EmbedService(
     }
 
     private fun readEmbeds(): Map<String, EmbedWithTemplate> {
-        return resourceService.getResourceFilesRecursively(
+        return ResourceService.getResourceFilesRecursively(
             path = "embed",
             filter = { name != "templates.toml" && extension == "toml" }
         ) { path ->
-            val content = resourceService.getFile(path).readText()
+            val content = ResourceService.getFile(path).readText()
             val pathParts = path.map {
                 if (it.isDirectory())
                     it.name
@@ -114,8 +112,8 @@ class EmbedService(
     }
 
     private fun readTemplates(): Map<String, Embed> {
-        return resourceService.getResourceFile("embed/templates.toml") { path ->
-            val content = resourceService.getFile(path).readText()
+        return ResourceService.getResourceFile("embed/templates.toml") { path ->
+            val content = ResourceService.getFile(path).readText()
 
             val jsonObject = tomlToJsonObject(content, json)
 

@@ -5,6 +5,7 @@ plugins {
     kotlin("plugin.serialization") version "2.0.20"
     id("com.google.cloud.tools.jib") version "3.4.2"
     id("com.google.devtools.ksp") version "2.0.20-1.0.25"
+    id("org.bytedeco.gradle-javacpp-platform") version "1.5.10"
     application
 }
 
@@ -56,6 +57,10 @@ dependencies {
     ksp("io.insert-koin:koin-ksp-compiler:1.3.1")
 
     implementation("org.scilab.forge:jlatexmath:1.0.7")
+    implementation("com.madgag:animated-gif-lib:1.4")
+    implementation("org.bytedeco:javacv:1.5.10")
+    implementation("org.bytedeco:ffmpeg-platform-gpl:6.1.1-1.5.10")
+
     implementation("io.github.classgraph:classgraph:4.8.146")
     implementation("net.jodah:expiringmap:0.5.10")
 
@@ -76,7 +81,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.2")
     implementation("org.tomlj:tomlj:1.1.1")
 
-    val ktorVersion = "2.3.9"
+    val ktorVersion = "3.0.0-rc-2"
     val exposedVersion = "0.54.0"
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
@@ -100,6 +105,9 @@ val dockerUser = System.getenv("docker_user") ?: null
 val dockerPassword = System.getenv("docker_password") ?: null
 
 jib {
+    from {
+        image = "registry.xirado.dev/bookworm-slim-jdk21"
+    }
     to {
         image = if (dockerRegistry != null)
             "$dockerRegistry/xirado/bean"
@@ -119,13 +127,14 @@ jib {
             }
         }
     }
-    from {
-        image = "openjdk:21"
-    }
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+
+ext {
+    set("javacppPlatform", "linux-x86_64,windows-x86_64")
 }
 
 kotlin {

@@ -20,7 +20,7 @@ suspend fun IReplyCallback.autoDefer(
         withContext(AutoDeferCoroutineContextElement(ephemeral)) {
             val resultDeferred = async { block() }
 
-            val result = withTimeoutOrNull(2.seconds) {
+            val result = withTimeoutOrNull(1.seconds) {
                 resultDeferred.await()
             }
 

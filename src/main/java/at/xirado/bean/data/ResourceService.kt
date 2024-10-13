@@ -1,8 +1,8 @@
 package at.xirado.bean.data
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.koin.core.annotation.Single
 import java.io.File
+import java.io.InputStream
 import java.net.URI
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
@@ -16,8 +16,7 @@ import kotlin.streams.asSequence
 
 private val log = KotlinLogging.logger { }
 
-@Single(createdAtStart = true)
-class ResourceService {
+object ResourceService {
     private val resourcesRoot = ResourceService::class.java.getResource("/logback.xml")
         ?: throw IllegalStateException("Could not get logback.xml! (Why??)")
     private var fs: FileSystem? = null
@@ -54,6 +53,13 @@ class ResourceService {
         val realPath = rootPath.resolve(path)
 
         map(realPath.relativizeToResourcesRoot())
+    }
+
+    fun readResource(path: String, block: (InputStream) -> Unit): Unit = accessFileSystem {
+        val rootPath = getResourcesRootPath()
+        val realPath = rootPath.resolve(path)
+
+        Files.newInputStream(realPath).use(block)
     }
 
     fun <T> getResourceFilesRecursively(

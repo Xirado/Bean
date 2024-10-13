@@ -1,1 +1,0 @@
-### Utility for creating named pipes on Windows

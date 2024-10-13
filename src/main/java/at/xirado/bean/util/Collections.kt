@@ -18,8 +18,15 @@ inline fun <reified T : Enum<T>> Iterable<T>.toEnumSet(): EnumSet<T> {
 }
 
 context(CoroutineScope)
-suspend inline fun <T, R> Iterable<T>.mapAsync(
+inline fun <T, R> Iterable<T>.mapAsync(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     crossinline block: suspend CoroutineScope.(T) -> R
 ) : List<Deferred<R>> = map { async(context, start) { block(this, it) } }
+
+context(CoroutineScope)
+inline fun <T, R> Iterable<T>.mapIndexedAsync(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    crossinline block: suspend CoroutineScope.(Int, T) -> R
+) : List<Deferred<R>> = mapIndexed { int, t -> async(context, start) { block(this, int, t) } }

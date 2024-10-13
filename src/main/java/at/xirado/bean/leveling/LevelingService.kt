@@ -12,8 +12,10 @@ import dev.minn.jda.ktx.coroutines.await
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.requests.GatewayIntent
 import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
+import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.random.Random
@@ -32,6 +34,7 @@ class LevelingService(
     private val defaultFeatures = config.defaultGuildFeaturesParsed
     private val timeouts: MutableMap<Long, Long> = mutableMapOf()
     private val timeoutLock = ReentrantLock()
+    override val intents: EnumSet<GatewayIntent> = EnumSet.of(GatewayIntent.GUILD_MESSAGES)
 
     init {
         setupTimeoutRemovalTask()
@@ -39,7 +42,6 @@ class LevelingService(
 
     override suspend fun onEvent(event: GenericEvent) {
         if (event !is MessageReceivedEvent) return
-
         if (!event.isFromGuild) return
 
         processLeveling(event)

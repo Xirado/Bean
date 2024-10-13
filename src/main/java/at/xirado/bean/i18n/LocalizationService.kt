@@ -17,9 +17,7 @@ private val log = KotlinLogging.logger { }
 private val englishUS = Locale.forLanguageTag("en-US")
 
 @Single(createdAtStart = true)
-class LocalizationService(
-    private val resourceService: ResourceService,
-) {
+class LocalizationService {
     private val languages = loadLocales().associateBy { it.locale }
 
     init {
@@ -53,7 +51,7 @@ class LocalizationService(
         return getString(locale.toLocale(), key, *arguments)
     }
 
-    private fun loadLocales(): List<Language> = resourceService.getResourceFilesRecursively(
+    private fun loadLocales(): List<Language> = ResourceService.getResourceFilesRecursively(
         path = "locale",
         filter = { extension == "toml" },
     ) { path ->
@@ -71,7 +69,7 @@ class LocalizationService(
             log.warn { "Locale $localeName has no entry in DiscordLocale" }
 
         try {
-            val content = resourceService.getFile(path).readText()
+            val content = ResourceService.getFile(path).readText()
             val localeObj = tomlToJsonObject(content)
             val localeMap = localeObj.extractStrings()
             val discordLocaleOrNull = if (discordLocale != DiscordLocale.UNKNOWN) discordLocale else null
