@@ -19,4 +19,11 @@ class Guild(id: EntityID<Long>) : Entity<Long>(id) {
     override fun toString(): String {
         return "Guild(id=$id)"
     }
+
+    fun toString(all: Boolean): String {
+        if (!all)
+            return toString()
+
+        return "Guild(id=$id, name=$name, ownerId=$ownerId, flags=$flags, features=$features, levelingConfig=$levelingConfig)"
+    }
 }

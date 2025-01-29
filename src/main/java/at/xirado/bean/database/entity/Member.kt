@@ -74,4 +74,11 @@ class Member(id: EntityID<CompositeID>) : CompositeEntity(id) {
     override fun toString(): String {
         return "Member(user=$user, guild=$guild)"
     }
+
+    fun toString(all: Boolean): String {
+        if (!all)
+            return toString()
+
+        return "Member(user=${user.toString(true)}, guild=${guild.toString(true)})"
+    }
 }

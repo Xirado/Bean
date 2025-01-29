@@ -19,4 +19,11 @@ class User(id: EntityID<Long>) : Entity<Long>(id) {
     override fun toString(): String {
         return "User(id=$id)"
     }
+
+    fun toString(all: Boolean): String {
+        if (!all)
+            return toString()
+
+        return "User(id=$id, username=$username, displayName=$displayName, flags=$flags, rankBackground=$rankBackground)"
+    }
 }

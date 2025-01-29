@@ -19,4 +19,8 @@ class GuildLevelingConfig(id: EntityID<Long>) : Entity<Long>(id) {
         0 -> Mee6LevelingStrategy
         else -> throw IllegalStateException("No leveling strategy of id $strategyId")
     }
+
+    override fun toString(): String {
+        return "GuildLevelingConfig(id=$id, notificationType=$notificationType)"
+    }
 }
