@@ -40,7 +40,7 @@ dependencies {
     implementation("io.github.JDA-Fork:JDA:ef41a9445d") // User app support
     implementation("club.minnced:jda-ktx:0.12.0")
     implementation("club.minnced:discord-webhooks:0.7.5")
-    implementation("at.xirado:JDUI:0.4.5")
+    implementation("at.xirado:JDUI:0.4.7")
 
     // Logging
     implementation("ch.qos.logback:logback-classic:1.5.8")

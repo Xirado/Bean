@@ -6,8 +6,8 @@ import at.xirado.bean.interaction.command.model.slash.dsl.option
 import at.xirado.bean.model.GuildFlag
 import at.xirado.jdui.component.MessageComponentCallbackResult
 import at.xirado.jdui.component.message.button.Button
+import at.xirado.jdui.component.message.messageComponents
 import at.xirado.jdui.message.messageBody
-import at.xirado.jdui.message.messageComponents
 import at.xirado.jdui.persistence.PersistentMessageConfig
 import at.xirado.jdui.persistence.PersistentMessageView
 import at.xirado.jdui.replyPersistentView
