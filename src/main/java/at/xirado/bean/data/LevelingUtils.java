@@ -21,6 +21,7 @@ import at.xirado.bean.data.database.SQLBuilder;
 import at.xirado.bean.http.routes.RankedMember;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +38,18 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class RankingSystem {
+public class LevelingUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RankingSystem.class);
-    private static Font FONT;
+    private static final Logger LOGGER = LoggerFactory.getLogger(LevelingUtils.class);
     private static final RescaleOp RESCALE_OP = new RescaleOp(.5f, 0, null);
+
+    private static final Map<String, BufferedImage> DEFAULT_WILDCARDS;
+    private static final Map<String, Integer> COLOR_INFO;
+    private static final Font FONT;
 
     private static final int CARD_WIDTH = 1200;
     private static final int CARD_HEIGHT = CARD_WIDTH / 4;
@@ -63,10 +69,14 @@ public class RankingSystem {
     private static final int XP_BAR_HEIGHT = CARD_HEIGHT / 5;
 
     static {
-        try {
-            FONT = Font.createFont(Font.TRUETYPE_FONT, RankingSystem.class.getResourceAsStream("/assets/fonts/NotoSans.ttf"));
+        try(InputStream font = LevelingUtils.class.getResourceAsStream("/assets/fonts/NotoSans.ttf")) {
+            if (font == null)
+                throw new IllegalStateException("Font not in resources");
+            FONT = Font.createFont(Font.TRUETYPE_FONT, font);
+            DEFAULT_WILDCARDS = loadWildcards();
+            COLOR_INFO = loadColorInfo();
         } catch (FontFormatException | IOException e) {
-            LOGGER.error("Couldn't load font from resources", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -285,20 +295,26 @@ public class RankingSystem {
             var rankCard = new BufferedImage(CARD_WIDTH, CARD_HEIGHT, BufferedImage.TYPE_INT_ARGB);
             var g = rankCard.createGraphics();
 
-            InputStream background;
+            BufferedImage backgroundImage;
+            Color primaryColor;
+
             if (card.startsWith("card")) {
-                background = RankingSystem.class.getResourceAsStream("/assets/wildcards/" + card + ".png");
+                String cardName = DEFAULT_WILDCARDS.containsKey(card) ? card : "card1";
+                BufferedImage cardImage = DEFAULT_WILDCARDS.get(cardName);
+                backgroundImage = cardImage;
+                primaryColor = new Color(COLOR_INFO.getOrDefault(cardName, 0x0C71E0));
             } else {
-                File file = new File(SetXPBackgroundCommand.DIRECTORY, card);
-                background = new FileInputStream(file);
+                File cardFile = new File(SetXPBackgroundCommand.DIRECTORY, card);
+                if (!cardFile.exists()) {
+                    backgroundImage = DEFAULT_WILDCARDS.get("card1");
+                } else {
+                    InputStream cardStream = new FileInputStream(cardFile);
+                    backgroundImage = ImageIO.read(cardStream);
+                }
+                primaryColor = new Color(getPrimaryColor(user));
             }
 
-            BufferedImage backgroundImage;
-            try {
-                backgroundImage = RESCALE_OP.filter(ImageIO.read(background), null);
-            } finally {
-                background.close();
-            }
+            backgroundImage = RESCALE_OP.filter(backgroundImage, null);
 
             var width = backgroundImage.getWidth();
             var height = backgroundImage.getHeight();
@@ -324,7 +340,6 @@ public class RankingSystem {
                 drawHeight = height;
 
             g.drawImage(backgroundImage.getSubimage(0, 0, drawWidth, drawHeight), 0, 0, CARD_WIDTH, CARD_HEIGHT, null);
-            background.close();
 
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -339,8 +354,6 @@ public class RankingSystem {
             var userString = user.getName();
             var leftAvatarAlign = AVATAR_SIZE + BORDER_SIZE * 2;
             g.drawString(userString, leftAvatarAlign, CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT);
-
-            Color c = new Color(getPrimaryColor(user));
 
             g.setColor(Color.white.darker());
 
@@ -361,19 +374,19 @@ public class RankingSystem {
             g.setColor(Color.white);
             var levelString = "Level " + currentLevel;
             g.drawString(levelString, CARD_WIDTH - BORDER_SIZE - g.getFontMetrics().stringWidth(levelString), CARD_HEIGHT - BORDER_SIZE * 2 - XP_BAR_HEIGHT);
-            g.setColor(c);
+            g.setColor(primaryColor);
             // draw empty xp bar
-            g.setColor(c.darker().darker());
+            g.setColor(primaryColor.darker().darker());
             g.fillRoundRect(leftAvatarAlign, CARD_HEIGHT - XP_BAR_HEIGHT - BORDER_SIZE, XP_BAR_WIDTH, XP_BAR_HEIGHT, XP_BAR_HEIGHT, XP_BAR_HEIGHT);
 
             // draw current xp bar
-            g.setColor(c);
+            g.setColor(primaryColor);
             int progress = (int) (((double) currentXP) / neededXP * XP_BAR_WIDTH);
             if (progress < 50 && progress != 0) progress = 50;
             g.fillRoundRect(leftAvatarAlign, CARD_HEIGHT - XP_BAR_HEIGHT - BORDER_SIZE, progress, XP_BAR_HEIGHT, XP_BAR_HEIGHT, XP_BAR_HEIGHT);
             int rank = getRank(guild.getIdLong(), user.getIdLong());
             Color rankColor = getRankColor(rank);
-            g.setColor(rankColor == null ? c.brighter() : rankColor);
+            g.setColor(rankColor == null ? primaryColor.brighter() : rankColor);
             String rankString = "#" + rank;
             int rankWidth = g.getFontMetrics().stringWidth(rankString);
             g.drawString(rankString, CARD_WIDTH - BORDER_SIZE - rankWidth, 70);
@@ -474,5 +487,46 @@ public class RankingSystem {
             case 3 -> Color.decode("#CD7F32");
             default -> null;
         };
+    }
+
+    private static Map<String, BufferedImage> loadWildcards() throws IOException {
+        String[] names = {"card1", "card2", "card3", "card4"};
+        Map<String, BufferedImage> wildcards = new HashMap<>();
+
+        for (String name : names) {
+            String path = "/assets/wildcards/" + name + ".png";
+            try (InputStream stream = LevelingUtils.class.getResourceAsStream(path)) {
+                if (stream == null) {
+                    LOGGER.error("Wildcard \"{}\" not found", path);
+                    continue;
+                }
+                byte[] data = stream.readAllBytes();
+                ByteArrayInputStream dataStream = new ByteArrayInputStream(data);
+
+                BufferedImage image = ImageIO.read(dataStream);
+                wildcards.put(name, image);
+            }
+        }
+
+        return wildcards;
+    }
+
+    private static Map<String, Integer> loadColorInfo() throws IOException {
+        Map<String, Integer> colorInfo = new HashMap<>();
+
+        try (InputStream stream = LevelingUtils.class.getResourceAsStream("/assets/wildcards/ColorInfo.json")) {
+            if (stream == null)
+                throw new IllegalStateException("ColorInfo not present");
+
+            DataObject obj = DataObject.fromJson(stream);
+
+            for (String key : obj.keys()) {
+                String value = obj.getString(key);
+                Integer valueParsed = Integer.parseInt(value, 16);
+                colorInfo.put(key, valueParsed);
+            }
+        }
+
+        return colorInfo;
     }
 }

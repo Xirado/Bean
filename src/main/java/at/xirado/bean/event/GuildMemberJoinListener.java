@@ -17,7 +17,7 @@
 package at.xirado.bean.event;
 
 import at.xirado.bean.Bean;
-import at.xirado.bean.data.RankingSystem;
+import at.xirado.bean.data.LevelingUtils;
 import at.xirado.bean.data.RoleReward;
 import at.xirado.bean.data.database.entity.DiscordGuild;
 import net.dv8tion.jda.api.Permission;
@@ -41,8 +41,8 @@ public class GuildMemberJoinListener extends ListenerAdapter {
                     .getGuildRepository()
                     .getGuildDataBlocking(event.getGuild().getIdLong());
 
-            long totalXP = RankingSystem.getTotalXP(event.getGuild().getIdLong(), event.getUser().getIdLong());
-            int level = RankingSystem.getLevel(totalXP);
+            long totalXP = LevelingUtils.getTotalXP(event.getGuild().getIdLong(), event.getUser().getIdLong());
+            int level = LevelingUtils.getLevel(totalXP);
 
             if (level > 0) {
                 Set<RoleReward> roleRewards = guildData.getEffectiveRoleRewards(level);

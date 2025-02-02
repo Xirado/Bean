@@ -18,7 +18,7 @@ package at.xirado.bean.mee6;
 
 import at.xirado.bean.Bean;
 import at.xirado.bean.data.MEE6Player;
-import at.xirado.bean.data.RankingSystem;
+import at.xirado.bean.data.LevelingUtils;
 import at.xirado.bean.misc.EmbedUtil;
 import at.xirado.bean.misc.Util;
 import net.dv8tion.jda.api.entities.Guild;
@@ -197,7 +197,7 @@ public class MEE6Queue extends Thread {
         String name = player.getUsername();
         String discriminator = player.getDiscriminator();
         String avatarUrl = player.getAvatar();
-        RankingSystem.setXP(connection, guildId, id, xp, name, discriminator, avatarUrl);
+        LevelingUtils.setXP(connection, guildId, id, xp, name, discriminator, avatarUrl);
     }
 
     public boolean hasPendingRequest(long guildId) {

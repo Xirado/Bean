@@ -18,7 +18,7 @@ package at.xirado.bean.event;
 
 import at.xirado.bean.Bean;
 import at.xirado.bean.command.slashcommands.leveling.XPAlertCommand;
-import at.xirado.bean.data.RankingSystem;
+import at.xirado.bean.data.LevelingUtils;
 import at.xirado.bean.data.RoleReward;
 import at.xirado.bean.data.database.entity.DiscordGuild;
 import at.xirado.bean.misc.EmbedUtil;
@@ -75,17 +75,17 @@ public class XPMessageListener extends ListenerAdapter {
 
             try (var connection = Bean.getInstance().getDatabase().getConnectionFromPool()) {
                 // Current total amount of xp
-                long currentTotalXP = RankingSystem.getTotalXP(connection, guildId, userId);
+                long currentTotalXP = LevelingUtils.getTotalXP(connection, guildId, userId);
                 // Current level
-                int level = RankingSystem.getLevel(currentTotalXP);
+                int level = LevelingUtils.getLevel(currentTotalXP);
                 // Current relative xp for next level
-                long currentXP = currentTotalXP - RankingSystem.getTotalXPNeeded(level);
+                long currentXP = currentTotalXP - LevelingUtils.getTotalXPNeeded(level);
                 // Amount of xp left to level up
-                long xpLeft = RankingSystem.getXPToLevelUp(level);
+                long xpLeft = LevelingUtils.getXPToLevelUp(level);
                 // Generate random amount of xp between 15 and 25
                 int xpAmount = 15 + random.nextInt(11);
 
-                RankingSystem.addXP(connection, guildId, userId, xpAmount, user.getName(), user.getDiscriminator(), user.getEffectiveAvatarUrl());
+                LevelingUtils.addXP(connection, guildId, userId, xpAmount, user.getName(), user.getDiscriminator(), user.getEffectiveAvatarUrl());
 
                 if (xpAmount + currentXP < xpLeft)
                     return;

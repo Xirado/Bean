@@ -19,7 +19,7 @@ package at.xirado.bean.command.slashcommands.leveling;
 import at.xirado.bean.Bean;
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
-import at.xirado.bean.data.RankingSystem;
+import at.xirado.bean.data.LevelingUtils;
 import at.xirado.bean.data.content.*;
 import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.entities.User;
@@ -47,7 +47,7 @@ public class RankCommand extends SlashCommand {
         OptionMapping optionData = event.getOption("user");
         User user = optionData == null ? event.getUser() : optionData.getAsUser();
 
-        long xp = RankingSystem.getTotalXP(event.getGuild().getIdLong(), user.getIdLong());
+        long xp = LevelingUtils.getTotalXP(event.getGuild().getIdLong(), user.getIdLong());
 
         if (xp < 100) {
             if (optionData == null)
@@ -57,7 +57,7 @@ public class RankCommand extends SlashCommand {
             return;
         }
 
-        byte[] rankCard = RankingSystem.generateLevelCard(user, event.getGuild());
+        byte[] rankCard = LevelingUtils.generateLevelCard(user, event.getGuild());
         if (rankCard == null) {
             commandHook.sendMessageEmbeds(EmbedUtil.errorEmbed("Could not load rank card! Please try again later!")).queue();
             return;
@@ -69,7 +69,7 @@ public class RankCommand extends SlashCommand {
         DismissableContentManager contentManager = Bean.getInstance().getDismissableContentManager();
 
         if (!contentManager.hasProgress(userId, RankCustomBackgroundDismissableContent.class)) {
-            if (!RankingSystem.getPreferredCard(event.getUser()).startsWith("card")) { // Default backgrounds
+            if (!LevelingUtils.getPreferredCard(event.getUser()).startsWith("card")) { // Default backgrounds
                 // They have a custom background so no need to show it to them.
                 contentManager.createDismissableContent(userId, RankCustomBackgroundDismissableContent.class, DismissableState.AWARE);
             } else {

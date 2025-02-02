@@ -18,7 +18,7 @@ package at.xirado.bean.command.slashcommands.leveling;
 
 import at.xirado.bean.command.SlashCommand;
 import at.xirado.bean.command.SlashCommandContext;
-import at.xirado.bean.data.RankingSystem;
+import at.xirado.bean.data.LevelingUtils;
 import at.xirado.bean.misc.EmbedUtil;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -83,7 +83,7 @@ public class SetXPBackgroundCommand extends SlashCommand {
 
             File file = new File(DIRECTORY, fullName);
             proxy.downloadToFile(file, 1200, 300).get();
-            RankingSystem.setPreferredCard(event.getUser(), fullName, event.getOption("color").getAsInt());
+            LevelingUtils.setPreferredCard(event.getUser(), fullName, event.getOption("color").getAsInt());
             event.getHook().sendMessageEmbeds(EmbedUtil.successEmbed("Your background has been updated!")).queue();
         } catch (InterruptedException | ExecutionException | SQLException ex) {
             throw new RuntimeException(ex);

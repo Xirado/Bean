@@ -17,7 +17,7 @@
 package at.xirado.bean.http.routes
 
 import at.xirado.bean.Bean
-import at.xirado.bean.data.RankingSystem
+import at.xirado.bean.data.LevelingUtils
 import at.xirado.bean.http.HttpServer
 import at.xirado.bean.http.auth.AuthPrincipal
 import at.xirado.bean.http.response.error.BadRequestError
@@ -53,7 +53,7 @@ fun Route.removeRankedMemberRoute() {
         if (!canRemoveMembersFromLeaderboard(guild, principal.userId))
             return@delete call.respondError(UnauthorizedError)
 
-        val success = RankingSystem.clearXP(guildId, memberId)
+        val success = LevelingUtils.clearXP(guildId, memberId)
 
         if (!success)
             return@delete call.respondError(noSuchMemberError)
