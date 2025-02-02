@@ -44,9 +44,6 @@ private val ERROR_EMBED = EmbedUtil.errorEmbed("An unknown error occurred. Pleas
 class InteractionHandler(val bean: Bean) {
 
     companion object {
-
-        private val devGuilds = listOf(815597207617142814L)
-
         val AUTOCOMPLETE_MAX_CHOICES = 25
 
         private val log = LoggerFactory.getLogger(InteractionHandler::class.java) as Logger
@@ -54,6 +51,7 @@ class InteractionHandler(val bean: Bean) {
         private const val commandsPackage = "at.xirado.bean.command.slashcommands"
     }
 
+    private val debugGuilds = bean.config.debugGuilds;
     private val globalCommands: MutableList<GenericCommand> = Collections.synchronizedList(mutableListOf())
     private val guildCommands: MutableMap<Long, MutableList<GenericCommand>> = ConcurrentHashMap()
 
@@ -205,13 +203,20 @@ class InteractionHandler(val bean: Bean) {
     private fun registerCommand(action: CommandListUpdateAction, command: GenericCommand) {
         Checks.notNull(command, "Command")
 
-        if (command.isGlobal && !bean.isDebug) {
+        if (command.isGlobal) {
+            if (bean.isDebug) {
+                debugGuilds?.let {
+                    it.forEach { addGuildCommand(it, command) }
+                }
+                return
+            }
+
             globalCommands.add(command)
             action.addCommands(command.commandData)
             return
         }
 
-        val enabledGuilds = if (bean.isDebug) devGuilds else command.enabledGuilds
+        val enabledGuilds = command.enabledGuilds
         enabledGuilds.forEach { addGuildCommand(it, command) }
     }
 

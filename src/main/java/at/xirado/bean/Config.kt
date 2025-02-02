@@ -29,6 +29,7 @@ import kotlin.io.path.readText
 data class Config(
     val discordToken: String,
     val debugMode: Boolean = false,
+    val debugGuilds: List<Long>? = null,
     val webhookUrl: String? = null,
     val http: HttpServerConfig,
     val jwt: JWTConfig,
